@@ -27,7 +27,7 @@ test('Register', async ({ page }) => {
   await page.getByLabel('Adresse').press('Tab');
   await page.getByLabel('Ville').fill('Riviere-du-Loup');
   await page.getByLabel('Ville').press('Tab');
-  await page.getByLabel('Code Postal').fill('G5R1R1');  
+  await page.getByLabel('Code Postal').fill('G5R1R1');
   await page.getByLabel('Code Postal').press('Tab');
   await page.getByLabel('Province').click();
   await page.getByLabel('Province').fill('Quebec');
@@ -41,6 +41,7 @@ test('Register', async ({ page }) => {
   await page.locator('#confirm_password').fill('Patate123');
   //confirme la création du compte
   await page.getByRole('button', { name: 'Créer' }).click();
+
   // MANQUE LA VALIDATION AVEC API... A faire
 });
 
