@@ -6,6 +6,8 @@
     import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
     import { writable } from "svelte/store";
     import type { Emploi } from "../../Models/Emploi";
+    import { GET } from "../../ts/server";
+    import { onMount } from "svelte";
 
     const modal = writable(false);
     const selectedEmploiId = writable(0);
@@ -19,38 +21,18 @@
     const handleEmploiClick = (offreId: number) => {
         openModal(offreId);
     };
-    const data: Emploi[] = [
-        {
-            id: 1,
-            titre: "Titre du poste 1",
-            dateDebut: "2021-10-10",
-            dateFin: "2021-10-11",
-            description: "Description du poste 1",
-            entreprise: "Entreprise 1",
-            poste: "Developpeur",
-            ville: "Squatec",
-        },
-        {
-            id: 2,
-            titre: "Titre du poste 2",
-            dateDebut: "2021-10-10",
-            dateFin: "2021-10-11",
-            description: "Description du poste 2",
-            entreprise: "Entreprise 2",
-            poste: "Developpeur",
-            ville: "Squatec",
-        },
-        {
-            id: 3,
-            titre: "Titre du poste 3",
-            dateDebut: "2021-10-10",
-            dateFin: "2021-10-11",
-            description: "Description du poste 3",
-            entreprise: "Entreprise 3",
-            poste: "Developpeur",
-            ville: "Squatec",
-        },
-    ];
+
+    const jobOffers = writable<Emploi[]>([]);
+    const getJobOffers = async () => {
+        try {
+            const response = await GET<any>("/jobOffer/offresEmploi");
+            console.log("response", response);
+            jobOffers.set(response);
+        } catch (error) {
+            console.error("Error fetching job offers:", error);
+        }
+    };
+    onMount(getJobOffers);
 </script>
 
 <Header />
@@ -65,13 +47,13 @@
         </div>
     </section>
     <section class="offres">
-        {#each data as offre}
+        {#each $jobOffers as offre}
             <EmploiRow emploi={offre} handleModalClick={handleEmploiClick}
             ></EmploiRow>
         {/each}
     </section>
     {#if $modal}
-        {#each data as emploi}
+        {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
                 <OffreEmploi {emploi} handleEmploiClick={closeModal} />
             {/if}
@@ -113,6 +95,12 @@
         flex-direction: column;
         width: 50%;
         margin-left: 5.2%;
+    }
+    .offres {
+        width: fit-content;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
     .offres {
         width: fit-content;

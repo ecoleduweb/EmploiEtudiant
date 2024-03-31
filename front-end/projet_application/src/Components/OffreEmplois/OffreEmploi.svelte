@@ -8,24 +8,22 @@
 <Modal handleModalClick={handleEmploiClick}>
     <div class="container">
         <div class="titleContainer">
-            <h3 class="title">{emploi.titre}</h3>
-            <h4 class="subtitle">{emploi.entreprise}</h4>
+            <h3 class="title">{emploi.title}</h3>
+            <h4 class="subtitle">{emploi.scheduleId}</h4>
         </div>
         <div class="info">
             <h5 class="infoTitle">Type de poste</h5>
-            <p class="text">{emploi.titre}</p>
+            <p class="text">{emploi.title}</p>
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
-            <p class="text">{emploi.ville}</p>
+            <p class="text">{emploi.address}</p>
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{emploi.description}</p>
             <h5 class="infoTitle">Date de début</h5>
-            <p class="text">{emploi.dateDebut}</p>
+            <p class="text">{emploi.dateEntryOffice}</p>
             <h5 class="infoTitle">Date limite pour postuler</h5>
-            <p class="text">{emploi.dateFin}</p>
-            <h5 class="infoTitle">Nom de la personne responsable</h5>
-            <p class="text">nom de la personne à ajouter</p>
+            <p class="text">{emploi.deadlineApply}</p>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
-            <p class="text">Courriel de la personne à ajouter</p>
+            <p class="text">{emploi.email}</p>
         </div>
     </div>
 </Modal>
