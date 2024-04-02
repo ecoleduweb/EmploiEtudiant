@@ -41,7 +41,6 @@
           const token = jwtDecode(response.token);
           console.log(token);
           localStorage.setItem("token", response.token);
-
           goto("/");
         }
       } catch (error) {

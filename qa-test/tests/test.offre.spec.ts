@@ -9,6 +9,23 @@ test.beforeEach(async ({ page }) => {
 
 
   test('Ajouter un Offre', async ({ page }) => {
+
+    await page.goto('http://localhost:5173');
+    await 1000;
+    await page.waitForLoadState('networkidle');
+    
+await page.getByRole('button', { name: 'Offrir un emploi test' }).click();
+await page.getByRole('link', { name: 'Connexion entreprise' }).click();
+    
+    await page.getByLabel('Nom d\'utilisateur').click();
+    await page.getByLabel('Nom d\'utilisateur').fill('test@test.ca');
+    await page.getByLabel('Nom d\'utilisateur').press('Tab');
+    await page.getByLabel('Mot de passe').fill('phil123');
+    // Clique sur le bouton de connexion
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+
+    await page.getByRole('button', { name: 'Trouver un emploi test' }).click();
+
     await page.locator('#titre').click();
     await page.locator('#titre').fill('Test');
     await page.locator('#titre').press('Tab');
