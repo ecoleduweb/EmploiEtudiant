@@ -28,7 +28,8 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-
+    # Temporary CORS bypass
+    CORS(app)
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
     

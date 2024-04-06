@@ -48,8 +48,7 @@
     </section>
     <section class="offres">
         {#each $jobOffers as offre}
-            <EmploiRow emploi={offre} handleModalClick={handleEmploiClick}
-            ></EmploiRow>
+            <EmploiRow emploi={offre} handleModalClick={handleEmploiClick}/>
         {/each}
     </section>
     {#if $modal}
