@@ -10,8 +10,9 @@
   import { goto } from "$app/navigation";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
 
-  const handleEmploi = () => {
-    goto("/emplois");
+  const handleOffreEmploi = () => {
+    console.log("OFFRE")
+    goto("/offre");
   };
 
   const modal = writable(false);
@@ -65,7 +66,7 @@
   <section class="haut">
     <div class="haut-gauche">
       <div class="divFlex">
-        <Button on:click={handleEmploi} text="Créer une nouvelle offre" />
+        <Button onClick={handleOffreEmploi} text="Créer une nouvelle offre" />
       </div>
     </div>
   </section>
