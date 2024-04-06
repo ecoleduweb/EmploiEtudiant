@@ -213,6 +213,7 @@
                 "jobOffer": {
                   "type": "object",
                   "properties": {
+                    "id": {"type": "integer"},
                     "title": {"type": "string"},
                     "address": {"type": "string"},
                     "description": {"type": "string"},
@@ -233,12 +234,17 @@
                 "enterprise": {
                   "type": "object",
                   "properties": {
+                    "id": {"type": "integer"},
                     "name": {"type": "string"},
                     "email": {"type": "string"},
                     "phone": {"type": "string"},
                     "address": {"type": "string"},
                     "cityId": {"type": "integer"}
                   }
+                },
+                "studyPrograms": {
+                  "type": "array",
+                  "items": {"type": "string"}
                 }
               }
             }

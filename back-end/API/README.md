@@ -15,6 +15,7 @@ DATABASE_TEST_URL= url de la base de données de test
 BEARER_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IeyJlbWFpbCI6InBoaWxzYXVjaWVyQGdtYWlsLmNvbSIsImV4cCI6MTcxMDnNk6hD83xlj9
 
 DATABASE_DEV_URL= url de la base de données de développement
+CORS=http://localhost
 
 SECRET_KEY=clé secrète
 ```
@@ -25,10 +26,11 @@ flask db migrate -m "Nom_de_la_migration"(cree une nouvelle migration)
 flask db upgrade (pour update les changements)
 flask db downgrade (pour revenir en arriere)
 flask db history (voir toutes les migration)
+flask db branches (Afficher les points de branchement actuels)
 ```
 ### Starting the server
 ```bash
-flask db branches (Afficher les points de branchement actuels)
+flask db upgrade (pour update les changements)
 flask run
 ```
 

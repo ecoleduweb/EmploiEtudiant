@@ -29,11 +29,9 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    CORS(app)
-
     # Set CORS origins
-    CORS(app, origins=['http://10.172.80.144', 'http://localhost'])
-
+    CORS(app, origins=[os.environ.get('CORS')])
+    
     try:
         if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
@@ -53,12 +51,16 @@ def create_app():
     from app.controllers.city_controller import city_blueprint
     from app.controllers.enterprise_controller import enterprise_blueprint
     from app.controllers.employer_controller import employer_blueprint
-    
+    from app.controllers.study_program_controller import study_program_blueprint
+    from app.controllers.offer_program_controller import offer_program_blueprint
+
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(job_offer_blueprint, url_prefix='/jobOffer')
     app.register_blueprint(enterprise_blueprint, url_prefix='/enterprise')
     app.register_blueprint(employer_blueprint, url_prefix='/employer')
     app.register_blueprint(city_blueprint, url_prefix='/city')
+    app.register_blueprint(study_program_blueprint, url_prefix='/studyProgram')
+    app.register_blueprint(offer_program_blueprint, url_prefix='/offerProgram')
 
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
     
