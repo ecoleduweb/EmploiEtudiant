@@ -1,0 +1,275 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Gestion de demandes d'emplois",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/ping": {
+      "get": {
+        "description": "Checks if the server is up and running",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Connected successfully"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "Logs in a user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "User information",
+            "in": "body",
+            "description": "JSON data containing user information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created successfully"
+          },
+          "401": {
+            "description": "User doesn't exist"
+          }
+        }
+      }
+    },
+    "/createUser": {
+      "post": {
+        "description": "Creates a user",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "User information",
+            "in": "body",
+            "description": "JSON data containing user information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/updatePassword": {
+      "put": {
+        "description": "Updates a user's password",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "User information",
+            "in": "body",
+            "description": "JSON data containing user information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password updated successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/getAllUsers": {
+      "get": {
+        "description": "Get a list of all users",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Users successfully fetched"
+          }
+        }
+      }
+    },
+    "/getUser": {
+      "get": {
+        "description": "Get a user's information based on email address",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "User information",
+            "in": "body",
+            "description": "JSON data containing user information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully fetched"
+          },
+          "400": {
+            "description": "Missing email address"
+          }
+        }
+      }
+    },
+    "/city/oneCity": {
+      "get": {
+        "description": "Get a city's information based on city id",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "City information",
+            "in": "body",
+            "description": "JSON data containing city information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City successfully fetched"
+          },
+          "400": {
+            "description": "Missing city id"
+          },
+          "404": {
+            "description": "City not found"
+          }
+        }
+      }
+    },
+    "/city/allCities": {
+      "get": {
+        "description": "Get a list of all cities",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Cities successfully fetched"
+          }
+        }
+      }
+    },
+    "/createJobOffer": {
+      "post": {
+        "description": "Create a job offer",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Job Offer",
+            "in": "body",
+            "description": "JSON data containing job offer information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobOffer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "address": {"type": "string"},
+                    "description": {"type": "string"},
+                    "dateEntryOffice": {"type": "string"},
+                    "deadlineApply": {"type": "string"},
+                    "email": {"type": "string"},
+                    "hoursPerWeek": {"type": "integer"},
+                    "compliantEmployer": {"type": "boolean"},
+                    "internship": {"type": "boolean"},
+                    "offerStatus": {"type": "integer"},
+                    "offerLink": {"type": "string"},
+                    "urgent": {"type": "boolean"},
+                    "active": {"type": "boolean"},
+                    "employerId": {"type": "integer"},
+                    "scheduleId": {"type": "integer"}
+                  }
+                },
+                "enterprise": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "integer"},
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                    "phone": {"type": "string"},
+                    "address": {"type": "string"},
+                    "cityId": {"type": "integer"}
+                  }
+                },
+                "studyPrograms": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job offer created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    }
+  }
+}

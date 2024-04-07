@@ -1,0 +1,35 @@
+name: Test BackEnd
+
+on: pull_request
+
+jobs:
+  unit-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install python
+        uses: actions/setup-python@v2
+
+      - name: Install all packages
+        working-directory: back-end
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libmariadb-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Create env file"
+        run: |
+          touch .env
+          echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL_2 }} >> .env
+          echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL_2 }} >> .env
+          echo CORS=${{ http://localhost }} >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          cat .env
+
+      - name: Run tests
+        working-directory: back-end/API/tests
+        run: python -m pytest
