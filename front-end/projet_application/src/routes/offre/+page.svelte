@@ -3,10 +3,13 @@
     import Button from "../../Components/Inputs/Button.svelte";
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
+    import { writable, type Writable } from 'svelte/store';
     import { POST } from "../../ts/server";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
-  
+    import type { Entreprise } from "../../Models/Entreprise";
+    import { goto } from '$app/navigation';
+
     const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
@@ -37,11 +40,12 @@
     compliantEmployer: false, 
     internship: false,
     offerLink: "",
+    offerStatus: 0,
     urgent: false,
     active: true,
     salary: "",
     scheduleId: -1,
-    idProgramme : [],
+    employerId: 1, // HARDCODER 
     };
 
     let errors: jobOffer = {
@@ -55,11 +59,12 @@
     compliantEmployer: false, 
     internship: false,
     offerLink: "",
+    offerStatus: 0,
     urgent: false,
     active: true,
     salary: "",
     scheduleId: 0,
-    idProgramme : [],
+    employerId: 0,// HARDCODER 
     };
 
     let programmeSelected: { label: string; value: number }[] = [];
@@ -71,54 +76,129 @@
     { label: "Graphisme", value: 4 },
     { label: "Informatique", value: 5 },
     { label: "Inhalothérapie", value: 6 },
-    { label: "Pharmacie", value: 7 }
+    { label: "Pharmacie", value: 7 },
+    { label: "Soins infirmiers", value: 8 },
+    { label: "Arts visuels", value: 9 },
+    { label: "Sciences de la nature", value: 10 },
+    { label: "Sciences humaines", value: 11 }
 ];
-  let scheduleSelected: { label: string; value: number }[] = [];
-  let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-  let scheduleOption = [
-  { label: "Temps plein", value: 1 },
-  { label: "Emploi d'été", value: 2 },
-  { label: "Temps partiel", value: 3 }
-  ];
+    let scheduleSelected: { label: string; value: number }[] = [];
+    let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+    let scheduleOption = [
+    { label: "Temps plein", value: 1 },
+    { label: "Emploi d'été", value: 2 },
+    { label: "Temps partiel", value: 3 }
+];
 
-  const handleSubmit = async () => {
-
-    try {
-      offre.scheduleId = (scheduleSelected as any)?.value;
-      offre.idProgramme = programmeSelected.map((p) => p.value);
-      console.log(offre.idProgramme);
-
-      await schema.validate(offre, { abortEarly: false });
-        errors = {
-        title: "",
-        address: "",
-        description: "",
-        dateEntryOffice: "",
-        deadlineApply: "",
+// SECTION ENTREPRISE --------------------------------------------
+   let enterprise: Entreprise = {
+        name: "",
         email: "",
-        hoursPerWeek: "",
-        compliantEmployer: false, 
-        internship: false,
-        offerLink: "",
-        urgent: false,
-        active: true,
-        salary: "",
-        scheduleId: 0,
-        idProgramme : [],
-      };
-      console.log(offre);
-      const response = await POST<jobOffer, any>("jobOffer/createJobOffer", offre);
-      console.log(response);
-    } catch (err) {
-      console.log(err);
-      errors = extractErrors(err);
-    }
-  }
+        phone: "",
+        address: "",
+        cityId: 0,
+        isTemporary: true,
+    };
 
+    let villeSelected: { label: string; value: number }[] = [];
+    let villeFromSelectedEntreprise: [] = [];
+    let villeOption = [
+        { label: "Trois-Pistoles", value: 1 },
+        { label: "Rivière-du-Loup", value: 2 },
+        { label: "Squatec", value: 3 },
+        { label: "Chibougamau", value: 4 },
+        { label: "Amqui", value: 5 },
+        { label: "Trois-Rivière", value: 6 },
+        { label: "Lévis", value: 7 },
+    ];
+    //--------------------------------------------------
+
+    let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
+
+    const handleSubmit = async () => {
+        try {
+            offre.scheduleId = (scheduleSelected as any)?.value;
+            let programmeName = programmeSelected.map((p) => p.label);
+            console.log(programmeName);
+            console.log("Entreprise")
+            console.log(enterprise);
+
+            await schema.validate(offre, { abortEarly: false });
+            errors = {
+                title: "",
+                address: "",
+                description: "",
+                dateEntryOffice: "",
+                deadlineApply: "",
+                email: "",
+                hoursPerWeek: "",
+                compliantEmployer: false,
+                internship: false,
+                offerLink: "",
+                offerStatus: 0,
+                urgent: false,
+                active: true,
+                salary: "",
+                scheduleId: 0,
+                employerId: 0,
+            };
+            const requestData = {
+                jobOffer: {
+                    ...offre,
+                },
+                enterprise: enterprise,
+                studyPrograms: programmeName
+            };
+            const response = await POST<any, any>("jobOffer/createJobOffer", requestData);
+            goto('/dashboard');
+        } catch (err) {
+            console.log(err);
+            if (err instanceof yup.ValidationError) {
+                errors = extractErrors(err);
+            }
+            // Handle the case where no program is selected
+            if (programmeSelected.length === 0) {
+                errorsProgramme = "Le programme visé est requis";
+            } else {
+                errorsProgramme = "";
+            }
+        }
+    }
   </script>
 
   <div class="container">
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
+      <!-- -------------------SECTION ENTREPRISE------------------------------ -->
+      <!-- --AJOUTER VALIDATION SI COMPTE A DEJA UN ENTREPRISE POUR CACHER CE FORMULAIRE------- -->
+        <h1 class="title">Créer une nouvelle entreprise</h1>
+        <div class="form-group-vertical">
+          <label for="title">Nom*</label>
+          <input type="text" bind:value={enterprise.name} class="form-control" id="titre" />
+        </div>
+        <div class="form-group-vertical">
+          <label for="title">Email*</label>
+          <input type="text" bind:value={enterprise.email} class="form-control" id="titre" />
+        </div>
+        <div class="form-group-vertical">
+          <label for="title">Téléphone*</label>
+          <input type="text" bind:value={enterprise.phone} class="form-control" id="titre" />
+        </div>
+        <div class="form-group-vertical">
+          <label for="title">Adresse*</label>
+          <input type="text" bind:value={enterprise.address} class="form-control" id="titre" />
+        </div>
+        <div class="form-group-vertical">
+        <label for="title">Adresse*</label>
+        <MultiSelect
+            id="programme"
+            options={villeOption}
+            placeholder="Choisir ville(s)..."
+            bind:value={villeSelected}
+            bind:selected={villeFromSelectedEntreprise}
+        ></MultiSelect>
+      </div>
+
+      <!-- -------------------SECTION EMPLOIS------------------------------ -->
       <h1>Créer une nouvelle offre d'emploi</h1>
       <div class="form-group-vertical">
         <label for="title">Titre du poste*</label>
@@ -175,7 +255,7 @@
         </MultiSelect>
       </div> 
       <p class="errors-input">
-        {#if errors.idProgramme}{errors.idProgramme}{/if}
+        {#if errorsProgramme}{errorsProgramme}{/if}
       </p>
       <div class="form-group-vertical">
         <label for="salaire">Salaire/H (0.00)</label>
@@ -227,7 +307,7 @@
       <p class="errors-input">
         {#if errors.description}{errors.description}{/if}
       </p>
-      <Button submit={true} text="Enregistrer" on:click={() => handleSubmit()} />
+      <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
     </form>
   </div>
 
@@ -251,7 +331,7 @@
       align-items: center;
       border: 0.3vw solid #ccc;
       background-color: #ffff;
-      box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+      box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1); 
       border-radius: 0.781vw;
       width: 70%;
       padding: 0 0.78vw 2vh 0;
