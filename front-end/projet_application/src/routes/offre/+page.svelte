@@ -119,10 +119,6 @@
         try {
             offre.scheduleId = (scheduleSelected as any)?.value;
             let programmeName = programmeSelected.map((p) => p.label);
-            console.log(programmeName);
-            console.log("Entreprise")
-            console.log(enterprise);
-
             await schema.validate(offre, { abortEarly: false });
             errors = {
                 title: "",
@@ -149,7 +145,7 @@
                 enterprise: enterprise,
                 studyPrograms: programmeName
             };
-            const response = await POST<any, any>("jobOffer/createJobOffer", requestData);
+            const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
             goto('/dashboard');
         } catch (err) {
             console.log(err);
