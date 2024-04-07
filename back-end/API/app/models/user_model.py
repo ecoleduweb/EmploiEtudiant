@@ -10,7 +10,7 @@ class User(db.Model):
     isModerator = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f"User('{self.name}', '{self.email}', '{self.password}',  '{self.admin}')"
+        return f"User('{self.email}', '{self.password}', '{self.active}',  '{self.isModerator}')"
     
     def to_json_string(self):
-        return {'id': self.id, 'name': self.name, 'email': self.email, 'password': self.password, 'admin': self.admin}
+        return {'id': self.id, 'email': self.email, 'password': self.password, "active": self.active, 'isModerator': self.isModerator}

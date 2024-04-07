@@ -8,41 +8,6 @@ Se mettre dans le répertoire /API
 pip install -r requirements.txt
 ```
 
-### Setting up the database (not required)
-Créer la base de données avec ce script:
-```sql
-CREATE DATABASE H2024;
-USE H2024;
-CREATE TABLE user (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) DEFAULT FALSE,
-    active BOOLEAN DEFAULT FALSE,
-    isModerator BOOLEAN DEFAULT FALSE
-);
-CREATE TABLE IF NOT EXISTS job_offer (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    dateEntryOffice DATETIME NOT NULL,
-    deadlineApply DATE NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    hoursPerWeek FLOAT NOT NULL,
-    compliantEmploymentStandards BOOLEAN NOT NULL,
-    internship BOOLEAN NOT NULL,
-    offerStatus INT NOT NULL,
-    offerLink VARCHAR(255) NOT NULL,
-    urgent BOOLEAN NOT NULL,
-    active BOOLEAN NOT NULL,
-    employerId INT NOT NULL,
-    scheduleId INT NOT NULL
-);
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-GRANT ALL PRIVILEGES ON H2024.* TO 'admin'@'localhost';
-FLUSH PRIVILEGES;
-```
-
 ### Setting up the environment variables
 Créer un .env dans le répertoire /API avec les variables suivantes:
 ```env
@@ -50,6 +15,7 @@ DATABASE_TEST_URL= url de la base de données de test
 BEARER_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IeyJlbWFpbCI6InBoaWxzYXVjaWVyQGdtYWlsLmNvbSIsImV4cCI6MTcxMDnNk6hD83xlj9
 
 DATABASE_DEV_URL= url de la base de données de développement
+CORS=http://localhost
 
 SECRET_KEY=clé secrète
 ```
@@ -60,6 +26,7 @@ flask db migrate -m "Nom_de_la_migration"(cree une nouvelle migration)
 flask db upgrade (pour update les changements)
 flask db downgrade (pour revenir en arriere)
 flask db history (voir toutes les migration)
+flask db branches (Afficher les points de branchement actuels)
 ```
 
 ### Logging
@@ -84,7 +51,7 @@ logger.critical("message")
 
 ### Starting the server
 ```bash
-flask db branches (Afficher les points de branchement actuels)
+flask db upgrade (pour update les changements)
 flask run
 ```
 

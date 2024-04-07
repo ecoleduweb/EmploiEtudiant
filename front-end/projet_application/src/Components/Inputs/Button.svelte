@@ -1,12 +1,13 @@
 <script lang="ts">
   export let text: string;
   export let submit: boolean = false;
+  export let onClick: (() => void) | undefined;
 </script>
 
 {#if submit}
   <input type="submit" class="submit" value={text} />
 {:else}
-  <button class="button">{text}</button>
+ <button class="button" on:click={onClick}>{text}</button>
 {/if}
 
 <style scoped>

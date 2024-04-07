@@ -1,10 +1,18 @@
 export interface Emploi {
     id: number;
-    titre: string;
-    dateDebut: string;
-    dateFin: string;
+    title: string;
+    address: string;
     description: string;
-    entreprise: string;
-    poste: string;
-    ville: string;
+    dateEntryOffice: string;
+    deadlineApply: string;
+    email: string;
+    hoursPerWeek: number;
+    compliantEmployer: boolean;
+    internship: boolean;
+    offerStatus: number;
+    offerLink: string;
+    urgent: boolean;
+    active: boolean;
+    employerId: number;
+    scheduleId: number;
 }

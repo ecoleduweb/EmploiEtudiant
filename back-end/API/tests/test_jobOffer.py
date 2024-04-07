@@ -1,11 +1,12 @@
-import os
 import pytest
 from app import create_app, db
 from app.models.jobOffer_model import JobOffer
-from sqlalchemy import text
+from app.models.user_model import User
+from app.models.study_program_model import StudyProgram
 
-# Token for authentication
-TOKEN = os.environ.get('BEARER_TOKEN')
+from argon2 import PasswordHasher
+
+hasher = PasswordHasher()
 
 @pytest.fixture(scope='module')
 def client(app):
@@ -29,10 +30,11 @@ def app():
             "internship": False,
             "offerStatus": 1,
             "offerLink": "www.google.com",
+            "salary": 1000,
             "urgent": False,
             "active": True,
-            "employerId": 1,
-            "scheduleId": 1
+            "employerId": None,
+            "scheduleId": None
         }
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
@@ -49,13 +51,29 @@ def app():
             "internship": False,
             "offerStatus": 1,
             "offerLink": "www.google.com",
+            "salary": 1000,
             "urgent": False,
             "active": True,
-            "employerId": 1,
-            "scheduleId": 1
+            "employerId": None,
+            "scheduleId": None
         }
         job_offer2 = JobOffer(**job_offer2_data)
         db.session.add(job_offer2)
+        hashed_password = hasher.hash("test123")
+        user = User(id=1, email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
+        db.session.add(user)
+        studyProgram1_data = {
+            "id": 1,
+            "name": "Informatique"
+        }
+        studyProgram1_data = StudyProgram(**studyProgram1_data)
+        db.session.add(studyProgram1_data)
+        studyProgram2_data = {
+            "id": 2,
+            "name": "Génie logiciel"
+        }
+        studyProgram2_data = StudyProgram(**studyProgram2_data)
+        db.session.add(studyProgram2_data)
         db.session.commit()
         yield app
         db.session.remove()
@@ -79,10 +97,11 @@ def test_offreEmploi(client):
         "internship": False,
         "offerStatus": 1,
         "offerLink": "www.google.com",
+        "salary": 1000,
         "urgent": False,
         "active": True,
-        "employerId": 1,
-        "scheduleId": 1
+        "employerId": None,
+        "scheduleId": None
     }
 
 def test_offresEmploi(client):
@@ -90,3 +109,48 @@ def test_offresEmploi(client):
     print(response)
     assert response.status_code == 200
     assert len(response.json) == 2
+
+def test_userCreateOffresEmploi(client):
+    data = {
+            "jobOffer": 
+            {
+                "id": 2,
+                "title": "Développeur",
+                "address": "123 rue de la rue",
+                "description": "Développeur front-end",
+                "dateEntryOffice": "2021-12-12",
+                "deadlineApply": "2021-12-12",
+                "email": "test@gmail.com",
+                "hoursPerWeek": 40,
+                "compliantEmployer": True,
+                "internship": False,
+                "offerStatus": 1,
+                "offerLink": "www.google.com",
+                "salary": 1000,
+                "urgent": False,
+                "active": True,
+                "employerId": 1,
+                "scheduleId": 1
+            },
+            "enterprise": 
+            {
+                "id": 1,
+                "name": "Google",
+                "email": "google@gmail.com",
+                "phone": "1234567890",
+                "address": "123 rue google",
+                "cityId": 1
+            },
+            "studyPrograms": [
+                "Informatique",
+                "Génie logiciel"
+            ]
+        }
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.post('/jobOffer/createJobOffer', json=data, headers={'Authorization': token})
+    assert response.status_code == 200

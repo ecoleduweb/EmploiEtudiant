@@ -207,6 +207,69 @@
           }
         }
       }
+    },
+    "/createJobOffer": {
+      "post": {
+        "description": "Create a job offer",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Job Offer",
+            "in": "body",
+            "description": "JSON data containing job offer information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobOffer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "integer"},
+                    "title": {"type": "string"},
+                    "address": {"type": "string"},
+                    "description": {"type": "string"},
+                    "dateEntryOffice": {"type": "string"},
+                    "deadlineApply": {"type": "string"},
+                    "email": {"type": "string"},
+                    "hoursPerWeek": {"type": "integer"},
+                    "compliantEmployer": {"type": "boolean"},
+                    "internship": {"type": "boolean"},
+                    "offerStatus": {"type": "integer"},
+                    "offerLink": {"type": "string"},
+                    "urgent": {"type": "boolean"},
+                    "active": {"type": "boolean"},
+                    "employerId": {"type": "integer"},
+                    "scheduleId": {"type": "integer"}
+                  }
+                },
+                "enterprise": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "integer"},
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                    "phone": {"type": "string"},
+                    "address": {"type": "string"},
+                    "cityId": {"type": "integer"}
+                  }
+                },
+                "studyPrograms": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job offer created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
     }
   }
 }
