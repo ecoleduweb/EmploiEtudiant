@@ -1,7 +1,7 @@
 """add city
 
 Revision ID: f39448eec21e
-Revises: bda06c9f7a4d
+Revises: 
 Create Date: 2024-03-25 13:09:05.079567
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.sql import text
 
 # revision identifiers, used by Alembic.
 revision = 'f39448eec21e'
-down_revision = 'bda06c9f7a4d'
+down_revision = None
 branch_labels = None
 depends_on = None
 
