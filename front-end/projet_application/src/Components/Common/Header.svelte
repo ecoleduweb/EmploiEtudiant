@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
 
   const handleEmploi = () => {
-
+    goto('/emplois')
   };
 </script>
 
