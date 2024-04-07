@@ -62,5 +62,17 @@
 </footer>
 
 <style scoped>
-  @import "../../styles/footer.css";
+  footer {
+    bottom: 0;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .svg-footer {
+    width: "100%";
+    height: "100%";
+    padding: 0px;
+    margin: 0px;
+  }
 </style>
