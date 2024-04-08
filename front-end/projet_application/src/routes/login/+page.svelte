@@ -7,6 +7,7 @@
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import { goto } from "$app/navigation";
+  import { jwtDecode } from "jwt-decode";
 
   const schema = yup.object().shape({
     email: yup
@@ -35,10 +36,12 @@
         password: "",
       };
       try {
-        const response = await POST<Login, any>("/login", form);
+        const response = await POST<Login, any>("/user/login", form);
         if (response.token != "") {
+          const token = jwtDecode(response.token);
+          console.log(token);
           localStorage.setItem("token", response.token);
-          goto("/");
+          goto("/dashboard");
         }
       } catch (error) {
         errors = {

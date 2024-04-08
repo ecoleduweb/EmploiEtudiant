@@ -34,6 +34,7 @@ jobs:
             touch .env
             echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }} >> .env
             echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
+            echo CORS=${{ secrets.QA_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo 'Installing packages'
             sudo systemctl enable back-end
@@ -41,7 +42,7 @@ jobs:
             cd /${{ secrets.SSH_USERNAME}}/qa_project/ProjetApplicationH2024/front-end/projet_application
             npm i
             touch .env
-            echo PUBLIC_BASE_URL = ${{ secrets.FRONT_PUBLIC_URL }} >> .env
+            echo PUBLIC_BASE_URL = ${{ secrets.QA_FRONT_PUBLIC_URL }} >> .env
             echo HOST = ${{ secrets.FRONT_HOST }} >> .env
             echo 'Starting services'
             sudo systemctl enable front-end

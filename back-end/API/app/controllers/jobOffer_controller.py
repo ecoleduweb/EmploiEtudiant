@@ -15,6 +15,10 @@ from app.services.enterprise_service import EnterpriseService
 enterprise_service = EnterpriseService()
 from app.services.user_service import UserService
 user_service = UserService()
+from app.services.offer_program_service import OfferProgramService
+offer_program_service = OfferProgramService()
+from app.services.study_program_service import StudyProgramService
+study_program_service = StudyProgramService()
 
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -47,15 +51,28 @@ def createJobOffer():
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
     if user.isModerator:
-        return jobOffer_service.createJobOffer(data["jobOffer"])
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"])
+        for studyProgram in data["studyPrograms"]:
+            studyProgramId = study_program_service.studyProgramId(studyProgram)
+            offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+        return jsonify({'message': 'Job offer created successfully'}) 
+
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             newEmployer = employer_service.createEmployer(entreprise.id, user.id)
-            return jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
+            for studyProgram in data["studyPrograms"]:
+                studyProgramId = study_program_service.studyProgramId(studyProgram)
+                offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+            return jsonify({'message': 'Job offer created successfully'})
         else:
-            return jobOffer_service.createJobOffer(data["jobOffer"], employer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id)
+            for studyProgram in data["studyPrograms"]:
+                studyProgramId = study_program_service.studyProgramId(studyProgram)
+                offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+            return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])
 def offreEmploi():

@@ -27,7 +27,7 @@ test('Register', async ({ page }) => {
   await page.getByLabel('Adresse').press('Tab');
   await page.getByLabel('Ville').fill('Riviere-du-Loup');
   await page.getByLabel('Ville').press('Tab');
-  await page.getByLabel('Code Postal').fill('G5R1R1');  
+  await page.getByLabel('Code Postal').fill('G5R1R1');
   await page.getByLabel('Code Postal').press('Tab');
   await page.getByLabel('Province').click();
   await page.getByLabel('Province').fill('Quebec');
@@ -41,6 +41,7 @@ test('Register', async ({ page }) => {
   await page.locator('#confirm_password').fill('Patate123');
   //confirme la création du compte
   await page.getByRole('button', { name: 'Créer' }).click();
+
   // MANQUE LA VALIDATION AVEC API... A faire
 });
 
@@ -95,134 +96,110 @@ test('Forgot Password', async ({ page }) => {
   // MANQUE LA VALIDATION AVEC API... A faire
 });
 
-// test('Mauvais register', async ({ page }) => {
-//   const courrielTest = 'courrielInvalide';
+test('Mauvais register', async ({ page }) => {
+  const courrielTest = 'courrielInvalide';
 
-//   function expectToContain<T>(array: T[], item: T) {
-//     expect(array.includes(item)).toBeTruthy();
-// }
-//   const expectedMessages = ['Veuillez renseigner ce champ.', 'Please fill out this field.', 'Please fill out this field', 'Veuillez inclure "@" dans l\'adresse e-mail. Il manque un symbole "@" dans '+{courrielTest}+'."'];
-//    // Ouvre la page de connexion
-//   // Hover sur le bouton "Offrir un emploi" pour faire apparaitre le sous-menu
-//   await page.hover('text=Offrir un emploi');
-//   // Clique sur le lien "Créer un compte entreprise"
-//   await page.getByRole('link', { name: 'Créer un compte entreprise' }).click();
-//   // Soumet le formulaire sans remplir les champs
-//   await page.getByRole('button', { name: 'Créer' }).click();
+   // Ouvre la page de connexion
+  // Hover sur le bouton "Offrir un emploi" pour faire apparaitre le sous-menu
+  await page.hover('text=Offrir un emploi');
+  // Clique sur le lien "Créer un compte entreprise"
+  await page.getByRole('link', { name: 'Créer un compte entreprise' }).click();
+  // Soumet le formulaire sans remplir les champs
+  await page.getByRole('button', { name: 'Créer' }).click();
 
-//   // FIRST NAME ############################################################################################################
-//   // Obtient le message d'erreur du champ requis
-//   const errorMessageFirstName = await page.evaluate(() => (document.querySelector('#firstName') as HTMLInputElement)?.validationMessage);
-
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageFirstName);
-//   await page.getByLabel('Prénom').click();
-//   await page.getByLabel('Prénom').fill('Test2');
-//   // ########################################################################################################################
+  // FIRST NAME ############################################################################################################
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Prénom requis').click();
+  await page.getByLabel('Prénom').click();
+  await page.getByLabel('Prénom').fill('Test2');
+  // ########################################################################################################################
 
 
-//   // LAST NAME ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageLastName = await page.evaluate(() => (document.querySelector('#lastName') as HTMLInputElement)?.validationMessage);
+  // LAST NAME ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
 
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageLastName);
-//   await page.getByLabel('Nom de famille').click();
-//   await page.getByLabel('Nom de famille').fill('test2');
-//   // ########################################################################################################################
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Nom de famille requis').click();
+  await page.getByLabel('Nom de famille').click();
+  await page.getByLabel('Nom de famille').fill('test2');
+  // ########################################################################################################################
 
-//   // LAST NAME ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageEntreprise = await page.evaluate(() => (document.querySelector('#entreprise') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageEntreprise);
-//   await page.getByLabel('Nom Entreprise').click();
-//   await page.getByLabel('Nom Entreprise').fill('Test Enteprise');
-//   // ########################################################################################################################
+  // LAST NAME ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText("Nom de l'entreprise requis").click();
+  await page.getByLabel('Nom Entreprise').click();
+  await page.getByLabel('Nom Entreprise').fill('Test Enteprise');
+  // ########################################################################################################################
 
-//   // ADRESSE ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageAdresse = await page.evaluate(() => (document.querySelector('#address') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageAdresse);
-//   await page.getByLabel('Adresse').click();
-//   await page.getByLabel('Adresse').fill('Test Enteprise');
-//   // ########################################################################################################################
+  // ADRESSE ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Adresse requise').click();
+  await page.getByLabel('Adresse').click();
+  await page.getByLabel('Adresse').fill('Test Enteprise');
+  // ########################################################################################################################
 
-//   // ADRESSE ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageVille = await page.evaluate(() => (document.querySelector('#city') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageVille);
-//   await page.getByLabel('Ville').click();
-//   await page.getByLabel('Ville').fill('Test Riviere du Loup');
-//   // ########################################################################################################################
+  // ADRESSE ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Ville requise').click();
+  await page.getByLabel('Ville').click();
+  await page.getByLabel('Ville').fill('Test Riviere du Loup');
+  // ########################################################################################################################
 
-//   // CODEPOSTAL ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageCodePostal = await page.evaluate(() => (document.querySelector('#zipCode') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageCodePostal);
-//   await page.getByLabel('Code Postal').click();
-//   await page.getByLabel('Code Postal').fill('G1G 1G1');
-//   // ########################################################################################################################
+  // CODEPOSTAL ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Code postal requis').click();
+  await page.getByLabel('Code Postal').click();
+  await page.getByLabel('Code Postal').fill('G1G 1G1');
+  // ########################################################################################################################
 
 
-//   // PROVINCE ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageProvince = await page.evaluate(() => (document.querySelector('#province') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageProvince);
-//   await page.getByLabel('Province').click();
-//   await page.getByLabel('Province').fill('Quebec');
-//   // ########################################################################################################################
+  // PROVINCE ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Province requise').click();
+  await page.getByLabel('Province').click();
+  await page.getByLabel('Province').fill('Quebec');
+  // ########################################################################################################################
 
 
-//   // COURRIEL ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-//   const errorMessageCourriel = await page.evaluate(() => (document.querySelector('#email') as HTMLInputElement)?.validationMessage);
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageCourriel);
-//   await page.getByLabel('Courriel').click();
-//   await page.getByLabel('Courriel').fill('courrielInvalide');
+  // COURRIEL ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Courriel requis').click();
+  await page.getByLabel('Courriel').click();
+  await page.getByLabel('Courriel').fill('courrielInvalide');
+  // COURRIEL VALIDE  -------------------------------------------------------------------------------------------------------------------------
 
-//   await page.getByRole('button', { name: 'Créer' }).click();
+  await page.getByLabel('Courriel').click();
+  await page.getByLabel('Courriel').fill('test@cegeprdl.ca');
 
-//   const errorMessageCourrielInvalide = await page.evaluate(() => (document.querySelector('#email') as HTMLInputElement)?.validationMessage);
+  // ########################################################################################################################
 
-//   expect(errorMessageCourrielInvalide).toBe(`Veuillez inclure "@" dans l'adresse e-mail. Il manque un symbole "@" dans "${courrielTest}".`); // Verifie le message d'erreur
+  // MOT DE PASSE ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
 
-//   // COURRIEL VALIDE  -------------------------------------------------------------------------------------------------------------------------
+  // Vérifie que le message d'erreur est correct
+  await page.getByText('Ne correspond pas aux critères de sécurité').click();
+  await page.getByLabel('Mot de passe').click();
 
-//   await page.getByLabel('Courriel').click();
-//   await page.getByLabel('Courriel').fill('test@cegeprdl.ca');
+  await page.getByLabel('Mot de passe').click();
+  await page.getByLabel('Mot de passe').fill('P@t@t31234567!');
+  await page.getByRole('button', { name: 'Créer' }).click();
+  await page.getByText('Les mots de passes ne').click();
+  await page.locator('#confirm_password').click();
+  await page.locator('#confirm_password').fill('P@t@t31234567!');
+  await page.getByRole('button', { name: 'Créer' }).click();
+  // ########################################################################################################################
 
-//   // ########################################################################################################################
+  // CONFIRMATION MOT DE PASSE ############################################################################################################
+  await page.getByRole('button', { name: 'Créer' }).click();
 
-//   // MOT DE PASSE ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
+  // ########################################################################################################################
 
-//   const errorMessageMotDePasse = await page.evaluate(() => (document.querySelector('#password') as HTMLInputElement)?.validationMessage);
+  // FIN DU TEST : TOUT LES CHAMPS REQUIRED SONT VALIDE ######################################################################
 
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageMotDePasse);
-
-//   await page.getByLabel('Mot de passe').click();
-//   await page.getByLabel('Mot de passe').fill('Patate123');
-//   // ########################################################################################################################
-
-//   // CONFIRMATION MOT DE PASSE ############################################################################################################
-//   await page.getByRole('button', { name: 'Créer' }).click();
-
-//   const errorMessageConfirmationMotDePasse = await page.evaluate(() => (document.querySelector('#confirm_password') as HTMLInputElement)?.validationMessage);
-
-//   // Vérifie que le message d'erreur est correct
-//   expectToContain(expectedMessages, errorMessageConfirmationMotDePasse);
-
-//   await page.locator('#confirm_password').click();
-//   await page.locator('#confirm_password').fill('Patate123');
-//   // ########################################################################################################################
-
-//   // FIN DU TEST : TOUT LES CHAMPS REQUIRED SONT VALIDE ######################################################################
-
-// });
+});
