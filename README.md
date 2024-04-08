@@ -28,7 +28,6 @@ sudo rm /usr/lib/python3.*/EXTERNALLY-MANAGED
 ```
 
 ### Si vous rencontrez un problème avec SSH et que vous avez cette erreur:
-Si vous rencontrez cette erreur:
 ```
 ssh: handshake failed: ssh: unable to authenticate, attempted methods [none publickey], no supported methods remain
 ```
