@@ -5,6 +5,17 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/ping": {
+      "get": {
+        "description": "Checks if the server is up and running",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Connected successfully"
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "description": "Logs in a user",
