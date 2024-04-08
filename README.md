@@ -1,4 +1,4 @@
-# ProjetApplicationH2024
+# Système de déploiment et de build Github Actions
 ### Si vous rencontrez l'erreur suivante lors de l'installation des requirements.txt
 ```bash
 err: error: externally-managed-environment
