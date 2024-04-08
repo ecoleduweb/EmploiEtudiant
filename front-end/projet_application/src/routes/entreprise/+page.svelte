@@ -8,6 +8,8 @@
     import type { Entreprise } from "../../Models/Entreprise";
     import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte";
     import Entreprises from "../../Components/Entreprise/Entreprises.svelte";
+    import Button from "../../Components/Inputs/Button.svelte";
+    import { goto } from "$app/navigation";
 
     const modal = writable(false);
     const selectedEntrepriseId = writable(0);
@@ -20,6 +22,11 @@
     };
     const handleEntrepriseClick = (offreId: number) => {
         openModal(offreId);
+    };
+
+    const handleOffreEmploi = () => {
+        console.log("OFFRE")
+        goto("/offre");
     };
 
     const entreprises = writable<Entreprise[]>([]);
@@ -35,9 +42,15 @@
     };
     onMount(getEnterprises);
 </script>
-
 <Header/>
 <main>
+    <section class="haut">
+        <div class="haut-gauche">
+          <div class="divFlex">
+            <Button onClick={handleOffreEmploi} text="Créer une nouvelle offre" />
+          </div>
+        </div>
+      </section>
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
