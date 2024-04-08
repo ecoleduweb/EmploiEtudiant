@@ -1,16 +1,17 @@
-"""add city
+"""ajout des jobOffer et study
 
-Revision ID: f39448eec21e
+Revision ID: 411829c69d61
 Revises: 
-Create Date: 2024-03-25 13:09:05.079567
+Create Date: 2024-04-08 14:09:10.714943
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import text
 
+
 # revision identifiers, used by Alembic.
-revision = 'f39448eec21e'
+revision = '411829c69d61'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,11 +25,29 @@ def upgrade():
     sa.Column('idRegion', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('employers',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('verified', sa.Boolean(), nullable=False),
+    sa.Column('userId', sa.Integer(), nullable=True),
+    sa.Column('enterpriseId', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('enterprise',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('phone', sa.String(length=255), nullable=False),
+    sa.Column('address', sa.String(length=255), nullable=False),
+    sa.Column('cityId', sa.Integer(), nullable=False),
+    sa.Column('isTemporary', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('job_offer',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('address', sa.String(length=255), nullable=False),
     sa.Column('description', sa.String(length=255), nullable=False),
+    sa.Column('OfferDebut', sa.Date(), nullable=False),
     sa.Column('dateEntryOffice', sa.Date(), nullable=False),
     sa.Column('deadlineApply', sa.Date(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
@@ -36,16 +55,27 @@ def upgrade():
     sa.Column('compliantEmployer', sa.Boolean(), nullable=False),
     sa.Column('internship', sa.Boolean(), nullable=False),
     sa.Column('offerStatus', sa.Integer(), nullable=False),
-    sa.Column('offerLink', sa.String(length=255), nullable=False),
-    sa.Column('urgent', sa.Boolean(), nullable=False),
+    sa.Column('offerLink', sa.String(length=255), nullable=True),
+    sa.Column('salary', sa.String(length=255), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
-    sa.Column('employerId', sa.Integer(), nullable=False),
-    sa.Column('scheduleId', sa.Integer(), nullable=False),
+    sa.Column('employerId', sa.Integer(), nullable=True),
+    sa.Column('scheduleId', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('offer_program',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('programId', sa.Integer(), nullable=False),
+    sa.Column('offerId', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('region',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('region', sa.String(length=100), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('study_program',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
@@ -56,6 +86,7 @@ def upgrade():
     sa.Column('isModerator', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    
     conn = op.get_bind()
     conn.execute(text("INSERT INTO region (id, region) VALUES (1, 'Bas-Saint-Laurent');"))
     conn.execute(text("INSERT INTO region (id, region) VALUES (2, 'Saguenay-Lac-Saint-Jean');"))
@@ -1328,17 +1359,37 @@ def upgrade():
     conn.execute(text("INSERT INTO city(id,City,idRegion) VALUES (1251,'Wotton',5);"))
     conn.execute(text("INSERT INTO city(id,City,idRegion) VALUES (1252,'Yamachiche',4);"))
     conn.execute(text("INSERT INTO city(id,City,idRegion) VALUES (1253,'Yamaska',16);"))
-
+    
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (1, 'Design d intérieur')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (2, 'Éducation à l enfance')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (3, 'Gestion et intervention en loisir')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (4, 'Graphisme')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (5, 'Informatique')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (6, 'Inhalothérapie')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (7, 'Pharmacie')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (8, 'Soins infirmiers')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (9, 'Arts visuels')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (10, 'Sciences de la nature')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (11, 'Sciences humaines')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (12, 'Général')"))
+    conn.execute(text("INSERT INTO study_program (id, name) VALUES (13, 'Aucun programme')"))
+    
+    conn.execute(text("INSERT INTO job_offer (id, title, address, description, dateEntryOffice, deadlineApply, email, hoursPerWeek, compliantEmployer, internship, offerStatus, offerLink, salary, OfferDebut, active, employerId, scheduleId) VALUES (1, 'Développeur', '123 rue de la rue', 'Développeur fullstack', '2021-12-12', '2021-12-12', 'test@gmail.com', 40, True, False, 1, 'www.google.com', '1000', '2021-12-12', True, 1, 1)"))
+    conn.execute(text("INSERT INTO job_offer (id, title, address, description, dateEntryOffice, deadlineApply, email, hoursPerWeek, compliantEmployer, internship, offerStatus, offerLink, salary, OfferDebut, active, employerId, scheduleId) VALUES (2, 'Développeur', '123 rue de la rue', 'Développeur fullstack', '2021-12-12', '2021-12-12', 'test2@gmail.com', 40, True, False, 1, 'www.google.com', '1000', '2021-12-12', True, 1, 2)"))
+    
     conn.execute(text("ALTER TABLE city ADD CONSTRAINT FK_city_idRegion FOREIGN KEY (idRegion) REFERENCES region(id);"))
-
+    conn.execute(text("ALTER TABLE job_offer ADD CONSTRAINT FK_jobOffer_scheduleId FOREIGN KEY (scheduleId) REFERENCES study_program(id);"))
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('user')
-    op.drop_table('city')
+    op.drop_table('study_program')
     op.drop_table('region')
+    op.drop_table('offer_program')
     op.drop_table('job_offer')
-
+    op.drop_table('enterprise')
+    op.drop_table('employers')
+    op.drop_table('city')
     # ### end Alembic commands ###
