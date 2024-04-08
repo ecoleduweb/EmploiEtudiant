@@ -31,7 +31,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "OfferDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -52,7 +52,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "OfferDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -98,7 +98,7 @@ def test_offreEmploi(client):
         "offerStatus": 1,
         "offerLink": "www.google.com",
         "salary": 1000,
-        "urgent": False,
+        "OfferDebut": "2021-12-12",
         "active": True,
         "employerId": None,
         "scheduleId": None
@@ -127,7 +127,7 @@ def test_userCreateOffresEmploi(client):
                 "offerStatus": 1,
                 "offerLink": "www.google.com",
                 "salary": 1000,
-                "urgent": False,
+                "OfferDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
                 "scheduleId": 1
