@@ -21,3 +21,9 @@ err:     See /usr/share/doc/python3.11/README.venv for more information.
 err: 
 err: note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
 ```
+La commande suivante devrait régler votre problème:
+# ProjetApplicationH2024
+### Si vous rencontrez l'erreur suivante lors de l'installation des requirements.txt
+```bash
+sudo rm /usr/lib/python3.*/EXTERNALLY-MANAGED
+```
