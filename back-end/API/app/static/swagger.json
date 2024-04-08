@@ -270,6 +270,85 @@
           }
         }
       }
+    },
+    "employmentsSchedule" : {
+      "get": {
+        "description": "Get a list of all employments schedule",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Employments schedule successfully fetched"
+          }
+        }
+      }
+    },
+    "employmentSchedule" : {
+      "get": {
+        "description": "Get a employment schedule based on id",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Employment schedule information",
+            "in": "body",
+            "description": "JSON data containing employment schedule information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule id"
+          },
+          "404": {
+            "description": "Employment schedule not found"
+          }
+        }
+      }
+    },
+    "employmentScheduleId" :{
+      "get": {
+        "description": "Get an employment schedule's id based on name",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Employment schedule name",
+            "in": "body",
+            "description": "JSON data containing employment schedule name",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule id successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule name"
+          },
+          "404": {
+            "description": "Employment schedule not found"
+          }
+        }
+      }
     }
   }
 }
