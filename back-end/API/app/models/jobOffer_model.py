@@ -18,7 +18,7 @@ class JobOffer(db.Model):
     internship = db.Column(db.Boolean, nullable=False)
     offerStatus = db.Column(db.Integer, nullable=False)
     offerLink = db.Column(db.String(255))
-    salary = db.Column(db.String, nullable=False)
+    salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
     employerId = db.Column(db.Integer, nullable=True)
     scheduleId = db.Column(db.Integer, nullable=True)
