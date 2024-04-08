@@ -239,7 +239,7 @@
                     "urgent": {"type": "boolean"},
                     "active": {"type": "boolean"},
                     "employerId": {"type": "integer"},
-                    "scheduleId": {"type": "integer"}
+                    "employmentSchedule": {"type": "string"}
                   }
                 },
                 "enterprise": {
