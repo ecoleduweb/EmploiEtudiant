@@ -6,4 +6,4 @@ class EnterpriseRepo:
         enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
         db.session.add(enterprise)
         db.session.commit()
-        return enterprise
+        return {'message': 'Enterprise created successfully'}, 201
