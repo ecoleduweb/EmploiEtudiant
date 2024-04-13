@@ -83,6 +83,16 @@ def offreEmploi():
     else:
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
+@token_required
+@job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
+def updateJobOffer():
+    data = request.get_json()
+    jobOffer = jobOffer_service.updateJobOffer(data)
+    if jobOffer:
+        return jsonify(jobOffer.to_json_string())
+    else:
+        return jsonify({'message': 'Job offer not found'}), 404
+
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])
 def offresEmploi():
     jobOffers = jobOffer_service.offresEmploi()

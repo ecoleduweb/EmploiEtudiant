@@ -5,6 +5,9 @@ class JobOfferService:
 
     def createJobOffer(self, data, employerId):
         return jobOffer_repo.createJobOffer(data, employerId)
+    
+    def updateJobOffer(self, data):
+        return jobOffer_repo.updateJobOffer(data)
 
     def offreEmploi(self, data):
         return jobOffer_repo.offreEmploi(data)

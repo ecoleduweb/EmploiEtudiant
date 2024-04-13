@@ -27,38 +27,43 @@
   const handleEmploiClick = (offreId: number) => {
     openModal(offreId);
   };
-  const data: Emploi[] = [
-    {
-      id: 1,
-      titre: "Titre du poste 1",
-      dateDebut: "2021-10-10",
-      dateFin: "2021-10-11",
-      description: "Description du poste 1",
-      entreprise: "Entreprise 1",
-      poste: "Developpeur",
-      ville: "Squatec",
-    },
-    {
-      id: 2,
-      titre: "Titre du poste 2",
-      dateDebut: "2021-10-10",
-      dateFin: "2021-10-11",
-      description: "Description du poste 2",
-      entreprise: "Entreprise 2",
-      poste: "Developpeur",
-      ville: "Squatec",
-    },
-    {
-      id: 3,
-      titre: "Titre du poste 3",
-      dateDebut: "2021-10-10",
-      dateFin: "2021-10-11",
-      description: "Description du poste 3",
-      entreprise: "Entreprise 3",
-      poste: "Developpeur",
-      ville: "Squatec",
-    },
-  ];
+  let emploi: Emploi = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    urgent: false,
+    active: true,
+    scheduleId: -1,
+    employerId: 1,
+  };
+
+  let error: Emploi = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    urgent: false,
+    active: true,
+    scheduleId: 0,
+    employerId: 0,
+  };
 </script>
 
 <Header />
