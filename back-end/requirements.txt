@@ -9,7 +9,6 @@ Flask-Script==2.0.6
 flask-swagger-ui==4.11.1
 gunicorn==21.2.0
 mariadb==1.1.9
-mysqlclient==2.2.1
 node==1.2.1
 PyJWT==2.8.0
 PyMySQL==1.1.0
