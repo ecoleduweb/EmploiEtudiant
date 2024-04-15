@@ -1,9 +1,7 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from app import db
 
 class User(db.Model):
-    #id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(255), nullable=False)
     lastName = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)

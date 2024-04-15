@@ -25,9 +25,9 @@ test('Register', async ({ page }) => {
   await page.getByLabel('Courriel').press('Alt+Control+2');
   await page.getByLabel('Courriel').fill('test@test.ca');
   await page.getByLabel('Mot de passe').click();
-  await page.getByLabel('Mot de passe').fill('Patate123');
+  await page.getByLabel("Mot de passe").fill("Password1234!");
   await page.locator('#confirm_password').click();
-  await page.locator('#confirm_password').fill('Patate123');
+  await page.locator("#confirm_password").fill("Password1234!");
   //confirme la création du compte
   await page.getByRole('button', { name: 'Créer' }).click();
 
