@@ -34,19 +34,19 @@ def token_required(f):
 @token_required
 @study_program_blueprint.route('/studyPrograms', methods=['GET'])
 def studyPrograms():
-    studyPrograms = study_program_service.getStudyPrograms()
+    studyPrograms = study_program_service.studyPrograms()
     return jsonify(studyPrograms)
 
 @token_required
 @study_program_blueprint.route('/studyProgramId', methods=['GET'])
 def studyProgramId():
-    data = request.get_json()
-    studyProgramId = study_program_service.studyProgramId(data["name"])
+    name = request.args.get('name')
+    studyProgramId = study_program_service.studyProgramId(name)
     return jsonify(studyProgramId)
 
 @token_required
 @study_program_blueprint.route('/addStudyProgram', methods=['POST'])
 def addStudyProgram():
     data = request.get_json()
-    studyProgram = study_program_service.addStudyProgram(data)
+    studyProgram = study_program_service.addStudyProgram(data["name"])
     return jsonify({'message': 'Study program added successfully'})
