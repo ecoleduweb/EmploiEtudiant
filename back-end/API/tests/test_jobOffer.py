@@ -136,7 +136,7 @@ def test_userCreateOffresEmploi(client):
                 "OfferDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
-                "employmentSchedule": "Temps plein",
+                "scheduleId": 1,
             },
             "enterprise": 
             {
