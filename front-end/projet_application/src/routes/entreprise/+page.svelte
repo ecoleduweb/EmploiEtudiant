@@ -2,64 +2,78 @@
     import "../../styles/global.css";
     import Header from "../../Components/Common/Header.svelte";
     import Footer from "../../Components/Common/Footer.svelte";
-    import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte";
-    import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
-    import { writable } from "svelte/store";
-    import type { Emploi } from "../../Models/Emploi";
-    import { GET } from "../../ts/server";
     import { onMount } from "svelte";
+    import { writable } from "svelte/store";
+    import { GET } from "../../ts/server";
+    import type { Entreprise } from "../../Models/Entreprise";
+    import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte";
+    import Entreprises from "../../Components/Entreprise/Entreprises.svelte";
+    import Button from "../../Components/Inputs/Button.svelte";
+    import { goto } from "$app/navigation";
 
     const modal = writable(false);
-    const selectedEmploiId = writable(0);
+    const selectedEntrepriseId = writable(0);
     const openModal = (id: number) => {
         modal.set(true);
-        selectedEmploiId.set(id);
+        selectedEntrepriseId.set(id);
     };
     const closeModal = () => {
         modal.set(false);
     };
-    const handleEmploiClick = (offreId: number) => {
+    const handleEntrepriseClick = (offreId: number) => {
         openModal(offreId);
     };
 
-    const jobOffers = writable<Emploi[]>([]);
-    const getJobOffers = async () => {
+    const handleOffreEmploi = () => {
+        console.log("OFFRE")
+        goto("/offre");
+    };
+
+    const entreprises = writable<Entreprise[]>([]);
+    const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/jobOffer/offresEmploi");
-            console.log("response", response);
-            jobOffers.set(response);
+            const response = await GET<any>("/enterprise/enterprises");
+            const data = await response.json();
+            entreprises.set(data);
+            console.log(data);
         } catch (error) {
             console.error("Error fetching job offers:", error);
         }
     };
-    onMount(getJobOffers);
+    onMount(getEnterprises);
 </script>
-
-<Header />
+<Header/>
 <main>
     <section class="haut">
         <div class="haut-gauche">
+          <div class="divFlex">
+            <Button onClick={handleOffreEmploi} text="Créer une nouvelle offre" />
+          </div>
+        </div>
+      </section>
+    <section class="haut">
+        <div class="haut-gauche">
             <h1 class="title">
-                <span class="text">EMPLOIS </span><span class="text">
-                    DISPONIBLES</span
+                <span class="text">ENTREPRISES </span><span class="text">
+                    EXISTANTES</span
                 >
             </h1>
         </div>
     </section>
     <section class="offres">
-        {#each $jobOffers as offre}
-            <EmploiRow emploi={offre} handleModalClick={handleEmploiClick}/>
+        {#each $entreprises as entreprise}
+            <EntrepriseRow entreprise={entreprise} handleModalClick={handleEntrepriseClick}/>
         {/each}
     </section>
     {#if $modal}
-        {#each $jobOffers as emploi}
-            {#if emploi.id === $selectedEmploiId}
-                <OffreEmploi {emploi} handleEmploiClick={closeModal} />
+        {#each $entreprises as entreprise}
+            {#if entreprise.id === $selectedEntrepriseId}
+                <Entreprises {entreprise} handleEntrepriseClick={closeModal} />
             {/if}
         {/each}
     {/if}
 </main>
-<Footer />
+<Footer/>
 
 <style scoped>
     .title {
@@ -95,13 +109,7 @@
         width: 50%;
         margin-left: 5.2%;
     }
-    .offres {
-        width: fit-content;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-    .offres {
+    .entreprises {
         width: fit-content;
         display: flex;
         flex-direction: column;

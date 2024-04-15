@@ -121,7 +121,6 @@ def test_userCreateOffresEmploi(client):
     data = {
             "jobOffer": 
             {
-                "id": 2,
                 "title": "Développeur",
                 "address": "123 rue de la rue",
                 "description": "Développeur front-end",
