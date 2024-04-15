@@ -1,5 +1,10 @@
 <script lang="ts">
     export let handleModalClick: () => void;
+    export let currentPage = window.location.pathname;
+
+    const saveModifications = () => {
+        console.log("Save modifications");
+    };
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault();
@@ -10,6 +15,11 @@
 <button class="slot" on:click={handleButtonClick}>
     <button class="modal" on:click|stopPropagation>
         <slot />
+        {#if currentPage === "/dashboard"}
+        <button class="save" on:click={saveModifications}>
+            <img src="save.svg" class="image" alt="save" />
+        </button>
+        {/if}
         <button class="close" on:click={handleButtonClick}>
             <img src="cancel.svg" class="image" alt="close" />
         </button>

@@ -41,6 +41,7 @@
           const token = jwtDecode(response.token);
           console.log(token);
           localStorage.setItem("token", response.token);
+          localStorage.setItem("email", form.email);
           goto("/dashboard");
         }
       } catch (error) {

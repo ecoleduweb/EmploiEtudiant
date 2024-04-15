@@ -1,6 +1,6 @@
 <script lang="ts">
     import "../../styles/global.css";
-    import Button from "../../Components/Inputs/Button.svelte";
+    import Button from "../Inputs/Button.svelte";
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
     import { writable, type Writable } from 'svelte/store';
@@ -162,7 +162,6 @@
     }
   </script>
 
-  <div class="container">
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
       <!-- -------------------SECTION ENTREPRISE------------------------------ -->
       <!-- --AJOUTER VALIDATION SI COMPTE A DEJA UN ENTREPRISE POUR CACHER CE FORMULAIRE------- -->
@@ -303,19 +302,10 @@
       <p class="errors-input">
         {#if errors.description}{errors.description}{/if}
       </p>
-      <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
+      <Button submit={true} text="Envoyer" on:click={handleSubmit} />
     </form>
-  </div>
 
   <style>
-    
-  .container{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: #f5f5f5;
-
-  }
   label {
       display: block;
       margin-bottom: 0.26vw;

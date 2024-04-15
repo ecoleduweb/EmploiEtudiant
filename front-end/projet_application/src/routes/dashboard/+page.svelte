@@ -7,8 +7,11 @@
   import type { Emploi } from "../../Models/Emploi";
   import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte";
   import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
+  import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
   import { goto } from "$app/navigation";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
+  import { GET } from "../../ts/server";
+  import { onMount } from "svelte";
 
   const handleOffreEmploi = () => {
     console.log("OFFRE")
@@ -27,43 +30,17 @@
   const handleEmploiClick = (offreId: number) => {
     openModal(offreId);
   };
-  let emploi: Emploi = {
-    id: 0,
-    title: "",
-    address: "",
-    description: "",
-    dateEntryOffice: "",
-    deadlineApply: "",
-    email: "",
-    hoursPerWeek: 0,
-    compliantEmployer: false, 
-    internship: false,
-    offerLink: "",
-    offerStatus: 0,
-    urgent: false,
-    active: true,
-    scheduleId: -1,
-    employerId: 1,
-  };
 
-  let error: Emploi = {
-    id: 0,
-    title: "",
-    address: "",
-    description: "",
-    dateEntryOffice: "",
-    deadlineApply: "",
-    email: "",
-    hoursPerWeek: 0,
-    compliantEmployer: false, 
-    internship: false,
-    offerLink: "",
-    offerStatus: 0,
-    urgent: false,
-    active: true,
-    scheduleId: 0,
-    employerId: 0,
+  const jobOffers = writable<Emploi[]>([]);
+  const getJobOffersEmployeur = async () => {
+    try {
+      const response = await GET<any>("jobOffer/offresEmploiEmployeur");
+      jobOffers.set(response);
+    } catch (error) {
+      console.error("Error fetching job offers:", error);
+    }
   };
+  onMount(getJobOffersEmployeur);
 </script>
 
 <Header />
@@ -77,14 +54,15 @@
   </section>
   <section class="offres">
     <p class="textOffre">Mes offres d'emplois</p>
-    {#each data as offre}
-      <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
+    {#each $jobOffers as offre}
+        <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
     {/each}
   </section>
   {#if $modal}
-    {#each data as emploi}
+    {#each $jobOffers as emploi}
       {#if emploi.id === $selectedEmploiId}
-        <OffreEmploi {emploi} handleEmploiClick={closeModal} />
+        <!-- <OffreEmploi {emploi} handleEmploiClick={closeModal} /> -->
+        <CreateEditOffre {emploi} handleEmploiClick={closeModal} />
       {/if}
     {/each}
   {/if}

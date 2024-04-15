@@ -7,11 +7,11 @@
 <div class="offreEmploi">
     <div class="emploi">
         <div class="info">
-            <p class="text">{emploi.titre}</p>
-            <p class="text">{emploi.dateFin}</p>
+            <p class="text">{emploi.title}</p>
+            <p class="text">{emploi.dateEntryOffice}</p>
             <p class="text">{emploi.description}</p>
         </div>
-        <button class="button">
+        <button class="button" on:click={() => handleModalClick(emploi.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
         <button class="button">

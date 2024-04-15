@@ -4,7 +4,7 @@ export async function GET<T>(url: string): Promise<T> {
   try {
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `${localStorage.getItem('token')}`
       }
     });
     if (!response.ok) {
