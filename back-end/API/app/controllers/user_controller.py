@@ -1,6 +1,7 @@
 from flask import jsonify, request, Blueprint
 from app.models.user_model import User
 import os
+from logging import getLogger
 from jwt import decode
 from flask import jsonify, request
 from functools import wraps
@@ -13,6 +14,7 @@ enterprise_service = EnterpriseService()
 from logging import getLogger
 logger = getLogger(__name__)
 
+logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 def token_required(f):
@@ -22,6 +24,7 @@ def token_required(f):
             if 'Authorization' in request.headers:
                 token = request.headers['Authorization']
             if not token:
+                logger.warn('A valid token is missing')
                 return jsonify({'message': 'a valid token is missing'})
 
             try:
@@ -30,6 +33,7 @@ def token_required(f):
 
             except Exception as e:
                 print(e)
+                logger.warn('Token is invalid')
                 return jsonify({'message': 'token is invalid'})
             return f(current_user)
         return decorated
@@ -49,6 +53,7 @@ def createUser():
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):
+        logger.warn('Invalid JSON data format in /createUser')
         return jsonify({'message': 'Invalid JSON data format'}), 400
 
     if user_service.getUser(data['email']) == "<Response 29 bytes [200 OK]>" or user_service.getUser(data['email']) is not None:
@@ -66,26 +71,30 @@ def updatePassword():
     data = request.get_json()
     logger.info('Attempt to update password on user with email: ' + data['email'])
     if not isinstance(data, dict):
+        logger.warn('Invalid JSON data format in /updatePassword')
         return jsonify({'message': 'Invalid JSON data format'}), 400
     email = data.get('email')
     password = data.get('password')
     
     if not all([email, password]):
         return jsonify({'message': 'Missing required fields'}), 400
+    
+    logger.warn('Password updated for user: ' + email)
     return user_service.updatePassword(data)
 
 @user_blueprint.route('/getAllUsers', methods=['GET'])
 @token_required
 def getAllUsers():
+    logger.warn('All users retrieved')
     return user_service.getAllUsers()
 
 @user_blueprint.route('/getUser', methods=['GET'])
 #@token_required
-def getUser(current_user):
-    logger.info('Attempt to retrive user information of: ' + current_user.email)
+def getUser():
     token = request.headers.get('Authorization')
     data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     email = data['email']
+    logger.warn('Attempt to retrive user information of: ' + email)
     if not token:
         return jsonify({'message': 'Missing required fields'}), 400
     user = user_service.getUser(email)
