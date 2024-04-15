@@ -32,7 +32,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -53,7 +53,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -89,7 +89,7 @@ def app():
 
 def test_offreEmploi(client):
     response = client.get('/jobOffer/offreEmploi?id=1')
-    print(response)
+    print(response.json)
     assert response.status_code == 200
     assert response.json == {
         "id": 1,
@@ -104,8 +104,8 @@ def test_offreEmploi(client):
         "internship": False,
         "offerStatus": 1,
         "offerLink": "www.google.com",
-        "salary": 1000,
-        "urgent": False,
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
         "active": True,
         "employerId": None,
         "scheduleId": None
@@ -121,7 +121,6 @@ def test_userCreateOffresEmploi(client):
     data = {
             "jobOffer": 
             {
-                "id": 2,
                 "title": "Développeur",
                 "address": "123 rue de la rue",
                 "description": "Développeur front-end",
@@ -134,10 +133,10 @@ def test_userCreateOffresEmploi(client):
                 "offerStatus": 1,
                 "offerLink": "www.google.com",
                 "salary": 1000,
-                "urgent": False,
+                "offerDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
-                "employmentSchedule": "Temps plein",
+                "scheduleId": 1,
             },
             "enterprise": 
             {

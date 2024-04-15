@@ -8,5 +8,3 @@ class EmploymentScheduleService:
     def employmentSchedule(self, employmentScheduleId):
         return employmentSchedule_repo.employmentSchedule(employmentScheduleId)
     
-    def employmentScheduleId(self, description):
-        return employmentSchedule_repo.employmentScheduleId(description)

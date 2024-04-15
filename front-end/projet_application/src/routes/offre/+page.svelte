@@ -11,11 +11,12 @@
   import type { Entreprise } from "../../Models/Entreprise";
   import { goto } from "$app/navigation";
 
+
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice: yup
+    dateEntryOffice : yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
@@ -59,7 +60,7 @@
     title: "",
     address: "",
     description: "",
-    dateDisplayJobOffer: new Date().toISOString().split("T")[0],
+    offerDebut: new Date().toISOString().split("T")[0],
     dateEntryOffice: new Date().toISOString().split("T")[0],
     deadlineApply: new Date().toISOString().split("T")[0],
     email: "",
@@ -79,7 +80,7 @@
     title: "",
     address: "",
     description: "",
-    dateDisplayJobOffer: "",
+    offerDebut: "",
     dateEntryOffice: "",
     deadlineApply: "",
     email: "",
@@ -128,18 +129,17 @@
     isTemporary: true,
   };
 
-  let villeSelected: { label: string; value: number }[] = [];
-  let villeFromSelectedEntreprise: [] = [];
-  let villeOption = [
-    { label: "Trois-Pistoles", value: 1 },
-    { label: "Rivière-du-Loup", value: 2 },
-    { label: "Squatec", value: 3 },
-    { label: "Chibougamau", value: 4 },
-    { label: "Amqui", value: 5 },
-    { label: "Trois-Rivière", value: 6 },
-    { label: "Lévis", value: 7 },
-  ];
-  //--------------------------------------------------
+    let villeSelected: { label: string; value: number }[] = [];
+    let villeFromSelectedEntreprise: [] = [];
+    let villesOption: { label: string; value: number }[] = [];
+    const getVilles = async () => {
+        const response = await GET<any>("city/allCities");
+        villesOption = response.map((v: any) => {
+            return { label: v.city, value: v.id };
+        });
+    };
+    getVilles();
+    //--------------------------------------------------
 
   let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
   let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
@@ -154,7 +154,7 @@
         title: "",
         address: "",
         description: "",
-        dateDisplayJobOffer: "",
+        offerDebut: "",
         dateEntryOffice: "",
         deadlineApply: "",
         email: "",
@@ -202,13 +202,12 @@
 
   let maxDateString : any;
   $: {
-    let dateDisplayJobOffer = new Date(offre.dateDisplayJobOffer);
+    let offerDebut = new Date(offre.offerDebut);
     let maxDate = new Date(
-      dateDisplayJobOffer.setDate(dateDisplayJobOffer.getDate() + 15 * 7)
+      offerDebut.setDate(offerDebut.getDate() + 15 * 7)
     );
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
-
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
 </script>
@@ -308,17 +307,17 @@
     </p>
     <div class="form-group-horizontal-date">
       <div class="form-group-vertical">
-        <label for="dateDisplayJobOffer">Date de publication de l'offre</label>
+        <label for="offerDebut">Date de publication de l'offre</label>
         <input
           type="date"
-          bind:value={offre.dateDisplayJobOffer}
+          bind:value={offre.offerDebut}
           class="form-control"
-          id="dateDisplayJobOffer"
+          id="offerDebut"
           min={minDateString}
         />
       </div>
       <p class="errors-input">
-        {#if errors.dateDisplayJobOffer}{errors.dateDisplayJobOffer}{/if}
+        {#if errors.offerDebut}{errors.offerDebut}{/if}
       </p>
       <div class="form-group-vertical">
         <label for="dateEntryOffice"
@@ -343,7 +342,7 @@
           class="form-control"
           id="deadlineApply"
           max={maxDateString}
-          min={offre.dateDisplayJobOffer}
+          min={offre.offerDebut}
         />
       </div>
       <p class="errors-input">
