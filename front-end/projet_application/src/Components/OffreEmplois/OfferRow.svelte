@@ -1,44 +1,39 @@
 <script lang="ts">
     import type { Emploi } from "../../Models/Emploi";
     export let emploi: Emploi;
-
     export let handleModalClick: (id: number) => void;
 </script>
 
-<button class="offreEmploi" on:click={() => handleModalClick(emploi.id)}>
+<div class="offreEmploi">
     <div class="emploi">
         <div class="info">
-            <p class="text">{emploi.title}</p>
-            <p class="text">{emploi.employerId}</p>
-            <p class="text">{emploi.deadlineApply}</p>
-            <p class="description">{emploi.description}</p>
+            <p class="text">{emploi.titre}</p>
+            <p class="text">{emploi.dateFin}</p>
+            <p class="text">{emploi.description}</p>
         </div>
-        <img class="image" src="add.svg" alt="ajouter" />
+        <button class="button">
+            <img class="image" src="edit.svg" alt="modifier" />
+        </button>
+        <button class="button">
+            <img class="image" src="cancel.svg" alt="supprimer" />
+        </button>
     </div>
-</button>
+</div>
 
 <style scoped>
     .offreEmploi {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        width: 90%;
+        width: 50%;
         border-width: 0px;
         border-bottom: 1px solid #00ad9a;
-        margin-left: 5.2%;
         background-color: transparent;
     }
     .info {
         display: flex;
         width: 90%;
-        font-size: 1.2rem;
-        flex-direction: row;
-        justify-content: space-around;
-    }
-    .description {
-        display: flex;
-        width: 50%;
-        font-size: 1rem;
+        font-size: 1.3rem;
         flex-direction: row;
         justify-content: space-around;
     }
@@ -52,17 +47,26 @@
         align-items: center;
         color: white;
         border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
         width: 100%;
         height: 100%;
         padding: 5px 0px 5px 0px;
+        transition: background-color 0.1s ease;
     }
     .emploi:hover {
-        background-color: #555b66;
+        background-color: #485163;
     }
     .image {
         width: 30px;
         height: 30px;
+    }
+    .button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border-radius: 4px;
+    }
+    .button:hover {
+        background-color: #455b66;
     }
 </style>

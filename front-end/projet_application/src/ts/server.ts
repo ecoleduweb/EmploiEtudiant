@@ -2,7 +2,11 @@ import { env } from '$env/dynamic/public';
 // Function to fetch data from the API
 export async function GET<T>(url: string): Promise<T> {
   try {
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`);
+    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
     if (!response.ok) {
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
@@ -17,10 +21,12 @@ export async function GET<T>(url: string): Promise<T> {
 // Function to post data to the API
 export async function POST<T, T1>(url: string, body: T): Promise<T1> {
   try {
+    var token = localStorage.getItem("token");
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `${token}`
       },
       body: JSON.stringify(body),
     });

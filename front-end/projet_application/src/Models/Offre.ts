@@ -10,10 +10,10 @@ export interface jobOffer {
     compliantEmployer: boolean; // employeur conciliant ou non
     internship: boolean; // si l'offre est un stage
     offerLink: string; // lien vers l'offre ou site web de l'employeur
+    offerStatus: number;
     urgent: boolean; // si l'offre est urgente
     active: boolean; // si l'offre est active ou non
     salary: string; // salaire de lheure                     ** A AJOUTER BD **
     scheduleId: number; // id de l'horaire de travail
-    // employerId: number; // id de l'employeur (pas encore inclus)
-    idProgramme: number[]; // id du programme visée par l'offre 
+    employerId: number; // id de l'employeur (pas encore inclus)
 } 

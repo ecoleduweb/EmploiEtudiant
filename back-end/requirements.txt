@@ -1,5 +1,6 @@
 cors==1.0.1
 cryptography==42.0.3
+Flask==3.0.1
 Flask-Argon2==0.3.0.0
 Flask-Bcrypt==1.0.1
 Flask-Cors==4.0.0

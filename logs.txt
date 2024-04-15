@@ -1,0 +1,256 @@
+[2024-04-08 14:42:51,793] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:42:51,801] ERROR in app: Exception on /employmentSchedule/employmentSchedules [GET]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 46, in employmentSchedules
+    return jsonify(employmentSchedules)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\json\provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\json\provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\json\provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type EmploymentSchedule is not JSON serializable
+[2024-04-08 14:42:52,880] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:42:54,141] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:42:54,344] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:43:28,427] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:43:28,434] ERROR in app: Exception on /employmentSchedule/employmentSchedules [GET]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 46, in employmentSchedules
+    return [employmentSchedule.to_json_string() for employmentSchedule in employmentSchedules]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'EmploymentSchedule' object has no attribute 'to_json_string'
+[2024-04-08 14:43:29,427] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:43:30,575] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:43:30,777] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:45:09,212] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:45:09,922] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:45:11,154] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:45:11,409] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:10,002] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:10,945] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:12,107] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:12,321] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:51,983] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:52,122] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:52,128] ERROR in app: Exception on /employmentSchedule/employmentScheduleId [POST]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+TypeError: employmentScheduleId() takes 0 positional arguments but 1 was given
+[2024-04-08 14:49:53,210] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:54,642] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:49:54,919] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:50:18,643] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:50:18,787] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:50:18,792] ERROR in app: Exception on /employmentSchedule/employmentScheduleId [POST]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\sql\base.py", line 2192, in _entity_namespace_key
+    return getattr(ns, key)  # type: ignore
+           ^^^^^^^^^^^^^^^^
+AttributeError: type object 'EmploymentSchedule' has no attribute 'name'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 52, in employmentScheduleId
+    employmentScheduleId = employment_schedule_service.employmentScheduleId(name)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\services\employmentSchedule_service.py", line 12, in employmentScheduleId
+    return employmentSchedule_repo.employmentScheduleId(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\repositories\employmentSchedule_repo.py", line 15, in employmentScheduleId
+    employmentSchedule = EmploymentSchedule.query.filter_by(name=name).first()
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2004, in filter_by
+    _entity_namespace_key(from_entity, key) == value
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\sql\base.py", line 2194, in _entity_namespace_key
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: Entity namespace for "employment_schedule" has no property "name"
+[2024-04-08 14:50:19,721] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:50:20,858] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:50:21,098] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:51:44,710] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:51:44,845] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:51:44,851] ERROR in app: Exception on /employmentSchedule/employmentScheduleId [POST]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 52, in employmentScheduleId
+    employmentScheduleId = employment_schedule_service.employmentScheduleId(description)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\services\employmentSchedule_service.py", line 12, in employmentScheduleId
+    return employmentSchedule_repo.employmentScheduleId(description)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\repositories\employmentSchedule_repo.py", line 16, in employmentScheduleId
+    employmentScheduleId = employmentSchedule.id
+                           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'id'
+[2024-04-08 14:51:45,813] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:51:47,073] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:51:47,335] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:53:33,360] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:53:33,497] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:53:33,506] ERROR in app: Exception on /employmentSchedule/employmentScheduleId [POST]
+Traceback (most recent call last):
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 31, in decorated
+    return f(current_user)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\controllers\employmentSchedule_controller.py", line 52, in employmentScheduleId
+    employmentScheduleId = employment_schedule_service.employmentScheduleId(description)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\services\employmentSchedule_service.py", line 12, in employmentScheduleId
+    return employmentSchedule_repo.employmentScheduleId(description)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\foxy6\Documents\Cegep\Projet d'Applications\ProjetApplicationH2024\back-end\API\app\repositories\employmentSchedule_repo.py", line 17, in employmentScheduleId
+    employmentScheduleId = employmentSchedule.id
+                           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'id'
+[2024-04-08 14:53:34,539] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:53:35,726] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:53:35,930] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:55:03,427] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:55:03,562] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:55:04,267] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:55:05,596] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 14:55:05,822] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 15:02:59,224] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 15:02:59,346] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 15:03:00,063] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 15:03:01,225] WARNING in user_service: Login attempt successful on user: test@gmail.com
+[2024-04-08 15:03:01,430] WARNING in user_service: Login attempt successful on user: test@gmail.com
