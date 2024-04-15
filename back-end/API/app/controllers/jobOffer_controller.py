@@ -61,7 +61,9 @@ def createJobOffer():
         employer = Employers.query.filter_by(userId=user.id).first()
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            newEmployer = employer_service.createEmployer(entreprise.id, user.id)
+            print(entreprise)
+            entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
+            newEmployer = employer_service.createEmployer(entrepriseId, user.id)
             jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)

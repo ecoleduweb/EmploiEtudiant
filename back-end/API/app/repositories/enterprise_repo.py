@@ -6,4 +6,8 @@ class EnterpriseRepo:
         enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
         db.session.add(enterprise)
         db.session.commit()
-        return {'message': 'Enterprise created successfully'}, 201
+        return enterprise
+
+    def getEntrepriseId(self, name):
+        enterprise = Enterprise.query.filter_by(name=name).first()
+        return enterprise.id
