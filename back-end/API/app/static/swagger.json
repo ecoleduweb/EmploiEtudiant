@@ -135,22 +135,14 @@
     "/getUser": {
       "get": {
         "description": "Get a user's information based on email address",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "User information",
-            "in": "body",
-            "description": "JSON data containing user information",
+            "name": "email",
+            "in": "query",
+            "description": "User's email address",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "string"
           }
         ],
         "responses": {
@@ -166,22 +158,14 @@
     "/city/oneCity": {
       "get": {
         "description": "Get a city's information based on city id",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "City information",
-            "in": "body",
-            "description": "JSON data containing city information",
+            "name": "id",
+            "in": "query",
+            "description": "City ID",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "integer"
           }
         ],
         "responses": {
@@ -239,7 +223,7 @@
                     "urgent": {"type": "boolean"},
                     "active": {"type": "boolean"},
                     "employerId": {"type": "integer"},
-                    "scheduleId": {"type": "integer"}
+                    "employmentSchedule": {"type": "string"}
                   }
                 },
                 "enterprise": {
@@ -282,16 +266,14 @@
         }
       }
     },
-    "/offreEmploi/:id": {
+    "/offreEmploi/{id}": {
       "get": {
         "description": "Get a job offer based on id",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
         "parameters": [
           {
-            "name": "Job offer id",
+            "name": "id",
             "in": "path",
-            "description": "Id of the job offer",
+            "description": "ID of the job offer",
             "required": true,
             "type": "integer"
           }
@@ -441,14 +423,13 @@
         }
       }
     },
-    "/studyProgram" : {
+    "/studyProgram": {
       "get": {
         "description": "Get a study program based on its ID",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "Study program ID",
+            "name": "id",
             "in": "query",
             "description": "ID of the study program",
             "required": true,
@@ -468,14 +449,13 @@
         }
       }
     },
-    "/studyProgramId" : {
+    "/studyProgramId": {
       "get": {
         "description": "Get the ID of a study program based on its name",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "Study program name",
+            "name": "name",
             "in": "query",
             "description": "Name of the study program",
             "required": true,
@@ -495,7 +475,7 @@
         }
       }
     },
-    "/addStudyProgram" : {
+    "/addStudyProgram": {
       "post": {
         "description": "Add a study program",
         "consumes": ["application/json"],
@@ -519,6 +499,69 @@
           },
           "400": {
             "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/employmentsSchedule": {
+      "get": {
+        "description": "Get a list of all employments schedule",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Employments schedule successfully fetched"
+          }
+        }
+      }
+    },
+    "/employmentSchedule": {
+      "get": {
+        "description": "Get a employment schedule based on id",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "ID of the employment schedule",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule id"
+          },
+          "404": {
+            "description": "Employment schedule not found"
+          }
+        }
+      }
+    },
+    "/employmentScheduleId": {
+      "get": {
+        "description": "Get an employment schedule's id based on name",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the employment schedule",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule id successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule name"
+          },
+          "404": {
+            "description": "Employment schedule not found"
           }
         }
       }
