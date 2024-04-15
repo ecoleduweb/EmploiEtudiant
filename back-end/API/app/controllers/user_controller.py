@@ -10,6 +10,8 @@ from app.services.employer_service import EmployerService
 employer_service = EmployerService()
 from app.services.enterprise_service import EnterpriseService
 enterprise_service = EnterpriseService()
+from logging import getLogger
+logger = getLogger(__name__)
 
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -35,19 +37,21 @@ def token_required(f):
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    logger.info('Attempt to login on user with email: ' + data['email'])
     return user_service.login(data["email"], data["password"])
 
 @user_blueprint.route('/createUser', methods=['POST'])
-@token_required
-def createUser(current_user):
+#@token_required
+def createUser():
     data = request.get_json()
-    if not all([data.get('id'), data.get('email'), data.get('password')]):
+    logger.info('Attempt to create a new user with email: ' + data['email'])
+    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('role')]):
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):
         return jsonify({'message': 'Invalid JSON data format'}), 400
 
-    if user_service.getUser(data['email']) is not None:
+    if user_service.getUser(data['email']) == "<Response 29 bytes [200 OK]>" or user_service.getUser(data['email']) is not None:
         return jsonify({'message': 'User already exists'}), 400
 
     return user_service.createUser(data)
@@ -60,6 +64,7 @@ def createUser(current_user):
 @token_required
 def updatePassword():
     data = request.get_json()
+    logger.info('Attempt to update password on user with email: ' + data['email'])
     if not isinstance(data, dict):
         return jsonify({'message': 'Invalid JSON data format'}), 400
     email = data.get('email')
@@ -75,8 +80,9 @@ def getAllUsers():
     return user_service.getAllUsers()
 
 @user_blueprint.route('/getUser', methods=['GET'])
-@token_required
-def getUser():
+#@token_required
+def getUser(current_user):
+    logger.info('Attempt to retrive user information of: ' + current_user.email)
     token = request.headers.get('Authorization')
     data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     email = data['email']
