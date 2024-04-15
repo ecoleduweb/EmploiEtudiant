@@ -1,7 +1,5 @@
 import pytest
 from app import create_app, db
-from app.models.offer_programm_model import OfferProgram
-
 
 @pytest.fixture(scope='module')
 def app():
