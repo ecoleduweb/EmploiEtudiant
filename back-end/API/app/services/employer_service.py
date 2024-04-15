@@ -7,3 +7,6 @@ class EmployerService:
 
     def linkEmployerEnterprise(self, data):
         return employer_repo.linkEmployerEnterprise(data)
+    
+    def getEmployerByEnterpriseId(self, enterpriseId):
+        return employer_repo.getEmployerByEnterpriseId(enterpriseId)

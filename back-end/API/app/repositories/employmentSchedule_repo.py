@@ -5,6 +5,7 @@ from flask import jsonify
 class EmploymentScheduleRepo:
     def employmentSchedule(self, employmentScheduleId):
         employmentSchedule = EmploymentSchedule.query.filter_by(id=employmentScheduleId).first()
+        print(employmentSchedule)
         return employmentSchedule
     
     def employmentSchedules(self):

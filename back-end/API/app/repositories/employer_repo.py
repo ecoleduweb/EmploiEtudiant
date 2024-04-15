@@ -15,3 +15,7 @@ class EmployerRepo:
         employer.enterprise_id = data['enterpriseId']
         db.session.commit()
         return jsonify({'message': 'employer linked to enterprise'})
+
+    def getEmployerByEnterpriseId(self, enterpriseId):
+        employer = Employers.query.filter_by(enterprise_id=enterpriseId).first()
+        return employer
