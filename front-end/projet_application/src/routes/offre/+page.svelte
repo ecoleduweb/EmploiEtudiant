@@ -5,6 +5,7 @@
   import type { jobOffer } from "../../Models/Offre";
   import { writable, type Writable } from "svelte/store";
   import { POST } from "../../ts/server";
+  import { GET } from "../../ts/server";
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import type { Entreprise } from "../../Models/Entreprise";
@@ -199,7 +200,7 @@
     }
   };
 
-  let maxDateString;
+  let maxDateString : any;
   $: {
     let dateDisplayJobOffer = new Date(offre.dateDisplayJobOffer);
     let maxDate = new Date(
@@ -257,7 +258,7 @@
       <label for="title">Ville*</label>
       <MultiSelect
         id="programme"
-        options={villeOption}
+        options={villesOption}
         placeholder="Choisir ville(s)..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
