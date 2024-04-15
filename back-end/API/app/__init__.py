@@ -76,6 +76,7 @@ def create_app():
     from app.controllers.employer_controller import employer_blueprint
     from app.controllers.study_program_controller import study_program_blueprint
     from app.controllers.offer_program_controller import offer_program_blueprint
+    from app.controllers.employmentSchedule_controller import employment_schedule_blueprint
     
     app.register_blueprint(ping_blueprint)
     app.register_blueprint(user_blueprint, url_prefix='/user')
@@ -85,6 +86,8 @@ def create_app():
     app.register_blueprint(city_blueprint, url_prefix='/city')
     app.register_blueprint(study_program_blueprint, url_prefix='/studyProgram')
     app.register_blueprint(offer_program_blueprint, url_prefix='/offerProgram')
+    app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
+
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
     
 

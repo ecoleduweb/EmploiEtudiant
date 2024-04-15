@@ -56,10 +56,6 @@ def createUser(current_user):
         return jsonify({'message': 'User already exists'}), 400
 
     return user_service.createUser(data)
-    # enterprise = enterprise_service.createEnterprise(data, isTemporary=True)
-    # employer = employer_service.createEmployer(user.id, enterprise.id, verified=False)
-    
-    # return jsonify({'message': 'User created successfully'})
 
 @user_blueprint.route('/updatePassword', methods=['PUT'])
 @token_required
@@ -85,7 +81,7 @@ def getAllUsers():
 
 @user_blueprint.route('/getUser', methods=['GET'])
 @token_required
-def getUser():
+def getUser(current_user):
     logger.warn('Attempt to retrive user information of: ' + current_user.email)
     token = request.headers.get('Authorization')
     data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
