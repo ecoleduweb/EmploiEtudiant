@@ -1,4 +1,4 @@
-<footer class="">
+<footer>
   <svg
     class="svg-footer"
     xmlns="http://www.w3.org/2000/svg"
@@ -61,18 +61,25 @@
   </svg>
 </footer>
 
-<style scoped>
+<style lang="scss" scoped>
   footer {
+    position: absolute;
     bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Stretch items vertically */
+    justify-content: flex-start; /* Align items at the start of the container */
+    margin: 0;
     width: 100%;
-    padding: 0px;
-    margin: 0px;
+    overflow: hidden;
   }
 
   .svg-footer {
-    width: "100%";
-    height: "100%";
-    padding: 0px;
-    margin: 0px;
+    width: 100%;
+  }
+  
+  * {
+    padding: 0;
+    margin: 0;
   }
 </style>

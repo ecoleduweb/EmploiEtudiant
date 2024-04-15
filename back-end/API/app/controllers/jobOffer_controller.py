@@ -58,14 +58,13 @@ def createJobOffer():
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         return jsonify({'message': 'Job offer created successfully'}) 
-
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            newEmployer = employer_service.createEmployer(entreprise.id, user.id)
-            employmentScheduleId = employment_schedule_service.employmentScheduleId(data["jobOffer"]["employmentSchedule"])
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id, employmentScheduleId)
+            entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
+            newEmployer = employer_service.createEmployer(entrepriseId, user.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)

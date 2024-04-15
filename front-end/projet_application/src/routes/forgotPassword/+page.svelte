@@ -27,8 +27,6 @@
       errors = {
         email: "",
       };
-
-      console.log(login);
     } catch (err) {
       errors = extractErrors(err);
     }
