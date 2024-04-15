@@ -46,3 +46,6 @@ class EnterpriseRepo:
            return False
         logger.warning('enterprise deleted')
         return True
+    def getEntrepriseId(self, name):
+        enterprise = Enterprise.query.filter_by(name=name).first()
+        return enterprise.id

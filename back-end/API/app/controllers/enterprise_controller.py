@@ -13,29 +13,9 @@ employer_service = EmployerService()
 
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-def token_required(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            token = request.headers.get('Authorization')
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization']
-            if not token:
-                return jsonify({'message': 'a valid token is missing'})
-
-            try:
-                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-                current_user = User.query.filter_by(email = data['email']).first()
-
-            except Exception as e:
-                print(e)
-                return jsonify({'message': 'token is invalid'})
-            return f(current_user)
-        return decorated
-
 def token_admin_required(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            token = request.headers.get('Authorization')
             if 'Authorization' in request.headers:
                 token = request.headers['Authorization']
             if not token:
@@ -44,7 +24,6 @@ def token_admin_required(f):
             try:
                 data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
                 current_user = User.query.filter_by(email = data['email']).first()
-
             except Exception as e:
                 print(e)
                 return jsonify({'message': 'token is invalid'})
@@ -88,4 +67,8 @@ def deleteEnterprise(idEnterprise):
         else:
             return jsonify({'message': 'enterprise is not temporary'})
     else:
-        return jsonify({'message': 'enterprise not found'})
+        return jsonify({'message': 'enterprise not found'})@token_admin_required
+@enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])
+def getEntrepriseId():
+    name = request.args.get('name')
+    return enterprise_service.getEntrepriseId(name)

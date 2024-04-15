@@ -7,8 +7,8 @@ class EnterpriseService:
         return enterprise_repo.getEnterprises()
     
     def createEnterprise(self, data, isTemporary):
-        return enterprise_repo.createEnterprise(data, isTemporary)
-    
+        return enterprise_repo.createEnterprise(data, isTemporary)    
+
     def getEnterprise(self, id):
         return enterprise_repo.getEnterprise(id)
     
@@ -17,3 +17,5 @@ class EnterpriseService:
     
     def deleteEnterprise(self, id):
         return enterprise_repo.deleteEnterprise(id)
+    def getEntrepriseId(self, name):
+        return enterprise_repo.getEntrepriseId(name)
