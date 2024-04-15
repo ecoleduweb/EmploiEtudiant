@@ -1,62 +1,89 @@
 <script lang="ts">
-    import "../../styles/global.css";
-    import Button from "../../Components/Inputs/Button.svelte";
-    import MultiSelect from 'svelte-multiselect';
-    import type { jobOffer } from "../../Models/Offre";
-    import { writable, type Writable } from 'svelte/store';
-    import { POST } from "../../ts/server";
-    import * as yup from "yup";
-    import { extractErrors } from "../../ts/utils";
-    import type { Entreprise } from "../../Models/Entreprise";
-    import { goto } from '$app/navigation';
+  import "../../styles/global.css";
+  import Button from "../../Components/Inputs/Button.svelte";
+  import MultiSelect from "svelte-multiselect";
+  import type { jobOffer } from "../../Models/Offre";
+  import { writable, type Writable } from "svelte/store";
+  import { POST } from "../../ts/server";
+  import * as yup from "yup";
+  import { extractErrors } from "../../ts/utils";
+  import type { Entreprise } from "../../Models/Entreprise";
+  import { goto } from "$app/navigation";
 
-    const schema = yup.object().shape({
+  const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice: yup.string().required("La date d'entrée en fonction est requise").test('is-date', "Veuillez choisir une date valide !", value => {
-    return !isNaN(Date.parse(value));
-    }),
-    deadlineApply: yup.string().required("La date limite de l'offre est requise").test('is-date', "Veuillez choisir une date valide !", value => {
-    return !isNaN(Date.parse(value));
-    }),
-    email : yup.string().matches(/\.[a-z]+$/, "Le courriel doit être de format valide : courriel@domaine.ca").email("Le courriel n'est pas valide").required("Le courriel est requis"),
-    hoursPerWeek: yup.string().required("Le nombre d'heure par semaine est requis").test('is-number', "Veuillez entrer un nombre d'heure valide !", value => {
-      return !isNaN(Number(value)) && Number(value) > 0;
-    }),
-    scheduleId: yup.number().required("Le type d'emploi est requis").min(0, "Le type d'emploi est requis"),
+    dateEntryOffice: yup
+      .string()
+      .required("La date d'entrée en fonction est requise")
+      .test("is-date", "Veuillez choisir une date valide !", (value) => {
+        return !isNaN(Date.parse(value));
+      }),
+    deadlineApply: yup
+      .string()
+      .required("La date limite de l'offre est requise")
+      .test("is-date", "Veuillez choisir une date valide !", (value) => {
+        return !isNaN(Date.parse(value));
+      }),
+    email: yup
+      .string()
+      .matches(
+        /\.[a-z]+$/,
+        "Le courriel doit être de format valide : courriel@domaine.ca"
+      )
+      .email("Le courriel n'est pas valide")
+      .required("Le courriel est requis"),
+    hoursPerWeek: yup
+      .string()
+      .required("Le nombre d'heure par semaine est requis")
+      .test(
+        "is-number",
+        "Veuillez entrer un nombre d'heure valide !",
+        (value) => {
+          return !isNaN(Number(value)) && Number(value) > 0;
+        }
+      ),
+    scheduleId: yup
+      .number()
+      .required("Le type d'emploi est requis")
+      .min(0, "Le type d'emploi est requis"),
     idProgramme: yup.array().min(1, "Le programme visé est requis"),
-    offerLink: yup.string().matches(/^(http|https):\/\/[^ "]+$/, "Le lien doit être de format valide : https://www.exemple.ca").url("Le lien doit être de format valide : https://www.exemple.ca").required("Le lien de l'offre est requis"),
+    acceptCondition: yup
+      .boolean()
+      .oneOf([true], "Vous devez accepter les conditions"),
   });
 
-    let offre: jobOffer = {
+  let offre: jobOffer = {
     title: "",
     address: "",
     description: "",
-    dateEntryOffice: "",
-    deadlineApply: "",
+    dateDisplayJobOffer: new Date().toISOString().split("T")[0],
+    dateEntryOffice: new Date().toISOString().split("T")[0],
+    deadlineApply: new Date().toISOString().split("T")[0],
     email: "",
     hoursPerWeek: "",
-    compliantEmployer: false, 
+    compliantEmployer: false,
     internship: false,
-    offerLink: "",
+    offerLink: "https://",
     offerStatus: 0,
     urgent: false,
     active: true,
     salary: "",
     scheduleId: -1,
-    employerId: 1, // HARDCODER 
-    };
+    employerId: 1, // HARDCODER
+  };
 
-    let errors: jobOffer = {
+  let errors: jobOffer = {
     title: "",
     address: "",
     description: "",
+    dateDisplayJobOffer: "",
     dateEntryOffice: "",
     deadlineApply: "",
     email: "",
     hoursPerWeek: "",
-    compliantEmployer: false, 
+    compliantEmployer: false,
     internship: false,
     offerLink: "",
     offerStatus: 0,
@@ -64,12 +91,12 @@
     active: true,
     salary: "",
     scheduleId: 0,
-    employerId: 0,// HARDCODER 
-    };
+    employerId: 0, // HARDCODER
+  };
 
-    let programmeSelected: { label: string; value: number }[] = [];
-    let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let programmesOption = [
+  let programmeSelected: { label: string; value: number }[] = [];
+  let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+  let programmesOption = [
     { label: "Design d'intérieur", value: 1 },
     { label: "Éducation à l'enfance", value: 2 },
     { label: "Gestion et intervention en loisir", value: 3 },
@@ -80,277 +107,417 @@
     { label: "Soins infirmiers", value: 8 },
     { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
-    { label: "Sciences humaines", value: 11 }
-];
-    let scheduleSelected: { label: string; value: number }[] = [];
-    let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let scheduleOption = [
+    { label: "Sciences humaines", value: 11 },
+  ];
+  let scheduleSelected: { label: string; value: number }[] = [];
+  let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+  let scheduleOption = [
     { label: "Temps plein", value: 1 },
     { label: "Emploi d'été", value: 2 },
-    { label: "Temps partiel", value: 3 }
-];
+    { label: "Temps partiel", value: 3 },
+  ];
 
-// SECTION ENTREPRISE --------------------------------------------
-   let enterprise: Entreprise = {
-        name: "",
-        email: "",
-        phone: "",
+  // SECTION ENTREPRISE --------------------------------------------
+  let enterprise: Entreprise = {
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    cityId: 0,
+    isTemporary: true,
+  };
+
+  let villeSelected: { label: string; value: number }[] = [];
+  let villeFromSelectedEntreprise: [] = [];
+  let villeOption = [
+    { label: "Trois-Pistoles", value: 1 },
+    { label: "Rivière-du-Loup", value: 2 },
+    { label: "Squatec", value: 3 },
+    { label: "Chibougamau", value: 4 },
+    { label: "Amqui", value: 5 },
+    { label: "Trois-Rivière", value: 6 },
+    { label: "Lévis", value: 7 },
+  ];
+  //--------------------------------------------------
+
+  let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
+  let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
+  let acceptCondition = false;
+
+  const handleSubmit = async () => {
+    try {
+      offre.scheduleId = (scheduleSelected as any)?.value;
+      let programmeName = programmeSelected.map((p) => p.label);
+      await schema.validate(offre, { abortEarly: false });
+      errors = {
+        title: "",
         address: "",
-        cityId: 0,
-        isTemporary: true,
-    };
-
-    let villeSelected: { label: string; value: number }[] = [];
-    let villeFromSelectedEntreprise: [] = [];
-    let villeOption = [
-        { label: "Trois-Pistoles", value: 1 },
-        { label: "Rivière-du-Loup", value: 2 },
-        { label: "Squatec", value: 3 },
-        { label: "Chibougamau", value: 4 },
-        { label: "Amqui", value: 5 },
-        { label: "Trois-Rivière", value: 6 },
-        { label: "Lévis", value: 7 },
-    ];
-    //--------------------------------------------------
-
-    let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
-
-    const handleSubmit = async () => {
-        try {
-            offre.scheduleId = (scheduleSelected as any)?.value;
-            let programmeName = programmeSelected.map((p) => p.label);
-            await schema.validate(offre, { abortEarly: false });
-            errors = {
-                title: "",
-                address: "",
-                description: "",
-                dateEntryOffice: "",
-                deadlineApply: "",
-                email: "",
-                hoursPerWeek: "",
-                compliantEmployer: false,
-                internship: false,
-                offerLink: "",
-                offerStatus: 0,
-                urgent: false,
-                active: true,
-                salary: "",
-                scheduleId: 0,
-                employerId: 0,
-            };
-            const requestData = {
-                jobOffer: {
-                    ...offre,
-                },
-                enterprise: enterprise,
-                studyPrograms: programmeName
-            };
-            const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
-            goto('/dashboard');
-        } catch (err) {
-            console.log(err);
-            if (err instanceof yup.ValidationError) {
-                errors = extractErrors(err);
-            }
-            // Handle the case where no program is selected
-            if (programmeSelected.length === 0) {
-                errorsProgramme = "Le programme visé est requis";
-            } else {
-                errorsProgramme = "";
-            }
-        }
+        description: "",
+        dateDisplayJobOffer: "",
+        dateEntryOffice: "",
+        deadlineApply: "",
+        email: "",
+        hoursPerWeek: "",
+        compliantEmployer: false,
+        internship: false,
+        offerLink: "",
+        offerStatus: 0,
+        urgent: false,
+        active: true,
+        salary: "",
+        scheduleId: 0,
+        employerId: 0,
+      };
+      const requestData = {
+        jobOffer: {
+          ...offre,
+        },
+        enterprise: enterprise,
+        studyPrograms: programmeName,
+      };
+      const response = await POST<any, any>(
+        "/jobOffer/createJobOffer",
+        requestData
+      );
+      goto("/dashboard");
+    } catch (err) {
+      console.log(err);
+      if (err instanceof yup.ValidationError) {
+        errors = extractErrors(err);
+      }
+      // Handle the case where no program is selected
+      if (programmeSelected.length === 0) {
+        errorsProgramme = "Le programme visé est requis";
+      } else {
+        errorsProgramme = "";
+      }
+      if (acceptCondition === false) {
+        errorsAcceptCondition = "Vous devez accepter les conditions";
+      } else {
+        errorsAcceptCondition = "";
+      }
     }
-  </script>
+  };
 
-  <div class="container">
-    <form on:submit|preventDefault={handleSubmit} class="form-offre">
-      <!-- -------------------SECTION ENTREPRISE------------------------------ -->
-      <!-- --AJOUTER VALIDATION SI COMPTE A DEJA UN ENTREPRISE POUR CACHER CE FORMULAIRE------- -->
-        <h1 class="title">Créer une nouvelle entreprise</h1>
-        <div class="form-group-vertical">
-          <label for="title">Nom*</label>
-          <input type="text" bind:value={enterprise.name} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Email*</label>
-          <input type="text" bind:value={enterprise.email} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Téléphone*</label>
-          <input type="text" bind:value={enterprise.phone} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Adresse*</label>
-          <input type="text" bind:value={enterprise.address} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-        <label for="title">Adresse*</label>
-        <MultiSelect
-            id="programme"
-            options={villeOption}
-            placeholder="Choisir ville(s)..."
-            bind:value={villeSelected}
-            bind:selected={villeFromSelectedEntreprise}
-        ></MultiSelect>
-      </div>
+  let maxDateString;
+  $: {
+    let dateDisplayJobOffer = new Date(offre.dateDisplayJobOffer);
+    let maxDate = new Date(
+      dateDisplayJobOffer.setDate(dateDisplayJobOffer.getDate() + 15 * 7)
+    );
+    maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
+  }
 
-      <!-- -------------------SECTION EMPLOIS------------------------------ -->
-      <h1>Créer une nouvelle offre d'emploi</h1>
+  let todayMin = new Date();
+  let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
+</script>
+
+<div class="container">
+  <form on:submit|preventDefault={handleSubmit} class="form-offre">
+    <!-- -------------------SECTION ENTREPRISE------------------------------ -->
+    <!-- --AJOUTER VALIDATION SI COMPTE A DEJA UN ENTREPRISE POUR CACHER CE FORMULAIRE------- -->
+    <h1 class="title">Créer une nouvelle entreprise</h1>
+    <div class="form-group-vertical">
+      <label for="title">Nom de l'entreprise*</label>
+      <input
+        type="text"
+        bind:value={enterprise.name}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="title">Email*</label>
+      <input
+        type="text"
+        bind:value={enterprise.email}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="title">Téléphone*</label>
+      <input
+        type="text"
+        bind:value={enterprise.phone}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="title">Adresse*</label>
+      <input
+        type="text"
+        bind:value={enterprise.address}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="title">Ville*</label>
+      <MultiSelect
+        id="programme"
+        options={villeOption}
+        placeholder="Choisir ville(s)..."
+        bind:value={villeSelected}
+        bind:selected={villeFromSelectedEntreprise}
+      ></MultiSelect>
+    </div>
+
+    <!-- -------------------SECTION EMPLOIS------------------------------ -->
+    <h1>Créer une nouvelle offre d'emploi</h1>
+    <div class="form-group-vertical">
+      <label for="title">Titre du poste*</label>
+      <input
+        type="text"
+        bind:value={offre.title}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.title}{errors.title}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="schedule">Type d'emplois*</label>
+      <MultiSelect
+        id="schedule"
+        options={scheduleOption}
+        maxSelect={1}
+        closeDropdownOnSelect={true}
+        placeholder="Choisir période(s)..."
+        bind:value={scheduleSelected}
+        bind:selected={scheduleFromExistingOffer}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.scheduleId}{errors.scheduleId}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Adresse du lieu de travail*</label>
+      <input
+        type="text"
+        bind:value={offre.address}
+        class="form-control"
+        id="address"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.address}{errors.address}{/if}
+    </p>
+    <div class="form-group-horizontal-date">
       <div class="form-group-vertical">
-        <label for="title">Titre du poste*</label>
-        <input type="text" bind:value={offre.title} class="form-control" id="titre" />
+        <label for="dateDisplayJobOffer">Date de publication de l'offre</label>
+        <input
+          type="date"
+          bind:value={offre.dateDisplayJobOffer}
+          class="form-control"
+          id="dateDisplayJobOffer"
+          min={minDateString}
+        />
       </div>
       <p class="errors-input">
-        {#if errors.title}{errors.title}{/if}
+        {#if errors.dateDisplayJobOffer}{errors.dateDisplayJobOffer}{/if}
       </p>
       <div class="form-group-vertical">
-        <label for="schedule">Type d'emplois*</label>
-        <MultiSelect
-          id="schedule"
-          options={scheduleOption}
-          maxSelect={1}
-          closeDropdownOnSelect={true}
-          placeholder="Choisir période(s)..."
-          bind:value={scheduleSelected}
-          bind:selected={scheduleFromExistingOffer}
-        /> 
-      </div>
-      <p class="errors-input">
-        {#if errors.scheduleId}{errors.scheduleId}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="lieu">Adresse du lieu de travail*</label>
-        <input type="text" bind:value={offre.address} class="form-control" id="address" />
-      </div>
-      <p class="errors-input">
-        {#if errors.address}{errors.address}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="dateEntryOffice">Date d'entrée en fonction*</label>
-        <input type="date" bind:value={offre.dateEntryOffice} class="form-control" id="dateEntryOffice" />
+        <label for="dateEntryOffice"
+          >Date d'entrée en fonction de l'emploi*</label
+        >
+        <input
+          type="date"
+          bind:value={offre.dateEntryOffice}
+          class="form-control"
+          id="dateEntryOffice"
+          min={minDateString}
+        />
       </div>
       <p class="errors-input">
         {#if errors.dateEntryOffice}{errors.dateEntryOffice}{/if}
       </p>
       <div class="form-group-vertical">
         <label for="deadlineApply">Date limite pour postuler*</label>
-        <input type="date" bind:value={offre.deadlineApply} class="form-control" id="deadlineApply" />
+        <input
+          type="date"
+          bind:value={offre.deadlineApply}
+          class="form-control"
+          id="deadlineApply"
+          max={maxDateString}
+          min={offre.dateDisplayJobOffer}
+        />
       </div>
       <p class="errors-input">
         {#if errors.deadlineApply}{errors.deadlineApply}{/if}
       </p>
-      <div class="form-group-vertical">
-        <label for="duree">Programme visée*</label>
-        <MultiSelect
-          id="programme"
-          options={programmesOption}
-          placeholder="Choisir programme(s)..."
-          bind:value={programmeSelected}
-          bind:selected={programmeFromSelectedOffer}
-        >
-        </MultiSelect>
-      </div> 
-      <p class="errors-input">
-        {#if errorsProgramme}{errorsProgramme}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="salaire">Salaire/H (0.00)</label>
-        <input type="text" bind:value={offre.salary} class="form-control" id="salaire" />
-      </div>
-      <p class="errors-input">
-          {#if errors.salary}{errors.salary}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="hoursPerWeek">Heure/Semaine*</label>
-        <input type="text" bind:value={offre.hoursPerWeek} class="form-control" id="hoursPerWeek" />
-      </div>
-      <p class="errors-input">
-          {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
-      </p>
-      <div class="form-group-horizontal">
-        <label for="internship">Stage ?</label>
-        <input type="checkbox" bind:checked={offre.internship} class="form-control" id="internship" />
-      </div>
-      <p class="errors-input">
-        {#if errors.internship}{errors.internship}{/if}
-      </p>
-      <div class="form-group-horizontal">
-        <label for="conciliation">Conciliation</label>
-        <input type="checkbox" bind:checked={offre.compliantEmployer} class="form-control" id="compliantEmployer" />
-      </div>
-      <div class="form-group-horizontal">
-        <label for="urgente">Urgente</label>
-        <input type="checkbox" bind:checked={offre.urgent} class="form-control" id="urgente" />
-      </div>
-      <div class="form-group-vertical">
-        <label for="offerLink">Lien*</label>
-        <input type="text" bind:value={offre.offerLink} class="form-control" id="offerLink" />
-      </div>
-      <p class="errors-input">
-        {#if errors.offerLink}{errors.offerLink}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="courriel-contact">Courriel contact*</label>
-        <input type="text" bind:value={offre.email} class="form-control" id="email" />
-      </div>
-      <p class="errors-input">
-        {#if errors.email}{errors.email}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="description">Description du poste*</label>
-        <textarea rows="15" cols="50" bind:value={offre.description} class="form-control" id="description" />
-      </div>
-      <p class="errors-input">
-        {#if errors.description}{errors.description}{/if}
-      </p>
-      <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
-    </form>
-  </div>
+    </div>
+    <div class="form-group-vertical">
+      <label for="duree">Programme visée*</label>
+      <MultiSelect
+        id="programme"
+        options={programmesOption}
+        placeholder="Choisir programme(s)..."
+        bind:value={programmeSelected}
+        bind:selected={programmeFromSelectedOffer}
+      ></MultiSelect>
+    </div>
+    <p class="errors-input">
+      {#if errorsProgramme}{errorsProgramme}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="salaire">Salaire/H</label>
+      <input
+        type="text"
+        bind:value={offre.salary}
+        class="form-control"
+        id="salaire"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.salary}{errors.salary}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="hoursPerWeek">Heure/Semaine*</label>
+      <input
+        type="text"
+        bind:value={offre.hoursPerWeek}
+        class="form-control"
+        id="hoursPerWeek"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
+    </p>
+    <div class="form-group-horizontal">
+      <label for="internship">Stage ?</label>
+      <input
+        type="checkbox"
+        bind:checked={offre.internship}
+        class="form-control"
+        id="internship"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.internship}{errors.internship}{/if}
+    </p>
+    <div class="form-group-horizontal">
+      <label for="conciliation">Conciliation</label>
+      <input
+        type="checkbox"
+        bind:checked={offre.compliantEmployer}
+        class="form-control"
+        id="compliantEmployer"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="offerLink">Adresse URL vers l'offre d'emploi détaillé</label>
+      <input
+        type="text"
+        bind:value={offre.offerLink}
+        class="form-control"
+        id="offerLink"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.offerLink}{errors.offerLink}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="courriel-contact">Courriel contact*</label>
+      <input
+        type="text"
+        bind:value={offre.email}
+        class="form-control"
+        id="email"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.email}{errors.email}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="description">Description du poste*</label>
+      <textarea
+        rows="15"
+        cols="50"
+        bind:value={offre.description}
+        class="form-control"
+        id="description"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.description}{errors.description}{/if}
+    </p>
+    <div class="accept-Condition">
+      <input
+        type="checkbox"
+        bind:checked={acceptCondition}
+        class="form-control-acceptCondition"
+        id="acceptCondition"
+      />
+      <label for="acceptCondition">J'acceptes les condtions </label>
+    </div>
+    <p class="errors-input">
+      {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
+    </p>
+    <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
+  </form>
+</div>
 
-  <style>
-    
-  .container{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: #f5f5f5;
-
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f5f5f5;
   }
   label {
-      display: block;
-      margin-bottom: 0.26vw;
+    display: block;
+    margin-bottom: 0.26vw;
   }
 
   .form-offre {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border: 0.3vw solid #ccc;
-      background-color: #ffff;
-      box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1); 
-      border-radius: 0.781vw;
-      width: 70%;
-      padding: 0 0.78vw 2vh 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 0.3vw solid #ccc;
+    background-color: #ffff;
+    box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1);
+    border-radius: 0.781vw;
+    width: 70%;
+    padding: 0 0.78vw 2vh 0;
   }
 
   .form-group-horizontal {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      width: 50%;
-      margin: 1vh 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 50%;
+    margin: 1vh 0;
   }
 
   .form-group-vertical {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 50%;
-      margin: 0.8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 50%;
+    margin: 0.8vw;
+  }
+  .form-group-horizontal-date {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 52.5%;
   }
 
   .errors-input {
-      color: red;
-      font-size: 0.8em;
+    color: red;
+    font-size: 0.8em;
   }
-  </style>
+  .accept-Condition {
+    display: flex;
+    flex-direction: row;
+    width: 51%;
+    margin: 0.8vw;
+  }
+  .form-control-acceptCondition {
+    margin-right: 0.8vw;
+    margin-bottom: 0.5vw;
+  }
+</style>
