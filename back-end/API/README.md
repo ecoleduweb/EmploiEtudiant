@@ -28,13 +28,13 @@ flask db downgrade (pour revenir en arriere)
 flask db history (voir toutes les migration)
 flask db branches (Afficher les points de branchement actuels)
 ```
-### To set the data for the first time
+### To set the database for the first time
 1. Wipe the /migrations folder
 2. Create the Database
 ```sql
 CREATE DATABASE H2024
 ```
-3. Initialise your migration
+3. Create your migration folder
 ```bash
 flask db init (to initialise the database)
 ```
@@ -43,11 +43,11 @@ flask db init (to initialise the database)
 flask db migrate -m "Nom_Migration"
 flask db upgrade
 ```
-5. Delete the version of alembic
+5. Delete the version of alembic in the database
 ```sql
 DELETE FROM alembic_version;
 ```
-6. Restore the previous migration
+6. Restore the previous migration folder
 7. Upgrade with the previous database
 ```bash
 flask db upgrade
