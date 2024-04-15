@@ -1,8 +1,14 @@
 from app import db
 from app.models.enterprise_model import Enterprise
 from flask import Flask, jsonify, request
+from logging import getLogger
+logger = getLogger(__name__)
 
 class EnterpriseRepo:
+    def getEnterprises(self):
+        enterprises = Enterprise.query.all()
+        return enterprises
+    
     def createEnterprise(self, data, isTemporary):
         enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
         db.session.add(enterprise)
@@ -17,7 +23,7 @@ class EnterpriseRepo:
             else:
                 return None
         except Exception as e:
-            return jsonify({'message': 'error occurred'})
+            logger.error("Error : could not get enterprise" + str(e))
     
     def updateEnterprise(self, data):
         enterprise = Enterprise.query.filter_by(id=data['id']).first()
@@ -27,6 +33,7 @@ class EnterpriseRepo:
         enterprise.address = data['address']
         enterprise.cityId = data['cityId']
         db.session.commit()
+        logger.warn('enterprise updated')
         return enterprise
     
     def deleteEnterprise(self, id):
@@ -35,5 +42,7 @@ class EnterpriseRepo:
             db.session.delete(enterprise)
             db.session.commit()
         else:
-            return jsonify({'message': 'enterprise is not temporary'})
-        return jsonify({'message': 'enterprise deleted'})
+           logger.error('enterprise is not temporary')
+           return False
+        logger.warning('enterprise deleted')
+        return True
