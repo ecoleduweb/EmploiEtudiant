@@ -133,7 +133,7 @@
     let villeFromSelectedEntreprise: [] = [];
     let villesOption: { label: string; value: number }[] = [];
     const getVilles = async () => {
-        const response = await GET<any>("city/allCities");
+        const response = await GET<any>("/city/allCities");
         villesOption = response.map((v: any) => {
             return { label: v.city, value: v.id };
         });
