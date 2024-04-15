@@ -15,7 +15,7 @@
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    offerDebut : yup
+    dateEntryOffice : yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
