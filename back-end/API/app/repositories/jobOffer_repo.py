@@ -5,7 +5,22 @@ from flask import Flask, jsonify
 class JobOfferRepo:
 
     def createJobOffer(self, data, employerId):
-        new_job_offer = JobOffer(title=data['title'], description=data['description'], address=data['address'], dateEntryOffice=data['dateEntryOffice'], deadlineApply=data['deadlineApply'], email=data['email'], hoursPerWeek=data['hoursPerWeek'], compliantEmployer=data['compliantEmployer'], internship=data['internship'], offerStatus=data['offerStatus'], offerLink=data['offerLink'], salary=data['salary'], urgent=data['urgent'], active=data['active'], employerId=employerId, scheduleId=data['scheduleId'])
+        new_job_offer = JobOffer(title=data['title'],
+         description=data['description'],
+         offerDebut=data["offerDebut"],
+         address=data['address'],
+         dateEntryOffice=data['dateEntryOffice'],
+         deadlineApply=data['deadlineApply'],
+         email=data['email'],
+         hoursPerWeek=data['hoursPerWeek'],
+         compliantEmployer=data['compliantEmployer'],
+         internship=data['internship'],
+         offerStatus=data['offerStatus'],
+         offerLink=data['offerLink'],
+         salary=data['salary'],
+         active=data['active'],
+         employerId=employerId,
+         scheduleId=data['scheduleId'])
         db.session.add(new_job_offer)
         db.session.commit()
         return new_job_offer
@@ -35,7 +50,7 @@ class JobOfferRepo:
         db.session.commit()
         return jsonify({'message': 'job offer updated'})
 
-    def offreEmploi(self, id):
+    def offreEmploi(self,id):
         jobOffer = JobOffer.query.filter_by(id=id).first()
         return jobOffer
 

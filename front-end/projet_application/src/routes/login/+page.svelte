@@ -39,7 +39,6 @@
         const response = await POST<Login, any>("/user/login", form);
         if (response.token != "") {
           const token = jwtDecode(response.token);
-          console.log(token);
           localStorage.setItem("token", response.token);
           localStorage.setItem("email", form.email);
           goto("/dashboard");

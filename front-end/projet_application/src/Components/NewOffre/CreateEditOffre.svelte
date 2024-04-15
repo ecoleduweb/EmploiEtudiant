@@ -4,7 +4,7 @@
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
     import { writable, type Writable } from 'svelte/store';
-    import { POST } from "../../ts/server";
+    import { GET, POST } from "../../ts/server";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
     import type { Entreprise } from "../../Models/Entreprise";
@@ -102,15 +102,14 @@
 
     let villeSelected: { label: string; value: number }[] = [];
     let villeFromSelectedEntreprise: [] = [];
-    let villeOption = [
-        { label: "Trois-Pistoles", value: 1 },
-        { label: "Rivière-du-Loup", value: 2 },
-        { label: "Squatec", value: 3 },
-        { label: "Chibougamau", value: 4 },
-        { label: "Amqui", value: 5 },
-        { label: "Trois-Rivière", value: 6 },
-        { label: "Lévis", value: 7 },
-    ];
+    let villesOption: { label: string; value: number }[] = [];
+    const getVilles = async () => {
+        const response = await GET<any>("city/allCities");
+        villesOption = response.map((v: any) => {
+            return { label: v.city, value: v.id };
+        });
+    };
+    getVilles();
     //--------------------------------------------------
 
     let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
@@ -186,7 +185,7 @@
         <label for="title">Adresse*</label>
         <MultiSelect
             id="programme"
-            options={villeOption}
+            options={villesOption}
             placeholder="Choisir ville(s)..."
             bind:value={villeSelected}
             bind:selected={villeFromSelectedEntreprise}

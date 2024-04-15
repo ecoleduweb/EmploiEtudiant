@@ -14,7 +14,6 @@
   import { onMount } from "svelte";
 
   const handleOffreEmploi = () => {
-    console.log("OFFRE")
     goto("/offre");
   };
 
