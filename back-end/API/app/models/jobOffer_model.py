@@ -9,7 +9,7 @@ class JobOffer(db.Model):
     title = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    OfferDebut = db.Column(db.Date, nullable=False)
+    offerDebut = db.Column(db.Date, nullable=False)
     dateEntryOffice = db.Column(db.Date, nullable=False)
     deadlineApply = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(255), nullable=False)
@@ -24,7 +24,7 @@ class JobOffer(db.Model):
     scheduleId = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
-        return f"JobOffer(id={self.id}, title='{self.title}', address='{self.address}', description='{self.description}', dateEntryOffice='{self.dateEntryOffice}', deadlineApply='{self.deadlineApply}', email='{self.email}', hoursPerWeek={self.hoursPerWeek}, compliantEmployer={self.compliantEmployer}, internship={self.internship}, offerStatus={self.offerStatus}, offerLink='{self.offerLink}', salary='{self.salary}', urgent={self.urgent}, active={self.active}, employerId={self.employerId}, scheduleId={self.scheduleId})"
+        return f"JobOffer(id={self.id}, title='{self.title}', address='{self.address}', description='{self.description}', offerDebut='{self.offerDebut}', dateEntryOffice='{self.dateEntryOffice}', deadlineApply='{self.deadlineApply}', email='{self.email}', hoursPerWeek={self.hoursPerWeek}, compliantEmployer={self.compliantEmployer}, internship={self.internship}, offerStatus={self.offerStatus}, offerLink='{self.offerLink}', salary='{self.salary}', active={self.active}, employerId={self.employerId}, scheduleId={self.scheduleId})"
 
     def to_json_string(self):
         return {
@@ -32,7 +32,7 @@ class JobOffer(db.Model):
             'title': self.title,
             'address': self.address,
             'description': self.description,
-            'OfferDebut': self.OfferDebut,
+            'offerDebut': str(self.offerDebut),
             'dateEntryOffice': str(self.dateEntryOffice),  # Convert datetime to string
             'deadlineApply': str(self.deadlineApply),  # Convert date to string
             'email': self.email,

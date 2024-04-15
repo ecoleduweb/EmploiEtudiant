@@ -32,7 +32,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "OfferDebut": "2021-12-12",
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -53,7 +53,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "OfferDebut": "2021-12-12",
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -89,7 +89,7 @@ def app():
 
 def test_offreEmploi(client):
     response = client.get('/jobOffer/offreEmploi?id=1')
-    print(response)
+    print(response.json)
     assert response.status_code == 200
     assert response.json == {
         "id": 1,
@@ -104,8 +104,8 @@ def test_offreEmploi(client):
         "internship": False,
         "offerStatus": 1,
         "offerLink": "www.google.com",
-        "salary": 1000,
-        "OfferDebut": "2021-12-12",
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
         "active": True,
         "employerId": None,
         "scheduleId": None
@@ -133,7 +133,7 @@ def test_userCreateOffresEmploi(client):
                 "offerStatus": 1,
                 "offerLink": "www.google.com",
                 "salary": 1000,
-                "OfferDebut": "2021-12-12",
+                "offerDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
                 "scheduleId": 1,
