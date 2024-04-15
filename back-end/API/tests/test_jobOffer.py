@@ -3,6 +3,7 @@ from app import create_app, db
 from app.models.jobOffer_model import JobOffer
 from app.models.user_model import User
 from app.models.study_program_model import StudyProgram
+from app.models.employmentSchedule_model import EmploymentSchedule
 
 from argon2 import PasswordHasher
 
@@ -74,6 +75,12 @@ def app():
         }
         studyProgram2_data = StudyProgram(**studyProgram2_data)
         db.session.add(studyProgram2_data)
+        employmentSchedule1_data = {
+            "id": 1,
+            "description": "Temps plein"
+        }
+        employmentSchedule1_data = EmploymentSchedule(**employmentSchedule1_data)
+        db.session.add(employmentSchedule1_data)
         db.session.commit()
         yield app
         db.session.remove()
@@ -129,7 +136,7 @@ def test_userCreateOffresEmploi(client):
                 "urgent": False,
                 "active": True,
                 "employerId": 1,
-                "scheduleId": 1
+                "employmentSchedule": "Temps plein",
             },
             "enterprise": 
             {
