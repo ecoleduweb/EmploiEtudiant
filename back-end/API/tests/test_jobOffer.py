@@ -136,7 +136,7 @@ def test_userCreateOffresEmploi(client):
                 "urgent": False,
                 "active": True,
                 "employerId": 1,
-                "employmentSchedule": "Temps plein",
+                "scheduleId": 1,
             },
             "enterprise": 
             {
