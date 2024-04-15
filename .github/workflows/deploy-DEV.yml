@@ -36,6 +36,7 @@ jobs:
             echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
             echo CORS=${{ secrets.DEV_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            flask db upgrade
             echo 'Installing packages'
             sudo systemctl enable back-end
             sudo systemctl start back-end
