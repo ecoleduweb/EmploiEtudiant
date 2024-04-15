@@ -1,8 +1,6 @@
 name: Test BackEnd
 
-on: 
-  pull_request:
-    branches: [ dev ]
+on: pull_request
 
 jobs:
   unit-testing:
@@ -28,7 +26,7 @@ jobs:
           touch .env
           echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL_2 }} >> .env
           echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL_2 }} >> .env
-          echo CORS=${{ http://localhost }} >> .env
+          echo CORS=http://localhost >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           cat .env
 
