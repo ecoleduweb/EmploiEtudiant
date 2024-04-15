@@ -10,6 +10,10 @@ class JobOfferRepo:
         db.session.commit()
         return new_job_offer
     
+    def offresEmploiEmployeur(self, employerEmail):
+        jobOffers = JobOffer.query.filter_by(email=employerEmail).all()
+        return jobOffers
+    
     def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['id']).first()
         jobOffer.title = data['title']
