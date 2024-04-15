@@ -23,17 +23,6 @@ def upgrade():
     sa.Column('description', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('offer_program',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('programId', sa.Integer(), nullable=False),
-    sa.Column('offerId', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('study_program',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     with op.batch_alter_table('city', schema=None) as batch_op:
         batch_op.drop_constraint('FK_city_idRegion', type_='foreignkey')
 
