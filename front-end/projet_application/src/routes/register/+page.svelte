@@ -73,19 +73,15 @@
         validatePassword: "",
       };
       try {
-        const response = await POST<any, any>("/user/createUser", {
-          //id: 1,
+        const response = await POST<any, any>("/user/register", {
           email: register.user.email,
           password: register.user.password,
           firstName: register.user.firstName,
           lastName: register.user.lastName,
           role: "user",
         });
-        const data = await response.json();
-        console.log(data);
         if (response.token != "") {
           const token = jwtDecode(response.token);
-          console.log(token);
           localStorage.setItem("token", response.token);
           goto("/dashboard");
         }
@@ -100,6 +96,7 @@
             role: "",
           },
           validatePassword: "",
+          token: "Erreur lors de la création du compte",
         };
       }
     } catch (err) {
@@ -183,6 +180,11 @@
         </div>
       </div>
     </div>
+    <p class="errors-input">
+      {#if errors.token}
+        {errors.token}
+      {/if}
+    </p>
     <div class="form-inputs form-submit">
       <div class="form-buttons">
         <Link text="Retour" href="/" />

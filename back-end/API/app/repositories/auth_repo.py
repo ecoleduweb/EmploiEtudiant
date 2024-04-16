@@ -2,17 +2,28 @@ from app import db
 from app.models.user_model import User
 from flask import Flask, jsonify, request
 from argon2 import PasswordHasher
+from jwt import encode
+import datetime
+import os
+from logging import getLogger
+logger = getLogger(__name__)
 
 hasher = PasswordHasher()
 
 class AuthRepo:
 
-    def createUser(self, data):
+    def register(self, data):
         hashed_password = hasher.hash(data['password'])
         new_user = User(firstName=data['firstName'], lastName=data['lastName'], email=data['email'], password=hashed_password, active=True, isModerator = data["role"] != "user")
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({'message': 'new user created'})
+        try:
+            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': data["role"] != "user"}, os.environ.get('SECRET_KEY'))
+            logger.warn("Register successful on user: " + data['email'])      
+            return jsonify({'token' : token})
+        except Exception as e:
+            logger.warn("Register failed on email: " + data['email'])
+            return jsonify({'message': "could not verify"}), 401
 
     def updatePassword(self, data):
         user = User.query.filter_by(email=data["email"]).first()
