@@ -11,7 +11,6 @@
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
 
   const handleOffreEmploi = () => {
-    console.log("OFFRE");
     goto("/offre");
   };
 

@@ -135,22 +135,14 @@
     "/getUser": {
       "get": {
         "description": "Get a user's information based on email address",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "User information",
-            "in": "body",
-            "description": "JSON data containing user information",
+            "name": "email",
+            "in": "query",
+            "description": "User's email address",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "string"
           }
         ],
         "responses": {
@@ -166,22 +158,14 @@
     "/city/oneCity": {
       "get": {
         "description": "Get a city's information based on city id",
-        "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "City information",
-            "in": "body",
-            "description": "JSON data containing city information",
+            "name": "id",
+            "in": "query",
+            "description": "City ID",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "integer"
           }
         ],
         "responses": {
@@ -239,7 +223,7 @@
                     "urgent": {"type": "boolean"},
                     "active": {"type": "boolean"},
                     "employerId": {"type": "integer"},
-                    "scheduleId": {"type": "integer"}
+                    "employmentSchedule": {"type": "string"}
                   }
                 },
                 "enterprise": {
@@ -267,6 +251,317 @@
           },
           "400": {
             "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/offresEmploi": {
+      "get": {
+        "description": "Get a list of all job offers",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Job offers successfully fetched"
+          }
+        }
+      }
+    },
+    "/offreEmploi/{id}": {
+      "get": {
+        "description": "Get a job offer based on id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the job offer",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job offer successfully fetched"
+          },
+          "400": {
+            "description": "Missing job offer id"
+          },
+          "404": {
+            "description": "Job offer not found"
+          }
+        }
+      }
+    },
+    "/createEmployer": {
+      "post": {
+        "description": "Create an employer",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Employer information",
+            "in": "body",
+            "description": "JSON data containing employer information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string"},
+                "password": {"type": "string"},
+                "isAdmin": {"type": "boolean"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employer created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/linkEmployerEnterprise": {
+      "put": {
+        "description": "Link an employer to an enterprise",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Link information",
+            "in": "body",
+            "description": "JSON data containing link information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "employerId": {"type": "integer"},
+                "enterpriseId": {"type": "integer"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employer linked to enterprise successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/createEnterprise": {
+      "post": {
+        "description": "Create an enterprise",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Enterprise information",
+            "in": "body",
+            "description": "JSON data containing enterprise information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string"},
+                "phone": {"type": "string"},
+                "address": {"type": "string"},
+                "cityId": {"type": "integer"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/linkOfferProgram": {
+      "put": {
+        "description": "Link a job offer to a study program",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Link information",
+            "in": "body",
+            "description": "JSON data containing link information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobOfferId": {"type": "integer"},
+                "studyProgram": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job offer linked to study program successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/studyPrograms": {
+      "get": {
+        "description": "Get a list of all study programs",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Study programs successfully fetched"
+          }
+        }
+      }
+    },
+    "/studyProgram": {
+      "get": {
+        "description": "Get a study program based on its ID",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "ID of the study program",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study program successfully fetched"
+          },
+          "400": {
+            "description": "Missing study program ID"
+          },
+          "404": {
+            "description": "Study program not found"
+          }
+        }
+      }
+    },
+    "/studyProgramId": {
+      "get": {
+        "description": "Get the ID of a study program based on its name",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the study program",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study program ID successfully fetched"
+          },
+          "400": {
+            "description": "Missing study program name"
+          },
+          "404": {
+            "description": "Study program not found"
+          }
+        }
+      }
+    },
+    "/addStudyProgram": {
+      "post": {
+        "description": "Add a study program",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Study program information",
+            "in": "body",
+            "description": "JSON data containing study program information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study program added successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          }
+        }
+      }
+    },
+    "/employmentsSchedule": {
+      "get": {
+        "description": "Get a list of all employments schedule",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Employments schedule successfully fetched"
+          }
+        }
+      }
+    },
+    "/employmentSchedule": {
+      "get": {
+        "description": "Get a employment schedule based on id",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "ID of the employment schedule",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule id"
+          },
+          "404": {
+            "description": "Employment schedule not found"
+          }
+        }
+      }
+    },
+    "/employmentScheduleId": {
+      "get": {
+        "description": "Get an employment schedule's id based on name",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the employment schedule",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employment schedule id successfully fetched"
+          },
+          "400": {
+            "description": "Missing employment schedule name"
+          },
+          "404": {
+            "description": "Employment schedule not found"
           }
         }
       }

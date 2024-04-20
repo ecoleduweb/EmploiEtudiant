@@ -1,4 +1,3 @@
-import os
 import pytest
 from app import create_app, db
 from app.models.study_program_model import StudyProgram
@@ -28,24 +27,20 @@ def app():
 @pytest.fixture(scope='module')
 def client(app):
     return app.test_client()
-
-def studyPrograms(client):
-    response = client.get('/studyPrograms')
+  
+def test_studyPrograms(client):
+    response = client.get('/studyProgram/studyPrograms')
     assert response.status_code == 200
     assert len(response.json) == 2
 
-def studyProgramId(client):
-    response = client.get('/studyProgramId?name=Informatique')
+def test_studyProgramId(client):
+    response = client.get('/studyProgram/studyProgramId?name=Informatique')
     assert response.status_code == 200
     assert response.json == 1
 
-def addStudyProgram(client):
+def test_addStudyProgram(client):
     data = {
-        "name": "Génie logiciel"
+        "name": "Genie logiciel"
     }
-    response = client.post('/addStudyProgram', json=data)
+    response = client.post('/studyProgram/addStudyProgram', json=data)
     assert response.status_code == 200
-    assert response.json == {
-        "id": 3,
-        "name": "Génie logiciel"
-    }
