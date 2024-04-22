@@ -14,7 +14,7 @@
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice: yup
+    dateEntryOffice : yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
@@ -186,14 +186,19 @@
       } else {
         errorsProgramme = "";
       }
+      if (acceptCondition === false) {
+        errorsAcceptCondition = "Vous devez accepter les conditions";
+      } else {
+        errorsAcceptCondition = "";
+      }
     }
   };
 
-  let maxDateString;
+  let maxDateString : any;
   $: {
-    let dateDisplayJobOffer = new Date(offre.dateDisplayJobOffer);
+    let offerDebut = new Date(offre.offerDebut);
     let maxDate = new Date(
-      dateDisplayJobOffer.setDate(dateDisplayJobOffer.getDate() + 15 * 7)
+      offerDebut.setDate(offerDebut.getDate() + 15 * 7)
     );
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
@@ -247,7 +252,7 @@
       <label for="title">Ville*</label>
       <MultiSelect
         id="programme"
-        options={villeOption}
+        options={villesOption}
         placeholder="Choisir ville(s)..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
@@ -297,12 +302,12 @@
     </p>
     <div class="form-group-horizontal-date">
       <div class="form-group-vertical">
-        <label for="dateDisplayJobOffer">Date de publication de l'offre</label>
+        <label for="offerDebut">Date de publication de l'offre</label>
         <input
           type="date"
           bind:value={offre.offerDebut}
           class="form-control"
-          id="dateDisplayJobOffer"
+          id="offerDebut"
           min={minDateString}
         />
       </div>
