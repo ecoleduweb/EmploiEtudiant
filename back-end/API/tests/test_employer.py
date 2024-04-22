@@ -31,6 +31,8 @@ def app():
         db.session.add(employers)
         data = {
             "id": 1,
+            "firstName": "test",
+            "lastName": "test",
             "email": "test@test.com",
             "password": hashed_password,
             "isModerator": True,

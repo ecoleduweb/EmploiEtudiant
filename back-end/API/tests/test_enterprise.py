@@ -36,6 +36,8 @@ def app():
         hashed_password = hasher.hash("test")
         data = {
             "id": 1,
+            "firstName": "test",
+            "lastName": "test",
             "email": "test@test.com",
             "password": hashed_password,
             "isModerator": True,
