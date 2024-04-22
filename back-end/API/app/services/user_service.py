@@ -29,8 +29,8 @@ class UserService:
             logger.warn("Login attempt failed on user: " + email)
             return jsonify({'message': "could not verify"}), 401
 
-    def createUser(self, data):
-        return auth_repo.createUser(data)
+    def register(self, data):
+        return auth_repo.register(data)
 
     def getAllUsers(self):
         return auth_repo.getAllUsers()

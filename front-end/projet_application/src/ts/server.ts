@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { env } from "$env/dynamic/public";
 // Function to fetch data from the API
 export async function GET<T>(url: string): Promise<T> {
   try {
@@ -9,12 +9,15 @@ export async function GET<T>(url: string): Promise<T> {
       }
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching:', error);
+    console.error("Error fetching:", error);
     throw error;
   }
 }
@@ -23,20 +26,24 @@ export async function GET<T>(url: string): Promise<T> {
 export async function POST<T, T1>(url: string, body: T): Promise<T1> {
   try {
     var token = localStorage.getItem("token");
+    if (!token) token = "";
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${token}`
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
       },
       body: JSON.stringify(body),
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error posting:', error);
+    console.error("Error posting:", error);
     throw error;
   }
 }
@@ -45,13 +52,16 @@ export async function POST<T, T1>(url: string, body: T): Promise<T1> {
 export async function DELETE(url: string): Promise<void> {
   try {
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: 'DELETE'
+      method: "DELETE",
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
-    console.error('Error posting:', error);
+    console.error("Error posting:", error);
     throw error;
   }
 }
@@ -60,17 +70,20 @@ export async function DELETE(url: string): Promise<void> {
 export async function PATCH<T>(url: string, body: T): Promise<void> {
   try {
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
-    console.error('Error posting:', error);
+    console.error("Error posting:", error);
     throw error;
   }
 }
