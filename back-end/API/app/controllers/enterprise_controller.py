@@ -12,7 +12,7 @@ enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, h
 @token_admin_required
 def createEnterprise(current_user):
     data = request.get_json()
-    entreprise = enterprise_service.createEnterprise(data, False)
+    entreprise = enterprise_service.createEnterprise(data["enterprise"], False)
     return jsonify({'message': 'Enterprise created successfully'})
 
 @enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])

@@ -12,23 +12,12 @@
     export let handleEntrepriseClick: () => void;
 
     const schema = yup.object().shape({
-    title: yup.string().required("Le titre du poste est requis"),
-    address: yup.string().required("L'adresse du lieu de travail est requise"),
-    description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice: yup.string().required("La date d'entrée en fonction est requise").test('is-date', "Veuillez choisir une date valide !", value => {
-    return !isNaN(Date.parse(value));
-    }),
-    deadlineApply: yup.string().required("La date limite de l'offre est requise").test('is-date', "Veuillez choisir une date valide !", value => {
-    return !isNaN(Date.parse(value));
-    }),
+    name: yup.string().required("Le nome de l'entreprise est requis."),
+    address: yup.string().required("L'adresse du lieu de travail est requise."),
     email : yup.string().matches(/\.[a-z]+$/, "Le courriel doit être de format valide : courriel@domaine.ca").email("Le courriel n'est pas valide").required("Le courriel est requis"),
-    hoursPerWeek: yup.string().required("Le nombre d'heure par semaine est requis").test('is-number', "Veuillez entrer un nombre d'heure valide !", value => {
-      return !isNaN(Number(value)) && Number(value) > 0;
-    }),
-    scheduleId: yup.number().required("Le type d'emploi est requis").min(0, "Le type d'emploi est requis"),
-    idProgramme: yup.array().min(1, "Le programme visé est requis"),
-    offerLink: yup.string().matches(/^(http|https):\/\/[^ "]+$/, "Le lien doit être de format valide : https://www.exemple.ca").url("Le lien doit être de format valide : https://www.exemple.ca").required("Le lien de l'offre est requis"),
-  });
+    phone: yup.string().matches(/^[0-9]{10}$/, "Le numéro de téléphone doit être de 10 chiffres").required("Le numéro de téléphone est requis"),
+    cityId: yup.number().required("La ville est requise"),
+    });
 
    let enterprise: Entreprise = {
         id: 0,
@@ -78,11 +67,12 @@
                 enterprise: enterprise,
             };
             const response = await POST<any, any>("/enterprise/createEnterprise", requestData);
-            goto('/entreprises');
+            handleEntrepriseClick();
         } catch (err) {
             console.log(err);
             if (err instanceof yup.ValidationError) {
                 errors = extractErrors(err);
+                console.log(errors);
             }
         }
     }
@@ -93,45 +83,45 @@
         <h1 class="title">Créer une nouvelle entreprise</h1>
         <div class="form-group-vertical">
             <label for="title">Nom*</label>
-            <input type="text" bind:value={enterprise.name} class="form-control" id="titre" />
+            <input type="text" bind:value={enterprise.name} class="form-control" id="name" />
             <p class="errors-input">
                 {#if errors.name}{errors.name}{/if}
             </p>
         </div>
         <div class="form-group-vertical">
             <label for="title">Email*</label>
-            <input type="text" bind:value={enterprise.email} class="form-control" id="titre" />
+            <input type="text" bind:value={enterprise.email} class="form-control" id="email" />
             <p class="errors-input">
                 {#if errors.email}{errors.email}{/if}
             </p>
         </div>
         <div class="form-group-vertical">
             <label for="title">Téléphone*</label>
-            <input type="text" bind:value={enterprise.phone} class="form-control" id="titre" />
+            <input type="text" bind:value={enterprise.phone} class="form-control" id="phone" />
             <p class="errors-input">
                 {#if errors.phone}{errors.phone}{/if}
             </p>
         </div>
         <div class="form-group-vertical">
             <label for="title">Adresse*</label>
-            <input type="text" bind:value={enterprise.address} class="form-control" id="titre" />
+            <input type="text" bind:value={enterprise.address} class="form-control" id="address" />
             <p class="errors-input">
                 {#if errors.address}{errors.address}{/if}
             </p>
         </div>
         <div class="form-group-vertical">
-        <label for="title">Ville*</label>
-        <MultiSelect
-            id="programme"
-            options={villeOption}
-            placeholder="Choisir ville(s)..."
-            bind:value={villeSelected}
-            bind:selected={villeFromSelectedEntreprise}
-            closeDropdownOnSelect={true}
-        ></MultiSelect>
-        <p class="errors-input">
-            {#if errors.cityId}{errors.cityId}{/if}
-        </p>
+            <label for="title">Ville*</label>
+            <MultiSelect
+                id="ville"
+                options={villeOption}
+                placeholder="Choisir ville(s)..."
+                bind:value={villeSelected}
+                bind:selected={villeFromSelectedEntreprise}
+                closeDropdownOnSelect={true}
+            ></MultiSelect>
+            <p class="errors-input">
+                {#if errors.cityId}{errors.cityId}{/if}
+            </p>
         </div>
         <Button submit={true} text="Créer" on:click={() => handleSubmit()} />
     </form>
