@@ -3,7 +3,7 @@
     import type { jobOffer } from "../../Models/Offre";
     export let offre: jobOffer;
     export let handleEmploiClick: () => void;
-    export let currentPage = window.location.pathname;
+    let currentPage = window.location.pathname;
 </script>
 
 <Modal handleModalClick={handleEmploiClick}>
@@ -12,7 +12,7 @@
             <h3 class="title">{offre.title}</h3>
             <h4 class="subtitle">{offre.scheduleId}</h4>
         </div>
-        {#if currentPage === "/offres"}
+        {#if currentPage === "/emplois"}
             <div class="info">
                 <h5 class="infoTitle">Type de poste</h5>
                 <p class="text">{offre.title}</p>

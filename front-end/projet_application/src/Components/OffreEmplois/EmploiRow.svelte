@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { jobOffer } from "../../Models/Offre";
     export let offre: jobOffer;
-
     export let handleModalClick: (id: number) => void;
 </script>
 

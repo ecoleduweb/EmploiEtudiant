@@ -87,7 +87,7 @@ def offreEmploi():
 
 @job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
 @token_required
-def offresEmploiEmployeur():
+def offresEmploiEmployeur(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
@@ -96,7 +96,7 @@ def offresEmploiEmployeur():
 
 @job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
 @token_required
-def updateJobOffer():
+def updateJobOffer(current_user):
     data = request.get_json()
     jobOffer = jobOffer_service.updateJobOffer(data)
     if jobOffer:

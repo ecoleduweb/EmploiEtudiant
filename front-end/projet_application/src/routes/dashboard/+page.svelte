@@ -58,6 +58,7 @@
     let dateNow = new Date();
     return dateNow > dateFin;
   });
+  console.log(notApprovedOffer.length, offerToCome.length, offerDisplayed.length, expiredOffer.length);
 </script>
 
 <Header />
@@ -99,8 +100,7 @@
   {#if $modal}
     {#each $jobOffers as offre}
       {#if offre.id === $selectedEmploiId}
-        <!-- <OffreEmploi {emploi} handleEmploiClick={closeModal} /> -->
-        <CreateEditOffre {offre} handleEmploiClick={closeModal} />
+        <CreateEditOffre offre={offre} handleEmploiClick={closeModal} />
       {/if}
     {/each}
   {/if}
