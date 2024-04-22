@@ -10,11 +10,12 @@ employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https
 @token_admin_required
 def createEmployer():
     data = request.get_json()
-    return employer_service.createEmployer(data)
+    employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
+    return jsonify(employer.to_json_string())
     
 @employer_blueprint.route('/linkEmployerEnterprise', methods=['PUT'])
 @token_required
-def linkEmployerEnterprise():
+def linkEmployerEnterprise(current_user):
     data = request.get_json()
     return employer_service.linkEmployerEnterprise(data)
 
@@ -23,3 +24,26 @@ def linkEmployerEnterprise():
 def getEmployerByEnterpriseId():
     id = request.args.get('id')
     return employer_service.getEmployerByEnterpriseId(id)
+
+@employer_blueprint.route('/updateEmployer', methods=['PUT'])
+@token_admin_required
+def updateEmployer(current_user):
+    id = request.args.get('id')
+    employer = employer_service.getEmployer(id)
+    if employer:
+        data = request.get_json()
+        employer_service.updateEmployer(data, id)
+        return jsonify({'message': 'employer updated'})
+    else:
+        return jsonify({'message': 'employer not found'})
+    
+@employer_blueprint.route('/deleteEmployer', methods=['DELETE'])
+@token_admin_required
+def deleteEmployer(current_user):
+    id = request.args.get('id')
+    employer = employer_service.getEmployer(id)
+    if employer:
+        employer_service.deleteEmployer(id)
+        return jsonify({'message': 'employer deleted'})
+    else:
+        return jsonify({'message': 'employer not found'})

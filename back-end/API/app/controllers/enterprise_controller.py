@@ -8,15 +8,47 @@ employer_service = EmployerService()
 
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
+@enterprise_blueprint.route('/getEnterprises', methods=['GET'])
+@token_admin_required
+def getEnterprises(current_user):
+    enterprises = enterprise_service.getEnterprises()
+    return jsonify([enterprise.to_json_string() for enterprise in enterprises])
+
 @enterprise_blueprint.route('/createEnterprise', methods=['POST'])
 @token_admin_required
 def createEnterprise(current_user):
     data = request.get_json()
-    entreprise = enterprise_service.createEnterprise(data["enterprise"], False)
-    return jsonify({'message': 'Enterprise created successfully'})
+    enterprise = enterprise_service.createEnterprise(data, False)
+    return jsonify(enterprise.to_json_string())
 
+@enterprise_blueprint.route('/updateEntreprise', methods=['PUT'])
+@token_admin_required
+def updateEntreprise(current_user):
+    id = request.args.get('id')
+    enterprise = enterprise_service.getEnterprise(id)
+    if enterprise:
+        data = request.get_json()
+        enterprise_service.updateEnterprise(data)
+        print('test')
+        return jsonify({'message': 'enterprise updated'})
+    else:
+        return jsonify({'message': 'enterprise not found'})
+
+@enterprise_blueprint.route('/deleteEnterprise', methods=['DELETE'])
+@token_admin_required
+def deleteEnterprise(current_user):
+    id = request.args.get('id')
+    enterprise = enterprise_service.getEnterprise(id)
+    if enterprise:
+        if enterprise_service.deleteEnterprise(id):
+            return jsonify({'message': 'enterprise deleted'})
+        else:
+            return jsonify({'message': 'enterprise is not temporary'})
+    else:
+        return jsonify({'message': 'enterprise not found'})
+    
 @enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])
 @token_admin_required
-def getEntrepriseId(current_user):
+def getEntrepriseId():
     name = request.args.get('name')
     return enterprise_service.getEntrepriseId(name)
