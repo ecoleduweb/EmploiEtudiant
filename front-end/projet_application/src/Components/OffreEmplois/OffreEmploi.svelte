@@ -1,7 +1,7 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte";
-    import type { Emploi } from "../../Models/Emploi";
-    export let emploi: Emploi;
+    import type { jobOffer } from "../../Models/Offre";
+    export let offre: jobOffer;
     export let handleEmploiClick: () => void;
     export let currentPage = window.location.pathname;
 </script>
@@ -9,39 +9,39 @@
 <Modal handleModalClick={handleEmploiClick}>
     <div class="container">
         <div class="titleContainer">
-            <h3 class="title">{emploi.title}</h3>
-            <h4 class="subtitle">{emploi.scheduleId}</h4>
+            <h3 class="title">{offre.title}</h3>
+            <h4 class="subtitle">{offre.scheduleId}</h4>
         </div>
-        {#if currentPage === "/emplois"}
+        {#if currentPage === "/offres"}
             <div class="info">
                 <h5 class="infoTitle">Type de poste</h5>
-                <p class="text">{emploi.title}</p>
+                <p class="text">{offre.title}</p>
                 <h5 class="infoTitle">Adresse du lieu de travail</h5>
-                <p class="text">{emploi.address}</p>
+                <p class="text">{offre.address}</p>
                 <h5 class="infoTitle">Description du poste</h5>
-                <p class="text">{emploi.description}</p>
+                <p class="text">{offre.description}</p>
                 <h5 class="infoTitle">Date de début</h5>
-                <p class="text">{emploi.dateEntryOffice}</p>
+                <p class="text">{offre.offerDebut}</p>
                 <h5 class="infoTitle">Date limite pour postuler</h5>
-                <p class="text">{emploi.deadlineApply}</p>
+                <p class="text">{offre.deadlineApply}</p>
                 <h5 class="infoTitle">Où envoyer votre candidature</h5>
-                <p class="text">{emploi.email}</p>
+                <p class="text">{offre.email}</p>
             </div>
         {/if}
         {#if currentPage === "/dashboard"}
             <div class="info">
                 <h5 class="infoTitle">Type de poste</h5>
-                <input class="text" type="text" value={emploi.title} />
+                <input class="text" type="text" value={offre.title} />
                 <h5 class="infoTitle">Adresse du lieu de travail</h5>
-                <input class="text" type="text" value={emploi.address} />
+                <input class="text" type="text" value={offre.address} />
                 <h5 class="infoTitle">Description du poste</h5>
-                <input class="text" type="text" value={emploi.description} />
+                <input class="text" type="text" value={offre.description} />
                 <h5 class="infoTitle">Date de début</h5>
-                <input class="text" type="date" value={emploi.dateEntryOffice} />
+                <input class="text" type="date" value={offre.offerDebut} />
                 <h5 class="infoTitle">Date limite pour postuler</h5>
-                <input class="text" type="date" value={emploi.deadlineApply} />
+                <input class="text" type="date" value={offre.deadlineApply} />
                 <h5 class="infoTitle">Où envoyer votre candidature</h5>
-                <input class="text" type="email" value={emploi.email} />
+                <input class="text" type="email" value={offre.email} />
             </div>
         {/if}
     </div>

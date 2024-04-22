@@ -1,17 +1,17 @@
 <script lang="ts">
-    import type { Emploi } from "../../Models/Emploi";
-    export let emploi: Emploi;
+    import type { jobOffer } from "../../Models/Offre";
+    export let offre: jobOffer;
 
     export let handleModalClick: (id: number) => void;
 </script>
 
-<button class="offreEmploi" on:click={() => handleModalClick(emploi.id)}>
+<button class="offreEmploi" on:click={() => handleModalClick(offre.id)}>
     <div class="emploi">
         <div class="info">
-            <p class="text">{emploi.title}</p>
-            <p class="text">{emploi.employerId}</p>
-            <p class="text">{emploi.deadlineApply}</p>
-            <p class="description">{emploi.description}</p>
+            <p class="text">{offre.title}</p>
+            <p class="text">{offre.employerId}</p>
+            <p class="text">{offre.deadlineApply}</p>
+            <p class="description">{offre.description}</p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>
