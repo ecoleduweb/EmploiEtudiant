@@ -40,6 +40,24 @@
     }
   };
   onMount(getJobOffersEmployeur);
+
+  const notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
+  const offerToCome = $jobOffers.filter((x) => {
+    let dateDebut = new Date(x.offerDebut);
+    let dateNow = new Date();
+    return dateNow < dateDebut;
+  });
+  const offerDisplayed = $jobOffers.filter((x) => {
+    let dateDebut = new Date(x.offerDebut);
+    let dateFin = new Date(x.deadlineApply);
+    let dateNow = new Date();
+    return x.isApproved && dateNow >= dateDebut && dateNow <= dateFin;
+  });
+  const expiredOffer = $jobOffers.filter((x) => {
+    let dateFin = new Date(x.deadlineApply);
+    let dateNow = new Date();
+    return dateNow > dateFin;
+  });
 </script>
 
 <Header />
@@ -53,9 +71,30 @@
   </section>
   <section class="offres">
     <p class="textOffre">Mes offres d'emplois</p>
-    {#each $jobOffers as offre}
+    {#if notApprovedOffer.length > 0}
+      <h2 class="textSections">En attente d'approbation</h2>
+      {#each notApprovedOffer as offre}
         <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
-    {/each}
+      {/each}
+    {/if}
+    {#if offerToCome.length > 0}
+      <h2 class="textSections">Offres bientôt affichées</h2>
+      {#each offerToCome as offre}
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+      {/each}
+    {/if}
+    {#if offerDisplayed.length > 0}
+      <h2 class="textSections">Offres affichées</h2>
+      {#each offerDisplayed as offre}
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+      {/each}
+    {/if}
+    {#if expiredOffer.length > 0}
+      <h2 class="textSections">Offres expirées</h2>
+      {#each expiredOffer as offre}
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+      {/each}
+    {/if}
   </section>
   {#if $modal}
     {#each $jobOffers as offre}
@@ -96,8 +135,16 @@
     margin-left: 10%;
   }
   .textOffre {
-    font-size: 2em;
+    font-size: 2.5em;
     margin: 0;
+    margin-bottom: 1%;
+    color: white;
+  }
+  .textSections {
+    font-size: 1.8em;
+    margin: 0;
+    margin-top: 15px;
+    margin-bottom: 5;
     color: white;
   }
 </style>
