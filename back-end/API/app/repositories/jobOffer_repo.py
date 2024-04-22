@@ -35,6 +35,7 @@ class JobOfferRepo:
         jobOffer.description = data['description']
         jobOffer.address = data['address']
         jobOffer.offerDebut = data['offerDebut']
+        jobOffer.dateEntryOffice = data['dateEntryOffice']
         jobOffer.deadlineApply = data['deadlineApply']
         jobOffer.email = data['email']
         jobOffer.hoursPerWeek = data['hoursPerWeek']
@@ -47,7 +48,7 @@ class JobOfferRepo:
         jobOffer.employerId = data['employerId']
         jobOffer.scheduleId = data['scheduleId']
         db.session.commit()
-        return jsonify({'message': 'job offer updated'})
+        return jobOffer
 
     def offreEmploi(self,id):
         jobOffer = JobOffer.query.filter_by(id=id).first()

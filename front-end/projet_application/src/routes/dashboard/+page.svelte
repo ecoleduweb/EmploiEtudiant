@@ -35,6 +35,7 @@
     try {
       const response = await GET<any>("jobOffer/offresEmploiEmployeur");
       jobOffers.set(response);
+      console.log($jobOffers);
     } catch (error) {
       console.error("Error fetching job offers:", error);
     }
@@ -42,7 +43,7 @@
   onMount(getJobOffersEmployeur);
 
   const notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
-  const offerToCome = $jobOffers.filter((x) => {
+  $: offerToCome = $jobOffers.filter((x) => {
     let dateDebut = new Date(x.offerDebut);
     let dateNow = new Date();
     return dateNow < dateDebut;
@@ -58,7 +59,6 @@
     let dateNow = new Date();
     return dateNow > dateFin;
   });
-  console.log(notApprovedOffer.length, offerToCome.length, offerDisplayed.length, expiredOffer.length);
 </script>
 
 <Header />
@@ -100,7 +100,7 @@
   {#if $modal}
     {#each $jobOffers as offre}
       {#if offre.id === $selectedEmploiId}
-        <CreateEditOffre offre={offre} handleEmploiClick={closeModal} />
+        <CreateEditOffre offre={offre} handleEmploiClick={closeModal} isEdit={true} />
       {/if}
     {/each}
   {/if}

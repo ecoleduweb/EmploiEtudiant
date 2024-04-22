@@ -1,5 +1,6 @@
 <script lang="ts">
     import "../../styles/global.css";
+    import Modal from "../Common/Modal.svelte";
     import Button from "../Inputs/Button.svelte";
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
@@ -8,6 +9,8 @@
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
     import { goto } from '$app/navigation';
+    export let handleEmploiClick: () => void;
+    export let isEdit: boolean;
 
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
@@ -53,12 +56,13 @@
       .oneOf([true], "Vous devez accepter les conditions"),
   });
 
-  let offre: jobOffer = {
+  export let offre: jobOffer = {
     id: 0,
     title: "",
     address: "",
     description: "",
     offerDebut: new Date().toISOString().split("T")[0],
+    dateEntryOffice: new Date().toISOString().split("T")[0],
     deadlineApply: new Date().toISOString().split("T")[0],
     email: "",
     hoursPerWeek: "",
@@ -79,6 +83,7 @@
     address: "",
     description: "",
     offerDebut: "",
+    dateEntryOffice: "",
     deadlineApply: "",
     email: "",
     hoursPerWeek: "",
@@ -133,6 +138,7 @@
                 address: "",
                 description: "",
                 offerDebut: "",
+                dateEntryOffice: "",
                 deadlineApply: "",
                 email: "",
                 hoursPerWeek: "",
@@ -178,7 +184,7 @@
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
 </script>
 
-<div class="container">
+<Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <h1>Créer une nouvelle offre d'emploi</h1>
     <div class="form-group-vertical">
@@ -240,14 +246,14 @@
         >
         <input
           type="date"
-          bind:value={offre.offerDebut}
+          bind:value={offre.dateEntryOffice}
           class="form-control"
           id="dateEntryOffice"
           min={minDateString}
         />
       </div>
       <p class="errors-input">
-        {#if errors.offerDebut}{errors.offerDebut}{/if}
+        {#if errors.dateEntryOffice}{errors.dateEntryOffice}{/if}
       </p>
       <div class="form-group-vertical">
         <label for="deadlineApply">Date limite pour postuler*</label>
@@ -378,15 +384,9 @@
       onClick={() => ""}
     />
   </form>
-</div>
+</Modal>
 
 <style>
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f5f5f5;
-  }
   label {
     display: block;
     margin-bottom: 0.26vw;
@@ -395,12 +395,13 @@
   .form-offre {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     border: 0.3vw solid #ccc;
     background-color: #ffff;
     box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1);
     border-radius: 0.781vw;
-    width: 70%;
     padding: 0 0.78vw 2vh 0;
   }
 
@@ -408,7 +409,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 50%;
+    width: 80%;
     margin: 1vh 0;
   }
 
@@ -416,14 +417,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 50%;
+    width: 80%;
     margin: 0.8vw;
   }
   .form-group-horizontal-date {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 52.5%;
+    width: 83.25%;
   }
 
   .errors-input {
@@ -433,7 +434,7 @@
   .accept-Condition {
     display: flex;
     flex-direction: row;
-    width: 51%;
+    width: 80%;
     margin: 0.8vw;
   }
   .form-control-acceptCondition {

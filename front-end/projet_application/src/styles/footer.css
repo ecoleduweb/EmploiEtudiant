@@ -1,20 +1,19 @@
 footer {
-    background-color: #1E2634;
-    text-align: center;
+    position: absolute;
     bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Stretch items vertically */
+    justify-content: flex-start; /* Align items at the start of the container */
+    margin: 0;
     width: 100%;
-    line-height: 60px;
-    color: #6c757d;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 0px;
-    margin: 0px;
-}
+  }
 
-.svg-footer {
-    width: "100%";
-    height: "100%";
-    padding: 0px;
-    margin: 0px;
-}
+  .svg-footer {
+    width: 100%;
+  }
+  
+  * {
+    padding: 0;
+    margin: 0;
+  }

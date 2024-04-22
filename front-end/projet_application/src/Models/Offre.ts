@@ -3,7 +3,8 @@ export interface jobOffer {
     title: string; // titre de l'offre
     address: string; // lieu de travail
     description: string; // description de l'offre
-    offerDebut: string // date d'entrée en fonction
+    offerDebut: string // date d'affichage de l'offre
+    dateEntryOffice: string; // date d'entrée au bureau
     deadlineApply: string // date limite pour postuler
     email: string; // courriel de la personne à contacter
     hoursPerWeek: string; // nombre d'heures par semaine  

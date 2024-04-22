@@ -18,12 +18,6 @@
             <img class="image" src="cancel.svg" alt="supprimer" />
         </button>
     </div>
-    <button class="button">
-      <img class="image" src="edit.svg" alt="modifier" />
-    </button>
-    <button class="button">
-      <img class="image" src="cancel.svg" alt="supprimer" />
-    </button>
 </div>
 
 <style scoped>
