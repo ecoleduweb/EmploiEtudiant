@@ -93,4 +93,9 @@
   .divFlex {
     display: flex;
   }
+  @media screen and (max-width: 900px) and (min-width: 300px) {
+    .divFlex {
+      display: flex;
+    }  
+  }
 </style>

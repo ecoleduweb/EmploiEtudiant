@@ -3,7 +3,7 @@ export interface jobOffer {
     address: string; // lieu de travail
     // EVENTUELLEMENT, UTILISER LA SECTION VILLE DE C-A
     description: string; // description de l'offre
-    dateDisplayJobOffer: string; // date de publication de l'offre
+    offerDebut: string; // date de publication de l'offre
     dateEntryOffice: string // date d'entrée en fonction
     deadlineApply: string // date limite pour postuler
     email: string; // courriel de la personne à contacter
@@ -12,7 +12,6 @@ export interface jobOffer {
     internship: boolean; // si l'offre est un stage
     offerLink: string; // lien vers l'offre ou site web de l'employeur
     offerStatus: number;
-    urgent: boolean; // si l'offre est urgente
     active: boolean; // si l'offre est active ou non
     salary: string; // salaire de lheure                     ** A AJOUTER BD **
     scheduleId: number; // id de l'horaire de travail
