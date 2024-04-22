@@ -7,3 +7,7 @@ class EnterpriseRepo:
         db.session.add(enterprise)
         db.session.commit()
         return enterprise
+
+    def getEntrepriseId(self, name):
+        enterprise = Enterprise.query.filter_by(name=name).first()
+        return enterprise.id
