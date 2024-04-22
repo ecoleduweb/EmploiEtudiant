@@ -4,10 +4,9 @@
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
     import { writable, type Writable } from 'svelte/store';
-    import { GET, POST } from "../../ts/server";
+    import { POST } from "../../ts/server";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
-    import type { Entreprise } from "../../Models/Entreprise";
     import { goto } from '$app/navigation';
 
     const schema = yup.object().shape({
@@ -70,46 +69,26 @@
     let programmeSelected: { label: string; value: number }[] = [];
     let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
     let programmesOption = [
-    { label: "Design d'intérieur", value: 1 },
-    { label: "Éducation à l'enfance", value: 2 },
-    { label: "Gestion et intervention en loisir", value: 3 },
-    { label: "Graphisme", value: 4 },
-    { label: "Informatique", value: 5 },
-    { label: "Inhalothérapie", value: 6 },
-    { label: "Pharmacie", value: 7 },
-    { label: "Soins infirmiers", value: 8 },
-    { label: "Arts visuels", value: 9 },
-    { label: "Sciences de la nature", value: 10 },
-    { label: "Sciences humaines", value: 11 }
-];
+        { label: "Design d'intérieur", value: 1 },
+        { label: "Éducation à l'enfance", value: 2 },
+        { label: "Gestion et intervention en loisir", value: 3 },
+        { label: "Graphisme", value: 4 },
+        { label: "Informatique", value: 5 },
+        { label: "Inhalothérapie", value: 6 },
+        { label: "Pharmacie", value: 7 },
+        { label: "Soins infirmiers", value: 8 },
+        { label: "Arts visuels", value: 9 },
+        { label: "Sciences de la nature", value: 10 },
+        { label: "Sciences humaines", value: 11 }
+    ];
     let scheduleSelected: { label: string; value: number }[] = [];
     let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
     let scheduleOption = [
-    { label: "Temps plein", value: 1 },
-    { label: "Emploi d'été", value: 2 },
-    { label: "Temps partiel", value: 3 }
-];
+        { label: "Temps plein", value: 1 },
+        { label: "Emploi d'été", value: 2 },
+        { label: "Temps partiel", value: 3 }
+    ];
 
-// SECTION ENTREPRISE --------------------------------------------
-   let enterprise: Entreprise = {
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-        cityId: 0,
-        isTemporary: true,
-    };
-
-    let villeSelected: { label: string; value: number }[] = [];
-    let villeFromSelectedEntreprise: [] = [];
-    let villesOption: { label: string; value: number }[] = [];
-    const getVilles = async () => {
-        const response = await GET<any>("city/allCities");
-        villesOption = response.map((v: any) => {
-            return { label: v.city, value: v.id };
-        });
-    };
-    getVilles();
     //--------------------------------------------------
 
     let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
@@ -141,11 +120,9 @@
                 jobOffer: {
                     ...offre,
                 },
-                enterprise: enterprise,
                 studyPrograms: programmeName
             };
-            const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
-            goto('/dashboard');
+            const response = await POST<any, any>("/jobOffer/updateJobOffer", requestData);
         } catch (err) {
             console.log(err);
             if (err instanceof yup.ValidationError) {
@@ -162,36 +139,6 @@
   </script>
 
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
-      <!-- -------------------SECTION ENTREPRISE------------------------------ -->
-      <!-- --AJOUTER VALIDATION SI COMPTE A DEJA UN ENTREPRISE POUR CACHER CE FORMULAIRE------- -->
-        <h1 class="title">Créer une nouvelle entreprise</h1>
-        <div class="form-group-vertical">
-          <label for="title">Nom*</label>
-          <input type="text" bind:value={enterprise.name} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Email*</label>
-          <input type="text" bind:value={enterprise.email} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Téléphone*</label>
-          <input type="text" bind:value={enterprise.phone} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-          <label for="title">Adresse*</label>
-          <input type="text" bind:value={enterprise.address} class="form-control" id="titre" />
-        </div>
-        <div class="form-group-vertical">
-        <label for="title">Adresse*</label>
-        <MultiSelect
-            id="programme"
-            options={villesOption}
-            placeholder="Choisir ville(s)..."
-            bind:value={villeSelected}
-            bind:selected={villeFromSelectedEntreprise}
-        ></MultiSelect>
-      </div>
-
       <!-- -------------------SECTION EMPLOIS------------------------------ -->
       <h1>Créer une nouvelle offre d'emploi</h1>
       <div class="form-group-vertical">
