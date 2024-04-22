@@ -9,6 +9,7 @@
   import { POST } from "../../ts/server";
   import { goto } from "$app/navigation";
   import { jwtDecode } from "jwt-decode";
+  import { env } from "$env/dynamic/public";
 
   const schema = yup.object({
     user: yup.object({
@@ -60,32 +61,8 @@
 
   const handleSubmit = async () => {
     try {
-      await schema.validate(register, { abortEarly: false });
-      errors = {
-        user: {
-          id: 0,
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          role: "",
-        },
-        validatePassword: "",
-      };
-      try {
-        const response = await POST<any, any>("/user/register", {
-          email: register.user.email,
-          password: register.user.password,
-          firstName: register.user.firstName,
-          lastName: register.user.lastName,
-          role: "user",
-        });
-        if (response.token != "") {
-          const token = jwtDecode(response.token);
-          localStorage.setItem("token", response.token);
-          goto("/dashboard");
-        }
-      } catch (error) {
+      if (doRecaptcha()) {
+        await schema.validate(register, { abortEarly: false });
         errors = {
           user: {
             id: 0,
@@ -96,15 +73,58 @@
             role: "",
           },
           validatePassword: "",
-          token: "Erreur lors de la création du compte",
         };
+        try {
+          const response = await POST<any, any>("/user/register", {
+            email: register.user.email,
+            password: register.user.password,
+            firstName: register.user.firstName,
+            lastName: register.user.lastName,
+            role: "user",
+          });
+          if (response.token != "") {
+            const token = jwtDecode(response.token);
+            localStorage.setItem("token", response.token);
+            goto("/dashboard");
+          }
+        } catch (error) {
+          errors = {
+            user: {
+              id: 0,
+              firstName: "",
+              lastName: "",
+              email: "",
+              password: "",
+              role: "",
+            },
+            validatePassword: "",
+            token: "Erreur lors de la création du compte",
+          };
+        }
+      } else {
+        console.log("Captcha failed");
       }
     } catch (err) {
       errors = extractErrors(err);
     }
     // Here you can handle form submission, for now, just logging the values
   };
+  let key = env.PUBLIC_RECAPTCHA_KEY;
+  let token = "";
+  function doRecaptcha() {
+    grecaptcha.ready(function () {
+      grecaptcha.execute(key, { action: "submit" }).then(function (t) {
+        token = t;
+      });
+    });
+    console.log(token);
+    return token != "";
+  }
 </script>
+
+<svelte:head>
+  <script src="https://www.google.com/recaptcha/api.js?render={key}"></script>
+</svelte:head>
 
 <div class="container">
   <h1>Créer un compte</h1>

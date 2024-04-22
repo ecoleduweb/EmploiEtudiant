@@ -5,6 +5,7 @@ from logging import getLogger
 from jwt import decode
 from flask import jsonify, request
 from functools import wraps
+import requests
 from app.services.user_service import UserService
 user_service = UserService()
 from app.services.employer_service import EmployerService
@@ -95,3 +96,20 @@ def getUser(current_user):
         return jsonify({'message': 'Missing required fields'}), 400
     user = user_service.getUser(email)
     return jsonify(user.to_json_string())
+
+@user_blueprint.route('/verifyRecaptcha', methods=['POST'])
+def verify_recaptcha(token):
+    key = os.environ.get('RECAPTCHA_KEY')
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    params = {
+        "secret": key,
+        "response": token
+    }
+    
+    response = requests.post(url, data=params)
+    result = response.json()
+    
+    if result['success'] and result['score'] >= 0.5:
+        return True
+    else:
+        return False
