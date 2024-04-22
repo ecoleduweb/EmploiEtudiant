@@ -40,7 +40,6 @@
         if (response.token != "") {
           const token = jwtDecode(response.token);
           localStorage.setItem("token", response.token);
-          localStorage.setItem("email", form.email);
           goto("/dashboard");
         }
       } catch (error) {
