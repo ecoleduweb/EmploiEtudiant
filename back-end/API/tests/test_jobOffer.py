@@ -3,6 +3,7 @@ from app import create_app, db
 from app.models.jobOffer_model import JobOffer
 from app.models.user_model import User
 from app.models.study_program_model import StudyProgram
+from app.models.employmentSchedule_model import EmploymentSchedule
 
 from argon2 import PasswordHasher
 
@@ -31,7 +32,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -52,7 +53,7 @@ def app():
             "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
-            "urgent": False,
+            "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
             "scheduleId": None
@@ -74,6 +75,12 @@ def app():
         }
         studyProgram2_data = StudyProgram(**studyProgram2_data)
         db.session.add(studyProgram2_data)
+        employmentSchedule1_data = {
+            "id": 1,
+            "description": "Temps plein"
+        }
+        employmentSchedule1_data = EmploymentSchedule(**employmentSchedule1_data)
+        db.session.add(employmentSchedule1_data)
         db.session.commit()
         yield app
         db.session.remove()
@@ -82,7 +89,7 @@ def app():
 
 def test_offreEmploi(client):
     response = client.get('/jobOffer/offreEmploi?id=1')
-    print(response)
+    print(response.json)
     assert response.status_code == 200
     assert response.json == {
         "id": 1,
@@ -97,8 +104,8 @@ def test_offreEmploi(client):
         "internship": False,
         "offerStatus": 1,
         "offerLink": "www.google.com",
-        "salary": 1000,
-        "urgent": False,
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
         "active": True,
         "employerId": None,
         "scheduleId": None
@@ -114,7 +121,6 @@ def test_userCreateOffresEmploi(client):
     data = {
             "jobOffer": 
             {
-                "id": 2,
                 "title": "Développeur",
                 "address": "123 rue de la rue",
                 "description": "Développeur front-end",
@@ -127,10 +133,10 @@ def test_userCreateOffresEmploi(client):
                 "offerStatus": 1,
                 "offerLink": "www.google.com",
                 "salary": 1000,
-                "urgent": False,
+                "offerDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
-                "scheduleId": 1
+                "scheduleId": 1,
             },
             "enterprise": 
             {

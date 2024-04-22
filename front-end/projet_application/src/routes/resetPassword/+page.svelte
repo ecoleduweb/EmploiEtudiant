@@ -42,9 +42,7 @@
         confirmPassword: "",
       };
 
-      console.log(resetPassword);
       const response = POST("/auth/resetPassword", resetPassword);
-      console.log(response);
     } catch (err) {
       errors = extractErrors(err);
     }

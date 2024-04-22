@@ -42,8 +42,7 @@ def login():
     return user_service.login(data["email"], data["password"])
 
 @user_blueprint.route('/createUser', methods=['POST'])
-@token_required
-def createUser(current_user):
+def createUser():
     data = request.get_json()
     if not all([data.get('id'), data.get('email'), data.get('password')]):
         return jsonify({'message': 'Missing required fields'}), 400
@@ -56,10 +55,6 @@ def createUser(current_user):
         return jsonify({'message': 'User already exists'}), 400
 
     return user_service.createUser(data)
-    # enterprise = enterprise_service.createEnterprise(data, isTemporary=True)
-    # employer = employer_service.createEmployer(user.id, enterprise.id, verified=False)
-    
-    # return jsonify({'message': 'User created successfully'})
 
 @user_blueprint.route('/updatePassword', methods=['PUT'])
 @token_required
@@ -85,7 +80,7 @@ def getAllUsers():
 
 @user_blueprint.route('/getUser', methods=['GET'])
 @token_required
-def getUser():
+def getUser(current_user):
     logger.warn('Attempt to retrive user information of: ' + current_user.email)
     token = request.headers.get('Authorization')
     data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])

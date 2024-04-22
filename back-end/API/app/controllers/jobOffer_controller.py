@@ -19,6 +19,8 @@ from app.services.offer_program_service import OfferProgramService
 offer_program_service = OfferProgramService()
 from app.services.study_program_service import StudyProgramService
 study_program_service = StudyProgramService()
+from app.services.employmentSchedule_service import EmploymentScheduleService
+employment_schedule_service = EmploymentScheduleService()
 
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -56,12 +58,12 @@ def createJobOffer():
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         return jsonify({'message': 'Job offer created successfully'}) 
-
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            newEmployer = employer_service.createEmployer(entreprise.id, user.id)
+            entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
+            newEmployer = employer_service.createEmployer(entrepriseId, user.id)
             jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
