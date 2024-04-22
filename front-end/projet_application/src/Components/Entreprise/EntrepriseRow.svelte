@@ -26,7 +26,7 @@
 <button class="entreprise" on:click={() => handleModalClick(entreprise.id)}>
     <div class="emploi">
         <div class="info">
-            <p class="text">{entreprise.name}</p>
+            <p class="textTitre">{entreprise.name}</p>
             <p class="text">{entreprise.email}</p>
             <p class="text">{entreprise.phone}</p>
             <p class="text">{entreprise.address}</p>
@@ -53,9 +53,15 @@
         font-size: 1.2rem;
         flex-direction: row;
         justify-content: space-around;
+        align-items: center;
     }
     .text {
         width: 20%;
+    }
+    .textTitre {
+        width: 20%;
+        font-weight: bold;
+        font-size: 1.8rem;
     }
     .emploi {
         display: flex;

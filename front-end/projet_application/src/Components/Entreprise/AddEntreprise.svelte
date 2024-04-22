@@ -30,18 +30,9 @@
         isTemporary: true,
     };
 
-    let villeSelected: { label: string; value: number }[] = [];
+    let villeSelected: { label: string; value: number } = { label: "", value: 0 };
     let villeFromSelectedEntreprise: [] = [];
     let villeOption: { label: string; value: number }[] = [];
-    // let villeOption = [
-    //     { label: "Trois-Pistoles", value: 1 },
-    //     { label: "Rivière-du-Loup", value: 2 },
-    //     { label: "Squatec", value: 3 },
-    //     { label: "Chibougamau", value: 4 },
-    //     { label: "Amqui", value: 5 },
-    //     { label: "Trois-Rivière", value: 6 },
-    //     { label: "Lévis", value: 7 },
-    // ];
 
     const getAllCities = async () => {
         try {
@@ -66,11 +57,7 @@
     };
 
     const updateCityId = () => {
-        if (villeSelected.length > 0) {
-            enterprise.cityId = villeSelected[0].value;
-        } else {
-            enterprise.cityId = 0;
-        }
+        enterprise.cityId = villeSelected.value;
     };
 
     const handleSubmit = async () => {
@@ -85,11 +72,8 @@
                 cityId: 0,
                 isTemporary: true,
             };
-            const requestData = {
-                enterprise: enterprise,
-            };
             updateCityId();
-            const response = await POST<any, any>("/enterprise/createEnterprise", requestData);
+            const response = await POST<any, any>("/enterprise/createEnterprise", enterprise);
             handleEntrepriseClick();
         } catch (err) {
             console.log(err);
@@ -141,13 +125,24 @@
                 bind:value={villeSelected}
                 bind:selected={villeFromSelectedEntreprise}
                 closeDropdownOnSelect={true}
-                on:change={updateCityId}
                 maxSelect={1}
             ></MultiSelect>
             <p class="errors-input">
                 {#if errors.cityId}{errors.cityId}{/if}
             </p>
         </div>
+        <!-- <div class="form-group-vertical">
+            <label for="title">Ville*</label>
+            <select id="ville" bind:value={villeSelected} class="form-control">
+                {#each villeOption as { label, value }}
+                    <option value={value}>{label}</option>
+                {/each}
+            </select>
+            <p class="errors-input">
+                {#if errors.cityId}{errors.cityId}{/if}
+            </p>
+        </div> -->
+        
         
         <Button submit={true} text="Créer" on:click={() => handleSubmit()} />
     </form>

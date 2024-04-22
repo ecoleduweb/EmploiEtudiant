@@ -18,7 +18,7 @@ def getEnterprises(current_user):
 @token_admin_required
 def createEnterprise(current_user):
     data = request.get_json()
-    enterprise = enterprise_service.createEnterprise(data['enterprise'], False)
+    enterprise = enterprise_service.createEnterprise(data, False)
     return jsonify(enterprise.to_json_string())
 
 @enterprise_blueprint.route('/updateEntreprise', methods=['PUT'])
