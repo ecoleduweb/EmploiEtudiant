@@ -9,6 +9,7 @@
   import { extractErrors } from "../../ts/utils";
   import type { Entreprise } from "../../Models/Entreprise";
   import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
 
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
@@ -30,7 +31,7 @@
       .string()
       .matches(
         /\.[a-z]+$/,
-        "Le courriel doit être de format valide : courriel@domaine.ca"
+        "Le courriel doit être de format valide : courriel@domaine.ca",
       )
       .email("Le courriel n'est pas valide")
       .required("Le courriel est requis"),
@@ -42,7 +43,7 @@
         "Veuillez entrer un nombre d'heure valide !",
         (value) => {
           return !isNaN(Number(value)) && Number(value) > 0;
-        }
+        },
       ),
     scheduleId: yup
       .number()
@@ -133,12 +134,19 @@
   let villeFromSelectedEntreprise: [] = [];
   let villesOption: { label: string; value: number }[] = [];
   const getVilles = async () => {
-    const response = await GET<any>("city/allCities");
+    const response = await GET<any>("/city/allCities");
     villesOption = response.map((v: any) => {
       return { label: v.city, value: v.id };
     });
   };
-  getVilles();
+  onMount(async () => {
+    getVilles();
+  });
+  //--------------------------------------------------
+
+  let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
+  let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
+  let acceptCondition = false;
 
   const handleSubmit = async () => {
     try {
@@ -172,7 +180,7 @@
       };
       const response = await POST<any, any>(
         "/jobOffer/createJobOffer",
-        requestData
+        requestData,
       );
       goto("/dashboard");
     } catch (err) {
