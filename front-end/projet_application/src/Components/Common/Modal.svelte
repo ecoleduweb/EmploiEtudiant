@@ -33,7 +33,7 @@
         cursor: default;
     }
     .modal {
-        background-color: #e5e5e5;
+        background-color: #ffffff;
         width: 90%;
         max-width: 800px;
         border: none;
@@ -43,7 +43,7 @@
         box-sizing: border-box;
         z-index: 100;
         display: flex;
-        justify-content: center;
+        align-items: flex-start;
     }
     button {
         border: none;
