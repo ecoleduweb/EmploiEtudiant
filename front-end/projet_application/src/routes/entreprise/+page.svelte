@@ -109,10 +109,4 @@
         width: 50%;
         margin-left: 5.2%;
     }
-    .entreprises {
-        width: fit-content;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
 </style>
