@@ -137,16 +137,18 @@
             <MultiSelect
                 id="ville"
                 options={villeOption}
-                placeholder="Choisir ville(s)..."
+                placeholder="Choisir une ville..."
                 bind:value={villeSelected}
                 bind:selected={villeFromSelectedEntreprise}
                 closeDropdownOnSelect={true}
                 on:change={updateCityId}
+                maxSelect={1}
             ></MultiSelect>
             <p class="errors-input">
                 {#if errors.cityId}{errors.cityId}{/if}
             </p>
         </div>
+        
         <Button submit={true} text="Créer" on:click={() => handleSubmit()} />
     </form>
 </Modal>

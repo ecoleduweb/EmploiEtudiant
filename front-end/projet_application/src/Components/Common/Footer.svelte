@@ -70,6 +70,7 @@
     align-items: stretch; /* Stretch items vertically */
     justify-content: flex-start; /* Align items at the start of the container */
     margin: 0;
+    margin-top: 20px;
     width: 100%;
     overflow: hidden;
     z-index: -1;
