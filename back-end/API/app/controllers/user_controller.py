@@ -42,7 +42,6 @@ def login():
     return user_service.login(data["email"], data["password"])
 
 @user_blueprint.route('/createUser', methods=['POST'])
-
 def createUser():
     data = request.get_json()
     if not all([data.get('id'), data.get('email'), data.get('password')]):
