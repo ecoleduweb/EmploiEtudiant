@@ -14,7 +14,7 @@
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice : yup
+    dateEntryOffice: yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
@@ -194,12 +194,10 @@
     }
   };
 
-  let maxDateString : any;
+  let maxDateString: any;
   $: {
     let offerDebut = new Date(offre.offerDebut);
-    let maxDate = new Date(
-      offerDebut.setDate(offerDebut.getDate() + 15 * 7)
-    );
+    let maxDate = new Date(offerDebut.setDate(offerDebut.getDate() + 15 * 7));
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
 
@@ -451,7 +449,12 @@
     <p class="errors-input">
       {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
     </p>
-    <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
+    <Button
+      submit={true}
+      text="Envoyer"
+      on:click={() => handleSubmit()}
+      onClick={() => ""}
+    />
   </form>
 </div>
 
