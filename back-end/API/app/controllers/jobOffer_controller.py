@@ -45,8 +45,8 @@ def token_required(f):
             return f(current_user)
         return decorated
 
-@token_required
 @job_offer_blueprint.route('/createJobOffer', methods=['POST'])
+@token_required
 def createJobOffer():
     data = request.get_json()
     token = request.headers.get('Authorization')
@@ -85,17 +85,17 @@ def offreEmploi():
     else:
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
-@token_required
 @job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
+@token_required
 def offresEmploiEmployeur():
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
-    jobOffers = jobOffer_service.offresEmploiEmployeur(user.email)
+    jobOffers = jobOffer_service.offresEmploiEmployeur(user.id)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@token_required
 @job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
+@token_required
 def updateJobOffer():
     data = request.get_json()
     jobOffer = jobOffer_service.updateJobOffer(data)
@@ -109,8 +109,8 @@ def offresEmploi():
     jobOffers = jobOffer_service.offresEmploi()
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@token_required
 @job_offer_blueprint.route('/linkJobOfferEmployer', methods=['PUT'])
+@token_required
 def linkJobOfferEmployer():
     data = request.get_json()
     return jobOffer_service.linkJobOfferEmployer(data)

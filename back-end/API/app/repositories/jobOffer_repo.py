@@ -25,8 +25,8 @@ class JobOfferRepo:
         db.session.commit()
         return new_job_offer
     
-    def offresEmploiEmployeur(self, employerEmail):
-        jobOffers = JobOffer.query.filter_by(email=employerEmail).all()
+    def offresEmploiEmployeur(self, employerId):
+        jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
         return jobOffers
     
     def updateJobOffer(self, data):
@@ -34,7 +34,7 @@ class JobOfferRepo:
         jobOffer.title = data['title']
         jobOffer.description = data['description']
         jobOffer.address = data['address']
-        jobOffer.dateEntryOffice = data['dateEntryOffice']
+        jobOffer.offerDebut = data['offerDebut']
         jobOffer.deadlineApply = data['deadlineApply']
         jobOffer.email = data['email']
         jobOffer.hoursPerWeek = data['hoursPerWeek']
@@ -43,7 +43,6 @@ class JobOfferRepo:
         jobOffer.offerStatus = data['offerStatus']
         jobOffer.offerLink = data['offerLink']
         jobOffer.salary = data['salary']
-        jobOffer.urgent = data['urgent']
         jobOffer.active = data['active']
         jobOffer.employerId = data['employerId']
         jobOffer.scheduleId = data['scheduleId']
