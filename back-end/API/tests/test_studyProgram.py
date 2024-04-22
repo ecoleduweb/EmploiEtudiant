@@ -27,6 +27,8 @@ def app():
         data = {
             "id": 1,
             "email": "test@test.com",
+            "firstName": "test",
+            "lastName": "test",
             "password": hashed_password,
             "isModerator": True,
             "active": True,
