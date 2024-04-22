@@ -4,19 +4,17 @@
   import MultiSelect from "svelte-multiselect";
   import type { jobOffer } from "../../Models/Offre";
   import { writable, type Writable } from "svelte/store";
-  import { POST } from "../../ts/server";
-  import { GET } from "../../ts/server";
+  import { GET, POST } from "../../ts/server";
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import type { Entreprise } from "../../Models/Entreprise";
   import { goto } from "$app/navigation";
 
-
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice : yup
+    dateEntryOffice: yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
@@ -69,7 +67,6 @@
     internship: false,
     offerLink: "https://",
     offerStatus: 0,
-    urgent: false,
     active: true,
     salary: "",
     scheduleId: -1,
@@ -89,7 +86,6 @@
     internship: false,
     offerLink: "",
     offerStatus: 0,
-    urgent: false,
     active: true,
     salary: "",
     scheduleId: 0,
@@ -129,21 +125,20 @@
     isTemporary: true,
   };
 
-    let villeSelected: { label: string; value: number }[] = [];
-    let villeFromSelectedEntreprise: [] = [];
-    let villesOption: { label: string; value: number }[] = [];
-    const getVilles = async () => {
-        const response = await GET<any>("/city/allCities");
-        villesOption = response.map((v: any) => {
-            return { label: v.city, value: v.id };
-        });
-    };
-    getVilles();
-    //--------------------------------------------------
-
   let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
   let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
   let acceptCondition = false;
+
+  let villeSelected: { label: string; value: number }[] = [];
+  let villeFromSelectedEntreprise: [] = [];
+  let villesOption: { label: string; value: number }[] = [];
+  const getVilles = async () => {
+    const response = await GET<any>("city/allCities");
+    villesOption = response.map((v: any) => {
+      return { label: v.city, value: v.id };
+    });
+  };
+  getVilles();
 
   const handleSubmit = async () => {
     try {
@@ -163,7 +158,6 @@
         internship: false,
         offerLink: "",
         offerStatus: 0,
-        urgent: false,
         active: true,
         salary: "",
         scheduleId: 0,
@@ -200,14 +194,13 @@
     }
   };
 
-  let maxDateString : any;
+  let maxDateString: any;
   $: {
     let offerDebut = new Date(offre.offerDebut);
-    let maxDate = new Date(
-      offerDebut.setDate(offerDebut.getDate() + 15 * 7)
-    );
+    let maxDate = new Date(offerDebut.setDate(offerDebut.getDate() + 15 * 7));
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
+
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
 </script>
@@ -456,7 +449,12 @@
     <p class="errors-input">
       {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
     </p>
-    <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
+    <Button
+      submit={true}
+      text="Envoyer"
+      on:click={() => handleSubmit()}
+      onClick={() => ""}
+    />
   </form>
 </div>
 
