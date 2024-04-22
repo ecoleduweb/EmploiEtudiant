@@ -1,7 +1,10 @@
 import pytest
 from app import create_app, db
 from app.models.enterprise_model import Enterprise
+from app.models.user_model import User
+from argon2 import PasswordHasher
 
+hasher = PasswordHasher()
 
 @pytest.fixture(scope='module')
 def app():
@@ -30,6 +33,16 @@ def app():
         }
         enterprise = Enterprise(**data)
         db.session.add(enterprise)
+        hashed_password = hasher.hash("test")
+        data = {
+            "id": 1,
+            "email": "test@test.com",
+            "password": hashed_password,
+            "isModerator": True,
+            "active": True,
+        }
+        user = User(**data)
+        db.session.add(user)
         db.session.commit()
         yield app
         db.session.remove()
@@ -40,7 +53,13 @@ def client(app):
     return app.test_client()
 
 def test_getEnterprises(client):
-    response = client.get('/enterprise/getEnterprises')
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/enterprise/getEnterprises', headers={"Authorization": token})
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -52,7 +71,13 @@ def test_createEnterprise(client):
         "address": "123 rue de la",
         "cityId": 1,
     }
-    response = client.post('/enterprise/createEnterprise', json=data)
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.post('/enterprise/createEnterprise', json=data, headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "id": 3,
@@ -73,7 +98,13 @@ def test_updateEnterprise(client):
         "address": "123 rue de la",
         "cityId": 1,
     }
-    response = client.put('/enterprise/updateEntreprise/1', json=data)
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.put('/enterprise/updateEntreprise?id=1', json=data, headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "message": 'enterprise updated'
@@ -88,7 +119,13 @@ def test_deleteEnterprise(client):
         "address": "123 rue de la",
         "cityId": 1,
     }
-    response = client.delete('/enterprise/deleteEnterprise/2')
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.delete('/enterprise/deleteEnterprise?id=2', headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "message": 'enterprise deleted'

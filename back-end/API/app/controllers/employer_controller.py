@@ -51,36 +51,39 @@ def token_admin_required(f):
                 return jsonify({'message': 'user is not admin'})
         return decorated
 
-@token_admin_required
+
 @employer_blueprint.route('/createEmployer', methods=['POST'])
-def createEmployer():
+@token_admin_required
+def createEmployer(current_user):
     data = request.get_json()
     employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
     return jsonify(employer.to_json_string())
     
-@token_required
 @employer_blueprint.route('/linkEmployerEnterprise', methods=['PUT'])
-def linkEmployerEnterprise():
+@token_required
+def linkEmployerEnterprise(current_user):
     data = request.get_json()
     return employer_service.linkEmployerEnterprise(data)
 
+@employer_blueprint.route('/updateEmployer', methods=['PUT'])
 @token_admin_required
-@employer_blueprint.route('/updateEmployer/<idEmployer>', methods=['PUT'])
-def updateEmployer(idEmployer):
-    employer = employer_service.getEmployer(idEmployer)
+def updateEmployer(current_user):
+    id = request.args.get('id')
+    employer = employer_service.getEmployer(id)
     if employer:
         data = request.get_json()
-        employer_service.updateEmployer(data, idEmployer)
+        employer_service.updateEmployer(data, id)
         return jsonify({'message': 'employer updated'})
     else:
         return jsonify({'message': 'employer not found'})
     
+@employer_blueprint.route('/deleteEmployer', methods=['DELETE'])
 @token_admin_required
-@employer_blueprint.route('/deleteEmployer/<idEmployer>', methods=['DELETE'])
-def deleteEmployer(idEmployer):
-    employer = employer_service.getEmployer(idEmployer)
+def deleteEmployer(current_user):
+    id = request.args.get('id')
+    employer = employer_service.getEmployer(id)
     if employer:
-        employer_service.deleteEmployer(idEmployer)
+        employer_service.deleteEmployer(id)
         return jsonify({'message': 'employer deleted'})
     else:
         return jsonify({'message': 'employer not found'})

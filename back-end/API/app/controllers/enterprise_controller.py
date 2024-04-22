@@ -32,23 +32,25 @@ def token_admin_required(f):
             else:
                 return jsonify({'message': 'user is not admin'})
         return decorated
-@token_admin_required
+
 @enterprise_blueprint.route('/getEnterprises', methods=['GET'])
-def getEnterprises():
+@token_admin_required
+def getEnterprises(current_user):
     enterprises = enterprise_service.getEnterprises()
     return jsonify([enterprise.to_json_string() for enterprise in enterprises])
 
-@token_admin_required
 @enterprise_blueprint.route('/createEnterprise', methods=['POST'])
-def createEnterprise():
+@token_admin_required
+def createEnterprise(current_user):
     data = request.get_json()
     enterprise = enterprise_service.createEnterprise(data, False)
     return jsonify(enterprise.to_json_string())
 
+@enterprise_blueprint.route('/updateEntreprise', methods=['PUT'])
 @token_admin_required
-@enterprise_blueprint.route('/updateEntreprise/<idEnterprise>', methods=['PUT'])
-def updateEntreprise(idEnterprise):
-    enterprise = enterprise_service.getEnterprise(idEnterprise)
+def updateEntreprise(current_user):
+    id = request.args.get('id')
+    enterprise = enterprise_service.getEnterprise(id)
     if enterprise:
         data = request.get_json()
         enterprise_service.updateEnterprise(data)
@@ -57,18 +59,21 @@ def updateEntreprise(idEnterprise):
     else:
         return jsonify({'message': 'enterprise not found'})
 
+@enterprise_blueprint.route('/deleteEnterprise', methods=['DELETE'])
 @token_admin_required
-@enterprise_blueprint.route('/deleteEnterprise/<idEnterprise>', methods=['DELETE'])
-def deleteEnterprise(idEnterprise):
-    enterprise = enterprise_service.getEnterprise(idEnterprise)
+def deleteEnterprise(current_user):
+    id = request.args.get('id')
+    enterprise = enterprise_service.getEnterprise(id)
     if enterprise:
-        if enterprise_service.deleteEnterprise(idEnterprise):
+        if enterprise_service.deleteEnterprise(id):
             return jsonify({'message': 'enterprise deleted'})
         else:
             return jsonify({'message': 'enterprise is not temporary'})
     else:
-        return jsonify({'message': 'enterprise not found'})@token_admin_required
+        return jsonify({'message': 'enterprise not found'})
+    
 @enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])
+@token_admin_required
 def getEntrepriseId():
     name = request.args.get('name')
     return enterprise_service.getEntrepriseId(name)
