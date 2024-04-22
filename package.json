@@ -1,5 +1,5 @@
 {
-  "name": "qa-test",
+  "name": "projetapplicationh2024",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.43.1",
-    "@types/node": "^20.11.16"
+    "@types/node": "^20.12.7"
   }
 }
