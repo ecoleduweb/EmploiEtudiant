@@ -4,8 +4,7 @@
   import MultiSelect from "svelte-multiselect";
   import type { jobOffer } from "../../Models/Offre";
   import { writable, type Writable } from "svelte/store";
-  import { POST } from "../../ts/server";
-  import { GET } from "../../ts/server";
+  import { GET, POST } from "../../ts/server";
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import type { Entreprise } from "../../Models/Entreprise";
@@ -69,7 +68,6 @@
     internship: false,
     offerLink: "https://",
     offerStatus: 0,
-    urgent: false,
     active: true,
     salary: "",
     scheduleId: -1,
@@ -89,7 +87,6 @@
     internship: false,
     offerLink: "",
     offerStatus: 0,
-    urgent: false,
     active: true,
     salary: "",
     scheduleId: 0,
@@ -129,6 +126,10 @@
     isTemporary: true,
   };
 
+  let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
+  let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
+  let acceptCondition = false;
+
   let villeSelected: { label: string; value: number }[] = [];
   let villeFromSelectedEntreprise: [] = [];
   let villesOption: { label: string; value: number }[] = [];
@@ -165,7 +166,6 @@
         internship: false,
         offerLink: "",
         offerStatus: 0,
-        urgent: false,
         active: true,
         salary: "",
         scheduleId: 0,
@@ -208,6 +208,7 @@
     let maxDate = new Date(offerDebut.setDate(offerDebut.getDate() + 15 * 7));
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
+
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
 </script>
@@ -456,7 +457,12 @@
     <p class="errors-input">
       {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
     </p>
-    <Button submit={true} text="Envoyer" on:click={() => handleSubmit()} />
+    <Button
+      submit={true}
+      text="Envoyer"
+      on:click={() => handleSubmit()}
+      onClick={() => ""}
+    />
   </form>
 </div>
 
