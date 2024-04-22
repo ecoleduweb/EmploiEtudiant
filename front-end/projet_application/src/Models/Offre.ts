@@ -3,6 +3,7 @@ export interface jobOffer {
     address: string; // lieu de travail
     // EVENTUELLEMENT, UTILISER LA SECTION VILLE DE C-A
     description: string; // description de l'offre
+    offerDebut : string; // date de publication de l'offre
     dateEntryOffice: string // date d'entrée en fonction
     deadlineApply: string // date limite pour postuler
     email: string; // courriel de la personne à contacter
