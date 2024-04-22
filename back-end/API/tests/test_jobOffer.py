@@ -61,7 +61,7 @@ def app():
         job_offer2 = JobOffer(**job_offer2_data)
         db.session.add(job_offer2)
         hashed_password = hasher.hash("test123")
-        user = User(id=1, email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
+        user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
         db.session.add(user)
         studyProgram1_data = {
             "id": 1,
