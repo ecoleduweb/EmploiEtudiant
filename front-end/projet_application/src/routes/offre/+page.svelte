@@ -10,13 +10,13 @@
   import { extractErrors } from "../../ts/utils";
   import type { Entreprise } from "../../Models/Entreprise";
   import { goto } from "$app/navigation";
-
+  import { onMount } from "svelte";
 
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
     address: yup.string().required("L'adresse du lieu de travail est requise"),
     description: yup.string().required("La description de l'offre est requise"),
-    dateEntryOffice : yup
+    dateEntryOffice: yup
       .string()
       .required("La date d'entrée en fonction est requise")
       .test("is-date", "Veuillez choisir une date valide !", (value) => {
@@ -32,7 +32,7 @@
       .string()
       .matches(
         /\.[a-z]+$/,
-        "Le courriel doit être de format valide : courriel@domaine.ca"
+        "Le courriel doit être de format valide : courriel@domaine.ca",
       )
       .email("Le courriel n'est pas valide")
       .required("Le courriel est requis"),
@@ -44,7 +44,7 @@
         "Veuillez entrer un nombre d'heure valide !",
         (value) => {
           return !isNaN(Number(value)) && Number(value) > 0;
-        }
+        },
       ),
     scheduleId: yup
       .number()
@@ -129,17 +129,19 @@
     isTemporary: true,
   };
 
-    let villeSelected: { label: string; value: number }[] = [];
-    let villeFromSelectedEntreprise: [] = [];
-    let villesOption: { label: string; value: number }[] = [];
-    const getVilles = async () => {
-        const response = await GET<any>("/city/allCities");
-        villesOption = response.map((v: any) => {
-            return { label: v.city, value: v.id };
-        });
-    };
+  let villeSelected: { label: string; value: number }[] = [];
+  let villeFromSelectedEntreprise: [] = [];
+  let villesOption: { label: string; value: number }[] = [];
+  const getVilles = async () => {
+    const response = await GET<any>("/city/allCities");
+    villesOption = response.map((v: any) => {
+      return { label: v.city, value: v.id };
+    });
+  };
+  onMount(async () => {
     getVilles();
-    //--------------------------------------------------
+  });
+  //--------------------------------------------------
 
   let errorsProgramme: string = ""; // Define a variable to hold the error message for selected program
   let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
@@ -178,7 +180,7 @@
       };
       const response = await POST<any, any>(
         "/jobOffer/createJobOffer",
-        requestData
+        requestData,
       );
       goto("/dashboard");
     } catch (err) {
@@ -200,12 +202,10 @@
     }
   };
 
-  let maxDateString : any;
+  let maxDateString: any;
   $: {
     let offerDebut = new Date(offre.offerDebut);
-    let maxDate = new Date(
-      offerDebut.setDate(offerDebut.getDate() + 15 * 7)
-    );
+    let maxDate = new Date(offerDebut.setDate(offerDebut.getDate() + 15 * 7));
     maxDateString = maxDate.toISOString().split("T")[0]; // format as yyyy-mm-dd
   }
   let todayMin = new Date();
