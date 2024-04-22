@@ -25,7 +25,7 @@ def app():
         employmentSchedule2 = EmploymentSchedule(**data2)
         db.session.add(employmentSchedule2)
         hashed_password = hasher.hash("test123")
-        user = User(id=1, email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
+        user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
         db.session.add(user)
         db.session.commit()
         yield app
