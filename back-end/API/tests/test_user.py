@@ -12,7 +12,7 @@ def app():
     with app.app_context():
         db.create_all()
         hashed_password = hasher.hash("test123")
-        user = User(id=1, email="test@gmail.com", password=hashed_password, active=True, isModerator=False)  # Removed 'name' attribute
+        user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)  # Removed 'name' attribute
         db.session.add(user)
         db.session.commit()
         yield app
@@ -23,11 +23,14 @@ def app():
 def client(app):
     return app.test_client()
 
-def test_createUser(client):
+def test_register(client):
     data = {
         "id": 2,
+        "firstName":"Robert", 
+        "lastName":"Lizotte",
         "email": "test2@gmail.com",
-        "password": "test123"
+        "password": "test123",
+        "role": "user"
     }
     dataLogin = {
         "email": "test@gmail.com",
@@ -35,7 +38,7 @@ def test_createUser(client):
     }
     reponseLogin = client.post('/user/login', json=dataLogin)
     token = reponseLogin.json['token']
-    response = client.post('/user/createUser', json=data, headers={"Authorization": token})
+    response = client.post('/user/register', json=data, headers={"Authorization": token})
     assert response.status_code == 200
 
 def test_login(client):
