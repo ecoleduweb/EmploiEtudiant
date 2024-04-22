@@ -7,7 +7,7 @@
 {#if submit}
   <input type="submit" class="submit" value={text} />
 {:else}
- <button class="button" on:click={onClick}>{text}</button>
+  <button class="button" on:click={onClick}>{text}</button>
 {/if}
 
 <style scoped>

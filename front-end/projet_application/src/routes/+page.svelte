@@ -24,8 +24,10 @@
     </div>
     <div class="haut-droite">
       <div class="buttonDiv">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div class="divFlex" on:click={handleEmploi}>
-          <Button text="Consulter toutes les offres" />
+          <Button text="Consulter toutes les offres" onClick={() => ""} />
         </div>
       </div>
     </div>
@@ -92,5 +94,10 @@
   }
   .divFlex {
     display: flex;
+  }
+  @media screen and (max-width: 900px) and (min-width: 300px) {
+    .divFlex {
+      display: flex;
+    }
   }
 </style>
