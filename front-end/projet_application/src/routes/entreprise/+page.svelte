@@ -3,7 +3,7 @@
     import Header from "../../Components/Common/Header.svelte";
     import Footer from "../../Components/Common/Footer.svelte";
     import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import { get, writable } from "svelte/store";
     import { GET } from "../../ts/server";
     import type { Entreprise } from "../../Models/Entreprise";
     import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte";
@@ -29,6 +29,7 @@
     };
     const closeModalAdd = () => {
         modalAdd.set(false);
+        getEnterprises();
     };
     const handleEntreprise = () => {
         openModalAdd();
@@ -37,15 +38,16 @@
     const entreprises = writable<Entreprise[]>([]);
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/enterprises");
-            const data = await response.json();
-            entreprises.set(data);
-            console.log(data);
+            const response = await GET<any>("/enterprise/getEnterprises");
+            entreprises.set(response);
         } catch (error) {
             console.error("Error fetching job offers:", error);
         }
     };
     onMount(getEnterprises);
+
+    
+
 </script>
 <Header/>
 <main>

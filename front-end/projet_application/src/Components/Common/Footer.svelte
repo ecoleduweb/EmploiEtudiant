@@ -63,7 +63,7 @@
 
 <style lang="scss" scoped>
   footer {
-    position: absolute;
+    position: sticky;
     bottom: 0;
     display: flex;
     flex-direction: column;
@@ -72,6 +72,7 @@
     margin: 0;
     width: 100%;
     overflow: hidden;
+    z-index: -1;
   }
 
   .svg-footer {

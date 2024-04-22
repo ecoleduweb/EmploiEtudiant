@@ -8,7 +8,7 @@ employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https
 
 @employer_blueprint.route('/createEmployer', methods=['POST'])
 @token_admin_required
-def createEmployer():
+def createEmployer(current_user):
     data = request.get_json()
     employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
     return jsonify(employer.to_json_string())

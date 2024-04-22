@@ -3,12 +3,13 @@
     import Button from "../../Components/Inputs/Button.svelte";
     import MultiSelect from 'svelte-multiselect';
     import { writable, type Writable } from 'svelte/store';
-    import { POST } from "../../ts/server";
+    import { GET, POST } from "../../ts/server";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
     import type { Entreprise } from "../../Models/Entreprise";
     import { goto } from '$app/navigation';
     import Modal from "../Common/Modal.svelte";
+  import { onMount } from "svelte";
     export let handleEntrepriseClick: () => void;
 
     const schema = yup.object().shape({
@@ -31,15 +32,28 @@
 
     let villeSelected: { label: string; value: number }[] = [];
     let villeFromSelectedEntreprise: [] = [];
-    let villeOption = [
-        { label: "Trois-Pistoles", value: 1 },
-        { label: "Rivière-du-Loup", value: 2 },
-        { label: "Squatec", value: 3 },
-        { label: "Chibougamau", value: 4 },
-        { label: "Amqui", value: 5 },
-        { label: "Trois-Rivière", value: 6 },
-        { label: "Lévis", value: 7 },
-    ];
+    let villeOption: { label: string; value: number }[] = [];
+    // let villeOption = [
+    //     { label: "Trois-Pistoles", value: 1 },
+    //     { label: "Rivière-du-Loup", value: 2 },
+    //     { label: "Squatec", value: 3 },
+    //     { label: "Chibougamau", value: 4 },
+    //     { label: "Amqui", value: 5 },
+    //     { label: "Trois-Rivière", value: 6 },
+    //     { label: "Lévis", value: 7 },
+    // ];
+
+    const getAllCities = async () => {
+        try {
+            const response = await GET<any>("/city/allCities");
+            villeOption = response.map((city: any) => {
+                return { label: city.city, value: city.id };
+            });
+        } catch (error) {
+            console.error("Error fetching cities:", error);
+        }
+    };
+    onMount(getAllCities);
 
     let errors : Entreprise = {
         id : 0,
@@ -49,6 +63,14 @@
         address: "",
         cityId: 0,
         isTemporary: true,
+    };
+
+    const updateCityId = () => {
+        if (villeSelected.length > 0) {
+            enterprise.cityId = villeSelected[0].value;
+        } else {
+            enterprise.cityId = 0;
+        }
     };
 
     const handleSubmit = async () => {
@@ -66,6 +88,7 @@
             const requestData = {
                 enterprise: enterprise,
             };
+            updateCityId();
             const response = await POST<any, any>("/enterprise/createEnterprise", requestData);
             handleEntrepriseClick();
         } catch (err) {
@@ -118,6 +141,7 @@
                 bind:value={villeSelected}
                 bind:selected={villeFromSelectedEntreprise}
                 closeDropdownOnSelect={true}
+                on:change={updateCityId}
             ></MultiSelect>
             <p class="errors-input">
                 {#if errors.cityId}{errors.cityId}{/if}

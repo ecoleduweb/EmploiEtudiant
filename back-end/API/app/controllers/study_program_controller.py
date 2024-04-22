@@ -7,20 +7,20 @@ study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'a
 
 @study_program_blueprint.route('/studyPrograms', methods=['GET'])
 @token_required
-def studyPrograms():
+def studyPrograms(current_user):
     studyPrograms = study_program_service.studyPrograms()
     return jsonify(studyPrograms)
 
 @study_program_blueprint.route('/studyProgramId', methods=['GET'])
 @token_required
-def studyProgramId():
+def studyProgramId(current_user):
     name = request.args.get('name')
     studyProgramId = study_program_service.studyProgramId(name)
     return jsonify(studyProgramId)
 
 @study_program_blueprint.route('/addStudyProgram', methods=['POST'])
 @token_required
-def addStudyProgram():
+def addStudyProgram(current_user):
     data = request.get_json()
     studyProgram = study_program_service.addStudyProgram(data["name"])
     return jsonify({'message': 'Study program added successfully'})

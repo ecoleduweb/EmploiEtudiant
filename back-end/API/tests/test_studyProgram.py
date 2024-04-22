@@ -1,6 +1,10 @@
 import pytest
 from app import create_app, db
 from app.models.study_program_model import StudyProgram
+from app.models.user_model import User
+from argon2 import PasswordHasher
+
+hasher = PasswordHasher()
 
 @pytest.fixture(scope='module')
 def app():
@@ -19,6 +23,16 @@ def app():
         }
         study_program2 = StudyProgram(**data_study_program2)
         db.session.add(study_program2)
+        hashed_password = hasher.hash("test")
+        data = {
+            "id": 1,
+            "email": "test@test.com",
+            "password": hashed_password,
+            "isModerator": True,
+            "active": True,
+        }
+        user = User(**data)
+        db.session.add(user)
         db.session.commit()
         yield app
         db.session.remove()
@@ -29,12 +43,24 @@ def client(app):
     return app.test_client()
   
 def test_studyPrograms(client):
-    response = client.get('/studyProgram/studyPrograms')
+    dataLogin = {
+    "email": "test@test.com",
+    "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/studyProgram/studyPrograms', headers={'Authorization' : token})
     assert response.status_code == 200
     assert len(response.json) == 2
 
 def test_studyProgramId(client):
-    response = client.get('/studyProgram/studyProgramId?name=Informatique')
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/studyProgram/studyProgramId?name=Informatique', headers={'Authorization' : token})
     assert response.status_code == 200
     assert response.json == 1
 
@@ -42,5 +68,11 @@ def test_addStudyProgram(client):
     data = {
         "name": "Genie logiciel"
     }
-    response = client.post('/studyProgram/addStudyProgram', json=data)
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.post('/studyProgram/addStudyProgram', json=data, headers={'Authorization' : token})
     assert response.status_code == 200

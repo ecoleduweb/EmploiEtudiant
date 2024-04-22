@@ -7,7 +7,7 @@ offer_program_blueprint = Blueprint('offerProgram', __name__) ## Représente l'a
 
 @offer_program_blueprint.route('/linkOfferProgram', methods=['POST'])
 @token_required
-def linkOfferProgram():
+def linkOfferProgram(current_user):
     data = request.get_json()
     offerProgram = offer_program_service.linkOfferProgram(data["offerId"], data["studyProgramId"])
     return (jsonify(offerProgram.to_json_string()), 200)
