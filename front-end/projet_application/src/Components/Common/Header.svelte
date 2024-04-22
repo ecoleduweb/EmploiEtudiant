@@ -1,10 +1,18 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { onMount } from 'svelte';
+  import { jwtDecode } from "jwt-decode";
 
   let isLoggedIn = false;
+  let email = '';  // Déclarer une variable pour stocker l'email
+
   onMount(async () => {
-    isLoggedIn = !!localStorage.getItem("token")
+    isLoggedIn = !!localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (token) {
+        var decoded = jwtDecode(token);
+        email = decoded.email;
+    }
   });
 
   const handleEmploi = () => {
@@ -16,7 +24,8 @@
     goto('/')
     localStorage.removeItem("token")
   }
-  </script>
+</script>
+
 
 <header>
   <div class="logo-img">
@@ -25,6 +34,9 @@
   <div class="ul-group">
     <ul class="ul-menu">
       {#if isLoggedIn}
+      <div class="option">
+        <p class="email">Connecté en tant que {email}</p>
+      </div>
       <div class="option">
         <button class="button logout-button" on:click={handleLogout}>
           <p class="textLogout">Déconnexion</p>
@@ -65,7 +77,7 @@
     align-items: center;
   }
 
-  .textLogout {
+  .textLogout, .email {
     margin-right: 8px;
   }
 
