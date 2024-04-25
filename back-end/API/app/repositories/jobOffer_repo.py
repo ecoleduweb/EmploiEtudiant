@@ -1,5 +1,7 @@
 from app import db
 from app.models.jobOffer_model import JobOffer
+from app.models.employers_model import Employers
+from app.models.enterprise_model import Enterprise
 from flask import Flask, jsonify
 
 class JobOfferRepo:

@@ -5,16 +5,15 @@
   import Button from "../../Components/Inputs/Button.svelte";
   import { writable } from "svelte/store";
   import type { jobOffer } from "../../Models/Offre";
-  import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte";
-  import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
+  import type { Entreprise } from "../../Models/Entreprise";
+  import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
   import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
   import { goto } from "$app/navigation";
-  import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
   import { GET } from "../../ts/server";
   import { onMount } from "svelte";
-
+    
   const handleOffreEmploi = () => {
-    goto("/offre");
+    return "<CreateEditOffre isJobOfferEdit={false} />";
   };
 
   const modal = writable(false);
@@ -29,36 +28,109 @@
   const handleEmploiClick = (offreId: number) => {
     openModal(offreId);
   };
+  let offre: jobOffer = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    offerDebut: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    active: true,
+    salary: 0,
+    scheduleId: -1,
+    employerId: 1,
+    isApproved: false,
+  };
+
+  let error: jobOffer = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    offerDebut: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    active: true,
+    salary: 0,
+    scheduleId: 0,
+    employerId: 0,
+    isApproved: false,
+  };
+
+  let entreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  }
+
+  let errorEntreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  }
 
   const jobOffers = writable<jobOffer[]>([]);
   const getJobOffersEmployeur = async () => {
     try {
-      const response = await GET<any>("jobOffer/offresEmploiEmployeur");
-      jobOffers.set(response);
-      console.log($jobOffers);
+      const responseOffre = await GET<any>("jobOffer/offresEmploiEmployeur");
+      jobOffers.set(responseOffre);
     } catch (error) {
       console.error("Error fetching job offers:", error);
     }
   };
   onMount(getJobOffersEmployeur);
 
-  const notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
+  const getEntreprise = async () => {
+    try {
+      const responseEntreprise = await GET<any>("enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      entreprise = responseEntreprise;
+    } catch (error) {
+      console.error("Error fetching entreprise:", error);
+    }
+  };
+  onMount(getEntreprise);
+
+  $: notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
   $: offerToCome = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
     let dateDebut = new Date(x.offerDebut);
     let dateNow = new Date();
     return dateNow < dateDebut;
   });
-  const offerDisplayed = $jobOffers.filter((x) => {
+  $: offerDisplayed = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
     let dateDebut = new Date(x.offerDebut);
     let dateFin = new Date(x.deadlineApply);
     let dateNow = new Date();
-    return x.isApproved && dateNow >= dateDebut && dateNow <= dateFin;
+    return dateNow >= dateDebut && dateNow <= dateFin;
   });
-  const expiredOffer = $jobOffers.filter((x) => {
+  $: expiredOffer = $jobOffers.filter((x) => {
     let dateFin = new Date(x.deadlineApply);
     let dateNow = new Date();
     return dateNow > dateFin;
   });
+  
 </script>
 
 <Header />
@@ -94,13 +166,13 @@
       <h2 class="textSections">Offres expirées</h2>
       {#each expiredOffer as offre}
         <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
-      {/each}
+    {/each}
     {/if}
   </section>
   {#if $modal}
     {#each $jobOffers as offre}
       {#if offre.id === $selectedEmploiId}
-        <CreateEditOffre offre={offre} handleEmploiClick={closeModal} isEdit={true} />
+        <CreateEditOffre offre={offre} entreprise={entreprise} handleEmploiClick={closeModal} isJobOfferEdit={true} />
       {/if}
     {/each}
   {/if}

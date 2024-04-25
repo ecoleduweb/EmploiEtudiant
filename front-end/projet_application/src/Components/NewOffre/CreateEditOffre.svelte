@@ -4,13 +4,14 @@
     import Button from "../Inputs/Button.svelte";
     import MultiSelect from 'svelte-multiselect';
     import type { jobOffer } from "../../Models/Offre";
-    import { writable, type Writable } from 'svelte/store';
-    import { POST } from "../../ts/server";
+    import type { Entreprise } from "../../Models/Entreprise";
+    import { writable } from 'svelte/store';
+    import { GET, POST } from "../../ts/server";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
-    import { goto } from '$app/navigation';
+    import { onMount } from "svelte";
     export let handleEmploiClick: () => void;
-    export let isEdit: boolean;
+    export let isJobOfferEdit: boolean;
 
   const schema = yup.object().shape({
     title: yup.string().required("Le titre du poste est requis"),
@@ -65,13 +66,13 @@
     dateEntryOffice: new Date().toISOString().split("T")[0],
     deadlineApply: new Date().toISOString().split("T")[0],
     email: "",
-    hoursPerWeek: "",
+    hoursPerWeek: 0,
     compliantEmployer: false,
     internship: false,
     offerLink: "https://",
     offerStatus: 0,
     active: true,
-    salary: "",
+    salary: 0,
     scheduleId: -1,
     employerId: 1, // HARDCODER
     isApproved: false,
@@ -86,17 +87,52 @@
     dateEntryOffice: "",
     deadlineApply: "",
     email: "",
-    hoursPerWeek: "",
+    hoursPerWeek: 0,
     compliantEmployer: false,
     internship: false,
     offerLink: "",
     offerStatus: 0,
     active: true,
-    salary: "",
+    salary: 0,
     scheduleId: 0,
     employerId: 0, // HARDCODER
     isApproved: false,
   };
+
+  export let entreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  };
+
+  let errorsEntreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  };
+
+
+    let villeSelected: { label: string; value: number }[] = [];
+    let villeFromSelectedEntreprise: [] = [];
+    let villesOption: { label: string; value: number }[] = [];
+    const getVilles = async () => {
+      const response = await GET<any>("/city/allCities");
+      villesOption = response.map((v: any) => {
+        return { label: v.city, value: v.id };
+      });
+    };
+    onMount(async () => {
+      getVilles();
+    });
+
 
     let programmeSelected: { label: string; value: number }[] = [];
     let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -127,51 +163,121 @@
   let errorsAcceptCondition: string = ""; // Define a variable to hold the error message for accepting condition
   let acceptCondition = false;
 
-    const handleSubmit = async () => {
-        try {
-            offre.scheduleId = (scheduleSelected as any)?.value;
-            let programmeName = programmeSelected.map((p) => p.label);
-            await schema.validate(offre, { abortEarly: false });
-            errors = {
-                id: 0,
-                title: "",
-                address: "",
-                description: "",
-                offerDebut: "",
-                dateEntryOffice: "",
-                deadlineApply: "",
-                email: "",
-                hoursPerWeek: "",
-                compliantEmployer: false,
-                internship: false,
-                offerLink: "",
-                offerStatus: 0,
-                active: true,
-                salary: "",
-                scheduleId: 0,
-                employerId: 0,
-                isApproved: false,
-            };
-            const requestData = {
-                jobOffer: {
-                    ...offre,
-                },
-                studyPrograms: programmeName
-            };
-            const response = await POST<any, any>("/jobOffer/updateJobOffer", requestData);
-        } catch (err) {
-            console.log(err);
-            if (err instanceof yup.ValidationError) {
-                errors = extractErrors(err);
-            }
-            // Handle the case where no program is selected
-            if (programmeSelected.length === 0) {
-                errorsProgramme = "Le programme visé est requis";
-            } else {
-                errorsProgramme = "";
-            }
-        }
-    };
+  const handleSubmit = async () => {
+    if (!acceptCondition) {
+      errorsAcceptCondition = "Vous devez accepter les conditions";
+      return;
+    }
+    if (isJobOfferEdit) {
+      await updateJobOffer();
+    } else {
+      await createJobOffer();
+    }
+  };
+
+  async function createJobOffer() {
+      try {
+          offre.scheduleId = (scheduleSelected as any)?.value;
+          let programmeName = programmeSelected.map((p) => p.label);
+          await schema.validate(offre, { abortEarly: false });
+          errors = {
+              id: 0,
+              title: "",
+              address: "",
+              description: "",
+              offerDebut: "",
+              dateEntryOffice: "",
+              deadlineApply: "",
+              email: "",
+              hoursPerWeek: 0,
+              compliantEmployer: false,
+              internship: false,
+              offerLink: "",
+              offerStatus: 0,
+              active: false,
+              salary: 0,
+              scheduleId: 0,
+              employerId: 0,
+              isApproved: false,
+          };
+          const requestData = {
+              jobOffer: {
+                  ...offre,
+              },
+              studyPrograms: programmeName
+          };
+          const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
+      } catch (err) {
+          console.log(err);
+          if (err instanceof yup.ValidationError) {
+              errors = extractErrors(err);
+          }
+          // Handle the case where no program is selected
+          if (programmeSelected.length === 0) {
+              errorsProgramme = "Le programme visé est requis";
+          } else {
+              errorsProgramme = "";
+          }
+      }
+  }
+
+  async function updateJobOffer() {
+      try {
+          offre.scheduleId = (scheduleSelected as any)?.value;
+          let programmeName = programmeSelected.map((p) => p.label);
+          await schema.validate(offre, { abortEarly: false });
+          errors = {
+              id: 0,
+              title: "",
+              address: "",
+              description: "",
+              offerDebut: "",
+              dateEntryOffice: "",
+              deadlineApply: "",
+              email: "",
+              hoursPerWeek: 0,
+              compliantEmployer: false,
+              internship: false,
+              offerLink: "",
+              offerStatus: 0,
+              active: false,
+              salary: 0,
+              scheduleId: 0,
+              employerId: 0,
+              isApproved: false,
+          };
+          errorsEntreprise = {
+              id: 0,
+              name: "",
+              address: "",
+              email: "",
+              phone: "",
+              cityId: 0,
+              isTemporary: false,
+          };
+          const requestData = {
+              entreprise: {
+                  ...entreprise,
+              },
+              jobOffer: {
+                  ...offre,
+              },
+              studyPrograms: programmeName,
+          };
+          const response = await POST<any, any>("/jobOffer/updateJobOffer", requestData);
+      } catch (err) {
+          console.log(err);
+          if (err instanceof yup.ValidationError) {
+              errors = extractErrors(err);
+          }
+          // Handle the case where no program is selected
+          if (programmeSelected.length === 0) {
+              errorsProgramme = "Le programme visé est requis";
+          } else {
+              errorsProgramme = "";
+          }
+      }
+  }
 
   let maxDateString: any;
   $: {
@@ -182,11 +288,78 @@
 
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
+
 </script>
 
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
-    <h1>Créer une nouvelle offre d'emploi</h1>
+    {#if isJobOfferEdit}
+      <h1>Modification d'une entreprise</h1>
+    {:else}
+      <h1>Création d'une nouvelle entreprise</h1>
+    {/if}
+    <div class="form-group-vertical">
+      <label for="title">Nom*</label>
+      <input
+        type="text"
+        bind:value={entreprise.name}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.name}{errorsEntreprise.name}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="schedule">Adresse*</label>
+      <input
+        type="text"
+        bind:value={entreprise.address}
+        class="form-control"
+        id="address"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.address}{errorsEntreprise.address}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Courriel*</label>
+      <input
+        type="text"
+        bind:value={entreprise.email}
+        class="form-control"
+        id="email"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.email}{errorsEntreprise.email}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Téléphone*</label>
+      <input
+        type="text"
+        bind:value={entreprise.phone}
+        class="form-control"
+        id="phone"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.phone}{errorsEntreprise.phone}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Ville*</label>
+      <MultiSelect
+        id="ville"
+        options={villesOption}
+        placeholder="Choisir ville..."
+        bind:value={villeSelected}
+        bind:selected={villeFromSelectedEntreprise}
+      />
+    {#if isJobOfferEdit}
+      <h1>Modification d'une offre d'emploi</h1>
+    {:else}
+      <h1>Création d'une nouvelle offre d'emploi</h1>
+    {/if}
     <div class="form-group-vertical">
       <label for="title">Titre du poste*</label>
       <input
