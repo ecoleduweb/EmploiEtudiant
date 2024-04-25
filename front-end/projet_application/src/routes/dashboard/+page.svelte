@@ -11,10 +11,6 @@
   import { goto } from "$app/navigation";
   import { GET } from "../../ts/server";
   import { onMount } from "svelte";
-    
-  const handleOffreEmploi = () => {
-    return "<CreateEditOffre isJobOfferEdit={false} />";
-  };
 
   const modal = writable(false);
   const selectedEmploiId = writable(0);
