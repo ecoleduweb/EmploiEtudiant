@@ -12,6 +12,9 @@ class EnterpriseService:
     def getEnterpriseByEmployer(self, employerId):
         return enterprise_repo.getEnterpriseByEmployer(employerId)
     
+    def getEnterprise(self, id):
+        return enterprise_repo.getEnterprise(id)
+    
     def updateEnterprise(self, data):
         return enterprise_repo.updateEnterprise(data)
     
