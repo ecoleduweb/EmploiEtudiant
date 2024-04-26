@@ -5,6 +5,10 @@
   import type { Register } from "../../Models/Register.ts";
   import { extractErrors } from "../../ts/utils";
   import * as yup from "yup";
+  import "../../styles/global.css";
+  import { POST } from "../../ts/server";
+  import { goto } from "$app/navigation";
+  import { jwtDecode } from "jwt-decode";
 
   const schema = yup.object({
     user: yup.object({
@@ -22,11 +26,6 @@
           "Ne correspond pas aux critères de sécurité"
         ),
     }),
-    nameEnterprise: yup.string().required("Nom de l'entreprise requis"),
-    address: yup.string().required("Adresse requise"),
-    city: yup.string().required("Ville requise"),
-    zipCode: yup.string().required("Code postal requis"),
-    province: yup.string().required("Province requise"),
     validatePassword: yup
       .string()
       .required("Confirmer le mot de passe")
@@ -44,12 +43,6 @@
       password: "",
       role: "",
     },
-    nameEnterprise: "",
-    address: "",
-    city: "",
-    phone: "",
-    zipCode: "",
-    province: "",
     validatePassword: "",
   };
 
@@ -62,12 +55,6 @@
       password: "",
       role: "",
     },
-    nameEnterprise: "",
-    address: "",
-    city: "",
-    phone: "",
-    zipCode: "",
-    province: "",
     validatePassword: "",
   };
 
@@ -83,14 +70,35 @@
           password: "",
           role: "",
         },
-        nameEnterprise: "",
-        address: "",
-        city: "",
-        phone: "",
-        zipCode: "",
-        province: "",
         validatePassword: "",
       };
+      try {
+        const response = await POST<any, any>("/user/register", {
+          email: register.user.email,
+          password: register.user.password,
+          firstName: register.user.firstName,
+          lastName: register.user.lastName,
+          role: "user",
+        });
+        if (response.token != "") {
+          const token = jwtDecode(response.token);
+          localStorage.setItem("token", response.token);
+          goto("/dashboard");
+        }
+      } catch (error) {
+        errors = {
+          user: {
+            id: 0,
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            role: "",
+          },
+          validatePassword: "",
+          token: "Erreur lors de la création du compte",
+        };
+      }
     } catch (err) {
       errors = extractErrors(err);
     }
@@ -135,50 +143,6 @@
       </div>
     </div>
     <div class="info-block">
-      <h2>Informations de l'entreprise</h2>
-      <div class="form-fields">
-        <div class="form-inputs">
-          <label for="entreprise">Nom Entreprise</label>
-          <input
-            type="text"
-            id="entreprise"
-            bind:value={register.nameEnterprise}
-          />
-          <p class="errors-input">
-            {#if errors.nameEnterprise}{errors.nameEnterprise}{/if}
-          </p>
-        </div>
-        <div class="form-inputs">
-          <label for="address">Adresse</label>
-          <input type="text" id="address" bind:value={register.address} />
-          <p class="errors-input">
-            {#if errors.address}{errors.address}{/if}
-          </p>
-        </div>
-        <div class="form-inputs">
-          <label for="city">Ville</label>
-          <input type="text" id="city" bind:value={register.city} />
-          <p class="errors-input">
-            {#if errors.city}{errors.city}{/if}
-          </p>
-        </div>
-        <div class="form-inputs">
-          <label for="zipCode">Code Postal</label>
-          <input type="text" id="zipCode" bind:value={register.zipCode} />
-          <p class="errors-input">
-            {#if errors.zipCode}{errors.zipCode}{/if}
-          </p>
-        </div>
-        <div class="form-inputs">
-          <label for="province">Province</label>
-          <input type="text" id="province" bind:value={register.province} />
-          <p class="errors-input">
-            {#if errors.province}{errors.province}{/if}
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="info-block">
       <h2>Informations de l'utilisateur</h2>
       <div class="form-connexion">
         <div class="form-inputs">
@@ -216,6 +180,11 @@
         </div>
       </div>
     </div>
+    <p class="errors-input">
+      {#if errors.token}
+        {errors.token}
+      {/if}
+    </p>
     <div class="form-inputs form-submit">
       <div class="form-buttons">
         <Link text="Retour" href="/" />
