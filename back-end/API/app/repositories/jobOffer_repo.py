@@ -21,7 +21,7 @@ class JobOfferRepo:
          offerLink=data['offerLink'],
          salary=data['salary'],
          active=data['active'],
-         employerId=employerId,
+         employerId=data['employerId'],
          scheduleId=data['scheduleId'],
          isApproved=data['isApproved'])
         db.session.add(new_job_offer)
