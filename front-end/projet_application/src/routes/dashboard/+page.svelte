@@ -8,9 +8,15 @@
   import type { Entreprise } from "../../Models/Entreprise";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
   import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
-  import { goto } from "$app/navigation";
   import { GET } from "../../ts/server";
   import { onMount } from "svelte";
+
+  let isJobOfferEdit = false;
+
+  const handleOffreEmploi = () => {
+    isJobOfferEdit = false;
+    openModal(0);
+  };
 
   const modal = writable(false);
   const selectedEmploiId = writable(0);
@@ -22,6 +28,7 @@
     modal.set(false);
   };
   const handleEmploiClick = (offreId: number) => {
+    isJobOfferEdit = true;
     openModal(offreId);
   };
   let offre: jobOffer = {
@@ -122,11 +129,12 @@
     return dateNow >= dateDebut && dateNow <= dateFin;
   });
   $: expiredOffer = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
     let dateFin = new Date(x.deadlineApply);
     let dateNow = new Date();
     return dateNow > dateFin;
   });
-  
+
 </script>
 
 <Header />
@@ -166,11 +174,16 @@
     {/if}
   </section>
   {#if $modal}
-    {#each $jobOffers as offre}
-      {#if offre.id === $selectedEmploiId}
-        <CreateEditOffre offre={offre} entreprise={entreprise} handleEmploiClick={closeModal} isJobOfferEdit={true} />
-      {/if}
-    {/each}
+    {#if isJobOfferEdit === false}
+        <CreateEditOffre handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+    {/if}
+    {#if isJobOfferEdit === true}
+      {#each $jobOffers as offre}
+        {#if offre.id === $selectedEmploiId}
+          <CreateEditOffre offre={offre} entreprise={entreprise} handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+        {/if}
+      {/each}
+    {/if}
   {/if}
 </main>
 <Footer />

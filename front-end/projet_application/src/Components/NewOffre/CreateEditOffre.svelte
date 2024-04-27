@@ -293,7 +293,7 @@
 
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
-    {#if isJobOfferEdit}
+    {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
     {:else}
       <h1>Création d'une nouvelle entreprise</h1>
@@ -355,7 +355,8 @@
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
       />
-    {#if isJobOfferEdit}
+    </div>
+    {#if isJobOfferEdit === true}
       <h1>Modification d'une offre d'emploi</h1>
     {:else}
       <h1>Création d'une nouvelle offre d'emploi</h1>
