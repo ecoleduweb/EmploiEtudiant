@@ -35,7 +35,8 @@ def app():
             "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
-            "scheduleId": None
+            "scheduleId": None,
+            "isApproved": True
         }
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
@@ -56,7 +57,8 @@ def app():
             "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
-            "scheduleId": None
+            "scheduleId": None,
+            "isApproved": False
         }
         job_offer2 = JobOffer(**job_offer2_data)
         db.session.add(job_offer2)
@@ -108,7 +110,8 @@ def test_offreEmploi(client):
         "offerDebut": "2021-12-12",
         "active": True,
         "employerId": None,
-        "scheduleId": None
+        "scheduleId": None,
+        "isApproved": True
     }
 
 def test_offresEmploi(client):
@@ -137,6 +140,7 @@ def test_userCreateOffresEmploi(client):
                 "active": True,
                 "employerId": 1,
                 "scheduleId": 1,
+                "isApproved": False
             },
             "enterprise": 
             {
