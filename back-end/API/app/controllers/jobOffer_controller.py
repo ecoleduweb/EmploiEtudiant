@@ -47,7 +47,7 @@ def token_required(f):
 
 @job_offer_blueprint.route('/createJobOffer', methods=['POST'])
 @token_required
-def createJobOffer():
+def createJobOffer(current_user):
     data = request.get_json()
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
