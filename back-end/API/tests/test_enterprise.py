@@ -142,4 +142,4 @@ def test_getEnterprise(client):
     token = responseLogin.json['token']
     response = client.get('/enterprise/getEnterprise?id=1', headers={"Authorization": token})
     assert response.status_code == 200
-    assert len(response.json) == 1
+    assert len(response.json) == 7
