@@ -10,6 +10,7 @@
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
     import { onMount } from "svelte";
+    import { jwtDecode } from "jwt-decode";
     export let handleEmploiClick: () => void;
     export let isJobOfferEdit: boolean;
 
@@ -131,8 +132,14 @@
     };
     onMount(async () => {
       getVilles();
+    // const token = localStorage.getItem("token");
+    // const decodedToken = jwtDecode(token as string);
+    // const isModerator = decodedToken.isModerator;
+    // console.log(decodedToken);
     });
 
+    //-------------SECTION ADMIN-------------------------------------
+    
 
     let programmeSelected: { label: string; value: number }[] = [];
     let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)

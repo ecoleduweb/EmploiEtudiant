@@ -96,7 +96,7 @@
   const jobOffers = writable<jobOffer[]>([]);
   const getJobOffersEmployeur = async () => {
     try {
-      const responseOffre = await GET<any>("jobOffer/offresEmploiEmployeur");
+      const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
       jobOffers.set(responseOffre);
     } catch (error) {
       console.error("Error fetching job offers:", error);
@@ -106,7 +106,7 @@
 
   const getEntreprise = async () => {
     try {
-      const responseEntreprise = await GET<any>("enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      const responseEntreprise = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
       entreprise = responseEntreprise;
     } catch (error) {
       console.error("Error fetching entreprise:", error);
