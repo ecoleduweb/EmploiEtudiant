@@ -29,11 +29,11 @@ def app():
             "hoursPerWeek": 40,
             "compliantEmployer": True,
             "internship": False,
-            "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
             "offerDebut": "2021-12-12",
             "active": True,
+            "approbationMessage": "Super offre!",
             "employerId": None,
             "scheduleId": None,
             "isApproved": True
@@ -51,7 +51,6 @@ def app():
             "hoursPerWeek": 40,
             "compliantEmployer": True,
             "internship": False,
-            "offerStatus": 1,
             "offerLink": "www.google.com",
             "salary": 1000,
             "offerDebut": "2021-12-12",
@@ -64,6 +63,8 @@ def app():
         db.session.add(job_offer2)
         hashed_password = hasher.hash("test123")
         user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
+        admin = User(id=2, firstName="Joe", lastName="Baril", email="bigJoeDu91@cegeprdl.ca", password=hashed_password, active=True, isModerator=True)
+        db.session.add(admin)
         db.session.add(user)
         studyProgram1_data = {
             "id": 1,
@@ -104,11 +105,11 @@ def test_offreEmploi(client):
         "hoursPerWeek": 40,
         "compliantEmployer": True,
         "internship": False,
-        "offerStatus": 1,
         "offerLink": "www.google.com",
         "salary": "1000",
         "offerDebut": "2021-12-12",
         "active": True,
+        "approbationMessage": "Super offre!",
         "employerId": None,
         "scheduleId": None,
         "isApproved": True
@@ -133,7 +134,6 @@ def test_userCreateOffresEmploi(client):
                 "hoursPerWeek": 40,
                 "compliantEmployer": True,
                 "internship": False,
-                "offerStatus": 1,
                 "offerLink": "www.google.com",
                 "salary": 1000,
                 "offerDebut": "2021-12-12",
@@ -163,4 +163,20 @@ def test_userCreateOffresEmploi(client):
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
     response = client.post('/jobOffer/createJobOffer', json=data, headers={'Authorization': token})
+    assert response.status_code == 200
+
+def test_approveJobOffer(client):
+    data = {
+        "id": 1,
+        "approbationMessage": "Super offre!",
+        "isApproved": True
+    }
+    data1 = {
+        "email": "bigJoeDu91@cegeprdl.ca",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    print(responseLogin.json)
+    response = client.put('/jobOffer/approveJobOffer', json=data, headers={'Authorization': token})
     assert response.status_code == 200

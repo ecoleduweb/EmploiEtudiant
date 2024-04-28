@@ -137,6 +137,6 @@ def linkJobOfferEmployer():
 
 @job_offer_blueprint.route('/approveJobOffer', methods=['PUT'])
 @token_admin_required
-def approveJobOffer():
+def approveJobOffer(current_user):
     data = request.get_json()
     return jobOffer_service.approveJobOffer(data)
