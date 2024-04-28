@@ -16,10 +16,11 @@ class JobOffer(db.Model):
     hoursPerWeek = db.Column(db.Float, nullable=False)
     compliantEmployer = db.Column(db.Boolean, nullable=False)
     internship = db.Column(db.Boolean, nullable=False)
-    offerStatus = db.Column(db.Integer, nullable=False)
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
+    isApproved = db.Column(db.Boolean, nullable=False)
+    approbationMessage = db.Column(db.String(255))
     employerId = db.Column(db.Integer, nullable=True)
     scheduleId = db.Column(db.Integer, nullable=True)
 
@@ -39,6 +40,8 @@ class JobOffer(db.Model):
           offerLink='{self.offerLink}',
           salary='{self.salary}',
           active={self.active},
+          isApproved={self.isApproved},
+          approbationMessage='{self.approbationMessage}',
           employerId={self.employerId},
           scheduleId={self.employmentSchedule})'''
 
@@ -59,6 +62,8 @@ class JobOffer(db.Model):
             'offerLink': self.offerLink,
             'salary': self.salary,
             'active': self.active,
+            'isApproved': self.isApproved,
+            'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
             'scheduleId': self.scheduleId
         }

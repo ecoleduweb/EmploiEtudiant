@@ -26,6 +26,26 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 
 token = os.environ.get('BEARER_TOKEN')
 
+def token_admin_required(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if 'Authorization' in request.headers:
+                token = request.headers['Authorization']
+            if not token:
+                return jsonify({'message': 'a valid token is missing'})
+
+            try:
+                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+                current_user = User.query.filter_by(email = data['email']).first()
+            except Exception as e:
+                print(e)
+                return jsonify({'message': 'token is invalid'})
+            if current_user.isModerator:
+                return f(current_user)
+            else:
+                return jsonify({'message': 'user is not admin'})
+        return decorated
+
 def token_required(f):
         @wraps(f)
         def decorated(*args, **kwargs):
@@ -95,3 +115,9 @@ def offresEmploi():
 def linkJobOfferEmployer():
     data = request.get_json()
     return jobOffer_service.linkJobOfferEmployer(data)
+
+@job_offer_blueprint.route('/approveJobOffer', methods=['PUT'])
+@token_admin_required
+def approveJobOffer():
+    data = request.get_json()
+    return jobOffer_service.approveJobOffer(data)

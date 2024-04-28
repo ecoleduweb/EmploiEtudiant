@@ -38,3 +38,9 @@ class JobOfferRepo:
         jobOffer.employer_id = data['employerId']
         db.session.commit()
         return jsonify({'message': 'job offer linked to employer'})
+    
+    def approveJobOffer(self, data):
+        jobOffer = JobOffer.query.filter_by(id=data['jobOfferId']).first()
+        jobOffer.offerStatus = data['offerStatus']
+        db.session.commit()
+        return jsonify({'message': 'job offer approved'})
