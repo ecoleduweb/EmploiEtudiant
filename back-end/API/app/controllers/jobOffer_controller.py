@@ -68,6 +68,10 @@ def offresEmploiEmployeur(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
+    if user.isModerator:
+        jobOffers = jobOffer_service.offresEmploi()
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    #Si il n'y a pas d'offre d'emploi pour l'employeur, on retourne un tableau vide
     try:
         employerId = employer_service.getEmployerByUserId(user.id).id
     except Exception as e:

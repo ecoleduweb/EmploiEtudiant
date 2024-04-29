@@ -6,7 +6,7 @@
   import type { jobOffer } from "../../Models/Offre";
   import type { Entreprise } from "../../Models/Entreprise";
   import { writable } from "svelte/store";
-  import { GET, POST } from "../../ts/server";
+  import { GET, POST, PUT } from "../../ts/server";
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import { onMount } from "svelte";
@@ -197,6 +197,7 @@
     { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
+    { label: "Toutes les programmes", value: 12 },
   ];
   let scheduleSelected: { label: string; value: number }[] = [];
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -222,6 +223,7 @@
     } else {
       await createJobOffer();
     }
+    window.location.reload();
   };
 
   async function createJobOffer() {
@@ -317,16 +319,17 @@
       console.log("ENTEPRISE :" + entreprise.cityId);
       const requestData = {
         entreprise: {
-          ...entreprise,
+          ...entreprise
         },
         jobOffer: {
-          ...offre,
+          ...offre
         },
-        studyPrograms: programmeName,
+        studyPrograms: programmeName
       };
-      const response = await POST<any, any>(
+      console.log(requestData.jobOffer);
+      const response = await PUT<any>(
         "/jobOffer/updateJobOffer",
-        requestData
+        requestData.jobOffer
       );
     } catch (err) {
       console.log(err);
@@ -357,6 +360,7 @@
 
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
+    <div class="content-form">
     {#if isModerator === true}
       {#if isJobOfferEdit === true}
         <!-- rien -->
@@ -394,7 +398,7 @@
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -407,7 +411,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -420,7 +424,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -433,7 +437,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -451,7 +455,7 @@
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
-        disabled={isEnterpriseSelected}
+        disabled={!isJobOfferEdit}
       />
       {/if}
     </div>
@@ -640,23 +644,28 @@
       {#if errors.description}{errors.description}{/if}
     </p>
     <div class="accept-Condition">
-      <input
-        type="checkbox"
-        bind:checked={acceptCondition}
-        class="form-control-acceptCondition"
-        id="acceptCondition"
-      />
-      <label for="acceptCondition">J'acceptes les condtions </label>
+      <div class="accept-horiz">
+        <input
+          type="checkbox"
+          bind:checked={acceptCondition}
+          class="form-control-acceptCondition"
+          id="acceptCondition"
+        />
+        <label for="acceptCondition">J'acceptes les condtions </label>
+      </div>
+      <div class="send">
+        <Button
+          submit={true}
+          text="Envoyer"
+          on:click={() => handleSubmit()}
+          onClick={() => ""}
+        />
+      </div>
     </div>
     <p class="errors-input">
       {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
     </p>
-    <Button
-      submit={true}
-      text="Envoyer"
-      on:click={() => handleSubmit()}
-      onClick={() => ""}
-    />
+  </div>
   </form>
 </Modal>
 
@@ -665,18 +674,26 @@
     display: block;
     margin-bottom: 0.26vw;
   }
+  h1{
+    margin: 0;
+  }
 
   .form-offre {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    overflow-y: scroll;
+    max-height: 700px;
     border: 0.3vw solid #ccc;
     background-color: #ffff;
     box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1);
     border-radius: 0.781vw;
-    padding: 0 0.78vw 2vh 0;
+  }
+
+  .content-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .form-group-horizontal {
@@ -705,10 +722,15 @@
     color: red;
     font-size: 0.8em;
   }
-  .accept-Condition {
+  .accept-Condition{
     display: flex;
     flex-direction: row;
-    width: 80%;
+    justify-content:space-around;
+    width: 100%;
+  }
+  .accept-horiz {
+    display: flex;
+    flex-direction: row;
     margin: 0.8vw;
   }
   .form-control-acceptCondition {
