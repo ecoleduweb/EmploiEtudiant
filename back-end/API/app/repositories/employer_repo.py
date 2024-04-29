@@ -42,8 +42,7 @@ class EmployerRepo:
             return False
         logger.warning('employer deleted')
         return True
-    
+      
     def getEmployerByUserId(self, userId):
         employer = Employers.query.filter_by(userId=userId).first()
         return employer
-            
