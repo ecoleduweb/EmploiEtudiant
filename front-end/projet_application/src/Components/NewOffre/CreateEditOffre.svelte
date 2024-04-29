@@ -6,7 +6,7 @@
   import type { jobOffer } from "../../Models/Offre";
   import type { Entreprise } from "../../Models/Entreprise";
   import { writable } from "svelte/store";
-  import { GET, POST } from "../../ts/server";
+  import { GET, POST, PUT } from "../../ts/server";
   import * as yup from "yup";
   import { extractErrors } from "../../ts/utils";
   import { onMount } from "svelte";
@@ -206,6 +206,7 @@
     { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
+    { label: "Toutes les programmes", value: 12 },
   ];
   let scheduleSelected: { label: string; value: number }[] = [];
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -322,16 +323,17 @@
       };
       const requestData = {
         entreprise: {
-          ...entreprise,
+          ...entreprise
         },
         jobOffer: {
-          ...offre,
+          ...offre
         },
-        studyPrograms: programmeName,
+        studyPrograms: programmeName
       };
-      const response = await POST<any, any>(
+      console.log(requestData.jobOffer);
+      const response = await PUT<any>(
         "/jobOffer/updateJobOffer",
-        requestData
+        requestData.jobOffer
       );
     } catch (err) {
       console.log(err);
@@ -394,7 +396,7 @@
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -407,7 +409,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -420,7 +422,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -433,7 +435,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
-        readonly={isEnterpriseSelected}
+        readonly={!isJobOfferEdit}
       />
     </div>
     <p class="errors-input">
@@ -451,7 +453,7 @@
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
-        disabled={isEnterpriseSelected}
+        disabled={!isJobOfferEdit}
       />
       {/if}
     </div>

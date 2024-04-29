@@ -57,11 +57,12 @@ export async function PUT<T>(url: string, body: T): Promise<void> {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(body),
     });
 
-    await handleResponse(response);
+    //await handleResponse(response);
   } catch (error) {
     console.error("Error putting:", error);
     throw error;
