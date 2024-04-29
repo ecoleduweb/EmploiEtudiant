@@ -1,6 +1,5 @@
 <script lang="ts">
     export let handleModalClick: () => void;
-    export let currentPage = window.location.pathname;
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault();
