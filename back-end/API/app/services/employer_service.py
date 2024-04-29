@@ -24,3 +24,4 @@ class EmployerService:
     
     def getEmployerByUserId(self, userId):
         return employer_repo.getEmployerByUserId(userId)
+

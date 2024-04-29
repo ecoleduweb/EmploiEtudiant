@@ -116,7 +116,13 @@ def test_offreEmploi(client):
     }
 
 def test_offresEmploi(client):
-    response = client.get('/jobOffer/offresEmploi')
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.get('/jobOffer/offresEmploi', headers={'Authorization': token})
     print(response)
     assert response.status_code == 200
     assert len(response.json) == 2
