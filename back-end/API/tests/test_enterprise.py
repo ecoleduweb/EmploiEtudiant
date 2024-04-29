@@ -36,6 +36,8 @@ def app():
         hashed_password = hasher.hash("test")
         data = {
             "id": 1,
+            "firstName": "test",
+            "lastName": "test",
             "email": "test@test.com",
             "password": hashed_password,
             "isModerator": True,
@@ -130,3 +132,14 @@ def test_deleteEnterprise(client):
     assert response.json == {
         "message": 'enterprise deleted'
     }
+
+def test_getEnterprise(client):
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/enterprise/getEnterprise?id=1', headers={"Authorization": token})
+    assert response.status_code == 200
+    assert len(response.json) == 7
