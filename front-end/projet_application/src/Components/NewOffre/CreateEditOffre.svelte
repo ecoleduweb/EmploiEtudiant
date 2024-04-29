@@ -166,7 +166,6 @@
         await getEmployerByUserId();
       }
     });
-  };
 
     //-------------SECTION ADMIN-------------------------------------
     let isModerator: boolean = false;
@@ -285,7 +284,7 @@
           }
       }
     }
-  }
+  
 
   async function updateJobOffer() {
     try {
