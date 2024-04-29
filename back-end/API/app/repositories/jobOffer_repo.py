@@ -17,7 +17,6 @@ class JobOfferRepo:
          hoursPerWeek=data['hoursPerWeek'],
          compliantEmployer=data['compliantEmployer'],
          internship=data['internship'],
-         offerStatus=data['offerStatus'],
          offerLink=data['offerLink'],
          salary=data['salary'],
          active=data['active'],
@@ -44,7 +43,6 @@ class JobOfferRepo:
         jobOffer.hoursPerWeek = data['hoursPerWeek']
         jobOffer.compliantEmployer = data['compliantEmployer']
         jobOffer.internship = data['internship']
-        jobOffer.offerStatus = data['offerStatus']
         jobOffer.offerLink = data['offerLink']
         jobOffer.salary = data['salary']
         jobOffer.active = data['active']
@@ -67,3 +65,10 @@ class JobOfferRepo:
         jobOffer.employer_id = data['employerId']
         db.session.commit()
         return jsonify({'message': 'job offer linked to employer'})
+    
+    def approveJobOffer(self, data):
+        jobOffer = JobOffer.query.filter_by(id=data['id']).first()
+        jobOffer.offerStatus = data['isApproved']
+        jobOffer.approbationMessage = data['approbationMessage']
+        db.session.commit()
+        return jsonify({'message': 'job offer approved'})
