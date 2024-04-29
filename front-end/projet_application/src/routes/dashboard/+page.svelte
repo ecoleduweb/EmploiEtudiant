@@ -4,14 +4,18 @@
   import Footer from "../../Components/Common/Footer.svelte";
   import Button from "../../Components/Inputs/Button.svelte";
   import { writable } from "svelte/store";
-  import type { Offre } from "../../Models/Offre";
-  import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte";
-  import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
-  import { goto } from "$app/navigation";
+  import type { jobOffer } from "../../Models/Offre";
+  import type { Entreprise } from "../../Models/Entreprise";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
+  import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
+  import { GET } from "../../ts/server";
+  import { onMount } from "svelte";
+
+  let isJobOfferEdit = false;
 
   const handleOffreEmploi = () => {
-    goto("/offre");
+    isJobOfferEdit = false;
+    openModal(0);
   };
 
   const modal = writable(false);
@@ -24,61 +28,113 @@
     modal.set(false);
   };
   const handleEmploiClick = (offreId: number) => {
+    isJobOfferEdit = true;
     openModal(offreId);
   };
-  const data: Offre[] = [
-    {
-      id: 1,
-      titre: "Titre du poste 1",
-      dateDebut: "2024-04-20",
-      dateFin: "2025-10-11",
-      description: "Description du poste 1",
-      entreprise: "Entreprise 1",
-      poste: "Developpeur",
-      ville: "Squatec",
-      isApproved: true,
-    },
-    {
-      id: 2,
-      titre: "Titre du poste 2",
-      dateDebut: "2021-10-10",
-      dateFin: "2026-10-11",
-      description: "Description du poste 2",
-      entreprise: "Entreprise 2",
-      poste: "Developpeur",
-      ville: "Squatec",
-      isApproved: true,
-    },
-    {
-      id: 3,
-      titre: "Titre du poste 3",
-      dateDebut: "2021-10-10",
-      dateFin: "2021-10-11",
-      description: "Description du poste 3",
-      entreprise: "Entreprise 3",
-      poste: "Developpeur",
-      ville: "Squatec",
-      isApproved: true,
-    },
-  ];
+  let offre: jobOffer = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    offerDebut: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    active: true,
+    salary: 0,
+    scheduleId: -1,
+    employerId: 1,
+    isApproved: false,
+  };
 
-  const notApprovedOffer = data.filter((x) => !x.isApproved);
-  const offerToCome = data.filter((x) => {
-    let dateDebut = new Date(x.dateDebut);
+  let error: jobOffer = {
+    id: 0,
+    title: "",
+    address: "",
+    description: "",
+    offerDebut: "",
+    dateEntryOffice: "",
+    deadlineApply: "",
+    email: "",
+    hoursPerWeek: 0,
+    compliantEmployer: false, 
+    internship: false,
+    offerLink: "",
+    offerStatus: 0,
+    active: true,
+    salary: 0,
+    scheduleId: 0,
+    employerId: 0,
+    isApproved: false,
+  };
+
+  let entreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  }
+
+  let errorEntreprise: Entreprise = {
+    id: 0,
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    cityId: 0,
+    isTemporary: false,
+  }
+
+  const jobOffers = writable<jobOffer[]>([]);
+  const getJobOffersEmployeur = async () => {
+    try {
+      const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
+      jobOffers.set(responseOffre);
+    } catch (error) {
+      console.error("Error fetching job offers:", error);
+    }
+  };
+  onMount(getJobOffersEmployeur);
+
+  const getEntreprise = async () => {
+    try {
+      const responseEntreprise = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      entreprise = responseEntreprise;
+    } catch (error) {
+      console.error("Error fetching entreprise:", error);
+    }
+  };
+  onMount(getEntreprise);
+
+  $: notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
+  $: offerToCome = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
+    let dateDebut = new Date(x.offerDebut);
     let dateNow = new Date();
     return dateNow < dateDebut;
   });
-  const offerDisplayed = data.filter((x) => {
-    let dateDebut = new Date(x.dateDebut);
-    let dateFin = new Date(x.dateFin);
+  $: offerDisplayed = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
+    let dateDebut = new Date(x.offerDebut);
+    let dateFin = new Date(x.deadlineApply);
     let dateNow = new Date();
-    return x.isApproved && dateNow >= dateDebut && dateNow <= dateFin;
+    return dateNow >= dateDebut && dateNow <= dateFin;
   });
-  const expiredOffer = data.filter((x) => {
-    let dateFin = new Date(x.dateFin);
+  $: expiredOffer = $jobOffers.filter((x) => {
+    if (!x.isApproved) return false;
+    let dateFin = new Date(x.deadlineApply);
     let dateNow = new Date();
     return dateNow > dateFin;
   });
+
 </script>
 
 <Header />
@@ -95,34 +151,39 @@
     {#if notApprovedOffer.length > 0}
       <h2 class="textSections">En attente d'approbation</h2>
       {#each notApprovedOffer as offre}
-        <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if offerToCome.length > 0}
       <h2 class="textSections">Offres bientôt affichées</h2>
       {#each offerToCome as offre}
-        <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if offerDisplayed.length > 0}
       <h2 class="textSections">Offres affichées</h2>
       {#each offerDisplayed as offre}
-        <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if expiredOffer.length > 0}
       <h2 class="textSections">Offres expirées</h2>
       {#each expiredOffer as offre}
-        <OfferRow emploi={offre} handleModalClick={handleEmploiClick} />
-      {/each}
+        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+    {/each}
     {/if}
   </section>
   {#if $modal}
-    {#each data as emploi}
-      {#if emploi.id === $selectedEmploiId}
-        <OffreEmploi {emploi} handleEmploiClick={closeModal} />
-      {/if}
-    {/each}
+    {#if isJobOfferEdit === false}
+        <CreateEditOffre handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+    {/if}
+    {#if isJobOfferEdit === true}
+      {#each $jobOffers as offre}
+        {#if offre.id === $selectedEmploiId}
+          <CreateEditOffre offre={offre} entreprise={entreprise} handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+        {/if}
+      {/each}
+    {/if}
   {/if}
 </main>
 <Footer />

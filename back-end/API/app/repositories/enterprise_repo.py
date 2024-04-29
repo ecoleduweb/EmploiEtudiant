@@ -1,5 +1,6 @@
 from app import db
 from app.models.enterprise_model import Enterprise
+from app.models.employers_model import Employers
 from flask import Flask, jsonify, request
 from logging import getLogger
 logger = getLogger(__name__)
@@ -13,6 +14,12 @@ class EnterpriseRepo:
         enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
         db.session.add(enterprise)
         db.session.commit()
+        return enterprise
+    
+    def getEnterpriseByEmployer(self, employerId):
+        employer = Employers.query.filter_by(id=employerId).first()
+        print(employer)
+        enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
         return enterprise
 
     def getEnterprise(self, id):

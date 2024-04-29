@@ -5,7 +5,7 @@
     import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte";
     import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
     import { writable } from "svelte/store";
-    import type { Emploi } from "../../Models/Emploi";
+    import type { jobOffer } from "../../Models/Offre";
     import { GET } from "../../ts/server";
     import { onMount } from "svelte";
 
@@ -22,7 +22,7 @@
         openModal(offreId);
     };
 
-    const jobOffers = writable<Emploi[]>([]);
+    const jobOffers = writable<jobOffer[]>([]);
     const getJobOffers = async () => {
         try {
             const response = await GET<any>("/jobOffer/offresEmploi");
@@ -47,13 +47,13 @@
     </section>
     <section class="offres">
         {#each $jobOffers as offre}
-            <EmploiRow emploi={offre} handleModalClick={handleEmploiClick}/>
+            <EmploiRow offre={offre} handleModalClick={handleEmploiClick}/>
         {/each}
     </section>
     {#if $modal}
         {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
-                <OffreEmploi {emploi} handleEmploiClick={closeModal} />
+                <OffreEmploi offre={emploi} handleEmploiClick={closeModal}/>
             {/if}
         {/each}
     {/if}

@@ -16,12 +16,13 @@ class JobOffer(db.Model):
     hoursPerWeek = db.Column(db.Float, nullable=False)
     compliantEmployer = db.Column(db.Boolean, nullable=False)
     internship = db.Column(db.Boolean, nullable=False)
-    offerStatus = db.Column(db.Integer, nullable=False)
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
+    approbationMessage = db.Column(db.String(255))
     employerId = db.Column(db.Integer, nullable=True)
     scheduleId = db.Column(db.Integer, nullable=True)
+    isApproved = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
@@ -35,12 +36,13 @@ class JobOffer(db.Model):
           hoursPerWeek={self.hoursPerWeek},
           compliantEmployer={self.compliantEmployer},
           internship={self.internship},
-          offerStatus={self.offerStatus},
           offerLink='{self.offerLink}',
           salary='{self.salary}',
           active={self.active},
+          approbationMessage='{self.approbationMessage}',
           employerId={self.employerId},
-          scheduleId={self.employmentSchedule})'''
+          scheduleId={self.scheduleId}),
+          isApproved={self.isApproved}'''
 
     def to_json_string(self):
         return {
@@ -55,10 +57,11 @@ class JobOffer(db.Model):
             'hoursPerWeek': self.hoursPerWeek,
             'compliantEmployer': self.compliantEmployer,
             'internship': self.internship,
-            'offerStatus': self.offerStatus,
             'offerLink': self.offerLink,
             'salary': self.salary,
             'active': self.active,
+            'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
-            'scheduleId': self.scheduleId
+            'scheduleId': self.scheduleId,
+            'isApproved': self.isApproved
         }
