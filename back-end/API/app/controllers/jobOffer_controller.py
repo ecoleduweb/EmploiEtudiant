@@ -37,6 +37,7 @@ def createJobOffer(current_user):
         return jsonify({'message': 'Job offer created successfully'}) 
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
+        print(employer)
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
@@ -68,9 +69,9 @@ def offresEmploiEmployeur(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
+    print(user)
     if user.isModerator:
         jobOffers = jobOffer_service.offresEmploi()
-        print(jobOffers)
         return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
