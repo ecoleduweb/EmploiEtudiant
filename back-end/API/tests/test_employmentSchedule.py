@@ -48,5 +48,11 @@ def test_employmentSchedules(client):
     assert len(response.json) == 2
 
 def test_employmentSchedule(client):
-    response = client.get('/employmentSchedule/employmentSchedule?id=1')
+    dataLogin = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/employmentSchedule/employmentSchedule/1', headers={"Authorization": token})
     assert response.status_code == 200

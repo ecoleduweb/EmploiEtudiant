@@ -35,7 +35,7 @@
         cursor: default;
     }
     .modal {
-        background-color: #e5e5e5;
+        background-color: #ffffff;
         width: 90%;
         max-width: 800px;
         border: none;

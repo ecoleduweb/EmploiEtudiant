@@ -1,42 +1,19 @@
 from flask import jsonify, request, Blueprint
-from app.models.user_model import User
 import os
 from logging import getLogger
 from jwt import decode
-from flask import jsonify, request
-from functools import wraps
 from app.services.user_service import UserService
-user_service = UserService()
 from app.services.employer_service import EmployerService
-employer_service = EmployerService()
 from app.services.enterprise_service import EnterpriseService
+from app.middleware.tokenVerify import token_required
+user_service = UserService()
+employer_service = EmployerService()
 enterprise_service = EnterpriseService()
 from logging import getLogger
 logger = getLogger(__name__)
 
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
-
-def token_required(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            token = request.headers.get('Authorization')
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization']
-            if not token:
-                logger.warn('A valid token is missing')
-                return jsonify({'message': 'a valid token is missing'})
-
-            try:
-                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-                current_user = User.query.filter_by(email = data['email']).first()
-
-            except Exception as e:
-                print(e)
-                logger.warn('Token is invalid')
-                return jsonify({'message': 'token is invalid'})
-            return f(current_user)
-        return decorated
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -80,7 +57,7 @@ def updatePassword():
 @user_blueprint.route('/getAllUsers', methods=['GET'])
 @token_required
 def getAllUsers():
-    logger.warn('All users retrieved')
+    logger.log('All users retrieved')
     return user_service.getAllUsers()
 
 @user_blueprint.route('/getUser', methods=['GET'])
