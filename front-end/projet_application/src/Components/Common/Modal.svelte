@@ -1,5 +1,6 @@
 <script lang="ts">
     export let handleModalClick: () => void;
+    export let currentPage = window.location.pathname;
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault();
@@ -19,8 +20,8 @@
 <style scoped lang="scss">
     .slot {
         width: 100%;
-        height: 100%;
-        position: fixed;
+        height: fit-content;
+        position: absolute;
         top: 0;
         left: 0;
         background-color: rgba(0, 0, 0, 0.5);
@@ -28,6 +29,8 @@
         justify-content: center;
         align-items: center;
         border: none;
+        overflow-y: auto;
+        z-index: 100;
     }
     .slot:hover {
         cursor: default;
@@ -42,7 +45,6 @@
         padding: 20px;
         box-sizing: border-box;
         z-index: 100;
-        display: flex;
         justify-content: center;
     }
     button {

@@ -9,6 +9,9 @@ export async function GET<T>(url: string): Promise<T> {
       }
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
     const data = await response.json();
@@ -33,6 +36,9 @@ export async function POST<T, T1>(url: string, body: T): Promise<T1> {
       body: JSON.stringify(body),
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
     return await response.json();
@@ -49,6 +55,9 @@ export async function DELETE(url: string): Promise<void> {
       method: "DELETE",
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
@@ -68,6 +77,9 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
       body: JSON.stringify(body),
     });
     if (!response.ok) {
+      if (response.status === 500) {
+        window.location.href = "/500";
+      }
       throw new Error(`Error: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
