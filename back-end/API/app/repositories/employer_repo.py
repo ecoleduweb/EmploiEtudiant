@@ -13,7 +13,7 @@ class EmployerRepo:
         return employer
     
     def getEmployer(self, id):
-        employer = Employers.query.filter_by(id=id).first()
+        employer = Employers.query.filter_by(userId=id).first()
         return employer
     
     def linkEmployerEnterprise(self, data):
