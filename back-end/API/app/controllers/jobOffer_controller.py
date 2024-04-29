@@ -90,8 +90,7 @@ def updateJobOffer(current_user):
         return jsonify({'message': 'Job offer not found'}), 404
 
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])
-@token_required
-def offresEmploi(current_user):
+def offresEmploi():
     jobOffers = jobOffer_service.offresEmploi()
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
