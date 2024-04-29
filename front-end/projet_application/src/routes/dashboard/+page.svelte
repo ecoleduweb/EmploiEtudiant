@@ -6,10 +6,12 @@
   import { writable } from "svelte/store";
   import type { jobOffer } from "../../Models/Offre";
   import type { Entreprise } from "../../Models/Entreprise";
+  import type { User } from "../../Models/User";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
   import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
   import { GET } from "../../ts/server";
   import { onMount } from "svelte";
+  import { jwtDecode } from "jwt-decode";
 
   let isJobOfferEdit = false;
 
@@ -31,6 +33,21 @@
     isJobOfferEdit = true;
     openModal(offreId);
   };
+
+  let user: User = {
+    id: 0,
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    address: "",
+    cityId: 0,
+    roleId: 0,
+    active: true,
+    token: "",
+  };
+
   let offre: jobOffer = {
     id: 0,
     title: "",
@@ -93,6 +110,13 @@
     isTemporary: false,
   }
 
+  onMount(async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      user = jwtDecode(token);
+    }
+  });
+
   const jobOffers = writable<jobOffer[]>([]);
   const getJobOffersEmployeur = async () => {
     try {
@@ -151,25 +175,25 @@
     {#if notApprovedOffer.length > 0}
       <h2 class="textSections">En attente d'approbation</h2>
       {#each notApprovedOffer as offre}
-        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if offerToCome.length > 0}
       <h2 class="textSections">Offres bientôt affichées</h2>
       {#each offerToCome as offre}
-        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if offerDisplayed.length > 0}
       <h2 class="textSections">Offres affichées</h2>
       {#each offerDisplayed as offre}
-        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if expiredOffer.length > 0}
       <h2 class="textSections">Offres expirées</h2>
       {#each expiredOffer as offre}
-        <OfferRow offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
     {/each}
     {/if}
   </section>

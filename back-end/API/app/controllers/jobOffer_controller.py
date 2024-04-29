@@ -68,12 +68,17 @@ def offresEmploiEmployeur(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
-    try:
-        employerId = employer_service.getEmployerByUserId(user.id).id
-    except Exception as e:
-        return jsonify([]), 200
-    jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    if user.isModerator:
+        jobOffers = jobOffer_service.offresEmploi()
+        print(jobOffers)
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    else:
+        employer = Employers.query.filter_by(userId=user.id).first()
+        if employer is None:
+            return jsonify({'message': 'Employer not found'}), 404
+        else:
+            jobOffers = jobOffer_service.offresEmploiEmployeur(employer.id)
+            return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
 @token_required
