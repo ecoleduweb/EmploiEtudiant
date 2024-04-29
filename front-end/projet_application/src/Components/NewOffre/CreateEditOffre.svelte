@@ -232,6 +232,7 @@
     } else {
       await createJobOffer();
     }
+    window.location.reload();
   };
 
   async function createJobOffer() {
