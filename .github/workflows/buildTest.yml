@@ -28,10 +28,12 @@ jobs:
 
       - name: Install dependencies
         working-directory: front-end
-        run: cd projet_application
+        run: |
+          cd projet_application
           npm i
 
       - name: Test Build
         working-directory: front-end
-        run: cd projet_application
+        run: |
+          cd projet_application
           npx vite build
