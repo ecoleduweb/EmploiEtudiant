@@ -24,9 +24,12 @@ jobs:
           node-version: "20" # or any other version you want
 
       - name: Install dependencies
-        working-directory: front-end
+        uses: bahmutov/npm-install@v1
+
+      - name: Install dependencies
+        working-directory: projet_application
         run: npm i
 
       - name: Test Build
-        working-directory: front-end
+        working-directory: projet_application
         run: npx vite build
