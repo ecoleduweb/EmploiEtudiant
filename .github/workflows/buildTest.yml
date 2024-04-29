@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14" # or any other version you want
+          node-version: "20" # or any other version you want
 
       - name: Install dependencies
         working-directory: front-end
@@ -29,4 +29,4 @@ jobs:
 
       - name: Test Build
         working-directory: front-end
-        run: vite build
+        run: npx vite build
