@@ -21,6 +21,47 @@ from app.middleware.tokenVerify import token_required
 
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
+token = os.environ.get('BEARER_TOKEN')
+
+def token_admin_required(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if 'Authorization' in request.headers:
+                token = request.headers['Authorization']
+            if not token:
+                return jsonify({'message': 'a valid token is missing'})
+
+            try:
+                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+                current_user = User.query.filter_by(email = data['email']).first()
+            except Exception as e:
+                print(e)
+                return jsonify({'message': 'token is invalid'})
+            if current_user.isModerator:
+                return f(current_user)
+            else:
+                return jsonify({'message': 'user is not admin'})
+        return decorated
+
+def token_required(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = request.headers.get('Authorization')
+            if 'Authorization' in request.headers:
+                token = request.headers['Authorization']
+            if not token:
+                return jsonify({'message': 'a valid token is missing'})
+
+            try:
+                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+                current_user = User.query.filter_by(email = data['email']).first()
+
+            except Exception as e:
+                print(e)
+                return jsonify({'message': 'token is invalid'})
+            return f(current_user)
+        return decorated
+
 @job_offer_blueprint.route('/createJobOffer', methods=['POST'])
 @token_required
 def createJobOffer(current_user):
@@ -29,7 +70,7 @@ def createJobOffer(current_user):
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
     if user.isModerator:
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], data["jobOffer"]["employerId"])
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None)
         for studyProgram in data["studyPrograms"]:
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
@@ -61,6 +102,29 @@ def offreEmploi():
     else:
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
+@job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
+@token_required
+def offresEmploiEmployeur(current_user):
+    token = request.headers.get('Authorization')
+    decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    user = User.query.filter_by(email = decoded_token['email']).first()
+    try:
+        employerId = employer_service.getEmployerByUserId(user.id).id
+    except Exception as e:
+        return jsonify([]), 200
+    jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
+    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+
+@job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
+@token_required
+def updateJobOffer(current_user):
+    data = request.get_json()
+    jobOffer = jobOffer_service.updateJobOffer(data)
+    if jobOffer:
+        return jsonify(jobOffer.to_json_string())
+    else:
+        return jsonify({'message': 'Job offer not found'}), 404
+
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])
 @token_required
 def offresEmploi(current_user):
@@ -72,3 +136,9 @@ def offresEmploi(current_user):
 def linkJobOfferEmployer(current_user):
     data = request.get_json()
     return jobOffer_service.linkJobOfferEmployer(data)
+
+@job_offer_blueprint.route('/approveJobOffer', methods=['PUT'])
+@token_admin_required
+def approveJobOffer(current_user):
+    data = request.get_json()
+    return jobOffer_service.approveJobOffer(data)
