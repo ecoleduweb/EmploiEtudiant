@@ -13,7 +13,7 @@ export interface jobOffer {
     offerLink: string; // lien vers l'offre ou site web de l'employeur
     offerStatus: number;
     active: boolean; // si l'offre est active ou non
-    salary: number; // salaire de lheure                     ** A AJOUTER BD **
+    salary: string; // salaire de lheure                     ** A AJOUTER BD **
     scheduleId: number; // id de l'horaire de travail
     employerId: number; // id de l'employeur 
     isApproved: boolean; // si l'offre est approuvée ou non
