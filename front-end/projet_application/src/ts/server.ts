@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-// Function to fetch data from the API
+
 export async function GET<T>(url: string): Promise<T> {
   try {
     var token = localStorage.getItem("token");
@@ -8,21 +8,15 @@ export async function GET<T>(url: string): Promise<T> {
         'Authorization': `${token}`
       }
     });
-    if (!response.ok) {
-      if (response.status === 500) {
-        window.location.href = "/500";
-      }
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
+    
+    const data = await handleResponse<T>(response);
+    return data as T;
   } catch (error) {
     console.error("Error fetching:", error);
     throw error;
   }
 }
 
-// Function to post data to the API
 export async function POST<T, T1>(url: string, body: T): Promise<T1> {
   try {
     var token = localStorage.getItem("token");
@@ -35,38 +29,45 @@ export async function POST<T, T1>(url: string, body: T): Promise<T1> {
       },
       body: JSON.stringify(body),
     });
-    if (!response.ok) {
-      if (response.status === 500) {
-        window.location.href = "/500";
-      }
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
-    return await response.json();
+
+    const data = await handleResponse<T1>(response);
+    return data as T1;
   } catch (error) {
     console.error("Error posting:", error);
     throw error;
   }
 }
 
-// Function to post delete to the API
 export async function DELETE(url: string): Promise<void> {
   try {
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
       method: "DELETE",
     });
-    if (!response.ok) {
-      if (response.status === 500) {
-        window.location.href = "/500";
-      }
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
+
+    await handleResponse(response);
   } catch (error) {
-    console.error("Error posting:", error);
+    console.error("Error deleting:", error);
     throw error;
   }
 }
 
-// Function to post patch to the API
+export async function PUT<T>(url: string, body: T): Promise<void> {
+  try {
+    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    await handleResponse(response);
+  } catch (error) {
+    console.error("Error putting:", error);
+    throw error;
+  }
+}
+
 export async function PATCH<T>(url: string, body: T): Promise<void> {
   try {
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
@@ -76,14 +77,25 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
       },
       body: JSON.stringify(body),
     });
-    if (!response.ok) {
-      if (response.status === 500) {
-        window.location.href = "/500";
-      }
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
+
+    await handleResponse(response);
   } catch (error) {
-    console.error("Error posting:", error);
+    console.error("Error patching:", error);
     throw error;
   }
+}
+
+
+
+async function handleResponse<T>(response: Response): Promise<T | undefined> {
+  if (!response.ok) {
+    if (response.status === 500) {
+      window.location.href = "/500";
+    } else if (response.status === 404) {
+      return undefined as T;
+    } else {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+  }
+  return await response.json() as T;
 }
