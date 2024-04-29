@@ -27,9 +27,11 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Install dependencies
-        working-directory: projet_application
-        run: npm i
+        working-directory: front-end
+        run: cd projet_application/
+          npm i
 
       - name: Test Build
-        working-directory: projet_application
-        run: npx vite build
+        working-directory: front-end
+        run: cd projet_application/
+          npx vite build
