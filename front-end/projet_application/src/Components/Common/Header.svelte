@@ -5,6 +5,8 @@
 
   let isLoggedIn = false;
   let email = '';  // Déclarer une variable pour stocker l'email
+  let firstName = '';  // Déclarer une variable pour stocker l'email
+  let lastName = '';  // Déclarer une variable pour stocker l'email
 
   onMount(async () => {
     isLoggedIn = !!localStorage.getItem("token");
@@ -12,6 +14,8 @@
     if (token) {
         var decoded = jwtDecode(token);
         email = decoded.email;
+        firstName = decoded.firstName;
+        lastName = decoded.lastName;
     }
   });
 
@@ -35,7 +39,7 @@
     <ul class="ul-menu">
       {#if isLoggedIn}
       <div class="option">
-        <p class="email">Connecté en tant que {email}</p>
+        <p class="email"><br>Connecté en tant que <br>{firstName} {lastName}</p>
       </div>
       <div class="option">
         <button class="button logout-button" on:click={handleLogout}>
