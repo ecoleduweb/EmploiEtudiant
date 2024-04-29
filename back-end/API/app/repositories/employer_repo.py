@@ -22,6 +22,10 @@ class EmployerRepo:
         db.session.commit()
         return jsonify({'message': 'employer linked to enterprise'})
 
+    def getEmployerByEnterpriseId(self, enterpriseId):
+        employer = Employers.query.filter_by(enterprise_id=enterpriseId).first()
+        return employer
+
     def updateEmployer(self, data, idEmployer):
         employer = Employers.query.filter_by(id=idEmployer).first()
         employer.verified = data['verified']
@@ -43,3 +47,4 @@ class EmployerRepo:
         employer = Employers.query.filter_by(userId=userId).first()
         return employer
             
+
