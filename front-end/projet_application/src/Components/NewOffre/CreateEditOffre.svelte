@@ -58,6 +58,10 @@
       .oneOf([true], "Vous devez accepter les conditions"),
   });
 
+  interface MyTokenPayload {
+  isModerator: boolean;
+  }
+
   export let offre: jobOffer = {
     id: 0,
     title: "",
@@ -120,6 +124,8 @@
     isTemporary: false,
   };
 
+  let isEnterpriseSelected: boolean = false;
+
 
     let villeSelected: { label: string; value: number }[] = [];
     let villeFromSelectedEntreprise: [] = [];
@@ -130,16 +136,41 @@
         return { label: v.city, value: v.id };
       });
     };
+
     onMount(async () => {
       getVilles();
-    // const token = localStorage.getItem("token");
-    // const decodedToken = jwtDecode(token as string);
-    // const isModerator = decodedToken.isModerator;
-    // console.log(decodedToken);
+      if (isModerator == true) {
+        getAllEnterprise();
+      }
+      const token = localStorage.getItem("token");
+      const decodedToken = jwtDecode<MyTokenPayload>(token as string);
+      isModerator = decodedToken.isModerator;
     });
 
     //-------------SECTION ADMIN-------------------------------------
+    let isModerator: boolean = false;
+    let enterpriseSelected: { label: string; value: number }[] = [];
+    let enterpriseFromSelectedEnterprise: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+    let enterpriseOption: { label: string; value: number }[] = [];
+    const getAllEnterprise = async () => {
+      const response = await GET<any>("/enterprise/getEnterprises");
+        enterpriseOption = response.map((e: Entreprise) => {
+        return { label: e.name, value: e.id };
+      });
+    };
+
+    const getEnterprise = async (enterpriseId: number) => {
+    const response = await GET<any>(`/enterprise/getEnterprise?id=${enterpriseId}`);
+    entreprise = response;
+    const city = villesOption.find(ville => ville.value === response.cityId);
+    if (city) {
+        villeSelected = [city];
+    }
+    isEnterpriseSelected = true;
     
+    };
+
+    //--------------------------------------------------
 
     let programmeSelected: { label: string; value: number }[] = [];
     let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -214,6 +245,9 @@
               studyPrograms: programmeName
           };
           const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
+          if (response.message === "Job offer created successfully") {
+            handleEmploiClick();
+          }
       } catch (err) {
           console.log(err);
           if (err instanceof yup.ValidationError) {
@@ -300,19 +334,39 @@
 
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
+    {#if isModerator === true}
+    {#if isJobOfferEdit === true}
+    <!-- rien -->
+    {:else}
+      <h1>Sélectionner une entreprise existante</h1>
+      <div class="form-group-vertical">
+        <MultiSelect
+        id="entreprise"
+        options={enterpriseOption}
+        closeDropdownOnSelect={true}
+        maxSelect={1}
+        placeholder="Choisir une entreprise..."
+        bind:value={enterpriseSelected}
+        bind:selected={enterpriseFromSelectedEnterprise}
+        on:add={(event) => getEnterprise(event.detail.option.value)}
+        />
+        </div>
+    {/if}
+    {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
     {:else}
       <h1>Création d'une nouvelle entreprise</h1>
     {/if}
     <div class="form-group-vertical">
-      <label for="title">Nom*</label>
-      <input
+        <label for="title">Nom*</label>
+        <input
         type="text"
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-      />
+        readonly={isEnterpriseSelected}
+    />
     </div>
     <p class="errors-input">
       {#if errorsEntreprise.name}{errorsEntreprise.name}{/if}
@@ -324,6 +378,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
+        readonly={isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -336,6 +391,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
+        readonly={isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -348,6 +404,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
+        readonly={isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -358,9 +415,11 @@
       <MultiSelect
         id="ville"
         options={villesOption}
+        closeDropdownOnSelect={true}
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
+        disabled={isEnterpriseSelected}
       />
     </div>
     {#if isJobOfferEdit === true}
@@ -456,6 +515,7 @@
       <MultiSelect
         id="programme"
         options={programmesOption}
+        closeDropdownOnSelect={true}
         placeholder="Choisir programme(s)..."
         bind:value={programmeSelected}
         bind:selected={programmeFromSelectedOffer}
