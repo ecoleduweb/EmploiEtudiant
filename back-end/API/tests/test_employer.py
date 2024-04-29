@@ -103,3 +103,4 @@ def test_deleteEmployer(client):
     assert response.json == {
         "message": "employer deleted"
     }
+
