@@ -615,22 +615,7 @@
       <input
         type="checkbox"
         bind:checked={acceptCondition}
-        class="form-control-acceptCondition"
-        id="acceptCondition"
-      />
-      <label for="acceptCondition">J'acceptes les condtions </label>
-    </div>
-    <p class="errors-input">
-      {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
-    </p>
-    <Button
-      submit={true}
-      text="Envoyer"
-      on:click={() => handleSubmit()}
-      onClick={() => ""}
-    />
-  </form>
-</Modal>
+
 
 <style>
   label {
