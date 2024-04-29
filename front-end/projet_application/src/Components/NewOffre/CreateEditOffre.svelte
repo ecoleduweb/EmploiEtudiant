@@ -349,23 +349,23 @@
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
     {#if isModerator === true}
-      {#if isJobOfferEdit === true}
-      <!-- rien -->
-      {:else}
-        <h1>Sélectionner une entreprise existante</h1>
-        <div class="form-group-vertical">
-          <MultiSelect
-          id="entreprise"
-          options={enterpriseOption}
-          closeDropdownOnSelect={true}
-          maxSelect={1}
-          placeholder="Choisir une entreprise..."
-          bind:value={enterpriseSelected}
-          bind:selected={enterpriseFromSelectedEnterprise}
-          on:add={(event) => getEnterprise(event.detail.option.value)}
-          />
-          </div>
-      {/if}
+    {#if isJobOfferEdit === true}
+    <!-- rien -->
+    {:else}
+      <h1>Sélectionner une entreprise existante</h1>
+      <div class="form-group-vertical">
+        <MultiSelect
+        id="entreprise"
+        options={enterpriseOption}
+        closeDropdownOnSelect={true}
+        maxSelect={1}
+        placeholder="Choisir une entreprise..."
+        bind:value={enterpriseSelected}
+        bind:selected={enterpriseFromSelectedEnterprise}
+        on:add={(event) => getEnterprise(event.detail.option.value)}
+        />
+        </div>
+    {/if}
     {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
