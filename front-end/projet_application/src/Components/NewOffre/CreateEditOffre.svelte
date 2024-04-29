@@ -330,10 +330,12 @@
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
 
+
 </script>
 
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
+    <div class="content-form">
     {#if isModerator === true}
     {#if isJobOfferEdit === true}
     <!-- rien -->
@@ -607,23 +609,28 @@
       {#if errors.description}{errors.description}{/if}
     </p>
     <div class="accept-Condition">
-      <input
-        type="checkbox"
-        bind:checked={acceptCondition}
-        class="form-control-acceptCondition"
-        id="acceptCondition"
-      />
-      <label for="acceptCondition">J'acceptes les condtions </label>
+      <div class="accept-horiz">
+        <input
+          type="checkbox"
+          bind:checked={acceptCondition}
+          class="form-control-acceptCondition"
+          id="acceptCondition"
+        />
+        <label for="acceptCondition">J'acceptes les condtions </label>
+      </div>
+      <div class="send">
+        <Button
+          submit={true}
+          text="Envoyer"
+          on:click={() => handleSubmit()}
+          onClick={() => ""}
+        />
+      </div>
     </div>
     <p class="errors-input">
       {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
     </p>
-    <Button
-      submit={true}
-      text="Envoyer"
-      on:click={() => handleSubmit()}
-      onClick={() => ""}
-    />
+  </div>
   </form>
 </Modal>
 
@@ -632,18 +639,26 @@
     display: block;
     margin-bottom: 0.26vw;
   }
+  h1{
+    margin: 0;
+  }
 
   .form-offre {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    overflow-y: scroll;
+    max-height: 700px;
     border: 0.3vw solid #ccc;
     background-color: #ffff;
     box-shadow: 0 0.104vw 0.208vw rgba(0, 0, 0, 0.1);
     border-radius: 0.781vw;
-    padding: 0 0.78vw 2vh 0;
+  }
+
+  .content-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .form-group-horizontal {
@@ -672,10 +687,15 @@
     color: red;
     font-size: 0.8em;
   }
-  .accept-Condition {
+  .accept-Condition{
     display: flex;
     flex-direction: row;
-    width: 80%;
+    justify-content:space-around;
+    width: 100%;
+  }
+  .accept-horiz {
+    display: flex;
+    flex-direction: row;
     margin: 0.8vw;
   }
   .form-control-acceptCondition {
