@@ -615,7 +615,22 @@
       <input
         type="checkbox"
         bind:checked={acceptCondition}
-
+        class="form-control-acceptCondition"
+        id="acceptCondition"
+      />
+      <label for="acceptCondition">J'acceptes les condtions </label>
+    </div>
+    <p class="errors-input">
+      {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
+    </p>
+    <Button
+      submit={true}
+      text="Envoyer"
+      on:click={() => handleSubmit()}
+      onClick={() => ""}
+    />
+  </form>
+</Modal>
 
 <style>
   label {
@@ -671,12 +686,5 @@
   .form-control-acceptCondition {
     margin-right: 0.8vw;
     margin-bottom: 0.5vw;
-  }
-  .ouioui {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 80%;
-    margin: 1vh 0;
   }
 </style>
