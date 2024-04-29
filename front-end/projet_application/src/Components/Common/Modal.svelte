@@ -1,6 +1,5 @@
 <script lang="ts">
     export let handleModalClick: () => void;
-    export let currentPage = window.location.pathname;
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault();
@@ -36,7 +35,7 @@
         cursor: default;
     }
     .modal {
-        background-color: #e5e5e5;
+        background-color: #ffffff;
         width: 90%;
         max-width: 800px;
         border: none;

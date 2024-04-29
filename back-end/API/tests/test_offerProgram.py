@@ -1,11 +1,27 @@
 import pytest
 from app import create_app, db
+from app.models.user_model import User
+from argon2 import PasswordHasher
+
+hasher = PasswordHasher()
 
 @pytest.fixture(scope='module')
 def app():
     app = create_app()
     with app.app_context():
         db.create_all()
+        hashed_password = hasher.hash("test")
+        data = {
+            "id": 1,
+            "email": "test@test.com",
+            "firstName": "test",
+            "lastName": "test",
+            "password": hashed_password,
+            "isModerator": True,
+            "active": True,
+        }
+        user = User(**data)
+        db.session.add(user)
         db.session.commit()
         yield app
         db.session.remove()
@@ -20,6 +36,12 @@ def test_linkOfferProgram(client):
         "studyProgramId": 1,
         "offerId": 1
     }
-    response = client.post('/offerProgram/linkOfferProgram', json=data)
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.post('/offerProgram/linkOfferProgram', json=data, headers={'Authorization': token})
     assert response.status_code == 200
 
