@@ -258,6 +258,8 @@
               employerId: 0,
               isApproved: false,
           };
+          entreprise.cityId = villeSelected[0].value;
+          console.log("ENTEPRISE :" + entreprise.cityId);
           const requestData = {
               jobOffer: {
                   ...offre,
@@ -320,6 +322,8 @@
         cityId: 0,
         isTemporary: false,
       };
+      entreprise.cityId = villeSelected[0].value;
+      console.log("ENTEPRISE :" + entreprise.cityId);
       const requestData = {
         entreprise: {
           ...entreprise,
@@ -379,6 +383,7 @@
         </div>
       {/if}
     {/if}
+    
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
     {:else}
