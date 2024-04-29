@@ -23,6 +23,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",
+		"@types/grecaptcha": "^3.0.9",
 		"dotenv": "^16.4.5",
 		"jwt-decode": "^4.0.0",
 		"sass": "^1.72.0",
