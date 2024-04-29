@@ -97,3 +97,14 @@ def deleteEmployer(current_user):
         return jsonify({'message': 'employer deleted'})
     else:
         return jsonify({'message': 'employer not found'})
+
+@employer_blueprint.route('/getEmployerByUserId', methods=['GET'])
+@token_required
+def getEmployerByUserId(current_user):
+    id = request.args.get('id')
+    if not id: id = current_user.id
+    employer = employer_service.getEmployerByUserId(id)
+    if employer:
+        return jsonify(employer.to_json_string())
+    else:
+        return jsonify({'message': 'employer not found'}), 404

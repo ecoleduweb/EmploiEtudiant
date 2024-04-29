@@ -108,7 +108,7 @@ def getEntrepriseId(current_user):
     return enterprise_service.getEntrepriseId(name)
 
 @enterprise_blueprint.route('/getEnterprise', methods=['GET'])
-@token_admin_required
+@token_required
 def getEnterprise(current_user):
     id = request.args.get('id')
     if id is None:
