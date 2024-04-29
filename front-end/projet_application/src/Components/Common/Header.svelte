@@ -2,25 +2,34 @@
   import { goto } from "$app/navigation";
   import { onMount } from 'svelte';
   import { jwtDecode } from "jwt-decode";
+  import type Token from "../../Models/Token";
 
   let isLoggedIn = false;
   let email = '';  // Déclarer une variable pour stocker l'email
   let firstName = '';  // Déclarer une variable pour stocker l'email
   let lastName = '';  // Déclarer une variable pour stocker l'email
+  let isModerator = false;
 
   onMount(async () => {
     isLoggedIn = !!localStorage.getItem("token");
     const token = localStorage.getItem("token");
     if (token) {
-        var decoded = jwtDecode(token);
-        email = decoded.email;
+        var decoded = jwtDecode<Token>(token);
         firstName = decoded.firstName;
         lastName = decoded.lastName;
+        isModerator = decoded.isModerator;
     }
   });
 
   const handleEmploi = () => {
     goto('/emplois')
+  };
+
+  const handleEnterprise = () => {
+    goto('/entreprises')
+  };
+  const handleDashboard = () => {
+    goto('/dashboard')
   };
 
   const handleLogout = () => {
@@ -45,6 +54,16 @@
         <button class="button logout-button" on:click={handleLogout}>
           <p class="textLogout">Déconnexion</p>
           <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
+        </button>
+      </div>
+      <div class="option">
+        <button class="button logout-button" on:click={handleDashboard}>
+          <p class="textLogout">Tableau de bord</p>
+        </button>
+      </div>
+      <div class="option">
+        <button class="button logout-button" on:click={handleEnterprise}>
+          <p class="textLogout">Entreprises</p>
         </button>
       </div>
       {:else}

@@ -11,6 +11,9 @@
   import { extractErrors } from "../../ts/utils";
   import { onMount } from "svelte";
   import { jwtDecode } from "jwt-decode";
+  import { onNavigate } from "$app/navigation";
+  import { goto } from '$app/navigation';
+  import type Token from "../../Models/Token";
   export let handleEmploiClick: () => void;
   export let isJobOfferEdit: boolean;
 
@@ -57,10 +60,6 @@
       .boolean()
       .oneOf([true], "Vous devez accepter les conditions"),
   });
-
-  interface MyTokenPayload {
-    isModerator: boolean;
-  }
 
   export let offre: jobOffer = {
     id: 0,
@@ -136,16 +135,6 @@
     });
   };
 
-  onMount(async () => {
-    getVilles();
-    if (isModerator == true) {
-      getAllEnterprise();
-    }
-    const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-    isModerator = decodedToken.isModerator;
-  });
-
     const getEmployerByUserId = async () => {
           const response = await GET<any>("/employer/getEmployerByUserId");
            if (response !== undefined) {
@@ -156,8 +145,10 @@
     onMount(async () => {
       await getVilles();
       const token = localStorage.getItem("token");
-      const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-      isModerator = decodedToken.isModerator;
+      if (token) {
+        var decoded = jwtDecode<Token>(token);
+        isModerator = decoded.isModerator;
+    }
       if (isModerator === true) {
         await getAllEnterprise();
       }
@@ -360,6 +351,8 @@
 
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
+
+
 </script>
 
 <Modal handleModalClick={handleEmploiClick}>
@@ -369,7 +362,7 @@
         <!-- rien -->
       {:else}
         <h1>Sélectionner une entreprise existante</h1>
-        <div class="form-group-vertical">
+        <div class="form-group-horizontal">
           <MultiSelect
             id="entreprise"
             options={enterpriseOption}
@@ -380,6 +373,11 @@
             bind:selected={enterpriseFromSelectedEnterprise}
             on:add={(event) => getEnterprise(event.detail.option.value)}
           />
+          <Button
+            submit={false}
+            text="Créer une entreprise"
+            onClick={() => goto("/entreprise")}
+        />
         </div>
       {/if}
     {/if}
