@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
 from app.services.employer_service import EmployerService
 from app.middleware.adminTokenVerified import token_admin_required
+from app.middleware.tokenVerify import token_required
 enterprise_service = EnterpriseService()
 employer_service = EmployerService()
 
@@ -20,6 +21,16 @@ def createEnterprise(current_user):
     data = request.get_json()
     enterprise = enterprise_service.createEnterprise(data, False)
     return jsonify(enterprise.to_json_string())
+
+@enterprise_blueprint.route('/getEnterpriseByEmployer', methods=['GET'])
+@token_required
+def getEnterpriseByEmployer(current_user):
+    id = request.args.get('id')
+    enterprise = enterprise_service.getEnterpriseByEmployer(id)
+    if enterprise:
+        return jsonify(enterprise.to_json_string()), 200
+    else:
+        return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/updateEntreprise', methods=['PUT'])
 @token_admin_required
@@ -49,6 +60,22 @@ def deleteEnterprise(current_user):
     
 @enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])
 @token_admin_required
-def getEntrepriseId():
+def getEntrepriseId(current_user):
     name = request.args.get('name')
     return enterprise_service.getEntrepriseId(name)
+
+@enterprise_blueprint.route('/getEnterprise', methods=['GET'])
+@token_required
+def getEnterprise(current_user):
+    id = request.args.get('id')
+    if id is None:
+        return jsonify({'message': 'ID is missing'}), 400
+    try:
+        id = int(id)  # Convert the id to an integer
+    except ValueError:
+        return jsonify({'message': 'ID must be an integer'}), 400
+    enterprise = enterprise_service.getEnterprise(id)
+    if enterprise:
+        return jsonify(enterprise.to_json_string()), 200
+    else:
+        return jsonify({'message': 'enterprise not found'}), 404

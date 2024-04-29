@@ -13,7 +13,7 @@ class EmployerRepo:
         return employer
     
     def getEmployer(self, id):
-        employer = Employers.query.filter_by(id=id).first()
+        employer = Employers.query.filter_by(userId=id).first()
         return employer
     
     def linkEmployerEnterprise(self, data):
@@ -42,3 +42,8 @@ class EmployerRepo:
             return False
         logger.warning('employer deleted')
         return True
+    
+    def getEmployerByUserId(self, userId):
+        employer = Employers.query.filter_by(userId=userId).first()
+        return employer
+            

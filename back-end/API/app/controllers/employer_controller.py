@@ -12,6 +12,16 @@ def createEmployer(current_user):
     data = request.get_json()
     employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
     return jsonify(employer.to_json_string())
+
+@employer_blueprint.route('/getEmployer', methods=['GET'])
+@token_required
+def getEmployer(current_user):
+    id = request.args.get('id')
+    employer = employer_service.getEmployer(id)
+    if employer:
+        return jsonify(employer.to_json_string())
+    else:
+        return jsonify({'message': 'employer not found'})
     
 @employer_blueprint.route('/linkEmployerEnterprise', methods=['PUT'])
 @token_required
@@ -47,3 +57,14 @@ def deleteEmployer(current_user):
         return jsonify({'message': 'employer deleted'})
     else:
         return jsonify({'message': 'employer not found'})
+
+@employer_blueprint.route('/getEmployerByUserId', methods=['GET'])
+@token_required
+def getEmployerByUserId(current_user):
+    id = request.args.get('id')
+    if not id: id = current_user.id
+    employer = employer_service.getEmployerByUserId(id)
+    if employer:
+        return jsonify(employer.to_json_string())
+    else:
+        return jsonify({'message': 'employer not found'}), 404
