@@ -47,7 +47,7 @@ class JobOfferRepo:
         jobOffer.salary = data['salary']
         jobOffer.active = data['active']
         jobOffer.employerId = data['employerId']
-        jobOffer.scheduleId = data['scheduleId'],
+        jobOffer.scheduleId = data['scheduleId']
         jobOffer.isApproved = data['isApproved']
         db.session.commit()
         return jobOffer
