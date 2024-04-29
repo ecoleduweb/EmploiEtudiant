@@ -137,14 +137,25 @@
       });
     };
 
+    const getEmployerByUserId = async () => {
+          const response = await GET<any>("/employer/getEmployerByUserId");
+           if (response !== undefined) {
+            getEnterprise(response.entrepriseId);
+           }
+    };
+
     onMount(async () => {
-      getVilles();
-      if (isModerator == true) {
-        getAllEnterprise();
-      }
+      await getVilles();
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode<MyTokenPayload>(token as string);
       isModerator = decodedToken.isModerator;
+      if (isModerator === true) {
+        await getAllEnterprise();
+      }
+      else 
+      {
+        await getEmployerByUserId();
+      }
     });
 
     //-------------SECTION ADMIN-------------------------------------
@@ -161,12 +172,12 @@
 
     const getEnterprise = async (enterpriseId: number) => {
     const response = await GET<any>(`/enterprise/getEnterprise?id=${enterpriseId}`);
-    entreprise = response;
-    const city = villesOption.find(ville => ville.value === response.cityId);
-    if (city) {
-        villeSelected = [city];
-    }
-    isEnterpriseSelected = true;
+      entreprise = response;
+      const city = villesOption.find(ville => ville.value === response.cityId);
+      if (city) {
+          villeSelected = [city];
+      }
+      isEnterpriseSelected = true;
     
     };
 
@@ -241,6 +252,9 @@
           const requestData = {
               jobOffer: {
                   ...offre,
+              },
+              enterprise: {
+                  ...entreprise,
               },
               studyPrograms: programmeName
           };
@@ -335,23 +349,23 @@
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
     {#if isModerator === true}
-    {#if isJobOfferEdit === true}
-    <!-- rien -->
-    {:else}
-      <h1>Sélectionner une entreprise existante</h1>
-      <div class="form-group-vertical">
-        <MultiSelect
-        id="entreprise"
-        options={enterpriseOption}
-        closeDropdownOnSelect={true}
-        maxSelect={1}
-        placeholder="Choisir une entreprise..."
-        bind:value={enterpriseSelected}
-        bind:selected={enterpriseFromSelectedEnterprise}
-        on:add={(event) => getEnterprise(event.detail.option.value)}
-        />
-        </div>
-    {/if}
+      {#if isJobOfferEdit === true}
+      <!-- rien -->
+      {:else}
+        <h1>Sélectionner une entreprise existante</h1>
+        <div class="form-group-vertical">
+          <MultiSelect
+          id="entreprise"
+          options={enterpriseOption}
+          closeDropdownOnSelect={true}
+          maxSelect={1}
+          placeholder="Choisir une entreprise..."
+          bind:value={enterpriseSelected}
+          bind:selected={enterpriseFromSelectedEnterprise}
+          on:add={(event) => getEnterprise(event.detail.option.value)}
+          />
+          </div>
+      {/if}
     {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
@@ -412,6 +426,9 @@
     </p>
     <div class="form-group-vertical">
       <label for="lieu">Ville*</label>
+      {#if villesOption.length === 0}
+        <p>Chargement des villes...</p>
+      {:else}
       <MultiSelect
         id="ville"
         options={villesOption}
@@ -421,6 +438,7 @@
         bind:selected={villeFromSelectedEntreprise}
         disabled={isEnterpriseSelected}
       />
+      {/if}
     </div>
     {#if isJobOfferEdit === true}
       <h1>Modification d'une offre d'emploi</h1>

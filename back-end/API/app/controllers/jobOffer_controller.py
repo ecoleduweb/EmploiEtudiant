@@ -53,7 +53,7 @@ def createJobOffer(current_user):
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
     if user.isModerator:
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"])
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None)
         for studyProgram in data["studyPrograms"]:
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
@@ -91,7 +91,11 @@ def offresEmploiEmployeur(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
-    jobOffers = jobOffer_service.offresEmploiEmployeur(user.id)
+    try:
+        employerId = employer_service.getEmployerByUserId(user.id).id
+    except Exception as e:
+        return jsonify([]), 200
+    jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
