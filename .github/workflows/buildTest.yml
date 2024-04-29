@@ -1,0 +1,24 @@
+name: Test build
+
+on: pull_request
+
+jobs:
+  unit-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+  
+        - name: Set up Node.js
+          uses: actions/setup-node@v2
+          with:
+            node-version: '14' # or any other version you want
+  
+        - name: Install dependencies
+          working-directory: front-end
+          run: npm ci
+  
+        - name: Test Build
+          working-directory: front-end
+          run: npm run build
