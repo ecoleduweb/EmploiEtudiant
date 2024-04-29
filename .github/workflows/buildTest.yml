@@ -11,7 +11,7 @@ on:
       - FE_Modification_Zach
 
 jobs:
-  unit-testing:
+  Test_Build:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: front-end
-        run: npm ci
+        run: npm i
 
       - name: Test Build
         working-directory: front-end
