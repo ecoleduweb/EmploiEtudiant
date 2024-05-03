@@ -74,17 +74,25 @@ label {
   width: 100%;
   justify-content: center;
 }
+/**
+Reste à mettre ça responsive :wink:
+(Faudrait changer le flex-direction du parent pour column sur tel)
+
+- W
+
+*/
 .password-validation-showcase {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-self: center;
-  gap: 15%;
-  left:10%;
-  margin-top:3%;
+  gap: 25%;
+  left: 10%;
+  margin-top: 3%;
+  width: 100%;
 }
 .validation-criteria-item {
   display: flex;
-  align-items: center;
-  gap: 5%;
+  max-width: 80%;
+  margin-bottom: 4%;
 }
