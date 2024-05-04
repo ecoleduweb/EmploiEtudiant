@@ -5,7 +5,6 @@
   import type Token from "../../Models/Token";
 
   let isLoggedIn = false;
-  let email = '';  // Déclarer une variable pour stocker l'email
   let firstName = '';  // Déclarer une variable pour stocker l'email
   let lastName = '';  // Déclarer une variable pour stocker l'email
   let isModerator = false;

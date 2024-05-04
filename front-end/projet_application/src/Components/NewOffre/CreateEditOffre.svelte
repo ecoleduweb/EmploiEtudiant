@@ -137,8 +137,13 @@
 
     const getEmployerByUserId = async () => {
           const response = await GET<any>("/employer/getEmployerByUserId");
+            console.log(response);
            if (response !== undefined) {
             getEnterprise(response.entrepriseId);
+            isEnterpriseSelected = true;
+           }
+           else {
+            isEnterpriseSelected = false;
            }
     };
 
@@ -177,8 +182,14 @@
       if (city) {
           villeSelected = [city];
       }
-      isEnterpriseSelected = true;
-    
+      if (entreprise === undefined)
+      {
+        isEnterpriseSelected = false;
+      }
+      else
+      {
+        isEnterpriseSelected = true;
+      }
     };
 
   //--------------------------------------------------
@@ -398,7 +409,7 @@
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -411,7 +422,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -424,7 +435,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -437,7 +448,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -455,7 +466,7 @@
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
-        disabled={!isJobOfferEdit}
+        disabled={!isJobOfferEdit && isEnterpriseSelected}
       />
       {/if}
     </div>
