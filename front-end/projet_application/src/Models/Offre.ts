@@ -16,5 +16,5 @@ export interface jobOffer {
     salary: string; // salaire de lheure                     ** A AJOUTER BD **
     scheduleId: number; // id de l'horaire de travail
     employerId: number; // id de l'employeur 
-    isApproved: boolean; // si l'offre est approuvée ou non
+    isApproved: boolean | null; // si l'offre est approuvée ou non
 }
