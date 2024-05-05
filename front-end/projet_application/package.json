@@ -11,6 +11,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"carbon-components-svelte": "^0.82.10",
@@ -22,6 +23,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"dotenv": "^16.4.5",
 		"jwt-decode": "^4.0.0",
 		"sass": "^1.72.0",
 		"svelte-multiselect": "^10.2.0",

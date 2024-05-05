@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 from app.models.region_model import Region
-from app.controllers.user_controller import token_required
 from app.services.city_service import CityService
+from app.middleware.tokenVerify import token_required
 
 city_blueprint = Blueprint('city', __name__)
 city_service = CityService()

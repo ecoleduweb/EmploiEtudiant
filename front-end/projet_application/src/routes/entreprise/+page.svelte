@@ -3,15 +3,16 @@
     import Header from "../../Components/Common/Header.svelte";
     import Footer from "../../Components/Common/Footer.svelte";
     import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import { get, writable } from "svelte/store";
     import { GET } from "../../ts/server";
     import type { Entreprise } from "../../Models/Entreprise";
     import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte";
     import Entreprises from "../../Components/Entreprise/Entreprises.svelte";
     import Button from "../../Components/Inputs/Button.svelte";
-    import { goto } from "$app/navigation";
+    import AddEntreprise from "../../Components/Entreprise/AddEntreprise.svelte";
 
     const modal = writable(false);
+    const modalAdd = writable(false);
     const selectedEntrepriseId = writable(0);
     const openModal = (id: number) => {
         modal.set(true);
@@ -23,40 +24,45 @@
     const handleEntrepriseClick = (offreId: number) => {
         openModal(offreId);
     };
-
-    const handleOffreEmploi = () => {
-        console.log("OFFRE")
-        goto("/offre");
+    const openModalAdd = () => {
+        modalAdd.set(true);
+    };
+    const closeModalAdd = () => {
+        modalAdd.set(false);
+        getEnterprises();
+    };
+    const handleEntreprise = () => {
+        openModalAdd();
     };
 
     const entreprises = writable<Entreprise[]>([]);
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/enterprises");
-            const data = await response.json();
-            entreprises.set(data);
-            console.log(data);
+            const response = await GET<any>("/enterprise/getEnterprises");
+            entreprises.set(response);
         } catch (error) {
             console.error("Error fetching job offers:", error);
         }
     };
     onMount(getEnterprises);
+
+    
+
 </script>
 <Header/>
 <main>
     <section class="haut">
         <div class="haut-gauche">
           <div class="divFlex">
-            <Button onClick={handleOffreEmploi} text="Créer une nouvelle offre" />
+            <Button onClick={handleEntreprise} text="Créer une nouvelle entreprise" />
           </div>
         </div>
       </section>
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
-                <span class="text">ENTREPRISES </span><span class="text">
-                    EXISTANTES</span
-                >
+                <span class="text">ENTREPRISES </span>
+                <span class="text"> EXISTANTES</span>
             </h1>
         </div>
     </section>
@@ -72,6 +78,10 @@
             {/if}
         {/each}
     {/if}
+    {#if $modalAdd}
+        <AddEntreprise handleEntrepriseClick={closeModalAdd} />
+    {/if}
+
 </main>
 <Footer/>
 
@@ -109,10 +119,8 @@
         width: 50%;
         margin-left: 5.2%;
     }
-    .entreprises {
-        width: fit-content;
+    .divFlex {
         display: flex;
-        flex-direction: column;
-        width: 100%;
+        margin-top: 20px;
     }
 </style>

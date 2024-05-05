@@ -44,11 +44,6 @@ header {
     margin: 0;
 }
 
-.li-items {
-    width: 10%;
-    display: flex;
-}
-
 button {
     background-color: #1E2634;
     color: white;

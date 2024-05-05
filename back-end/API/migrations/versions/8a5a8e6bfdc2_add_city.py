@@ -1,9 +1,7 @@
 """add city
-
 Revision ID: 8a5a8e6bfdc2
 Revises: 
 Create Date: 2024-04-08 14:11:47.379816
-
 """
 from alembic import op
 import sqlalchemy as sa

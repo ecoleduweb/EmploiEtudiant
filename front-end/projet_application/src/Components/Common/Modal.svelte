@@ -20,7 +20,7 @@
     .slot {
         width: 100%;
         height: 100%;
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         background-color: rgba(0, 0, 0, 0.5);
@@ -28,14 +28,17 @@
         justify-content: center;
         align-items: center;
         border: none;
+        overflow-y: scroll;
+        z-index: 100;
     }
     .slot:hover {
         cursor: default;
     }
     .modal {
-        background-color: #e5e5e5;
+        background-color: #ffffff;
         width: 90%;
         max-width: 800px;
+        max-height: 800px;
         border: none;
         border-bottom: 1px solid #00ad9a;
         border-radius: 10px;

@@ -1,8 +1,29 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte";
     import type { Entreprise } from "../../Models/Entreprise";
+    import { GET } from "../../ts/server";
+    import { onMount } from "svelte";
+    import type { City } from "../../Models/City";
     export let entreprise: Entreprise;
     export let handleEntrepriseClick: () => void;
+
+    let ville: City;
+    let nomVille: string;
+
+    const getCity = async (id: number) => {
+        try {
+            ville = await GET<any>(`/city/oneCity?id=${id}`);
+            nomVille = ville.city;
+        } catch (error) {
+            console.error("Error fetching city:", error);
+        }
+    };
+
+    onMount(() => {
+        getCity(entreprise.cityId);
+    });
+
+
 </script>
 
 <Modal handleModalClick={handleEntrepriseClick}>
@@ -18,7 +39,7 @@
             <h5 class="infoTitle">Adresse de l'entreprise</h5>
             <p class="text">{entreprise.address}</p>
             <h5 class="infoTitle">Ville</h5>
-            <p class="text">{entreprise.cityId}</p>
+            <p class="text">{nomVille}</p>
         </div>
     </div>
 </Modal>

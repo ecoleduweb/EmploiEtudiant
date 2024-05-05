@@ -1,40 +1,13 @@
 from flask import jsonify, request, Blueprint
-import os
-from app import db
-from app.models.user_model import User
-from jwt import decode
-from functools import wraps
-from app.models.region_model import Region
-from app.controllers.user_controller import token_required
 from app.services.employmentSchedule_service import EmploymentScheduleService
+from app.middleware.tokenVerify import token_required
 employment_schedule_service = EmploymentScheduleService()
 
 employment_schedule_blueprint = Blueprint('employmentSchedule', __name__)
 
-
-def token_required(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            token = request.headers.get('Authorization')
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization']
-            if not token:
-                return jsonify({'message': 'a valid token is missing'})
-
-            try:
-                data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-                current_user = User.query.filter_by(email = data['email']).first()
-
-            except Exception as e:
-                print(e)
-                return jsonify({'message': 'token is invalid'})
-            return f(current_user)
-        return decorated
-
-
-@employment_schedule_blueprint.route('/employmentSchedule', methods=['GET'])
+@employment_schedule_blueprint.route('/employmentSchedule/<int:id>', methods=['GET'])
 @token_required
-def employmentSchedule():
+def employmentSchedule(current_user):
     id = request.args.get('id')
     employmentSchedule = employment_schedule_service.employmentSchedule(id)
     return jsonify(employmentSchedule)
