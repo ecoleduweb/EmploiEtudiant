@@ -7,3 +7,10 @@ class OfferProgramRepo:
         db.session.add(new_offer_program)
         db.session.commit()
         return new_offer_program
+
+    def getProgramIdByOfferId(self, offerId):
+        offerPrograms = OfferProgram.query.filter_by(offerId=offerId).all()
+        if offerPrograms:
+            return [offerProgram.programId for offerProgram in offerPrograms]
+        else:
+            return []

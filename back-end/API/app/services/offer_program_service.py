@@ -4,3 +4,6 @@ offer_program_repo = OfferProgramRepo()
 class OfferProgramService:
     def linkOfferProgram(self, programId, offerId):
         return offer_program_repo.linkOfferProgram(programId, offerId)
+    
+    def getProgramIdByOfferId(self, offerId):
+        return offer_program_repo.getProgramIdByOfferId(offerId)

@@ -25,7 +25,7 @@
   };
 
   const handleEnterprise = () => {
-    goto('/entreprises')
+    goto('/entreprise')
   };
   const handleDashboard = () => {
     goto('/dashboard')
@@ -60,11 +60,13 @@
           <p class="textLogout">Tableau de bord</p>
         </button>
       </div>
+      {#if isModerator}
       <div class="option">
         <button class="button logout-button" on:click={handleEnterprise}>
           <p class="textLogout">Entreprises</p>
         </button>
       </div>
+      {/if}
       {:else}
       <div class="option dropdown">
         <button class="button dropbtn">

@@ -161,6 +161,23 @@
       {
         await getEmployerByUserId();
       }
+      if (isJobOfferEdit === true) {
+        console.log("EDIT-MODE");
+        console.log(offre);
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
+        if (schedule) {
+          scheduleSelected = { label: schedule.label, value: schedule.value };
+        }
+        const response = await GET<any>(`/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`);
+            programmeSelected = response.map((programId: number) => {
+            let program = programmesOption.find(p => p.value === programId);
+            return program ? { label: program.label, value: program.value } : null;
+            }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
+        }
     });
 
     //-------------SECTION ADMIN-------------------------------------
@@ -194,7 +211,7 @@
 
   //--------------------------------------------------
 
-  let programmeSelected: { label: string; value: number }[] = [];
+  let programmeSelected = [{ label: "", value: 0 }];
   let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let programmesOption = [
     { label: "Design d'intérieur", value: 1 },
@@ -210,7 +227,7 @@
     { label: "Sciences humaines", value: 11 },
     { label: "Toutes les programmes", value: 12 },
   ];
-  let scheduleSelected: { label: string; value: number }[] = [];
+  let scheduleSelected: { label: string; value: number } = { label: "", value: 0 };
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let scheduleOption = [
     { label: "Temps plein", value: 1 },
