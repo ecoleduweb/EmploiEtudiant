@@ -36,11 +36,11 @@ jobs:
             echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
             echo CORS=${{ secrets.DEV_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-            echo MAIL_SERVER=${{ secrets.SMTP_SERVER }}
-            echo MAIL_PORT=${{ secrets.SMTP_PORT }}
-            echo MAIL_SENDER=${{ secrets.SMTP_SENDER_LOGIN }}
-            echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }}
-            echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_SENDER_LOGIN }}
+            echo MAIL_SERVER=${{ secrets.SMTP_SERVER }} >> .env
+            echo MAIL_PORT=${{ secrets.SMTP_PORT }} >> .env
+            echo MAIL_SENDER=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
+            echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
+            echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
             flask db upgrade
             echo 'Installing packages'
             sudo systemctl enable back-end
