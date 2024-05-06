@@ -100,6 +100,11 @@ def offresEmploi():
     jobOffers = jobOffer_service.offresEmploi()
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
+@job_offer_blueprint.route('/offresEmploiApproved', methods=['GET'])
+def offresEmploiApproved():
+    jobOffers = jobOffer_service.offresEmploiApproved()
+    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+
 @job_offer_blueprint.route('/linkJobOfferEmployer', methods=['PUT'])
 @token_required
 def linkJobOfferEmployer(current_user):

@@ -15,9 +15,10 @@
   import { onMount } from "svelte";
   import { jwtDecode } from "jwt-decode";
   import Modal from "../../Components/Common/Modal.svelte";
+  import type Token from "../../Models/Token";
 
   let isJobOfferEdit = false;
-
+  let isModerator = false;
   const handleOffreEmploi = () => {
     isJobOfferEdit = false;
     openModal(0);
@@ -132,6 +133,9 @@
     const token = localStorage.getItem("token");
     if (token) {
       user = jwtDecode(token);
+      if (user.isModerator === true) {
+        isModerator = true;
+      }
     }
   });
 
@@ -191,7 +195,12 @@
     </div>
   </section>
   <section class="offres">
-    <p class="textOffre">Mes offres d'emplois</p>
+    {#if isModerator === true}
+      <p class="textOffre">Les offres d'emplois</p>
+    {/if}
+    {#if isModerator === false}
+      <p class="textOffre">Mes offres d'emplois</p>
+    {/if}
     <!-- {#if toBeApprovedOffer.length > 0}
       <h2 class="textSections">En attente d'approbation</h2>
       {#each toBeApprovedOffer as offre}
