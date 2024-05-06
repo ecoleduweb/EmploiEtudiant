@@ -136,10 +136,13 @@
       if (user.isModerator === true) {
         isModerator = true;
       }
+      await getJobOffersEmployeur();
+      await getEntreprise();
     }
   });
 
   const jobOffers = writable<jobOffer[]>([]);
+
   const getJobOffersEmployeur = async () => {
     try {
       const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
@@ -148,7 +151,6 @@
       console.error("Error fetching job offers:", error);
     }
   };
-  onMount(getJobOffersEmployeur);
 
   const getEntreprise = async () => {
     try {
@@ -160,7 +162,6 @@
       console.error("Error fetching entreprise:", error);
     }
   };
-  onMount(getEntreprise);
 
   $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null);
   $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false);

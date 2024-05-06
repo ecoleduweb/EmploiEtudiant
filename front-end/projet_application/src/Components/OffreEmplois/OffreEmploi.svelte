@@ -4,7 +4,7 @@
     import type { Entreprise } from "../../Models/Entreprise";
     export let offre: jobOffer;
     export let entreprise: Entreprise;
-    let currentPage = window.location.pathname;
+    
 </script>
     <div class="container">
         <div class="titleContainer">
