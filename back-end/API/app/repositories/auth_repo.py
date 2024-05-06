@@ -49,9 +49,11 @@ class AuthRepo:
         for user in users:
             user_data = {}
             user_data['id'] = user.id
-            user_data['name'] = user.name
+            user_data['firstName'] = user.firstName
+            user_data['lastName'] = user.lastName
             user_data['email'] = user.email
             user_data['password'] = user.password
-            user_data['admin'] = user.admin
+            user_data['active'] = user.active
+            user_data['isModerator'] = user.isModerator
             output.append(user_data)
         return jsonify({'users': output})
