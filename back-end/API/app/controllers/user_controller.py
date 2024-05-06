@@ -10,7 +10,6 @@ user_service = UserService()
 employer_service = EmployerService()
 enterprise_service = EnterpriseService()
 from logging import getLogger
-logger = getLogger(__name__)
 
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -25,7 +24,7 @@ def login():
 def register():
     data = request.get_json()
     logger.info('Attempt to create a new user with email: ' + data['email'])
-    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('role')]):
+    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName')]):
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):

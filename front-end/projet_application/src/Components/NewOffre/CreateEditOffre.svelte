@@ -11,13 +11,31 @@
   import { extractErrors } from "../../ts/utils";
   import { onMount } from "svelte";
   import { jwtDecode } from "jwt-decode";
+  import { onNavigate } from "$app/navigation";
+  import { goto } from '$app/navigation';
+  import type Token from "../../Models/Token";
   export let handleEmploiClick: () => void;
   export let isJobOfferEdit: boolean;
 
   const schema = yup.object().shape({
-    title: yup.string().required("Le titre du poste est requis"),
-    address: yup.string().required("L'adresse du lieu de travail est requise"),
-    description: yup.string().required("La description de l'offre est requise"),
+    title: yup
+      .string()
+      .max(255, "Le titre du poste doit être de 255 caractères maximum")
+      .required("Le titre du poste est requis"),
+    address: yup
+      .string()
+      .max(
+        255,
+        "L'adresse du lieu de travail doit être de 255 caractères maximum",
+      )
+      .required("L'adresse du lieu de travail est requise"),
+    description: yup
+      .string()
+      .max(
+        30000,
+        "La description de l'offre doit être de 30000 caractères maximum",
+      )
+      .required("La description de l'offre est requise"),
     dateEntryOffice: yup
       .string()
       .required("La date d'entrée en fonction est requise")
@@ -32,21 +50,22 @@
       }),
     email: yup
       .string()
+      .max(255, "Le courriel doit être de 255 caractères maximum")
       .matches(
         /\.[a-z]+$/,
-        "Le courriel doit être de format valide : courriel@domaine.ca"
+        "Le courriel doit être de format valide : courriel@domaine.ca",
       )
       .email("Le courriel n'est pas valide")
       .required("Le courriel est requis"),
     hoursPerWeek: yup
       .string()
-      .required("Le nombre d'heure par semaine est requis")
+      .required("Le nombre d'heures par semaine est requis")
       .test(
         "is-number",
         "Veuillez entrer un nombre d'heure valide !",
         (value) => {
           return !isNaN(Number(value)) && Number(value) > 0;
-        }
+        },
       ),
     scheduleId: yup
       .number()
@@ -57,10 +76,6 @@
       .boolean()
       .oneOf([true], "Vous devez accepter les conditions"),
   });
-
-  interface MyTokenPayload {
-    isModerator: boolean;
-  }
 
   export let offre: jobOffer = {
     id: 0,
@@ -136,48 +151,60 @@
     });
   };
 
-  onMount(async () => {
-    getVilles();
-    if (isModerator == true) {
-      getAllEnterprise();
+  const getEmployerByUserId = async () => {
+    const response = await GET<any>("/employer/getEmployerByUserId");
+            console.log(response);
+    if (response !== undefined) {
+      getEnterprise(response.entrepriseId);
+            isEnterpriseSelected = true;
+           }
+           else {
+            isEnterpriseSelected = false;
     }
+  };
+
+  onMount(async () => {
+    await getVilles();
     const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-    isModerator = decodedToken.isModerator;
+    if (token) {
+        var decoded = jwtDecode<Token>(token);
+      isModerator = decoded.isModerator;
+    }
+    if (isModerator === true) {
+      await getAllEnterprise();
+    } else {
+      await getEmployerByUserId();
+      }
+      if (isJobOfferEdit === true) {
+        console.log("EDIT-MODE");
+        console.log(offre);
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
+        if (schedule) {
+          scheduleSelected = { label: schedule.label, value: schedule.value };
+        }
+        const response = await GET<any>(`/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`);
+            programmeSelected = response.map((programId: number) => {
+            let program = programmesOption.find(p => p.value === programId);
+            return program ? { label: program.label, value: program.value } : null;
+            }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
+      }
   });
 
-    const getEmployerByUserId = async () => {
-          const response = await GET<any>("/employer/getEmployerByUserId");
-           if (response !== undefined) {
-            getEnterprise(response.entrepriseId);
-           }
-    };
-
-    onMount(async () => {
-      await getVilles();
-      const token = localStorage.getItem("token");
-      const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-      isModerator = decodedToken.isModerator;
-      if (isModerator === true) {
-        await getAllEnterprise();
-      }
-      else 
-      {
-        await getEmployerByUserId();
-      }
+  //-------------SECTION ADMIN-------------------------------------
+  let isModerator: boolean = false;
+  let enterpriseSelected: { label: string; value: number }[] = [];
+  let enterpriseFromSelectedEnterprise: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+  let enterpriseOption: { label: string; value: number }[] = [];
+  const getAllEnterprise = async () => {
+    const response = await GET<any>("/enterprise/getEnterprises");
+    enterpriseOption = response.map((e: Entreprise) => {
+      return { label: e.name, value: e.id };
     });
-
-    //-------------SECTION ADMIN-------------------------------------
-    let isModerator: boolean = false;
-    let enterpriseSelected: { label: string; value: number }[] = [];
-    let enterpriseFromSelectedEnterprise: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let enterpriseOption: { label: string; value: number }[] = [];
-    const getAllEnterprise = async () => {
-      const response = await GET<any>("/enterprise/getEnterprises");
-        enterpriseOption = response.map((e: Entreprise) => {
-        return { label: e.name, value: e.id };
-      });
-    };
+  };
 
     const getEnterprise = async (enterpriseId: number) => {
     const response = await GET<any>(`/enterprise/getEnterprise?id=${enterpriseId}`);
@@ -186,13 +213,19 @@
       if (city) {
           villeSelected = [city];
       }
-      isEnterpriseSelected = true;
-    
+      if (entreprise === undefined)
+      {
+        isEnterpriseSelected = false;
+      }
+      else
+      {
+        isEnterpriseSelected = true;
+      }
     };
 
   //--------------------------------------------------
 
-  let programmeSelected: { label: string; value: number }[] = [];
+  let programmeSelected = [{ label: "", value: 0 }];
   let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let programmesOption = [
     { label: "Design d'intérieur", value: 1 },
@@ -206,9 +239,9 @@
     { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
-    { label: "Toutes les programmes", value: 12 },
+    { label: "Tous les programmes", value: 12 },
   ];
-  let scheduleSelected: { label: string; value: number }[] = [];
+  let scheduleSelected: { label: string; value: number } = { label: "", value: 0 };
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let scheduleOption = [
     { label: "Temps plein", value: 1 },
@@ -236,62 +269,68 @@
   };
 
   async function createJobOffer() {
-      try {
-          offre.scheduleId = (scheduleSelected as any)?.value;
-          let programmeName = programmeSelected.map((p) => p.label);
-          await schema.validate(offre, { abortEarly: false });
-          errors = {
-              id: 0,
-              title: "",
-              address: "",
-              description: "",
-              offerDebut: "",
-              dateEntryOffice: "",
-              deadlineApply: "",
-              email: "",
-              hoursPerWeek: 0,
-              compliantEmployer: false,
-              internship: false,
-              offerLink: "",
-              offerStatus: 0,
-              active: false,
-              salary: "",
-              scheduleId: 0,
-              employerId: 0,
-              isApproved: false,
-          };
-          const requestData = {
-              jobOffer: {
-                  ...offre,
-              },
-              enterprise: {
-                  ...entreprise,
-              },
-              studyPrograms: programmeName
-          };
-          const response = await POST<any, any>("/jobOffer/createJobOffer", requestData);
-          if (response.message === "Job offer created successfully") {
-            handleEmploiClick();
-          }
-      } catch (err) {
-          console.log(err);
-          if (err instanceof yup.ValidationError) {
-              errors = extractErrors(err);
-          }
-          // Handle the case where no program is selected
-          if (programmeSelected.length === 0) {
-              errorsProgramme = "Le programme visé est requis";
-          } else {
-              errorsProgramme = "";
-          }
+    try {
+      offre.scheduleId = (scheduleSelected as any)?.value;
+      let programmeName = programmeSelected.map((p) => p.label);
+      await schema.validate(offre, { abortEarly: false });
+      errors = {
+        id: 0,
+        title: "",
+        address: "",
+        description: "",
+        offerDebut: "",
+        dateEntryOffice: "",
+        deadlineApply: "",
+        email: "",
+        hoursPerWeek: 0,
+        compliantEmployer: false,
+        internship: false,
+        offerLink: "",
+        offerStatus: 0,
+        active: false,
+        salary: "",
+        scheduleId: 0,
+        employerId: 0,
+        isApproved: false,
+      };
+          entreprise.cityId = villeSelected[0].value;
+          console.log("ENTEPRISE :" + entreprise.cityId);
+      offre.isApproved = null;
+      const requestData = {
+        jobOffer: {
+          ...offre,
+        },
+        enterprise: {
+          ...entreprise,
+        },
+        studyPrograms: programmeName,
+      };
+      const response = await POST<any, any>(
+        "/jobOffer/createJobOffer",
+        requestData,
+      );
+      if (response.message === "Job offer created successfully") {
+        handleEmploiClick();
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+      if (err instanceof yup.ValidationError) {
+        errors = extractErrors(err);
+      }
+      // Handle the case where no program is selected
+      if (programmeSelected.length === 0) {
+        errorsProgramme = "Le programme visé est requis";
+      } else {
+        errorsProgramme = "";
       }
     }
-  
+  }
 
   async function updateJobOffer() {
     try {
       offre.scheduleId = (scheduleSelected as any)?.value;
-      let programmeName = programmeSelected.map((p) => p.label);
+      let programmeName = programmeSelected.map((p) => p.value);
       await schema.validate(offre, { abortEarly: false });
       errors = {
         id: 0,
@@ -322,6 +361,8 @@
         cityId: 0,
         isTemporary: false,
       };
+      entreprise.cityId = villeSelected[0].value;
+      console.log("ENTEPRISE :" + entreprise.cityId);
       const requestData = {
         entreprise: {
           ...entreprise
@@ -332,10 +373,16 @@
         studyPrograms: programmeName
       };
       console.log(requestData.jobOffer);
-      const response = await PUT<any>(
+      const response = await PUT<any, any>(
         "/jobOffer/updateJobOffer",
-        requestData.jobOffer
+        requestData
+
       );
+      if (response) {
+        handleEmploiClick();
+        console.log(response);
+        window.location.reload();
+      }
     } catch (err) {
       console.log(err);
       if (err instanceof yup.ValidationError) {
@@ -673,7 +720,7 @@
     display: block;
     margin-bottom: 0.26vw;
   }
-  h1{
+  h1 {
     margin: 0;
   }
 
@@ -725,6 +772,12 @@
     display: flex;
     flex-direction: row;
     justify-content:space-around;
+    width: 100%;
+  }
+  .accept-horiz {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     width: 100%;
   }
   .accept-horiz {

@@ -7,3 +7,22 @@ class OfferProgramRepo:
         db.session.add(new_offer_program)
         db.session.commit()
         return new_offer_program
+
+    def getProgramIdByOfferId(self, offerId):
+        offerPrograms = OfferProgram.query.filter_by(offerId=offerId).all()
+        if offerPrograms:
+            return [offerProgram.programId for offerProgram in offerPrograms]
+        else:
+            return []
+        
+    def updateOfferProgram(self, offerId, programIds):
+        offerPrograms = OfferProgram.query.filter_by(offerId=offerId).all()  
+        for offerProgram in offerPrograms:
+            if offerProgram.programId not in programIds:
+                db.session.delete(offerProgram)
+        for programId in programIds:
+            offerProgram = OfferProgram.query.filter_by(offerId=offerId, programId=programId).first()
+            if not offerProgram:
+                offerProgram = OfferProgram(offerId=offerId, programId=programId)
+                db.session.add(offerProgram)
+        db.session.commit()

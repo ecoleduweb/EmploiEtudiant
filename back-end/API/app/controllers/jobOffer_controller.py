@@ -30,24 +30,25 @@ def createJobOffer(current_user):
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
     if user.isModerator:
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None)
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None, True)
         for studyProgram in data["studyPrograms"]:
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         return jsonify({'message': 'Job offer created successfully'}) 
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
+        print(employer)
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
             newEmployer = employer_service.createEmployer(entrepriseId, user.id)
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id, False)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
             return jsonify({'message': 'Job offer created successfully'})
         else:
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, False)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
@@ -84,15 +85,24 @@ def offresEmploiEmployeur(current_user):
 def updateJobOffer(current_user):
     data = request.get_json()
     jobOffer = jobOffer_service.updateJobOffer(data)
+    print(data['studyPrograms'])
+    # update offerProgram
+    if 'studyPrograms' in data:
+        offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
+
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:
         return jsonify({'message': 'Job offer not found'}), 404
 
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])
-@token_required
-def offresEmploi(current_user):
+def offresEmploi():
     jobOffers = jobOffer_service.offresEmploi()
+    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+
+@job_offer_blueprint.route('/offresEmploiApproved', methods=['GET'])
+def offresEmploiApproved():
+    jobOffers = jobOffer_service.offresEmploiApproved()
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/linkJobOfferEmployer', methods=['PUT'])

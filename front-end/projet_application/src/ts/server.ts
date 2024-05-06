@@ -8,7 +8,7 @@ export async function GET<T>(url: string): Promise<T> {
         'Authorization': `${token}`
       }
     });
-    
+
     const data = await handleResponse<T>(response);
     return data as T;
   } catch (error) {
@@ -51,8 +51,10 @@ export async function DELETE(url: string): Promise<void> {
   }
 }
 
-export async function PUT<T>(url: string, body: T): Promise<void> {
+export async function PUT<T, T1>(url: string, body: T): Promise<T1> {
   try {
+    var token = localStorage.getItem("token");
+    if (!token) token = "";
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
       method: "PUT",
       headers: {
@@ -62,6 +64,8 @@ export async function PUT<T>(url: string, body: T): Promise<void> {
       body: JSON.stringify(body),
     });
 
+    const data = await handleResponse<T1>(response);
+    return data as T1;
     //await handleResponse(response);
   } catch (error) {
     console.error("Error putting:", error);
