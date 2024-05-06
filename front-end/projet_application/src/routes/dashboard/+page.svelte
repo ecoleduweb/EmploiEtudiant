@@ -35,6 +35,10 @@
   };
   const handleEditEmploiClick = (offreId: number) => {
     isJobOfferEdit = true;
+    const offre = $jobOffers.find((x) => x.id === offreId);
+    if (offre) {
+      offre.isApproved = null;
+    }
     openModal(offreId);
   };
 
