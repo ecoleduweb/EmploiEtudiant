@@ -8,10 +8,10 @@
   export let handleModalClick: (id: number) => void;
 
   const entreprise = writable<string>();
-  const getEnterprises = async (employerId: number) => {
+  const getEnterprises = async () => {
     try {
       const response = await GET<any>(
-        "/enterprise/getEnterpriseByEmployer?id=" + employerId
+        "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId
       );
       entreprise.set(response.name);
     } catch (error) {
@@ -19,7 +19,8 @@
     }
   };
   onMount(() => {
-    getEnterprises(offre.employerId);
+    if(offre)
+    getEnterprises();
   });
 </script>
 
