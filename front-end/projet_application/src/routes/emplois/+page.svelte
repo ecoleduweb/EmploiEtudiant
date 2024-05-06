@@ -64,6 +64,9 @@
 <Footer />
 
 <style scoped>
+  main {
+    height: 100%;
+  }
   .title {
     left: 7.2%;
     margin: 0;
