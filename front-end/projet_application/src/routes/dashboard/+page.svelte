@@ -136,10 +136,12 @@
       if (user.isModerator === true) {
         isModerator = true;
       }
+      await getJobOffersEmployeur();
     }
   });
 
   const jobOffers = writable<jobOffer[]>([]);
+
   const getJobOffersEmployeur = async () => {
     try {
       const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
@@ -148,40 +150,25 @@
       console.error("Error fetching job offers:", error);
     }
   };
-  onMount(getJobOffersEmployeur);
-
-  const getEntreprise = async () => {
-    try {
-      const responseEntreprise = await GET<any>(
-        "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId
-      );
-      entreprise = responseEntreprise;
-    } catch (error) {
-      console.error("Error fetching entreprise:", error);
-    }
-  };
-  onMount(getEntreprise);
+  let dateNow = new Date(new Date().toLocaleDateString());
 
   $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null);
   $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false);
   $: offerToCome = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
     let dateDebut = new Date(x.offerDebut);
-    let dateNow = new Date();
     return dateNow < dateDebut;
   });
   $: offerDisplayed = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
     let dateDebut = new Date(x.offerDebut);
     let dateFin = new Date(x.deadlineApply);
-    let dateNow = new Date();
     return dateNow >= dateDebut && dateNow <= dateFin;
   });
   $: expiredOffer = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
     let dateFin = new Date(x.deadlineApply);
-    let dateNow = new Date();
-    return dateNow > dateFin;
+    return dateFin < dateNow;
   });
 </script>
 
@@ -247,7 +234,6 @@
         {#if offre.id === $selectedEmploiId}
           <CreateEditOffre
             {offre}
-            {entreprise}
             handleEmploiClick={closeModal}
             {isJobOfferEdit}
           />

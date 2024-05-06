@@ -151,17 +151,30 @@
     });
   };
 
-  const getEmployerByUserId = async () => {
-    const response = await GET<any>("/employer/getEmployerByUserId");
-            console.log(response);
-    if (response !== undefined) {
-      getEnterprise(response.entrepriseId);
-            isEnterpriseSelected = true;
-           }
-           else {
-            isEnterpriseSelected = false;
+  const fetchEnterprise = async () => {
+    let response = undefined;
+    if (isJobOfferEdit === true) {
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+
     }
+    else if (!isModerator){
+      const employer = await GET<any>("/employer/getEmployerByUserId");
+    if (employer)
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + employer.id);
+    }
+    if (response !== undefined) {
+        entreprise = response;
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        isEnterpriseSelected = true;
+      }
+      else {
+        isEnterpriseSelected = false;
+      }
   };
+  
 
   onMount(async () => {
     await getVilles();
@@ -172,16 +185,10 @@
     }
     if (isModerator === true) {
       await getAllEnterprise();
-    } else {
-      await getEmployerByUserId();
-      }
+    }
+    await fetchEnterprise();
       if (isJobOfferEdit === true) {
-        console.log("EDIT-MODE");
         console.log(offre);
-        const city = villesOption.find(ville => ville.value === entreprise.cityId);
-        if (city) {
-          villeSelected = [city];
-        }
         const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
         if (schedule) {
           scheduleSelected = { label: schedule.label, value: schedule.value };
@@ -192,6 +199,7 @@
             return program ? { label: program.label, value: program.value } : null;
             }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
       }
+      
   });
 
   //-------------SECTION ADMIN-------------------------------------
@@ -265,6 +273,10 @@
     } else {
       await createJobOffer();
     }
+  };
+
+  const handleEntreprise = () => {
+    goto("/entreprise");
   };
 
   async function createJobOffer() {
@@ -415,7 +427,7 @@
         <!-- rien -->
       {:else}
         <h1>Sélectionner une entreprise existante</h1>
-        <div class="form-group-vertical">
+        <div class="form-group-horizontal">
           <MultiSelect
             id="entreprise"
             options={enterpriseOption}
@@ -425,6 +437,11 @@
             bind:value={enterpriseSelected}
             bind:selected={enterpriseFromSelectedEnterprise}
             on:add={(event) => getEnterprise(event.detail.option.value)}
+          />
+          <Button
+            submit={false}
+            text="Ajouter"
+            onClick={() => handleEntreprise()}
           />
         </div>
       {/if}
@@ -441,7 +458,7 @@
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -454,7 +471,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -467,7 +484,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -480,7 +497,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -498,7 +515,7 @@
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
-        disabled={!isJobOfferEdit}
+        disabled={!isJobOfferEdit && isEnterpriseSelected}
       />
       {/if}
     </div>

@@ -6,7 +6,7 @@
   import { onMount } from "svelte";
   import { writable } from "svelte/store";
   export let offre: jobOffer;
-  let currentPage = window.location.pathname;
+  
 
   const entreprise = writable<string>();
   const getEnterprises = async (employerId: number) => {
@@ -27,7 +27,9 @@
 <div class="container">
   <div class="titleContainer">
     <h3 class="title">{offre.title}</h3>
-    <h4 class="subtitle">Chez {$entreprise}</h4>
+    {#if $entreprise}
+      <h4 class="subtitle">Chez {$entreprise}</h4>
+    {/if}
   </div>
   <div class="info">
     <h5 class="infoTitle">Type de poste</h5>
