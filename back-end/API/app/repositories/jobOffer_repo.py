@@ -68,7 +68,8 @@ class JobOfferRepo:
     
     def approveJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['id']).first()
-        jobOffer.offerStatus = data['isApproved']
+        print(data)
+        jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
         db.session.commit()
         return jsonify({'message': 'job offer approved'})

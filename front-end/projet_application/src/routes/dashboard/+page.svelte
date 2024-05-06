@@ -9,9 +9,12 @@
   import type { User } from "../../Models/User";
   import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte";
   import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte";
+  import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte";
+  import ApprouveOffre from "../../Components/OffreEmplois/ApprouveOffre.svelte";
   import { GET } from "../../ts/server";
   import { onMount } from "svelte";
   import { jwtDecode } from "jwt-decode";
+  import Modal from "../../Components/Common/Modal.svelte";
 
   let isJobOfferEdit = false;
 
@@ -29,10 +32,25 @@
   const closeModal = () => {
     modal.set(false);
   };
-  const handleEmploiClick = (offreId: number) => {
+  const handleEditEmploiClick = (offreId: number) => {
     isJobOfferEdit = true;
     openModal(offreId);
   };
+
+  const modalApprove = writable(false);
+  const selectedEmploiIdApprove = writable(0);
+  const openModalApprove = (id: number) => {
+    modalApprove.set(true);
+    selectedEmploiIdApprove.set(id);
+  };
+  const closeModalApprove = () => {
+    modalApprove.set(false);
+  };
+  const handleApproveClick = (offreId: number) => {
+    console.log(offreId);
+    openModalApprove(offreId);
+  };
+
 
   let user: User = {
     id: 0,
@@ -175,25 +193,25 @@
     {#if notApprovedOffer.length > 0}
       <h2 class="textSections">En attente d'approbation</h2>
       {#each notApprovedOffer as offre}
-        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
       {/each}
     {/if}
     {#if offerToCome.length > 0}
       <h2 class="textSections">Offres bientôt affichées</h2>
       {#each offerToCome as offre}
-        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
       {/each}
     {/if}
     {#if offerDisplayed.length > 0}
       <h2 class="textSections">Offres affichées</h2>
       {#each offerDisplayed as offre}
-        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick}/>
       {/each}
     {/if}
     {#if expiredOffer.length > 0}
       <h2 class="textSections">Offres expirées</h2>
       {#each expiredOffer as offre}
-        <OfferRow user={user} offre={offre} handleModalClick={handleEmploiClick} />
+        <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick}/>
     {/each}
     {/if}
   </section>
@@ -209,6 +227,15 @@
       {/each}
     {/if}
   {/if}
+  {#if $modalApprove}
+        {#each $jobOffers as emploi}
+            {#if emploi.id === $selectedEmploiIdApprove}
+              <Modal handleModalClick={closeModalApprove}>
+                <ApprouveOffre offre={emploi} entreprise={entreprise} handleApproveClick={closeModalApprove}/>
+              </Modal>
+            {/if}
+        {/each}
+    {/if}
 </main>
 <Footer />
 

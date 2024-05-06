@@ -53,10 +53,13 @@ export async function DELETE(url: string): Promise<void> {
 
 export async function PUT<T>(url: string, body: T): Promise<void> {
   try {
+    var token = localStorage.getItem("token");
+    if (!token) token = "";
     const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `${token}`,
       },
       body: JSON.stringify(body),
     });
