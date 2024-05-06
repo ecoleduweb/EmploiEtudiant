@@ -18,9 +18,24 @@
   export let isJobOfferEdit: boolean;
 
   const schema = yup.object().shape({
-    title: yup.string().required("Le titre du poste est requis"),
-    address: yup.string().required("L'adresse du lieu de travail est requise"),
-    description: yup.string().required("La description de l'offre est requise"),
+    title: yup
+      .string()
+      .max(255, "Le titre du poste doit être de 255 caractères maximum")
+      .required("Le titre du poste est requis"),
+    address: yup
+      .string()
+      .max(
+        255,
+        "L'adresse du lieu de travail doit être de 255 caractères maximum",
+      )
+      .required("L'adresse du lieu de travail est requise"),
+    description: yup
+      .string()
+      .max(
+        30000,
+        "La description de l'offre doit être de 30000 caractères maximum",
+      )
+      .required("La description de l'offre est requise"),
     dateEntryOffice: yup
       .string()
       .required("La date d'entrée en fonction est requise")
@@ -35,21 +50,22 @@
       }),
     email: yup
       .string()
+      .max(255, "Le courriel doit être de 255 caractères maximum")
       .matches(
         /\.[a-z]+$/,
-        "Le courriel doit être de format valide : courriel@domaine.ca"
+        "Le courriel doit être de format valide : courriel@domaine.ca",
       )
       .email("Le courriel n'est pas valide")
       .required("Le courriel est requis"),
     hoursPerWeek: yup
       .string()
-      .required("Le nombre d'heure par semaine est requis")
+      .required("Le nombre d'heures par semaine est requis")
       .test(
         "is-number",
         "Veuillez entrer un nombre d'heure valide !",
         (value) => {
           return !isNaN(Number(value)) && Number(value) > 0;
-        }
+        },
       ),
     scheduleId: yup
       .number()
@@ -249,7 +265,6 @@
     } else {
       await createJobOffer();
     }
-    window.location.reload();
   };
 
   async function createJobOffer() {
@@ -291,10 +306,11 @@
       };
       const response = await POST<any, any>(
         "/jobOffer/createJobOffer",
-        requestData
+        requestData,
       );
       if (response.message === "Job offer created successfully") {
         handleEmploiClick();
+        window.location.reload();
       }
     } catch (err) {
       console.log(err);
@@ -356,10 +372,16 @@
         studyPrograms: programmeName,
       };
       console.log(requestData.jobOffer);
-      const response = await PUT<any>(
+      const response = await PUT<any, any>(
         "/jobOffer/updateJobOffer",
         requestData
+
       );
+      if (response) {
+        handleEmploiClick();
+        console.log(response);
+        window.location.reload();
+      }
     } catch (err) {
       console.log(err);
       if (err instanceof yup.ValidationError) {
