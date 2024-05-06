@@ -618,7 +618,7 @@
       </p>
     </div>
     <div class="form-group-vertical">
-      <label for="duree">Programme visée*</label>
+      <label for="duree">Programme visé*</label>
       <MultiSelect
         id="programme"
         options={programmesOption}
