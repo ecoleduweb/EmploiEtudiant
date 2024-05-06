@@ -154,24 +154,24 @@
       console.error("Error fetching job offers:", error);
     }
   };
-  let dateNow = new Date(new Date().toLocaleDateString());
+  let dateNow = new Date().toISOString().split('T')[0];
 
   $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null);
   $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false);
   $: offerToCome = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateDebut = new Date(x.offerDebut);
+    let dateDebut = new Date(x.offerDebut).toISOString().split('T')[0];
     return dateNow < dateDebut;
   });
   $: offerDisplayed = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateDebut = new Date(x.offerDebut);
-    let dateFin = new Date(x.deadlineApply);
+    let dateDebut = new Date(x.offerDebut).toISOString().split('T')[0];
+    let dateFin = new Date(x.deadlineApply).toISOString().split('T')[0];
     return dateNow >= dateDebut && dateNow <= dateFin;
   });
   $: expiredOffer = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateFin = new Date(x.deadlineApply);
+    let dateFin = new Date(x.deadlineApply).toISOString().split('T')[0];
     return dateFin < dateNow;
   });
 </script>

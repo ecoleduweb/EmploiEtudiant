@@ -7,7 +7,6 @@
   import { writable } from "svelte/store";
   export let offre: jobOffer;
   
-
   const entreprise = writable<string>();
   const getEnterprises = async (employerId: number) => {
     try {
@@ -19,9 +18,35 @@
       console.error("Error fetching entreprise:", error);
     }
   };
-  onMount(() => {
+  onMount( async() => {
     getEnterprises(offre.employerId);
+    const response = await GET<any>(`/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`);
+    try {
+            programmeSelected = response.map((programId: number) => {
+            let program = programmesOption.find(p => p.value === programId);
+            return program ? { label: program.label, value: program.value } : null;
+            }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
+      } catch (error) {
+        console.error("Error fetching program:", error);
+    };
   });
+  let programmeSelected = [] as any;
+  let programmesOption = [
+    { label: "Design d'intérieur", value: 1 },
+    { label: "Éducation à l'enfance", value: 2 },
+    { label: "Gestion et intervention en loisir", value: 3 },
+    { label: "Graphisme", value: 4 },
+    { label: "Informatique", value: 5 },
+    { label: "Inhalothérapie", value: 6 },
+    { label: "Pharmacie", value: 7 },
+    { label: "Soins infirmiers", value: 8 },
+    { label: "Arts visuels", value: 9 },
+    { label: "Sciences de la nature", value: 10 },
+    { label: "Sciences humaines", value: 11 },
+    { label: "Tous les programmes", value: 12 },
+  ];
+  
+  
 </script>
 
 <div class="container">
@@ -36,12 +61,27 @@
     <p class="text">{offre.title}</p>
     <h5 class="infoTitle">Adresse du lieu de travail</h5>
     <p class="text">{offre.address}</p>
-    <h5 class="infoTitle">Description du poste</h5>
-    <p class="text">{offre.description}</p>
     <h5 class="infoTitle">Date de début</h5>
     <p class="text">{offre.offerDebut}</p>
+    <h5 class="infoTitle">Date d'entrée en fonction</h5>
+    <p class="text">{offre.dateEntryOffice}</p>
     <h5 class="infoTitle">Date limite pour postuler</h5>
     <p class="text">{offre.deadlineApply}</p>
+    <h5 class="infoTitle">Salaire</h5>
+    <p class="text">{offre.salary}</p>
+    <h5 class="infoTitle">Heure par semaine</h5>
+    <p class="text">{offre.hoursPerWeek}</p>
+    <h5 class="infoTitle">Stage ?</h5>
+    <p class="text">{offre.internship ? "Oui" : "Non"}</p>
+    <h5 class="infoTitle">Employeur Conciliant ?</h5>
+    <p class="text">{offre.compliantEmployer ? "Oui" : "Non"}</p>
+    <h5 class="infoTitle">Programme</h5>
+    <p class="text">{programmeSelected.map(p => p.label).join(", ")}</p>
+    <p class="text">{offre.deadlineApply}</p>
+    <h5 class="infoTitle">Description du poste</h5>
+    <p class="text">{offre.description}</p>
+    <h5 class="infoTitle">Adresse URL vers l'offre d'emploi détaillé</h5>
+    <p class="text">{offre.offerLink}</p>
     <h5 class="infoTitle">Où envoyer votre candidature</h5>
     <p class="text">{offre.email}</p>
   </div>
@@ -87,5 +127,7 @@
     color: white;
     border-radius: 4px;
     transition: background-color 0.3s ease;
+    max-height: 700px;
+    overflow-y: auto;
   }
 </style>
