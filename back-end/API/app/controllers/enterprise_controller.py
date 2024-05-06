@@ -23,7 +23,6 @@ def createEnterprise(current_user):
     return jsonify(enterprise.to_json_string())
 
 @enterprise_blueprint.route('/getEnterpriseByEmployer', methods=['GET'])
-@token_required
 def getEnterpriseByEmployer(current_user):
     id = request.args.get('id')
     enterprise = enterprise_service.getEnterpriseByEmployer(id)
