@@ -8,7 +8,7 @@ export async function GET<T>(url: string): Promise<T> {
         'Authorization': `${token}`
       }
     });
-    
+
     const data = await handleResponse<T>(response);
     return data as T;
   } catch (error) {
@@ -51,7 +51,7 @@ export async function DELETE(url: string): Promise<void> {
   }
 }
 
-export async function PUT<T>(url: string, body: T): Promise<void> {
+export async function PUT<T, T1>(url: string, body: T): Promise<T1> {
   try {
     var token = localStorage.getItem("token");
     if (!token) token = "";
@@ -59,12 +59,14 @@ export async function PUT<T>(url: string, body: T): Promise<void> {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${token}`,
+        "Authorization": `${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(body),
     });
 
-    await handleResponse(response);
+    const data = await handleResponse<T1>(response);
+    return data as T1;
+    //await handleResponse(response);
   } catch (error) {
     console.error("Error putting:", error);
     throw error;

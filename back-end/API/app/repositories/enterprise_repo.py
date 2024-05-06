@@ -18,9 +18,11 @@ class EnterpriseRepo:
     
     def getEnterpriseByEmployer(self, employerId):
         employer = Employers.query.filter_by(id=employerId).first()
-        print(employer)
-        enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
-        return enterprise
+        if(employer == None):
+            return None
+        else: 
+            enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
+            return enterprise
 
     def getEnterprise(self, id):
         try:

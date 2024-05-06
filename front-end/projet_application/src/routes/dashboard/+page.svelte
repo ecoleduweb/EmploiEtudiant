@@ -76,7 +76,7 @@
     deadlineApply: "",
     email: "",
     hoursPerWeek: 0,
-    compliantEmployer: false, 
+    compliantEmployer: false,
     internship: false,
     offerLink: "",
     offerStatus: 0,
@@ -97,7 +97,7 @@
     deadlineApply: "",
     email: "",
     hoursPerWeek: 0,
-    compliantEmployer: false, 
+    compliantEmployer: false,
     internship: false,
     offerLink: "",
     offerStatus: 0,
@@ -116,7 +116,7 @@
     phone: "",
     cityId: 0,
     isTemporary: false,
-  }
+  };
 
   let errorEntreprise: Entreprise = {
     id: 0,
@@ -126,7 +126,7 @@
     phone: "",
     cityId: 0,
     isTemporary: false,
-  }
+  };
 
   onMount(async () => {
     const token = localStorage.getItem("token");
@@ -148,7 +148,9 @@
 
   const getEntreprise = async () => {
     try {
-      const responseEntreprise = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      const responseEntreprise = await GET<any>(
+        "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId
+      );
       entreprise = responseEntreprise;
     } catch (error) {
       console.error("Error fetching entreprise:", error);
@@ -156,7 +158,8 @@
   };
   onMount(getEntreprise);
 
-  $: notApprovedOffer = $jobOffers.filter((x) => !x.isApproved);
+  $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null);
+  $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false);
   $: offerToCome = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
     let dateDebut = new Date(x.offerDebut);
@@ -176,7 +179,6 @@
     let dateNow = new Date();
     return dateNow > dateFin;
   });
-
 </script>
 
 <Header />
@@ -194,6 +196,18 @@
       <h2 class="textSections">En attente d'approbation</h2>
       {#each notApprovedOffer as offre}
         <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
+     {/each}
+    {/if}
+    {#if isRefusedOffer.length > 0}
+      <h2 class="textSections">Offres refusées</h2>
+      {#each isRefusedOffer as offre}
+        <OfferRow {offre} handleModalClick={handleEmploiClick} />
+      {/each}
+    {/if}
+    {#if toBeApprovedOffer.length > 0}
+      <h2 class="textSections">Offres en attente d'approbation</h2>
+      {#each toBeApprovedOffer as offre}
+        <OfferRow {offre} handleModalClick={handleEmploiClick} />
       {/each}
     {/if}
     {#if offerToCome.length > 0}
@@ -217,12 +231,17 @@
   </section>
   {#if $modal}
     {#if isJobOfferEdit === false}
-        <CreateEditOffre handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+      <CreateEditOffre handleEmploiClick={closeModal} {isJobOfferEdit} />
     {/if}
     {#if isJobOfferEdit === true}
       {#each $jobOffers as offre}
         {#if offre.id === $selectedEmploiId}
-          <CreateEditOffre offre={offre} entreprise={entreprise} handleEmploiClick={closeModal} isJobOfferEdit={isJobOfferEdit} />
+          <CreateEditOffre
+            {offre}
+            {entreprise}
+            handleEmploiClick={closeModal}
+            {isJobOfferEdit}
+          />
         {/if}
       {/each}
     {/if}
