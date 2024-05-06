@@ -448,6 +448,9 @@
         </div>
       {/if}
     {/if}
+    {#if offre.approbationMessage}
+    <h3 style="color: red;">Raison du refus: {offre.approbationMessage}</h3>
+    {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
     {:else}
