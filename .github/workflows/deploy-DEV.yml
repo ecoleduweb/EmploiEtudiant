@@ -41,6 +41,7 @@ jobs:
             echo MAIL_SENDER=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
             echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
             echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
+            echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
             flask db upgrade
             echo 'Installing packages'
