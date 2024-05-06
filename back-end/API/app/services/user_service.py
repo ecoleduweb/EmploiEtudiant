@@ -7,8 +7,9 @@ import datetime
 from jwt import encode
 import os
 from app.repositories.auth_repo import AuthRepo
+from app.services.captcha_service import CaptchaService
 auth_repo = AuthRepo()
-
+captcha_service = CaptchaService()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
@@ -30,6 +31,9 @@ class UserService:
             return jsonify({'message': "could not verify"}), 401
 
     def register(self, data):
+        print(data)
+        if not captcha_service.verify_captcha(data['captchaToken']):
+            return jsonify({'message': 'Captcha verification failed'}), 400
         return auth_repo.register(data)
 
     def getAllUsers(self):
@@ -40,3 +44,4 @@ class UserService:
 
     def updatePassword(self, data):
         return auth_repo.updatePassword(data)
+    

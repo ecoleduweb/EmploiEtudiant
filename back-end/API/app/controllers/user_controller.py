@@ -2,7 +2,6 @@ from flask import jsonify, request, Blueprint
 import os
 from logging import getLogger
 from jwt import decode
-import requests
 from app.services.user_service import UserService
 from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
@@ -25,7 +24,7 @@ def login():
 def register():
     data = request.get_json()
     logger.info('Attempt to create a new user with email: ' + data['email'])
-    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName')]):
+    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('captchaToken')]):
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):
@@ -72,20 +71,3 @@ def getUser(current_user):
         return jsonify({'message': 'Missing required fields'}), 400
     user = user_service.getUser(email)
     return jsonify(user.to_json_string())
-
-@user_blueprint.route('/verifyRecaptcha', methods=['POST'])
-def verify_recaptcha(token):
-    key = os.environ.get('RECAPTCHA_KEY')
-    url = "https://www.google.com/recaptcha/api/siteverify"
-    params = {
-        "secret": key,
-        "response": token
-    }
-    
-    response = requests.post(url, data=params)
-    result = response.json()
-    
-    if result['success'] and result['score'] >= 0.5:
-        return True
-    else:
-        return False

@@ -107,6 +107,7 @@
             firstName: register.user.firstName,
             lastName: register.user.lastName,
             role: "user",
+            captchaToken: token,
           });
           if (response.token != "") {
             const token = jwtDecode(response.token);
