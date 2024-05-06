@@ -175,7 +175,7 @@
           <label for="email">Courriel</label>
           <input id="email" bind:value={register.user.email} />
           <p class="errors-input">
-            {#if !errors["user.email"]}
+            {#if errors["user.email"]}
               {errors["user.email"]}
             {/if}
           </p>
@@ -188,7 +188,7 @@
             bind:value={register.user.password}
           />
           <p class="errors-input">
-            {#if !errors["user.password"]}
+            {#if errors["user.password"]}
               {errors["user.password"]}
             {/if}
           </p>
@@ -201,7 +201,7 @@
             bind:value={register.validatePassword}
           />
           <p class="errors-input">
-            {#if !errors.validatePassword}{errors.validatePassword}{/if}
+            {#if errors.validatePassword}{errors.validatePassword}{/if}
           </p>
         </div>
         <div class="password-validation-showcase">
