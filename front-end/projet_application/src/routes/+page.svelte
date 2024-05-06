@@ -36,6 +36,9 @@
 <Footer />
 
 <style scoped>
+  main {
+    height: 100%;
+  }
   h2 {
     color: white;
   }

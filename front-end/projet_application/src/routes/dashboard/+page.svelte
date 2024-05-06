@@ -264,6 +264,7 @@
     justify-content: center;
     width: 100%;
     min-height: 81vh;
+    height: 100%;
   }
   .haut {
     display: flex;
