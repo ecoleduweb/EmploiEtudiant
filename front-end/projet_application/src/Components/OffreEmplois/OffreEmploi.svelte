@@ -27,7 +27,9 @@
 <div class="container">
   <div class="titleContainer">
     <h3 class="title">{offre.title}</h3>
-    <h4 class="subtitle">Chez {$entreprise}</h4>
+    {#if $entreprise}
+      <h4 class="subtitle">Chez {$entreprise}</h4>
+    {/if}
   </div>
   <div class="info">
     <h5 class="infoTitle">Type de poste</h5>

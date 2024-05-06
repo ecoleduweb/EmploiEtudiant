@@ -31,7 +31,7 @@ def createJobOffer(current_user):
     user = User.query.filter_by(email = decoded_token['email']).first()
     employer = None
     if user.isModerator:
-        employer = employer_service.createEmployer(data[entreprise][id], None)
+        employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         isApproved = True
     else:
         isApproved = None
@@ -40,11 +40,11 @@ def createJobOffer(current_user):
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
             employer = employer_service.createEmployer(entrepriseId, user.id)
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
-        for studyProgram in data["studyPrograms"]:
-            studyProgramId = study_program_service.studyProgramId(studyProgram)
-            offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-        return jsonify({'message': 'Job offer created successfully'})
+    jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
+    for studyProgram in data["studyPrograms"]:
+        studyProgramId = study_program_service.studyProgramId(studyProgram)
+        offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])
 def offreEmploi():

@@ -151,11 +151,12 @@
     });
   };
 
-  const getEmployerByUserId = async () => {
-    const response = await GET<any>("/employer/getEmployerByUserId");
-            console.log(response);
+  const getEnterpriseByEmployer = async () => {
+    const response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      entreprise = response;
+      console.log(response);
+
     if (response !== undefined) {
-      getEnterprise(response.entrepriseId);
             isEnterpriseSelected = true;
            }
            else {
@@ -172,9 +173,8 @@
     }
     if (isModerator === true) {
       await getAllEnterprise();
-    } else {
-      await getEmployerByUserId();
-      }
+    }
+    await getEnterpriseByEmployer();
       if (isJobOfferEdit === true) {
         console.log("EDIT-MODE");
         console.log(offre);
@@ -192,6 +192,7 @@
             return program ? { label: program.label, value: program.value } : null;
             }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
       }
+      
   });
 
   //-------------SECTION ADMIN-------------------------------------
