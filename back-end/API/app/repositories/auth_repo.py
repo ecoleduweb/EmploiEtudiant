@@ -18,7 +18,7 @@ class AuthRepo:
         db.session.add(new_user)
         db.session.commit()
         try:
-            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator}, os.environ.get('SECRET_KEY'))
+            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
             logger.warn("Register successful on user: " + data['email'])      
             return jsonify({'token' : token})
         except Exception as e:

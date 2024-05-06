@@ -376,12 +376,12 @@
       console.log("ENTEPRISE :" + entreprise.cityId);
       const requestData = {
         entreprise: {
-          ...entreprise,
+          ...entreprise
         },
         jobOffer: {
-          ...offre,
+          ...offre
         },
-        studyPrograms: programmeName,
+        studyPrograms: programmeName
       };
       console.log(requestData.jobOffer);
       const response = await PUT<any, any>(
@@ -417,6 +417,8 @@
 
   let todayMin = new Date();
   let minDateString = todayMin.toISOString().split("T")[0]; // format as yyyy-mm-dd
+
+
 </script>
 
 <Modal handleModalClick={handleEmploiClick}>
@@ -782,7 +784,13 @@
     color: red;
     font-size: 0.8em;
   }
-  .accept-Condition {
+  .accept-Condition{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    width: 100%;
+  }
+  .accept-horiz {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
