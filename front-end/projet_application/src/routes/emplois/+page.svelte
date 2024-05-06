@@ -26,7 +26,7 @@
     const jobOffers = writable<jobOffer[]>([]);
     const getJobOffers = async () => {
         try {
-            const response = await GET<any>("/jobOffer/jobOffersApproved");
+            const response = await GET<any>("/jobOffer/offresEmploiApproved");
             jobOffers.set(response);
         } catch (error) {
             console.error("Error fetching job offers:", error);
