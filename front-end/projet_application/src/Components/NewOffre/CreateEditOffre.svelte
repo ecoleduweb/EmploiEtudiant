@@ -275,6 +275,10 @@
     }
   };
 
+  const handleEntreprise = () => {
+    goto("/entreprise");
+  };
+
   async function createJobOffer() {
     try {
       offre.scheduleId = (scheduleSelected as any)?.value;
@@ -423,7 +427,7 @@
         <!-- rien -->
       {:else}
         <h1>Sélectionner une entreprise existante</h1>
-        <div class="form-group-vertical">
+        <div class="form-group-horizontal">
           <MultiSelect
             id="entreprise"
             options={enterpriseOption}
@@ -433,6 +437,11 @@
             bind:value={enterpriseSelected}
             bind:selected={enterpriseFromSelectedEnterprise}
             on:add={(event) => getEnterprise(event.detail.option.value)}
+          />
+          <Button
+            submit={false}
+            text="Ajouter"
+            onClick={() => handleEntreprise()}
           />
         </div>
       {/if}
