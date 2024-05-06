@@ -6,7 +6,7 @@ from flask import Flask, jsonify
 
 class JobOfferRepo:
 
-    def createJobOffer(self, data, employerId):
+    def createJobOffer(self, data, employerId, isApproved):
         new_job_offer = JobOffer(title=data['title'],
          description=data['description'],
          offerDebut=data["offerDebut"],
@@ -22,7 +22,7 @@ class JobOfferRepo:
          active=data['active'],
          employerId=employerId,
          scheduleId=data['scheduleId'],
-         isApproved=data['isApproved'])
+         isApproved=isApproved)
         db.session.add(new_job_offer)
         db.session.commit()
         return new_job_offer
@@ -68,7 +68,8 @@ class JobOfferRepo:
     
     def approveJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['id']).first()
-        jobOffer.offerStatus = data['isApproved']
+        print(data)
+        jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
         db.session.commit()
         return jsonify({'message': 'job offer approved'})

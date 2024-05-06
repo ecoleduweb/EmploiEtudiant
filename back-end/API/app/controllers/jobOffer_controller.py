@@ -30,24 +30,25 @@ def createJobOffer(current_user):
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
     if user.isModerator:
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None)
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None, True)
         for studyProgram in data["studyPrograms"]:
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         return jsonify({'message': 'Job offer created successfully'}) 
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
+        print(employer)
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
             newEmployer = employer_service.createEmployer(entrepriseId, user.id)
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id, False)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
             return jsonify({'message': 'Job offer created successfully'})
         else:
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id)
+            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, False)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
