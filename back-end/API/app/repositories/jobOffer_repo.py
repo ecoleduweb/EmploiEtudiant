@@ -2,6 +2,7 @@ from app import db
 from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
+from datetime import date
 from flask import Flask, jsonify
 
 class JobOfferRepo:
@@ -61,7 +62,12 @@ class JobOfferRepo:
         return jobOffers
     
     def offresEmploiApproved(self):
-        jobOffers = JobOffer.query.filter_by(isApproved=True).all()
+        today = date.today()
+        jobOffers = JobOffer.query.filter(
+            JobOffer.isApproved == True,
+            JobOffer.offerDebut <= today,
+            JobOffer.deadlineApply >= today
+        ).all()
         return jobOffers
     
     def linkJobOfferEmployer(self, data):
