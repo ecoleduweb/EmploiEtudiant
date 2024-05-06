@@ -48,6 +48,7 @@
       color: #fff;
       padding: 10px;
       text-align: center;
+      z-index: 1;;
     }
   
     .cookie-banner a {
