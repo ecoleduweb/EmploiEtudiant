@@ -41,6 +41,7 @@ jobs:
             echo MAIL_SENDER=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
             echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
             echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
+            echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
             flask db upgrade
             echo 'Installing packages'
             sudo systemctl enable back-end
@@ -50,6 +51,7 @@ jobs:
             touch .env
             echo PUBLIC_BASE_URL = ${{ secrets.PROD_FRONT_PUBLIC_URL }} >> .env
             echo HOST = ${{ secrets.FRONT_HOST }} >> .env
+            echo PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY }} >> .env
             echo 'Building front-end'
             npm run build
             echo 'Starting services'
