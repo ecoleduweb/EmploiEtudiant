@@ -63,12 +63,12 @@
 
 <style lang="scss" scoped>
   footer {
-    position: sticky;
+    position: fixed;
     bottom: 0;
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* Stretch items vertically */
-    justify-content: flex-start; /* Align items at the start of the container */
+    align-items: stretch;
+    justify-content: flex-start;
     margin: 0;
     width: 100%;
     overflow: hidden;
@@ -77,7 +77,7 @@
   .svg-footer {
     width: 100%;
   }
-  
+
   * {
     padding: 0;
     margin: 0;
