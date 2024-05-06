@@ -15,7 +15,7 @@
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            const response = await PUT<any>("/jobOffer/approveJobOffer", { id: offre.id, approbationMessage: approbationMessage, isApproved: isApproved});
+            const response = await PUT<any, any>("/jobOffer/approveJobOffer", { id: offre.id, approbationMessage: approbationMessage, isApproved: isApproved});
         } catch (error) {
             console.error("Error approving job offer:", error);
         }

@@ -192,22 +192,22 @@
   </section>
   <section class="offres">
     <p class="textOffre">Mes offres d'emplois</p>
-    {#if notApprovedOffer.length > 0}
+    <!-- {#if toBeApprovedOffer.length > 0}
       <h2 class="textSections">En attente d'approbation</h2>
-      {#each notApprovedOffer as offre}
+      {#each toBeApprovedOffer as offre}
         <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
      {/each}
-    {/if}
+    {/if} -->
     {#if isRefusedOffer.length > 0}
       <h2 class="textSections">Offres refusées</h2>
       {#each isRefusedOffer as offre}
-        <OfferRow {offre} handleModalClick={handleEmploiClick} />
+        <OfferRow {user} {offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
       {/each}
     {/if}
     {#if toBeApprovedOffer.length > 0}
       <h2 class="textSections">Offres en attente d'approbation</h2>
       {#each toBeApprovedOffer as offre}
-        <OfferRow {offre} handleModalClick={handleEmploiClick} />
+      <OfferRow {user} {offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
       {/each}
     {/if}
     {#if offerToCome.length > 0}
