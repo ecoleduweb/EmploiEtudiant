@@ -46,7 +46,7 @@ def createJobOffer(current_user):
     for studyProgram in data["studyPrograms"]:
         studyProgramId = study_program_service.studyProgramId(studyProgram)
         offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle entreprise", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer["title"] + ".")
+    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle entreprise", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
     return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])
