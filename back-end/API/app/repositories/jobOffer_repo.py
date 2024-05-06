@@ -60,6 +60,10 @@ class JobOfferRepo:
         jobOffers = JobOffer.query.all()
         return jobOffers
     
+    def offresEmploiApproved(self):
+        jobOffers = JobOffer.query.filter_by(isApproved=True).all()
+        return jobOffers
+    
     def linkJobOfferEmployer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOfferId']).first()
         jobOffer.employer_id = data['employerId']
