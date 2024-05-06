@@ -85,7 +85,8 @@ def updateJobOffer(current_user):
     if 'studyPrograms' in data:
         offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
 
-    if jobOffer:
+    if jobOffer:    
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une entreprise", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
         return jsonify(jobOffer.to_json_string())
     else:
         return jsonify({'message': 'Job offer not found'}), 404

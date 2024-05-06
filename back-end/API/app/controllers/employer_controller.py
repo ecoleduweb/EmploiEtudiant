@@ -2,8 +2,6 @@ from flask import jsonify, request, Blueprint
 from app.services.employer_service import EmployerService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
-from app.controllers.email_controller import sendMail
-import os
 employer_service = EmployerService()
 
 employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -13,7 +11,6 @@ employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https
 def createEmployer(current_user):
     data = request.get_json()
     employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
-    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'un compte employeur", "Un nouveau compte employeur a été créé.")
     return jsonify(employer.to_json_string())
 
 @employer_blueprint.route('/getEmployer', methods=['GET'])
