@@ -71,35 +71,35 @@
 
   const handleSubmit = async () => {
     try {
+      const lowercaseRegex = /^(?=.*[a-z])/;
+      const uppercaseRegex = /^(?=.*[A-Z])/;
+      const digitRegex = /^(?=.*[0-9])/;
+      const specialCharRegex = /^(?=.*[!@#$%^&*])/;
+      const lengthRegex = /^(?=.{12,})/;
+
+      validations.update((vals) => ({
+        ...vals,
+        lowercase: lowercaseRegex.test(register.user.password),
+        uppercase: uppercaseRegex.test(register.user.password),
+        digit: digitRegex.test(register.user.password),
+        specialChar: specialCharRegex.test(register.user.password),
+        length: lengthRegex.test(register.user.password),
+      }));
+
+      await schema.validate(register, { abortEarly: false });
+      errors = {
+        user: {
+          id: 0,
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          role: "",
+        },
+        validatePassword: "",
+        token: "",
+      };
       if (doRecaptcha()) {
-        const lowercaseRegex = /^(?=.*[a-z])/;
-        const uppercaseRegex = /^(?=.*[A-Z])/;
-        const digitRegex = /^(?=.*[0-9])/;
-        const specialCharRegex = /^(?=.*[!@#$%^&*])/;
-        const lengthRegex = /^(?=.{12,})/;
-
-        validations.update((vals) => ({
-          ...vals,
-          lowercase: lowercaseRegex.test(register.user.password),
-          uppercase: uppercaseRegex.test(register.user.password),
-          digit: digitRegex.test(register.user.password),
-          specialChar: specialCharRegex.test(register.user.password),
-          length: lengthRegex.test(register.user.password),
-        }));
-
-        await schema.validate(register, { abortEarly: false });
-        errors = {
-          user: {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            role: "",
-          },
-          validatePassword: "",
-          token: "",
-        };
         try {
           const response = await POST<any, any>("/user/register", {
             email: register.user.email,
@@ -133,7 +133,6 @@
     } catch (err) {
       errors = extractErrors(err);
     }
-    // Here you can handle form submission, for now, just logging the values
   };
   let key = env.PUBLIC_RECAPTCHA_KEY;
   let token = "";
@@ -274,7 +273,7 @@
         <Link text="Retour" href="/" />
       </div>
       <div class="form-buttons">
-        <Button submit={true} text="Créer" />
+        <Button submit={true} text="Créer" onClick={() => {}} />
       </div>
     </div>
   </form>
