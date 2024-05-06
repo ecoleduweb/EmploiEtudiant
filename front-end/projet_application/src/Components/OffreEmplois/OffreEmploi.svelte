@@ -77,7 +77,6 @@
     <p class="text">{offre.compliantEmployer ? "Oui" : "Non"}</p>
     <h5 class="infoTitle">Programme</h5>
     <p class="text">{programmeSelected.map(p => p.label).join(", ")}</p>
-    <p class="text">{offre.deadlineApply}</p>
     <h5 class="infoTitle">Description du poste</h5>
     <p class="text">{offre.description}</p>
     <h5 class="infoTitle">Adresse URL vers l'offre d'emploi détaillé</h5>
