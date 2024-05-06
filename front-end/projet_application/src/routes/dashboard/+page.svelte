@@ -35,6 +35,10 @@
   };
   const handleEditEmploiClick = (offreId: number) => {
     isJobOfferEdit = true;
+    const offre = $jobOffers.find((x) => x.id === offreId);
+    if (offre) {
+      offre.isApproved = null;
+    }
     openModal(offreId);
   };
 
@@ -289,8 +293,7 @@
   .textSections {
     font-size: 1.8em;
     margin: 0;
-    margin-top: 15px;
-    margin-bottom: 5;
+    margin-top: 60px;
     color: white;
   }
 </style>
