@@ -151,18 +151,30 @@
     });
   };
 
-  const getEnterpriseByEmployer = async () => {
-    const response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
-      entreprise = response;
-      console.log(response);
+  const fetchEnterprise = async () => {
+    let response = undefined;
+    if (isJobOfferEdit === true) {
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
 
-    if (response !== undefined) {
-            isEnterpriseSelected = true;
-           }
-           else {
-            isEnterpriseSelected = false;
     }
+    else if (!isModerator){
+      const employer = await GET<any>("/employer/getEmployerByUserId");
+    if (employer)
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + employer.id);
+    }
+    if (response !== undefined) {
+        entreprise = response;
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        isEnterpriseSelected = true;
+      }
+      else {
+        isEnterpriseSelected = false;
+      }
   };
+  
 
   onMount(async () => {
     await getVilles();
@@ -174,14 +186,9 @@
     if (isModerator === true) {
       await getAllEnterprise();
     }
-    await getEnterpriseByEmployer();
+    await fetchEnterprise();
       if (isJobOfferEdit === true) {
-        console.log("EDIT-MODE");
         console.log(offre);
-        const city = villesOption.find(ville => ville.value === entreprise.cityId);
-        if (city) {
-          villeSelected = [city];
-        }
         const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
         if (schedule) {
           scheduleSelected = { label: schedule.label, value: schedule.value };
