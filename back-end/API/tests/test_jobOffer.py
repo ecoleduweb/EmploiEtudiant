@@ -30,7 +30,7 @@ def app():
             "compliantEmployer": True,
             "internship": False,
             "offerLink": "www.google.com",
-            "salary": 1000,
+            "salary": '1000',
             "offerDebut": "2021-12-12",
             "active": True,
             "approbationMessage": "Super offre!",
@@ -52,7 +52,7 @@ def app():
             "compliantEmployer": True,
             "internship": False,
             "offerLink": "www.google.com",
-            "salary": 1000,
+            "salary": '1000',
             "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
@@ -116,7 +116,13 @@ def test_offreEmploi(client):
     }
 
 def test_offresEmploi(client):
-    response = client.get('/jobOffer/offresEmploi')
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.get('/jobOffer/offresEmploi', headers={'Authorization': token})
     print(response)
     assert response.status_code == 200
     assert len(response.json) == 2
@@ -135,7 +141,7 @@ def test_userCreateOffresEmploi(client):
                 "compliantEmployer": True,
                 "internship": False,
                 "offerLink": "www.google.com",
-                "salary": 1000,
+                "salary": '1000',
                 "offerDebut": "2021-12-12",
                 "active": True,
                 "employerId": 1,
@@ -180,3 +186,57 @@ def test_approveJobOffer(client):
     print(responseLogin.json)
     response = client.put('/jobOffer/approveJobOffer', json=data, headers={'Authorization': token})
     assert response.status_code == 200
+
+def test_updateJobOffer(client):
+    data = {
+         "jobOffer": {
+            "id": 1,
+            "title": "Développeur Fullstack",
+            "address": "123 rue de la liberte",
+            "description": "Développeur fullstack",
+            "dateEntryOffice": "2021-12-12",
+            "deadlineApply": "2021-12-12",
+            "email": "test@gmail.com",
+            "hoursPerWeek": 40,
+            "compliantEmployer": True,
+            "internship": False,
+            "offerLink": "www.google.com",
+            "salary": '1000',
+            "offerDebut": "2021-12-12",
+            "active": True,
+            "approbationMessage": "Super offre!",
+            "employerId": 1,
+            "scheduleId": 1,
+            "isApproved": False
+         },
+         "studyPrograms": [5, 6] 
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put('/jobOffer/updateJobOffer', json=data, headers={'Authorization': token})
+    assert response.status_code == 200
+    assert response.json == {
+        "id": 1,
+        "title": "Développeur Fullstack",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "compliantEmployer": True,
+        "internship": False,
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "scheduleId": 1,
+        "isApproved": False
+    }

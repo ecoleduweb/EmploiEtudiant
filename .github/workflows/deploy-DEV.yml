@@ -44,7 +44,8 @@ jobs:
             npm i
             touch .env
             echo PUBLIC_BASE_URL = ${{ secrets.DEV_FRONT_PUBLIC_URL }} >> .env
-            echo HOST = ${{ secrets.FRONT_HOST }} >> .env
+            echo 'Building front-end'
+            npm run build
             echo 'Starting services'
             sudo systemctl enable front-end
             sudo systemctl start front-end

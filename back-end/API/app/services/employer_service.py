@@ -21,3 +21,7 @@ class EmployerService:
     
     def deleteEmployer(self, id):
         return employer_repo.deleteEmployer(id)
+    
+    def getEmployerByUserId(self, userId):
+        return employer_repo.getEmployerByUserId(userId)
+

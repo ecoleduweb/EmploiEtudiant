@@ -10,6 +10,7 @@
   import { goto } from "$app/navigation";
   import { jwtDecode } from "jwt-decode";
   import { env } from "$env/dynamic/public";
+  import { writable } from "svelte/store";
 
   const schema = yup.object({
     user: yup.object({
@@ -24,7 +25,7 @@
         .required("Mot de passe requis")
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/,
-          "Ne correspond pas aux critères de sécurité"
+          "Ne correspond pas aux critères de sécurité",
         ),
     }),
     validatePassword: yup
@@ -32,7 +33,7 @@
       .required("Confirmer le mot de passe")
       .oneOf(
         [yup.ref("user.password"), null],
-        "Les mots de passes ne correspondent pas"
+        "Les mots de passes ne correspondent pas",
       ),
   });
   let errors: Register = {
@@ -45,6 +46,7 @@
       role: "",
     },
     validatePassword: "",
+    token: "",
   };
 
   let register: Register = {
@@ -57,11 +59,34 @@
       role: "",
     },
     validatePassword: "",
+    token: "",
   };
+  const validations = writable({
+    lowercase: false,
+    uppercase: false,
+    digit: false,
+    specialChar: false,
+    length: false,
+  });
 
   const handleSubmit = async () => {
     try {
       if (doRecaptcha()) {
+        const lowercaseRegex = /^(?=.*[a-z])/;
+        const uppercaseRegex = /^(?=.*[A-Z])/;
+        const digitRegex = /^(?=.*[0-9])/;
+        const specialCharRegex = /^(?=.*[!@#$%^&*])/;
+        const lengthRegex = /^(?=.{12,})/;
+
+        validations.update((vals) => ({
+          ...vals,
+          lowercase: lowercaseRegex.test(register.user.password),
+          uppercase: uppercaseRegex.test(register.user.password),
+          digit: digitRegex.test(register.user.password),
+          specialChar: specialCharRegex.test(register.user.password),
+          length: lengthRegex.test(register.user.password),
+        }));
+
         await schema.validate(register, { abortEarly: false });
         errors = {
           user: {
@@ -73,6 +98,7 @@
             role: "",
           },
           validatePassword: "",
+          token: "",
         };
         try {
           const response = await POST<any, any>("/user/register", {
@@ -197,6 +223,44 @@
           <p class="errors-input">
             {#if errors.validatePassword}{errors.validatePassword}{/if}
           </p>
+        </div>
+        <div class="password-validation-showcase">
+          <ul>
+            <li>
+              <div class="validation-criteria-item">
+                <div>Au moins une lettre minuscule</div>
+                <div>{$validations.lowercase ? "✅" : "❌"}</div>
+              </div>
+            </li>
+            <li>
+              <div class="validation-criteria-item">
+                <div style="margin-right:14%">
+                  Au moins une lettre majuscule
+                </div>
+                <div>{$validations.uppercase ? "✅" : "❌"}</div>
+              </div>
+            </li>
+            <li>
+              <div class="validation-criteria-item">
+                <div style="margin-right:14%">Au moins un chiffre</div>
+                <div>{$validations.digit ? "✅" : "❌"}</div>
+              </div>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <div class="validation-criteria-item">
+                <div>Au moins un caractère spécial</div>
+                <div>{$validations.specialChar ? "✅" : "❌"}</div>
+              </div>
+            </li>
+            <li>
+              <div class="validation-criteria-item">
+                <div>Au moins 12 caractères</div>
+                <div>{$validations.length ? "✅" : "❌"}</div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -1,18 +1,16 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte";
     import type { jobOffer } from "../../Models/Offre";
+    import type { Entreprise } from "../../Models/Entreprise";
     export let offre: jobOffer;
-    export let handleEmploiClick: () => void;
+    export let entreprise: Entreprise;
     let currentPage = window.location.pathname;
 </script>
-
-<Modal handleModalClick={handleEmploiClick}>
     <div class="container">
         <div class="titleContainer">
             <h3 class="title">{offre.title}</h3>
-            <h4 class="subtitle">{offre.scheduleId}</h4>
+            <h4 class="subtitle">Chez {entreprise.name}</h4>
         </div>
-        {#if currentPage === "/emplois"}
             <div class="info">
                 <h5 class="infoTitle">Type de poste</h5>
                 <p class="text">{offre.title}</p>
@@ -27,25 +25,7 @@
                 <h5 class="infoTitle">Où envoyer votre candidature</h5>
                 <p class="text">{offre.email}</p>
             </div>
-        {/if}
-        {#if currentPage === "/dashboard"}
-            <div class="info">
-                <h5 class="infoTitle">Type de poste</h5>
-                <input class="text" type="text" value={offre.title} />
-                <h5 class="infoTitle">Adresse du lieu de travail</h5>
-                <input class="text" type="text" value={offre.address} />
-                <h5 class="infoTitle">Description du poste</h5>
-                <input class="text" type="text" value={offre.description} />
-                <h5 class="infoTitle">Date de début</h5>
-                <input class="text" type="date" value={offre.offerDebut} />
-                <h5 class="infoTitle">Date limite pour postuler</h5>
-                <input class="text" type="date" value={offre.deadlineApply} />
-                <h5 class="infoTitle">Où envoyer votre candidature</h5>
-                <input class="text" type="email" value={offre.email} />
-            </div>
-        {/if}
     </div>
-</Modal>
 
 <style scoped>
     .titleContainer {

@@ -1,6 +1,5 @@
 <script lang="ts">
     export let handleModalClick: () => void;
-    export let currentPage = window.location.pathname;
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault();
@@ -8,7 +7,7 @@
     };
 </script>
 
-<button class="slot" on:click={handleButtonClick}>
+<button class="overlay" on:click={handleButtonClick}>
     <button class="modal" on:click|stopPropagation>
         <slot />
         <button class="close" on:click={handleButtonClick}>
@@ -17,53 +16,43 @@
     </button>
 </button>
 
-<style scoped lang="scss">
-    .slot {
-        width: 100%;
-        height: fit-content;
-        position: absolute;
+<style scoped>
+    .overlay {
+        position: fixed;
         top: 0;
         left: 0;
+        width: 100vw;
+        height: 100vh;
         background-color: rgba(0, 0, 0, 0.5);
         display: flex;
         justify-content: center;
         align-items: center;
-        border: none;
-        overflow-y: auto;
-        z-index: 100;
+        z-index: 1000;
     }
-    .slot:hover {
-        cursor: default;
-    }
+
     .modal {
-        background-color: #e5e5e5;
-        width: 90%;
-        max-width: 800px;
-        border: none;
-        border-bottom: 1px solid #00ad9a;
+        display: flex;
+        flex-direction: row;
+        background-color: #ffffff;
         border-radius: 10px;
         padding: 20px;
+        width: 80%;
+        max-width: 600px;
         box-sizing: border-box;
-        z-index: 100;
-        justify-content: center;
+        text-align: center;
     }
-    button {
-        border: none;
-        background-color: transparent;
-        :hover {
-            cursor: default;
-        }
-    }
+
     .close {
-        width: 8%;
+        width: 5%;
+        background: none;
         border: none;
-        background-color: transparent;
-        :hover {
-            cursor: pointer;
-        }
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
     }
 
     .image {
-        width: 100%;
+        width: 30px;
+        height: 30px;
     }
 </style>
