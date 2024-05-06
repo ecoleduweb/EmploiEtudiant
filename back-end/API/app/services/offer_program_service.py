@@ -7,3 +7,6 @@ class OfferProgramService:
     
     def getProgramIdByOfferId(self, offerId):
         return offer_program_repo.getProgramIdByOfferId(offerId)
+    
+    def updateOfferProgram(self, offerId, programIds):
+        return offer_program_repo.updateOfferProgram(offerId, programIds)
