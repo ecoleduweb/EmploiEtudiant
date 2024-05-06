@@ -221,7 +221,7 @@
     { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
-    { label: "Toutes les programmes", value: 12 },
+    { label: "Tous les programmes", value: 12 },
   ];
   let scheduleSelected: { label: string; value: number }[] = [];
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -567,7 +567,7 @@
         </p>
       </div>
       <div class="form-group-vertical">
-        <label for="duree">Programme visée*</label>
+        <label for="duree">Programme visé*</label>
         <MultiSelect
           id="programme"
           options={programmesOption}
