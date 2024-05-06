@@ -8,6 +8,7 @@
     import type { jobOffer } from "../../Models/Offre";
     import { GET } from "../../ts/server";
     import { onMount } from "svelte";
+  import Modal from "../../Components/Common/Modal.svelte";
 
     const modal = writable(false);
     const selectedEmploiId = writable(0);
@@ -53,7 +54,9 @@
     {#if $modal}
         {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
-                <OffreEmploi offre={emploi} handleEmploiClick={closeModal}/>
+            <Modal handleModalClick={closeModal}>
+                <OffreEmploi offre={emploi} />
+            </Modal>
             {/if}
         {/each}
     {/if}

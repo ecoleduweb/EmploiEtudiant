@@ -14,11 +14,11 @@ class AuthRepo:
 
     def register(self, data):
         hashed_password = hasher.hash(data['password'])
-        new_user = User(firstName=data['firstName'], lastName=data['lastName'], email=data['email'], password=hashed_password, active=True, isModerator = data["role"] != "user")
+        new_user = User(firstName=data['firstName'], lastName=data['lastName'], email=data['email'], password=hashed_password, active=True, isModerator = False)
         db.session.add(new_user)
         db.session.commit()
         try:
-            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': data["role"] != "user"}, os.environ.get('SECRET_KEY'))
+            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator}, os.environ.get('SECRET_KEY'))
             logger.warn("Register successful on user: " + data['email'])      
             return jsonify({'token' : token})
         except Exception as e:
