@@ -19,6 +19,8 @@ study_program_service = StudyProgramService()
 employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from app.controllers.email_controller import sendMail
+import os
 
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -34,6 +36,7 @@ def createJobOffer(current_user):
         for studyProgram in data["studyPrograms"]:
             studyProgramId = study_program_service.studyProgramId(studyProgram)
             offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle entreprise", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer["title"] + ".")
         return jsonify({'message': 'Job offer created successfully'}) 
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
@@ -46,12 +49,15 @@ def createJobOffer(current_user):
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'entreprise", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer["title"] + ".")
             return jsonify({'message': 'Job offer created successfully'})
         else:
             jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, False)
             for studyProgram in data["studyPrograms"]:
                 studyProgramId = study_program_service.studyProgramId(studyProgram)
                 offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+            
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'entreprise", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer["title"] + ".")
             return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])

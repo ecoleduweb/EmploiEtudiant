@@ -6,6 +6,8 @@ from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 enterprise_service = EnterpriseService()
 employer_service = EmployerService()
+from app.controllers.email_controller import sendMail
+import os
 
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -20,6 +22,7 @@ def getEnterprises(current_user):
 def createEnterprise(current_user):
     data = request.get_json()
     enterprise = enterprise_service.createEnterprise(data, False)
+    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle entreprise", "Une nouvelle entreprise a été créée du nom de " + enterprise.name + ".")
     return jsonify(enterprise.to_json_string())
 
 @enterprise_blueprint.route('/getEnterpriseByEmployer', methods=['GET'])

@@ -3,7 +3,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Blueprint
 import os
-#email_blueprint = Blueprint('email', __name__)
 
 # Configuration
 port = os.environ.get('MAIL_PORT')
@@ -12,14 +11,12 @@ sender_email = os.environ.get('MAIL_SENDER')
 login = os.environ.get('MAIL_SERVER_LOGIN')
 password = os.environ.get('MAIL_SERVER_PASSWORD')
 
-#email_blueprint.route('/send', methods=['POST'])
 def sendMail(receiver_email, subject, content):
 
     subject = "Site de recrutement - " + subject
     html = """\
     <html>
     <body>
-        <p>Hi,<br>
         <p>""" + content + """</p>
     </body>
     </html>
@@ -41,5 +38,4 @@ def sendMail(receiver_email, subject, content):
         server.login(login, password)
         server.sendmail(sender_email, receiver_email, message.as_string())
         server.quit()
-
-    print('Sent')
+    return True
