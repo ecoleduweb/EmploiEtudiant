@@ -84,6 +84,11 @@ def offresEmploiEmployeur(current_user):
 def updateJobOffer(current_user):
     data = request.get_json()
     jobOffer = jobOffer_service.updateJobOffer(data)
+    print(data['studyPrograms'])
+    # update offerProgram
+    if 'studyPrograms' in data:
+        offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
+
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:

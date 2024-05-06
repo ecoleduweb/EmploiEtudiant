@@ -189,24 +189,27 @@ def test_approveJobOffer(client):
 
 def test_updateJobOffer(client):
     data = {
-        "id": 1,
-        "title": "Développeur Fullstack",
-        "address": "123 rue de la liberte",
-        "description": "Développeur fullstack",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2021-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": 40,
-        "compliantEmployer": True,
-        "internship": False,
-        "offerLink": "www.google.com",
-        "salary": '1000',
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": "Super offre!",
-        "employerId": 1,
-        "scheduleId": 1,
-        "isApproved": False
+         "jobOffer": {
+            "id": 1,
+            "title": "Développeur Fullstack",
+            "address": "123 rue de la liberte",
+            "description": "Développeur fullstack",
+            "dateEntryOffice": "2021-12-12",
+            "deadlineApply": "2021-12-12",
+            "email": "test@gmail.com",
+            "hoursPerWeek": 40,
+            "compliantEmployer": True,
+            "internship": False,
+            "offerLink": "www.google.com",
+            "salary": '1000',
+            "offerDebut": "2021-12-12",
+            "active": True,
+            "approbationMessage": "Super offre!",
+            "employerId": 1,
+            "scheduleId": 1,
+            "isApproved": False
+         },
+         "studyPrograms": [5, 6] 
     }
 
     data1 = {

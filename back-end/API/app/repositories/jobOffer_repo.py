@@ -32,23 +32,23 @@ class JobOfferRepo:
         return jobOffers
     
     def updateJobOffer(self, data):
-        jobOffer = JobOffer.query.filter_by(id=data['id']).first()
-        jobOffer.title = data['title']
-        jobOffer.description = data['description']
-        jobOffer.address = data['address']
-        jobOffer.offerDebut = data['offerDebut']
-        jobOffer.dateEntryOffice = data['dateEntryOffice']
-        jobOffer.deadlineApply = data['deadlineApply']
-        jobOffer.email = data['email']
-        jobOffer.hoursPerWeek = data['hoursPerWeek']
-        jobOffer.compliantEmployer = data['compliantEmployer']
-        jobOffer.internship = data['internship']
-        jobOffer.offerLink = data['offerLink']
-        jobOffer.salary = data['salary']
-        jobOffer.active = data['active']
-        jobOffer.employerId = data['employerId']
-        jobOffer.scheduleId = data['scheduleId']
-        jobOffer.isApproved = data['isApproved']
+        jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
+        jobOffer.title = data['jobOffer']['title']
+        jobOffer.description = data['jobOffer']['description']
+        jobOffer.address = data['jobOffer']['address']
+        jobOffer.offerDebut = data['jobOffer']['offerDebut']
+        jobOffer.dateEntryOffice = data['jobOffer']['dateEntryOffice']
+        jobOffer.deadlineApply = data['jobOffer']['deadlineApply']
+        jobOffer.email = data['jobOffer']['email']
+        jobOffer.hoursPerWeek = data['jobOffer']['hoursPerWeek']
+        jobOffer.compliantEmployer = data['jobOffer']['compliantEmployer']
+        jobOffer.internship = data['jobOffer']['internship']
+        jobOffer.offerLink = data['jobOffer']['offerLink']
+        jobOffer.salary = data['jobOffer']['salary']
+        jobOffer.active = data['jobOffer']['active']
+        jobOffer.employerId = data['jobOffer']['employerId']
+        jobOffer.scheduleId = data['jobOffer']['scheduleId']
+        jobOffer.isApproved = data['jobOffer']['isApproved']
         db.session.commit()
         return jobOffer
 

@@ -11,6 +11,9 @@
   import { extractErrors } from "../../ts/utils";
   import { onMount } from "svelte";
   import { jwtDecode } from "jwt-decode";
+  import { onNavigate } from "$app/navigation";
+  import { goto } from '$app/navigation';
+  import type Token from "../../Models/Token";
   export let handleEmploiClick: () => void;
   export let isJobOfferEdit: boolean;
 
@@ -73,10 +76,6 @@
       .boolean()
       .oneOf([true], "Vous devez accepter les conditions"),
   });
-
-  interface MyTokenPayload {
-    isModerator: boolean;
-  }
 
   export let offre: jobOffer = {
     id: 0,
@@ -152,33 +151,47 @@
     });
   };
 
-  onMount(async () => {
-    getVilles();
-    if (isModerator == true) {
-      getAllEnterprise();
-    }
-    const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-    isModerator = decodedToken.isModerator;
-  });
-
   const getEmployerByUserId = async () => {
     const response = await GET<any>("/employer/getEmployerByUserId");
+            console.log(response);
     if (response !== undefined) {
       getEnterprise(response.entrepriseId);
+            isEnterpriseSelected = true;
+           }
+           else {
+            isEnterpriseSelected = false;
     }
   };
 
   onMount(async () => {
     await getVilles();
     const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode<MyTokenPayload>(token as string);
-    isModerator = decodedToken.isModerator;
+    if (token) {
+        var decoded = jwtDecode<Token>(token);
+      isModerator = decoded.isModerator;
+    }
     if (isModerator === true) {
       await getAllEnterprise();
     } else {
       await getEmployerByUserId();
-    }
+      }
+      if (isJobOfferEdit === true) {
+        console.log("EDIT-MODE");
+        console.log(offre);
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
+        if (schedule) {
+          scheduleSelected = { label: schedule.label, value: schedule.value };
+        }
+        const response = await GET<any>(`/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`);
+            programmeSelected = response.map((programId: number) => {
+            let program = programmesOption.find(p => p.value === programId);
+            return program ? { label: program.label, value: program.value } : null;
+            }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
+      }
   });
 
   //-------------SECTION ADMIN-------------------------------------
@@ -193,21 +206,26 @@
     });
   };
 
-  const getEnterprise = async (enterpriseId: number) => {
-    const response = await GET<any>(
-      `/enterprise/getEnterprise?id=${enterpriseId}`,
-    );
-    entreprise = response;
-    const city = villesOption.find((ville) => ville.value === response.cityId);
-    if (city) {
-      villeSelected = [city];
-    }
-    isEnterpriseSelected = true;
-  };
+    const getEnterprise = async (enterpriseId: number) => {
+    const response = await GET<any>(`/enterprise/getEnterprise?id=${enterpriseId}`);
+      entreprise = response;
+      const city = villesOption.find(ville => ville.value === response.cityId);
+      if (city) {
+          villeSelected = [city];
+      }
+      if (entreprise === undefined)
+      {
+        isEnterpriseSelected = false;
+      }
+      else
+      {
+        isEnterpriseSelected = true;
+      }
+    };
 
   //--------------------------------------------------
 
-  let programmeSelected: { label: string; value: number }[] = [];
+  let programmeSelected = [{ label: "", value: 0 }];
   let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let programmesOption = [
     { label: "Design d'intérieur", value: 1 },
@@ -223,7 +241,7 @@
     { label: "Sciences humaines", value: 11 },
     { label: "Tous les programmes", value: 12 },
   ];
-  let scheduleSelected: { label: string; value: number }[] = [];
+  let scheduleSelected: { label: string; value: number } = { label: "", value: 0 };
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let scheduleOption = [
     { label: "Temps plein", value: 1 },
@@ -274,6 +292,9 @@
         employerId: 0,
         isApproved: false,
       };
+          entreprise.cityId = villeSelected[0].value;
+          console.log("ENTEPRISE :" + entreprise.cityId);
+      offre.isApproved = null;
       const requestData = {
         jobOffer: {
           ...offre,
@@ -308,7 +329,7 @@
   async function updateJobOffer() {
     try {
       offre.scheduleId = (scheduleSelected as any)?.value;
-      let programmeName = programmeSelected.map((p) => p.label);
+      let programmeName = programmeSelected.map((p) => p.value);
       await schema.validate(offre, { abortEarly: false });
       errors = {
         id: 0,
@@ -339,6 +360,8 @@
         cityId: 0,
         isTemporary: false,
       };
+      entreprise.cityId = villeSelected[0].value;
+      console.log("ENTEPRISE :" + entreprise.cityId);
       const requestData = {
         entreprise: {
           ...entreprise,
@@ -351,7 +374,8 @@
       console.log(requestData.jobOffer);
       const response = await PUT<any, any>(
         "/jobOffer/updateJobOffer",
-        requestData.jobOffer,
+        requestData
+
       );
       if (response) {
         handleEmploiClick();
@@ -386,306 +410,305 @@
 <Modal handleModalClick={handleEmploiClick}>
   <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-      {#if isModerator === true}
-        {#if isJobOfferEdit === true}
-          <!-- rien -->
-        {:else}
-          <h1>Sélectionner une entreprise existante</h1>
-          <div class="form-group-vertical">
-            <MultiSelect
-              id="entreprise"
-              options={enterpriseOption}
-              closeDropdownOnSelect={true}
-              maxSelect={1}
-              placeholder="Choisir une entreprise..."
-              bind:value={enterpriseSelected}
-              bind:selected={enterpriseFromSelectedEnterprise}
-              on:add={(event) => getEnterprise(event.detail.option.value)}
-            />
-          </div>
-        {/if}
-      {/if}
+    {#if isModerator === true}
       {#if isJobOfferEdit === true}
-        <h1>Modification d'une entreprise</h1>
+        <!-- rien -->
       {:else}
-        <h1>Création d'une nouvelle entreprise</h1>
-      {/if}
-      <div class="form-group-vertical">
-        <label for="title">Nom*</label>
-        <input
-          type="text"
-          bind:value={entreprise.name}
-          class="form-control"
-          id="titre"
-          readonly={!isJobOfferEdit}
-        />
-      </div>
-      <p class="errors-input">
-        {#if errorsEntreprise.name}{errorsEntreprise.name}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="schedule">Adresse*</label>
-        <input
-          type="text"
-          bind:value={entreprise.address}
-          class="form-control"
-          id="address"
-          readonly={!isJobOfferEdit}
-        />
-      </div>
-      <p class="errors-input">
-        {#if errorsEntreprise.address}{errorsEntreprise.address}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="lieu">Courriel*</label>
-        <input
-          type="text"
-          bind:value={entreprise.email}
-          class="form-control"
-          id="email"
-          readonly={!isJobOfferEdit}
-        />
-      </div>
-      <p class="errors-input">
-        {#if errorsEntreprise.email}{errorsEntreprise.email}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="lieu">Téléphone*</label>
-        <input
-          type="text"
-          bind:value={entreprise.phone}
-          class="form-control"
-          id="phone"
-          readonly={!isJobOfferEdit}
-        />
-      </div>
-      <p class="errors-input">
-        {#if errorsEntreprise.phone}{errorsEntreprise.phone}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="lieu">Ville*</label>
-        {#if villesOption.length === 0}
-          <p>Chargement des villes...</p>
-        {:else}
+        <h1>Sélectionner une entreprise existante</h1>
+        <div class="form-group-vertical">
           <MultiSelect
-            id="ville"
-            options={villesOption}
+            id="entreprise"
+            options={enterpriseOption}
             closeDropdownOnSelect={true}
-            placeholder="Choisir ville..."
-            bind:value={villeSelected}
-            bind:selected={villeFromSelectedEntreprise}
-            disabled={!isJobOfferEdit}
+            maxSelect={1}
+            placeholder="Choisir une entreprise..."
+            bind:value={enterpriseSelected}
+            bind:selected={enterpriseFromSelectedEnterprise}
+            on:add={(event) => getEnterprise(event.detail.option.value)}
           />
-        {/if}
-      </div>
-      {#if isJobOfferEdit === true}
-        <h1>Modification d'une offre d'emploi</h1>
-      {:else}
-        <h1>Création d'une nouvelle offre d'emploi</h1>
+        </div>
       {/if}
+    {/if}
+    {#if isJobOfferEdit === true}
+      <h1>Modification d'une entreprise</h1>
+    {:else}
+      <h1>Création d'une nouvelle entreprise</h1>
+    {/if}
+    <div class="form-group-vertical">
+      <label for="title">Nom*</label>
+      <input
+        type="text"
+        bind:value={entreprise.name}
+        class="form-control"
+        id="titre"
+        readonly={!isJobOfferEdit}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.name}{errorsEntreprise.name}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="schedule">Adresse*</label>
+      <input
+        type="text"
+        bind:value={entreprise.address}
+        class="form-control"
+        id="address"
+        readonly={!isJobOfferEdit}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.address}{errorsEntreprise.address}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Courriel*</label>
+      <input
+        type="text"
+        bind:value={entreprise.email}
+        class="form-control"
+        id="email"
+        readonly={!isJobOfferEdit}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.email}{errorsEntreprise.email}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Téléphone*</label>
+      <input
+        type="text"
+        bind:value={entreprise.phone}
+        class="form-control"
+        id="phone"
+        readonly={!isJobOfferEdit}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errorsEntreprise.phone}{errorsEntreprise.phone}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Ville*</label>
+      {#if villesOption.length === 0}
+        <p>Chargement des villes...</p>
+      {:else}
+      <MultiSelect
+        id="ville"
+        options={villesOption}
+        closeDropdownOnSelect={true}
+        placeholder="Choisir ville..."
+        bind:value={villeSelected}
+        bind:selected={villeFromSelectedEntreprise}
+        disabled={!isJobOfferEdit}
+      />
+      {/if}
+    </div>
+    {#if isJobOfferEdit === true}
+      <h1>Modification d'une offre d'emploi</h1>
+    {:else}
+      <h1>Création d'une nouvelle offre d'emploi</h1>
+    {/if}
+    <div class="form-group-vertical">
+      <label for="title">Titre du poste*</label>
+      <input
+        type="text"
+        bind:value={offre.title}
+        class="form-control"
+        id="titre"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.title}{errors.title}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="schedule">Type d'emplois*</label>
+      <MultiSelect
+        id="schedule"
+        options={scheduleOption}
+        maxSelect={1}
+        closeDropdownOnSelect={true}
+        placeholder="Choisir période(s)..."
+        bind:value={scheduleSelected}
+        bind:selected={scheduleFromExistingOffer}
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.scheduleId}{errors.scheduleId}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="lieu">Adresse du lieu de travail*</label>
+      <input
+        type="text"
+        bind:value={offre.address}
+        class="form-control"
+        id="address"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.address}{errors.address}{/if}
+    </p>
+    <div class="form-group-horizontal-date">
       <div class="form-group-vertical">
-        <label for="title">Titre du poste*</label>
+        <label for="offerDebut">Date de publication de l'offre</label>
         <input
-          type="text"
-          bind:value={offre.title}
+          type="date"
+          bind:value={offre.offerDebut}
           class="form-control"
-          id="titre"
+          id="offerDebut"
+          min={minDateString}
         />
       </div>
       <p class="errors-input">
-        {#if errors.title}{errors.title}{/if}
+        {#if errors.offerDebut}{errors.offerDebut}{/if}
       </p>
       <div class="form-group-vertical">
-        <label for="schedule">Type d'emplois*</label>
-        <MultiSelect
-          id="schedule"
-          options={scheduleOption}
-          maxSelect={1}
-          closeDropdownOnSelect={true}
-          placeholder="Choisir période(s)..."
-          bind:value={scheduleSelected}
-          bind:selected={scheduleFromExistingOffer}
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.scheduleId}{errors.scheduleId}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="lieu">Adresse du lieu de travail*</label>
-        <input
-          type="text"
-          bind:value={offre.address}
-          class="form-control"
-          id="address"
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.address}{errors.address}{/if}
-      </p>
-      <div class="form-group-horizontal-date">
-        <div class="form-group-vertical">
-          <label for="offerDebut">Date de publication de l'offre</label>
-          <input
-            type="date"
-            bind:value={offre.offerDebut}
-            class="form-control"
-            id="offerDebut"
-            min={minDateString}
-          />
-        </div>
-        <p class="errors-input">
-          {#if errors.offerDebut}{errors.offerDebut}{/if}
-        </p>
-        <div class="form-group-vertical">
-          <label for="dateEntryOffice"
-            >Date d'entrée en fonction de l'emploi*</label
-          >
-          <input
-            type="date"
-            bind:value={offre.dateEntryOffice}
-            class="form-control"
-            id="dateEntryOffice"
-            min={minDateString}
-          />
-        </div>
-        <p class="errors-input">
-          {#if errors.dateEntryOffice}{errors.dateEntryOffice}{/if}
-        </p>
-        <div class="form-group-vertical">
-          <label for="deadlineApply">Date limite pour postuler*</label>
-          <input
-            type="date"
-            bind:value={offre.deadlineApply}
-            class="form-control"
-            id="deadlineApply"
-            max={maxDateString}
-            min={offre.offerDebut}
-          />
-        </div>
-        <p class="errors-input">
-          {#if errors.deadlineApply}{errors.deadlineApply}{/if}
-        </p>
-      </div>
-      <div class="form-group-vertical">
-        <label for="duree">Programme visé*</label>
-        <MultiSelect
-          id="programme"
-          options={programmesOption}
-          closeDropdownOnSelect={true}
-          placeholder="Choisir programme(s)..."
-          bind:value={programmeSelected}
-          bind:selected={programmeFromSelectedOffer}
-        ></MultiSelect>
-      </div>
-      <p class="errors-input">
-        {#if errorsProgramme}{errorsProgramme}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="salaire">Salaire/H</label>
-        <input
-          type="text"
-          bind:value={offre.salary}
-          class="form-control"
-          id="salaire"
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.salary}{errors.salary}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="hoursPerWeek">Heure/Semaine*</label>
-        <input
-          type="text"
-          bind:value={offre.hoursPerWeek}
-          class="form-control"
-          id="hoursPerWeek"
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
-      </p>
-      <div class="form-group-horizontal">
-        <label for="internship">Stage ?</label>
-        <input
-          type="checkbox"
-          bind:checked={offre.internship}
-          class="form-control"
-          id="internship"
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.internship}{errors.internship}{/if}
-      </p>
-      <div class="form-group-horizontal">
-        <label for="conciliation">Conciliation</label>
-        <input
-          type="checkbox"
-          bind:checked={offre.compliantEmployer}
-          class="form-control"
-          id="compliantEmployer"
-        />
-      </div>
-      <div class="form-group-vertical">
-        <label for="offerLink">Adresse URL vers l'offre d'emploi détaillé</label
+        <label for="dateEntryOffice"
+          >Date d'entrée en fonction de l'emploi*</label
         >
         <input
-          type="text"
-          bind:value={offre.offerLink}
+          type="date"
+          bind:value={offre.dateEntryOffice}
           class="form-control"
-          id="offerLink"
+          id="dateEntryOffice"
+          min={minDateString}
         />
       </div>
       <p class="errors-input">
-        {#if errors.offerLink}{errors.offerLink}{/if}
+        {#if errors.dateEntryOffice}{errors.dateEntryOffice}{/if}
       </p>
       <div class="form-group-vertical">
-        <label for="courriel-contact">Courriel contact*</label>
+        <label for="deadlineApply">Date limite pour postuler*</label>
         <input
-          type="text"
-          bind:value={offre.email}
+          type="date"
+          bind:value={offre.deadlineApply}
           class="form-control"
-          id="email"
+          id="deadlineApply"
+          max={maxDateString}
+          min={offre.offerDebut}
         />
       </div>
       <p class="errors-input">
-        {#if errors.email}{errors.email}{/if}
-      </p>
-      <div class="form-group-vertical">
-        <label for="description">Description du poste*</label>
-        <textarea
-          rows="15"
-          cols="50"
-          bind:value={offre.description}
-          class="form-control"
-          id="description"
-        />
-      </div>
-      <p class="errors-input">
-        {#if errors.description}{errors.description}{/if}
-      </p>
-      <div class="accept-Condition">
-        <div class="accept-horiz">
-          <input
-            type="checkbox"
-            bind:checked={acceptCondition}
-            class="form-control-acceptCondition"
-            id="acceptCondition"
-          />
-          <label for="acceptCondition">J'acceptes les condtions </label>
-        </div>
-        <div class="send">
-          <Button
-            submit={true}
-            text="Envoyer"
-            on:click={() => handleSubmit()}
-            onClick={() => ""}
-          />
-        </div>
-      </div>
-      <p class="errors-input">
-        {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
+        {#if errors.deadlineApply}{errors.deadlineApply}{/if}
       </p>
     </div>
+    <div class="form-group-vertical">
+      <label for="duree">Programme visée*</label>
+      <MultiSelect
+        id="programme"
+        options={programmesOption}
+        closeDropdownOnSelect={true}
+        placeholder="Choisir programme(s)..."
+        bind:value={programmeSelected}
+        bind:selected={programmeFromSelectedOffer}
+      ></MultiSelect>
+    </div>
+    <p class="errors-input">
+      {#if errorsProgramme}{errorsProgramme}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="salaire">Salaire/H</label>
+      <input
+        type="text"
+        bind:value={offre.salary}
+        class="form-control"
+        id="salaire"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.salary}{errors.salary}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="hoursPerWeek">Heure/Semaine*</label>
+      <input
+        type="text"
+        bind:value={offre.hoursPerWeek}
+        class="form-control"
+        id="hoursPerWeek"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
+    </p>
+    <div class="form-group-horizontal">
+      <label for="internship">Stage ?</label>
+      <input
+        type="checkbox"
+        bind:checked={offre.internship}
+        class="form-control"
+        id="internship"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.internship}{errors.internship}{/if}
+    </p>
+    <div class="form-group-horizontal">
+      <label for="conciliation">Conciliation</label>
+      <input
+        type="checkbox"
+        bind:checked={offre.compliantEmployer}
+        class="form-control"
+        id="compliantEmployer"
+      />
+    </div>
+    <div class="form-group-vertical">
+      <label for="offerLink">Adresse URL vers l'offre d'emploi détaillé</label>
+      <input
+        type="text"
+        bind:value={offre.offerLink}
+        class="form-control"
+        id="offerLink"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.offerLink}{errors.offerLink}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="courriel-contact">Courriel contact*</label>
+      <input
+        type="text"
+        bind:value={offre.email}
+        class="form-control"
+        id="email"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.email}{errors.email}{/if}
+    </p>
+    <div class="form-group-vertical">
+      <label for="description">Description du poste*</label>
+      <textarea
+        rows="15"
+        cols="50"
+        bind:value={offre.description}
+        class="form-control"
+        id="description"
+      />
+    </div>
+    <p class="errors-input">
+      {#if errors.description}{errors.description}{/if}
+    </p>
+    <div class="accept-Condition">
+      <div class="accept-horiz">
+        <input
+          type="checkbox"
+          bind:checked={acceptCondition}
+          class="form-control-acceptCondition"
+          id="acceptCondition"
+        />
+        <label for="acceptCondition">J'acceptes les condtions </label>
+      </div>
+      <div class="send">
+        <Button
+          submit={true}
+          text="Envoyer"
+          on:click={() => handleSubmit()}
+          onClick={() => ""}
+        />
+      </div>
+    </div>
+    <p class="errors-input">
+      {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
+    </p>
+  </div>
   </form>
 </Modal>
 
