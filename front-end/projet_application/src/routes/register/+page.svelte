@@ -32,11 +32,11 @@
       .string()
       .required("Confirmer le mot de passe")
       .oneOf(
-        [yup.ref("user.password"), null],
+        [yup.ref("user.password")],
         "Les mots de passes ne correspondent pas",
       ),
   });
-  let errors: Register = {
+  let errors: { [key: string]: any } = {
     user: {
       id: 0,
       firstName: "",
@@ -105,7 +105,7 @@
 
       if (captchaToken) {
         // Perform registration only if we have a valid token
-        const response = await POST("/user/register", {
+        const response: Register = await POST("/user/register", {
           email: register.user.email,
           password: register.user.password,
           firstName: register.user.firstName,
