@@ -22,7 +22,7 @@ class UserService:
             return jsonify({'message': 'user not found'}), 401
         try:
             isvalid = hasher.verify(user.password, password)
-            token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))
+            token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(seconds=10),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))
             logger.warn("Login attempt successful on user: " + email)      
             return jsonify({'token' : token})
         except Exception as e:
