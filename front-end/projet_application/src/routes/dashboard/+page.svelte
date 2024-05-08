@@ -35,6 +35,10 @@
   };
   const handleEditEmploiClick = (offreId: number) => {
     isJobOfferEdit = true;
+    const offre = $jobOffers.find((x) => x.id === offreId);
+    if (offre) {
+      offre.isApproved = null;
+    }
     openModal(offreId);
   };
 
@@ -136,10 +140,12 @@
       if (user.isModerator === true) {
         isModerator = true;
       }
+      await getJobOffersEmployeur();
     }
   });
 
   const jobOffers = writable<jobOffer[]>([]);
+
   const getJobOffersEmployeur = async () => {
     try {
       const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
@@ -148,40 +154,25 @@
       console.error("Error fetching job offers:", error);
     }
   };
-  onMount(getJobOffersEmployeur);
-
-  const getEntreprise = async () => {
-    try {
-      const responseEntreprise = await GET<any>(
-        "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId
-      );
-      entreprise = responseEntreprise;
-    } catch (error) {
-      console.error("Error fetching entreprise:", error);
-    }
-  };
-  onMount(getEntreprise);
+  let dateNow = new Date().toISOString().split('T')[0];
 
   $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null);
   $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false);
   $: offerToCome = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateDebut = new Date(x.offerDebut);
-    let dateNow = new Date();
+    let dateDebut = new Date(x.offerDebut).toISOString().split('T')[0];
     return dateNow < dateDebut;
   });
   $: offerDisplayed = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateDebut = new Date(x.offerDebut);
-    let dateFin = new Date(x.deadlineApply);
-    let dateNow = new Date();
+    let dateDebut = new Date(x.offerDebut).toISOString().split('T')[0];
+    let dateFin = new Date(x.deadlineApply).toISOString().split('T')[0];
     return dateNow >= dateDebut && dateNow <= dateFin;
   });
   $: expiredOffer = $jobOffers.filter((x) => {
     if (!x.isApproved) return false;
-    let dateFin = new Date(x.deadlineApply);
-    let dateNow = new Date();
-    return dateNow > dateFin;
+    let dateFin = new Date(x.deadlineApply).toISOString().split('T')[0];
+    return dateFin < dateNow;
   });
 </script>
 
@@ -247,7 +238,6 @@
         {#if offre.id === $selectedEmploiId}
           <CreateEditOffre
             {offre}
-            {entreprise}
             handleEmploiClick={closeModal}
             {isJobOfferEdit}
           />
@@ -274,6 +264,7 @@
     justify-content: center;
     width: 100%;
     min-height: 81vh;
+    height: 100%;
   }
   .haut {
     display: flex;
@@ -303,8 +294,7 @@
   .textSections {
     font-size: 1.8em;
     margin: 0;
-    margin-top: 15px;
-    margin-bottom: 5;
+    margin-top: 60px;
     color: white;
   }
 </style>

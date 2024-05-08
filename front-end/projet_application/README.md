@@ -4,6 +4,12 @@
 
 Before starting the app, create a .env file and add the required fields. Alternativately, the file can be found on Discord, in #front-end.
 
+```bash
+PUBLIC_BASE_URL = 
+PUBLIC_MEASUREMENT_ID = 
+HOST = 
+```
+
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (make sure you're in the /projet_application directory), start a development server:
