@@ -1,5 +1,8 @@
 import requests
 import os
+from logging import getLogger
+logger = getLogger(__name__)
+
 class CaptchaService:
     def verify_captcha(self, token):
         key = os.environ.get('RECAPTCHA_KEY')
@@ -8,11 +11,12 @@ class CaptchaService:
             "secret": key,
             "response": token
         }
-        print("test")
         response = requests.post(url, data=params)
         result = response.json()
         if result['success'] and result['score'] >= 0.5:
+            logger.warn("Captcha verification successful")
             return True
         else:
+            logger.warn("Captcha verification failed")
             print("Captcha verification failed")
             return False

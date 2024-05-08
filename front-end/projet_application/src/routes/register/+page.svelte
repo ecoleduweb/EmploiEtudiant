@@ -10,7 +10,7 @@
   import { goto } from "$app/navigation";
   import { jwtDecode } from "jwt-decode";
   import { env } from "$env/dynamic/public";
-  import { writable } from "svelte/store";
+  import { writable, get } from "svelte/store";
 
   const schema = yup.object({
     user: yup.object({
@@ -99,53 +99,49 @@
         validatePassword: "",
         token: "",
       };
-      if (doRecaptcha()) {
-        try {
-          const response = await POST<any, any>("/user/register", {
-            email: register.user.email,
-            password: register.user.password,
-            firstName: register.user.firstName,
-            lastName: register.user.lastName,
-            role: "user",
-            captchaToken: token,
-          });
-          if (response.token != "") {
-            const token = jwtDecode(response.token);
-            localStorage.setItem("token", response.token);
-            goto("/dashboard");
-          }
-        } catch (error) {
-          errors = {
-            user: {
-              id: 0,
-              firstName: "",
-              lastName: "",
-              email: "",
-              password: "",
-              role: "",
-            },
-            validatePassword: "",
-            token: "Erreur lors de la création du compte",
-          };
+
+      // Get reCAPTCHA token
+      const captchaToken = await doRecaptcha(); // Get the reCAPTCHA token
+
+      if (captchaToken) {
+        // Perform registration only if we have a valid token
+        const response = await POST("/user/register", {
+          email: register.user.email,
+          password: register.user.password,
+          firstName: register.user.firstName,
+          lastName: register.user.lastName,
+          role: "user",
+          captchaToken, // Use the retrieved token
+        });
+
+        if (response.token) {
+          const decodedToken = jwtDecode(response.token);
+          localStorage.setItem("token", response.token); // Store the token
+          goto("/dashboard"); // Redirect to the dashboard
         }
       } else {
         console.log("Captcha failed");
       }
-    } catch (err) {
-      errors = extractErrors(err);
+    } catch (error) {
+      // Handle error
+      console.error("Registration error:", error);
+      errors = extractErrors(error); // Custom error extraction function
     }
   };
   let key = env.PUBLIC_RECAPTCHA_KEY;
-  let token = "";
-  function doRecaptcha() {
-    grecaptcha.ready(function () {
-      grecaptcha.execute(key, { action: "submit" }).then(function (t) {
-        token = t;
+  let token = writable("");
+
+  // Function to get reCAPTCHA token
+  const doRecaptcha = async () => {
+    return new Promise((resolve) => {
+      grecaptcha.ready(() => {
+        grecaptcha.execute(key, { action: "submit" }).then((recaptchaToken) => {
+          token.set(recaptchaToken); // Update the Svelte store
+          resolve(recaptchaToken); // Resolve with the token
+        });
       });
     });
-    console.log(token);
-    return token != "";
-  }
+  };
 </script>
 
 <svelte:head>
