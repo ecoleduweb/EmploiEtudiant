@@ -32,8 +32,9 @@ class UserService:
 
     def register(self, data):
         print(data)
-        if not captcha_service.verify_captcha(data['captchaToken']):
-            return jsonify({'message': 'Captcha verification failed'}), 400
+        if ((os.environ.get('ENVIRONMENT') is None) or (os.environ.get('ENVIRONMENT') == 'prod')):
+            if not captcha_service.verify_captcha(data['captchaToken']):
+                return jsonify({'message': 'Captcha verification failed'}), 400
         return auth_repo.register(data)
 
     def getAllUsers(self):
