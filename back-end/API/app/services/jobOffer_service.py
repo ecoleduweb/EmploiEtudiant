@@ -26,5 +26,4 @@ class JobOfferService:
     
     def approveJobOffer(self, data):
         return jobOffer_repo.approveJobOffer(data)
-        # emailService.sendEmail(data['email'], data['approbationMessage'])
     
