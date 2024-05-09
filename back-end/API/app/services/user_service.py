@@ -1,7 +1,7 @@
 from logging import getLogger
 from app.models.user_model import User
 from app import db
-from flask import jsonify
+from flask import jsonify, current_app
 from argon2 import PasswordHasher
 import datetime
 from jwt import encode
@@ -31,8 +31,7 @@ class UserService:
             return jsonify({'message': "could not verify"}), 401
 
     def register(self, data):
-        print(data)
-        if ((os.environ.get('ENVIRONMENT') is None) or (os.environ.get('ENVIRONMENT') == 'prod')):
+        if not current_app.config.get('TESTING'):
             if not captcha_service.verify_captcha(data['captchaToken']):
                 return jsonify({'message': 'Captcha verification failed'}), 400
         return auth_repo.register(data)
