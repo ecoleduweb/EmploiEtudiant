@@ -9,7 +9,8 @@
   import { POST } from "../../ts/server";
   import { goto } from "$app/navigation";
   import { jwtDecode } from "jwt-decode";
-  import { writable } from "svelte/store";
+  import { env } from "$env/dynamic/public";
+  import { writable, get } from "svelte/store";
 
   const schema = yup.object({
     user: yup.object({
@@ -24,18 +25,18 @@
         .required("Mot de passe requis")
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/,
-          "Ne correspond pas aux critères de sécurité"
+          "Ne correspond pas aux critères de sécurité",
         ),
     }),
     validatePassword: yup
       .string()
       .required("Confirmer le mot de passe")
       .oneOf(
-        [yup.ref("user.password"), null],
-        "Les mots de passes ne correspondent pas"
+        [yup.ref("user.password")],
+        "Les mots de passes ne correspondent pas",
       ),
   });
-  let errors: Register = {
+  let errors: { [key: string]: any } = {
     user: {
       id: 0,
       firstName: "",
@@ -98,39 +99,54 @@
         validatePassword: "",
         token: "",
       };
-      try {
-        const response = await POST<any, any>("/user/register", {
+
+      // Get reCAPTCHA token
+      const captchaToken = await doRecaptcha(); // Get the reCAPTCHA token
+
+      if (captchaToken) {
+        // Perform registration only if we have a valid token
+        const response: Register = await POST("/user/register", {
           email: register.user.email,
           password: register.user.password,
           firstName: register.user.firstName,
           lastName: register.user.lastName,
           role: "user",
+          captchaToken, // Use the retrieved token
         });
-        if (response.token != "") {
-          const token = jwtDecode(response.token);
-          localStorage.setItem("token", response.token);
-          goto("/dashboard");
+
+        if (response.token) {
+          const decodedToken = jwtDecode(response.token);
+          localStorage.setItem("token", response.token); // Store the token
+          goto("/dashboard"); // Redirect to the dashboard
         }
-      } catch (error) {
-        errors = {
-          user: {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            role: "",
-          },
-          validatePassword: "",
-          token: "Erreur lors de la création du compte",
-        };
+      } else {
+        console.log("Captcha failed");
       }
-    } catch (err) {
-      errors = extractErrors(err);
+    } catch (error) {
+      // Handle error
+      console.error("Registration error:", error);
+      errors = extractErrors(error); // Custom error extraction function
     }
-    // Here you can handle form submission, for now, just logging the values
+  };
+  let key = env.PUBLIC_RECAPTCHA_KEY;
+  let token = writable("");
+
+  // Function to get reCAPTCHA token
+  const doRecaptcha = async () => {
+    return new Promise((resolve) => {
+      grecaptcha.ready(() => {
+        grecaptcha.execute(key, { action: "submit" }).then((recaptchaToken) => {
+          token.set(recaptchaToken); // Update the Svelte store
+          resolve(recaptchaToken); // Resolve with the token
+        });
+      });
+    });
   };
 </script>
+
+<svelte:head>
+  <script src="https://www.google.com/recaptcha/api.js?render={key}"></script>
+</svelte:head>
 
 <div class="container">
   <h1>Créer un compte</h1>
@@ -262,7 +278,7 @@
         <Link text="Retour" href="/" />
       </div>
       <div class="form-buttons">
-        <Button submit={true} text="Créer" />
+        <Button submit={true} text="Créer" onClick={() => {}} />
       </div>
     </div>
   </form>

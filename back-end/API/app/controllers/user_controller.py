@@ -24,7 +24,7 @@ def login():
 def register():
     data = request.get_json()
     logger.info('Attempt to create a new user with email: ' + data['email'])
-    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName')]):
+    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('captchaToken')]):
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):

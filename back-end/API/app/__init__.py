@@ -57,6 +57,7 @@ def create_app():
     try:
         if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
+            app.config['TESTING'] = True
             print("Running tests")
         else:
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_DEV_URL')
