@@ -206,40 +206,48 @@
         </div>
         <div class="password-validation-showcase">
           <ul>
+            {#if !$validations.lowercase}
             <li>
               <div class="validation-criteria-item">
                 <div>Au moins une lettre minuscule</div>
                 <div>{$validations.lowercase ? "✅" : "❌"}</div>
               </div>
             </li>
+            {/if}
+            {#if !$validations.uppercase}
             <li>
               <div class="validation-criteria-item">
-                <div style="margin-right:14%">
-                  Au moins une lettre majuscule
-                </div>
+                <div style="margin-right:14%">Au moins une lettre majuscule</div>
                 <div>{$validations.uppercase ? "✅" : "❌"}</div>
               </div>
             </li>
+            {/if}
+            {#if !$validations.digit}
             <li>
               <div class="validation-criteria-item">
                 <div style="margin-right:14%">Au moins un chiffre</div>
                 <div>{$validations.digit ? "✅" : "❌"}</div>
               </div>
             </li>
+            {/if}
           </ul>
           <ul>
+            {#if !$validations.specialChar}
             <li>
               <div class="validation-criteria-item">
                 <div>Au moins un caractère spécial</div>
                 <div>{$validations.specialChar ? "✅" : "❌"}</div>
               </div>
             </li>
+            {/if}
+            {#if !$validations.length}
             <li>
               <div class="validation-criteria-item">
                 <div>Au moins 12 caractères</div>
                 <div>{$validations.length ? "✅" : "❌"}</div>
               </div>
             </li>
+            {/if}
           </ul>
         </div>
       </div>
