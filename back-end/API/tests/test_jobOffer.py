@@ -92,7 +92,6 @@ def app():
 
 def test_offreEmploi(client):
     response = client.get('/jobOffer/offreEmploi?id=1')
-    print(response.json)
     assert response.status_code == 200
     assert response.json == {
         "id": 1,
@@ -123,7 +122,6 @@ def test_offresEmploi(client):
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
     response = client.get('/jobOffer/offresEmploi', headers={'Authorization': token})
-    print(response)
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -183,7 +181,6 @@ def test_approveJobOffer(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    print(responseLogin.json)
     response = client.put('/jobOffer/approveJobOffer', json=data, headers={'Authorization': token})
     assert response.status_code == 200
 
@@ -207,7 +204,7 @@ def test_updateJobOffer(client):
             "approbationMessage": "Super offre!",
             "employerId": 1,
             "scheduleId": 1,
-            "isApproved": False
+            "isApproved": True
          },
          "studyPrograms": [5, 6] 
     }
@@ -235,8 +232,8 @@ def test_updateJobOffer(client):
         "salary": '1000',
         "offerDebut": "2021-12-12",
         "active": True,
-        "approbationMessage": "Super offre!",
+        "approbationMessage": None,
         "employerId": 1,
         "scheduleId": 1,
-        "isApproved": False
+        "isApproved": None
     }

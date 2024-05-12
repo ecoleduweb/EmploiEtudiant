@@ -2,6 +2,7 @@ from app import db
 from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
+from app.models.user_model import User
 from datetime import date
 from flask import Flask, jsonify
 
@@ -49,7 +50,12 @@ class JobOfferRepo:
         jobOffer.active = data['jobOffer']['active']
         jobOffer.employerId = data['jobOffer']['employerId']
         jobOffer.scheduleId = data['jobOffer']['scheduleId']
-        jobOffer.isApproved = data['jobOffer']['isApproved']
+
+        if 'isApproved' in data['jobOffer']:
+            jobOffer.isApproved = data['jobOffer']['isApproved']
+            
+        if 'approbationMessage' in data['jobOffer']:
+            jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
         db.session.commit()
         return jobOffer
 
@@ -78,7 +84,6 @@ class JobOfferRepo:
     
     def approveJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['id']).first()
-        print(data)
         jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
         db.session.commit()

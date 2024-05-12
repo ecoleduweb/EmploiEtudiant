@@ -19,6 +19,8 @@ study_program_service = StudyProgramService()
 employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from app.controllers.email_controller import sendMail
+import os
 
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
@@ -44,6 +46,7 @@ def createJobOffer(current_user):
     for studyProgram in data["studyPrograms"]:
         studyProgramId = study_program_service.studyProgramId(studyProgram)
         offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
     return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])
@@ -76,13 +79,16 @@ def offresEmploiEmployeur(current_user):
 @token_required
 def updateJobOffer(current_user):
     data = request.get_json()
+    if not current_user.isModerator:
+        data["jobOffer"]["isApproved"] = None
+        data["jobOffer"]["approbationMessage"] = None
     jobOffer = jobOffer_service.updateJobOffer(data)
-    print(data['studyPrograms'])
     # update offerProgram
     if 'studyPrograms' in data:
         offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
 
-    if jobOffer:
+    if jobOffer:    
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
         return jsonify(jobOffer.to_json_string())
     else:
         return jsonify({'message': 'Job offer not found'}), 404
@@ -107,4 +113,7 @@ def linkJobOfferEmployer(current_user):
 @token_admin_required
 def approveJobOffer(current_user):
     data = request.get_json()
+    email = current_user.email
+    title = jobOffer_service.offreEmploi(data["id"]).title
+    sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
     return jobOffer_service.approveJobOffer(data)
