@@ -1,7 +1,7 @@
 name: PROD - Build & Deploy
 on:
   push:
-    branches: [PROD]
+    branches: [PRODUCTION]
 
 jobs:
   deploy:
