@@ -96,6 +96,7 @@
     scheduleId: -1,
     employerId: 1, // HARDCODER
     isApproved: false,
+    approbationMessage: "",
   };
 
   let errors: jobOffer = {
@@ -117,6 +118,7 @@
     scheduleId: 0,
     employerId: 0, // HARDCODER
     isApproved: false,
+    approbationMessage: "",
   };
 
   export let entreprise: Entreprise = {
@@ -308,6 +310,7 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
+        approbationMessage: "",
       };
           entreprise.cityId = villeSelected[0].value;
           console.log("ENTEPRISE :" + entreprise.cityId);
@@ -367,6 +370,7 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
+        approbationMessage: "",
       };
       errorsEntreprise = {
         id: 0,
