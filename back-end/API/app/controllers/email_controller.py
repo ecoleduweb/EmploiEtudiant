@@ -32,7 +32,6 @@ def sendMail(receiver_email, subject, content):
     message.attach(MIMEText(html, "html"))
 
     # Send the email
-    print(smtp_server, port, login, password, sender_email, receiver_email)
     with smtplib.SMTP(smtp_server, port) as server:
         server.connect(smtp_server, port)
         server.starttls()
