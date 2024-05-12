@@ -5,7 +5,6 @@ from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
 from datetime import date
 from flask import Flask, jsonify
-from app.controllers.email_controller import sendMail
 
 class JobOfferRepo:
 
@@ -87,8 +86,5 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=data['id']).first()
         jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
-        user_id = Employers.query.filter_by(id=jobOffer.employerId).first().userId
-        email = User.query.filter_by(id=user_id).first().email
-        sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été approuvée!")
         db.session.commit()
         return jsonify({'message': 'job offer approved'})

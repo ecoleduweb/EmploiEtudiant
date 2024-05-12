@@ -113,4 +113,7 @@ def linkJobOfferEmployer(current_user):
 @token_admin_required
 def approveJobOffer(current_user):
     data = request.get_json()
+    email = current_user.email
+    title = jobOffer_service.offreEmploi(data["id"]).title
+    sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
     return jobOffer_service.approveJobOffer(data)
