@@ -17,4 +17,5 @@ export interface jobOffer {
     scheduleId: number; // id de l'horaire de travail
     employerId: number; // id de l'employeur 
     isApproved: boolean | null; // si l'offre est approuvée ou non
+    approbationMessage: string | null; // message d'approbation
 }

@@ -6,6 +6,8 @@ from app.services.user_service import UserService
 from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
 from app.middleware.tokenVerify import token_required
+from app.middleware.adminTokenVerified import token_admin_required
+
 user_service = UserService()
 employer_service = EmployerService()
 enterprise_service = EnterpriseService()
@@ -22,7 +24,7 @@ def login():
 @user_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName')]):
+    if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('captchaToken')]):
         logger.warn('Missing required fields in /register : ' + str(data))
         return jsonify({'message': 'Missing required fields'}), 400
     
@@ -41,7 +43,7 @@ def register():
 def updatePassword():
     data = request.get_json()
     if not isinstance(data, dict):
-        logger.warn('Invalid JSON data format in /updatePassword')
+        logger.warn('Invalid JSON data format in /updatePassword : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
     email = data.get('email')
     password = data.get('password')
@@ -53,9 +55,11 @@ def updatePassword():
     return user_service.updatePassword(data)
 
 @user_blueprint.route('/getAllUsers', methods=['GET'])
-@token_required
-def getAllUsers():
-    return user_service.getAllUsers()
+@token_admin_required
+def getAllUsers(current_user):
+    response = user_service.getAllUsers()
+    return response
+
 
 @user_blueprint.route('/getUser', methods=['GET'])
 @token_required

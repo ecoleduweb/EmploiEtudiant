@@ -18,6 +18,7 @@ DATABASE_DEV_URL= url de la base de données de développement
 CORS=http://localhost
 
 SECRET_KEY=clé secrète
+RECAPTCHA_KEY="myPrivateCaptchaKey"
 ```
 ### Setting migration
 ```bash

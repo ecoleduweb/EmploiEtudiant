@@ -1,14 +1,15 @@
 from logging import getLogger
 from app.models.user_model import User
 from app import db
-from flask import jsonify
+from flask import jsonify, current_app
 from argon2 import PasswordHasher
 import datetime
 from jwt import encode
 import os
 from app.repositories.auth_repo import AuthRepo
+from app.services.captcha_service import CaptchaService
 auth_repo = AuthRepo()
-
+captcha_service = CaptchaService()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
@@ -30,6 +31,9 @@ class UserService:
             return jsonify({'message': "could not verify"}), 401
 
     def register(self, data):
+        if not current_app.config.get('TESTING'):
+            if not captcha_service.verify_captcha(data['captchaToken']):
+                return jsonify({'message': 'Captcha verification failed'}), 400
         return auth_repo.register(data)
 
     def getAllUsers(self):
@@ -40,3 +44,4 @@ class UserService:
 
     def updatePassword(self, data):
         return auth_repo.updatePassword(data)
+    

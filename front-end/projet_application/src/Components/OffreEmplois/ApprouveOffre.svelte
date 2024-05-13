@@ -15,7 +15,8 @@
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            const response = await PUT<any, any>("/jobOffer/approveJobOffer", { id: offre.id, approbationMessage: approbationMessage, isApproved: isApproved});
+            const response = await PUT<any, any>("/jobOffer/approveJobOffer", { id: offre.id, approbationMessage: approbationMessage, isApproved: isApproved});    
+            window.location.reload();
         } catch (error) {
             console.error("Error approving job offer:", error);
         }
@@ -23,24 +24,25 @@
     };
 
 </script>
-
-    <OffreEmploi offre={offre} entreprise={entreprise} />
-    <div class="container">
-            <div>
-                <h5 class="infoTitle">Message d'approbation</h5>
-                <textarea bind:value={approbationMessage} placeholder="Message d'approbation" class="input" />
-            </div>
-            <div class="button">
-                <Button 
-                    text="Approuver"
-                    onClick={() => approveOffer(true)}
-                />
-                
-                <Button 
-                    text="Refuser"
-                    onClick={() => approveOffer(false)}
-                />
-            </div>
+    <div class="main-div">
+        <OffreEmploi offre={offre} entreprise={entreprise} />
+        <div class="container">
+                <div>
+                    <h5 class="infoTitle">Message d'approbation</h5>
+                    <textarea bind:value={approbationMessage} placeholder="Message d'approbation" class="input" />
+                </div>
+                <div class="button">
+                    <Button 
+                        text="Approuver"
+                        onClick={() => approveOffer(true)}
+                    />
+                    
+                    <Button 
+                        text="Refuser"
+                        onClick={() => approveOffer(false)}
+                    />
+                </div>
+        </div>
     </div>
 
 <style scoped>
@@ -67,5 +69,9 @@
         flex-direction: row;
         justify-content: center;
         gap: 1vw;
+    }
+    .main-div{
+        flex-direction: column;
+        margin: auto;
     }
 </style>

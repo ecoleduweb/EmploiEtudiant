@@ -23,12 +23,14 @@
   const handleEmploi = () => {
     goto('/emplois')
   };
-
   const handleEnterprise = () => {
     goto('/entreprise')
   };
   const handleDashboard = () => {
     goto('/dashboard')
+  };
+  const handleUtilisateur = () => {
+    goto('/utilisateur')
   };
 
   const handleLogout = () => {
@@ -64,6 +66,11 @@
       <div class="option">
         <button class="button logout-button" on:click={handleEnterprise}>
           <p class="textLogout">Entreprises</p>
+        </button>
+      </div>
+      <div class="option">
+        <button class="button logout-button" on:click={handleUtilisateur}>
+          <p class="textLogout">Utilisateurs</p>
         </button>
       </div>
       {/if}

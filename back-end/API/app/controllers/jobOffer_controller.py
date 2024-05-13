@@ -20,6 +20,8 @@ employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
+from app.controllers.email_controller import sendMail
+import os
 
 logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -31,29 +33,23 @@ def createJobOffer(current_user):
     token = request.headers.get('Authorization')
     decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     user = User.query.filter_by(email = decoded_token['email']).first()
+    employer = None
     if user.isModerator:
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], None, True)
-        for studyProgram in data["studyPrograms"]:
-            studyProgramId = study_program_service.studyProgramId(studyProgram)
-            offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-        return jsonify({'message': 'Job offer created successfully'}) 
+        employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+        isApproved = True
     else:
+        isApproved = None
         employer = Employers.query.filter_by(userId=user.id).first()
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
-            newEmployer = employer_service.createEmployer(entrepriseId, user.id)
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], newEmployer.id, False)
-            for studyProgram in data["studyPrograms"]:
-                studyProgramId = study_program_service.studyProgramId(studyProgram)
-                offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-            return jsonify({'message': 'Job offer created successfully'})
-        else:
-            jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, False)
-            for studyProgram in data["studyPrograms"]:
-                studyProgramId = study_program_service.studyProgramId(studyProgram)
-                offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-            return jsonify({'message': 'Job offer created successfully'})
+            employer = employer_service.createEmployer(entrepriseId, user.id)
+    jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
+    for studyProgram in data["studyPrograms"]:
+        studyProgramId = study_program_service.studyProgramId(studyProgram)
+        offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+    return jsonify({'message': 'Job offer created successfully'})
 
 @job_offer_blueprint.route('/offreEmploi', methods=['GET'])
 def offreEmploi():
@@ -87,12 +83,16 @@ def offresEmploiEmployeur(current_user):
 @token_required
 def updateJobOffer(current_user):
     data = request.get_json()
+    if not current_user.isModerator:
+        data["jobOffer"]["isApproved"] = None
+        data["jobOffer"]["approbationMessage"] = None
     jobOffer = jobOffer_service.updateJobOffer(data)
     # update offerProgram
     if 'studyPrograms' in data:
         offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
 
-    if jobOffer:
+    if jobOffer:    
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
         return jsonify(jobOffer.to_json_string())
     else:
         logger.warn('Job offer not found with data : ' + str(data))
@@ -118,4 +118,7 @@ def linkJobOfferEmployer(current_user):
 @token_admin_required
 def approveJobOffer(current_user):
     data = request.get_json()
+    email = current_user.email
+    title = jobOffer_service.offreEmploi(data["id"]).title
+    sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
     return jobOffer_service.approveJobOffer(data)

@@ -96,6 +96,7 @@
     scheduleId: -1,
     employerId: 1, // HARDCODER
     isApproved: false,
+    approbationMessage: "",
   };
 
   let errors: jobOffer = {
@@ -117,6 +118,7 @@
     scheduleId: 0,
     employerId: 0, // HARDCODER
     isApproved: false,
+    approbationMessage: "",
   };
 
   export let entreprise: Entreprise = {
@@ -151,17 +153,30 @@
     });
   };
 
-  const getEmployerByUserId = async () => {
-    const response = await GET<any>("/employer/getEmployerByUserId");
-            console.log(response);
-    if (response !== undefined) {
-      getEnterprise(response.entrepriseId);
-            isEnterpriseSelected = true;
-           }
-           else {
-            isEnterpriseSelected = false;
+  const fetchEnterprise = async () => {
+    let response = undefined;
+    if (isJobOfferEdit === true) {
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+
     }
+    else if (!isModerator){
+      const employer = await GET<any>("/employer/getEmployerByUserId");
+    if (employer)
+      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + employer.id);
+    }
+    if (response !== undefined) {
+        entreprise = response;
+        const city = villesOption.find(ville => ville.value === entreprise.cityId);
+        if (city) {
+          villeSelected = [city];
+        }
+        isEnterpriseSelected = true;
+      }
+      else {
+        isEnterpriseSelected = false;
+      }
   };
+  
 
   onMount(async () => {
     await getVilles();
@@ -172,16 +187,10 @@
     }
     if (isModerator === true) {
       await getAllEnterprise();
-    } else {
-      await getEmployerByUserId();
-      }
+    }
+    await fetchEnterprise();
       if (isJobOfferEdit === true) {
-        console.log("EDIT-MODE");
         console.log(offre);
-        const city = villesOption.find(ville => ville.value === entreprise.cityId);
-        if (city) {
-          villeSelected = [city];
-        }
         const schedule = scheduleOption.find(s => s.value === offre.scheduleId);
         if (schedule) {
           scheduleSelected = { label: schedule.label, value: schedule.value };
@@ -192,6 +201,7 @@
             return program ? { label: program.label, value: program.value } : null;
             }).filter((p: number) => p !== null); // Filtrer les éventuels null si aucun programme n'est trouvé
       }
+      
   });
 
   //-------------SECTION ADMIN-------------------------------------
@@ -228,18 +238,23 @@
   let programmeSelected = [{ label: "", value: 0 }];
   let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let programmesOption = [
+    { label: "Art lettres et communication", value: 12 },
+    { label: "Arts visuels", value: 9 },
     { label: "Design d'intérieur", value: 1 },
     { label: "Éducation à l'enfance", value: 2 },
+    { label: "Génie électrique", value: 13 },
     { label: "Gestion et intervention en loisir", value: 3 },
     { label: "Graphisme", value: 4 },
     { label: "Informatique", value: 5 },
     { label: "Inhalothérapie", value: 6 },
     { label: "Pharmacie", value: 7 },
-    { label: "Soins infirmiers", value: 8 },
-    { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
-    { label: "Tous les programmes", value: 12 },
+    { label: "Soins infirmiers", value: 8 },
+    { label: "Soins pré-hospitalier d'urgence", value: 15 },
+    { label: "Technique administrative", value: 14 },
+    { label: "Tous les programmes", value: 16 },
+    { label: "Autres", value: 17 },
   ];
   let scheduleSelected: { label: string; value: number } = { label: "", value: 0 };
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -267,6 +282,10 @@
     }
   };
 
+  const handleEntreprise = () => {
+    goto("/entreprise");
+  };
+
   async function createJobOffer() {
     try {
       offre.scheduleId = (scheduleSelected as any)?.value;
@@ -291,6 +310,7 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
+        approbationMessage: "",
       };
           entreprise.cityId = villeSelected[0].value;
           console.log("ENTEPRISE :" + entreprise.cityId);
@@ -350,6 +370,7 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
+        approbationMessage: "",
       };
       errorsEntreprise = {
         id: 0,
@@ -417,7 +438,7 @@
         <!-- rien -->
       {:else}
         <h1>Sélectionner une entreprise existante</h1>
-        <div class="form-group-vertical">
+        <div class="form-group-horizontal">
           <MultiSelect
             id="entreprise"
             options={enterpriseOption}
@@ -428,8 +449,16 @@
             bind:selected={enterpriseFromSelectedEnterprise}
             on:add={(event) => getEnterprise(event.detail.option.value)}
           />
+          <Button
+            submit={false}
+            text="Ajouter"
+            onClick={() => handleEntreprise()}
+          />
         </div>
       {/if}
+    {/if}
+    {#if offre.approbationMessage}
+    <h3 style="color: red;">Raison du refus: {offre.approbationMessage}</h3>
     {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
@@ -443,7 +472,7 @@
         bind:value={entreprise.name}
         class="form-control"
         id="titre"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -456,7 +485,7 @@
         bind:value={entreprise.address}
         class="form-control"
         id="address"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -469,7 +498,7 @@
         bind:value={entreprise.email}
         class="form-control"
         id="email"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -482,7 +511,7 @@
         bind:value={entreprise.phone}
         class="form-control"
         id="phone"
-        readonly={!isJobOfferEdit}
+        readonly={!isJobOfferEdit && isEnterpriseSelected}
       />
     </div>
     <p class="errors-input">
@@ -500,7 +529,7 @@
         placeholder="Choisir ville..."
         bind:value={villeSelected}
         bind:selected={villeFromSelectedEntreprise}
-        disabled={!isJobOfferEdit}
+        disabled={!isJobOfferEdit && isEnterpriseSelected}
       />
       {/if}
     </div>
@@ -593,7 +622,7 @@
       </p>
     </div>
     <div class="form-group-vertical">
-      <label for="duree">Programme visée*</label>
+      <label for="duree">Programme visé*</label>
       <MultiSelect
         id="programme"
         options={programmesOption}
