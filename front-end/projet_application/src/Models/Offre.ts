@@ -8,8 +8,6 @@ export interface jobOffer {
     deadlineApply: string // date limite pour postuler
     email: string; // courriel de la personne à contacter
     hoursPerWeek: number; // nombre d'heures par semaine  
-    compliantEmployer: boolean; // employeur conciliant ou non
-    internship: boolean; // si l'offre est un stage
     offerLink: string; // lien vers l'offre ou site web de l'employeur
     offerStatus: number;
     active: boolean; // si l'offre est active ou non
