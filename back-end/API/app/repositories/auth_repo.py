@@ -19,15 +19,15 @@ class AuthRepo:
         db.session.commit()
         try:
             token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
-            logger.warn("Register successful on user: " + data['email'])      
             return jsonify({'token' : token})
         except Exception as e:
-            logger.warn("Register failed on email: " + data['email'])
+            logger.warn("Register failed on email: " + data['email'] + " could not verify : " + str(e))
             return jsonify({'message': "could not verify"}), 401
 
     def updatePassword(self, data):
         user = User.query.filter_by(email=data["email"]).first()
         if not user:
+            logger.warn("Couldn't update password for user with email: " + data["email"] + " user not found")
             return jsonify({'message': 'no user found'})
         user.password = hasher.hash(data['password'])
         db.session.commit()
@@ -39,6 +39,7 @@ class AuthRepo:
             if user:
                 return user
             else:
+                logger.warn("Couldn't get user with email: " + email + " user not found")
                 return None
         except:
             return jsonify({'message': 'error occurred'})

@@ -2,8 +2,10 @@ from flask import jsonify, request, Blueprint
 from app.services.employer_service import EmployerService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from logging import getLogger
 employer_service = EmployerService()
 
+logger = getLogger(__name__)
 employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 @employer_blueprint.route('/createEmployer', methods=['POST'])
@@ -21,7 +23,8 @@ def getEmployer(current_user):
     if employer:
         return jsonify(employer.to_json_string())
     else:
-        return jsonify({'message': 'employer not found'})
+        logger.warn('Employer not found with id : ' + id)
+        return jsonify({'message': 'employer not found'}), 404
     
 @employer_blueprint.route('/linkEmployerEnterprise', methods=['PUT'])
 @token_required
@@ -45,7 +48,8 @@ def updateEmployer(current_user):
         employer_service.updateEmployer(data, id)
         return jsonify({'message': 'employer updated'})
     else:
-        return jsonify({'message': 'employer not found'})
+        logger.warn('Employer not found with id : ' + id)
+        return jsonify({'message': 'employer not found'}), 404
     
 @employer_blueprint.route('/deleteEmployer', methods=['DELETE'])
 @token_admin_required
@@ -56,7 +60,8 @@ def deleteEmployer(current_user):
         employer_service.deleteEmployer(id)
         return jsonify({'message': 'employer deleted'})
     else:
-        return jsonify({'message': 'employer not found'})
+        logger.warn('Employer not found with id : ' + id)
+        return jsonify({'message': 'employer not found'}), 404
 
 @employer_blueprint.route('/getEmployerByUserId', methods=['GET'])
 @token_required
@@ -67,4 +72,5 @@ def getEmployerByUserId(current_user):
     if employer:
         return jsonify(employer.to_json_string())
     else:
+        logger.warn('Employer not found with id : ' + id)
         return jsonify({'message': 'employer not found'}), 404

@@ -19,9 +19,11 @@ study_program_service = StudyProgramService()
 employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from logging import getLogger
 from app.controllers.email_controller import sendMail
 import os
 
+logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 @job_offer_blueprint.route('/createJobOffer', methods=['POST'])
@@ -56,6 +58,7 @@ def offreEmploi():
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:
+        logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
 @job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
@@ -71,7 +74,8 @@ def offresEmploiEmployeur(current_user):
     try:
         employerId = employer_service.getEmployerByUserId(user.id).id
     except Exception as e:
-        return jsonify([]), 200
+        logger.warn('Employer not found : ' + str(e))
+        return jsonify([])
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
@@ -91,6 +95,7 @@ def updateJobOffer(current_user):
         sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
         return jsonify(jobOffer.to_json_string())
     else:
+        logger.warn('Job offer not found with data : ' + str(data))
         return jsonify({'message': 'Job offer not found'}), 404
 
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])
