@@ -4,9 +4,11 @@ from app.services.enterprise_service import EnterpriseService
 from app.services.employer_service import EmployerService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
+from logging import getLogger
 enterprise_service = EnterpriseService()
 employer_service = EmployerService()
 
+logger = getLogger(__name__)
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 @enterprise_blueprint.route('/getEnterprises', methods=['GET'])
@@ -30,6 +32,7 @@ def getEnterpriseByEmployer(current_user):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
+        logger.warn('Enterprise not found with id : ' + id)
         return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/updateEntreprise', methods=['PUT'])
@@ -40,9 +43,9 @@ def updateEntreprise(current_user):
     if enterprise:
         data = request.get_json()
         enterprise_service.updateEnterprise(data)
-        print('test')
         return jsonify({'message': 'enterprise updated'})
     else:
+        logger.warn('Enterprise not found with id : ' + id)
         return jsonify({'message': 'enterprise not found'})
 
 @enterprise_blueprint.route('/deleteEnterprise', methods=['DELETE'])
@@ -54,8 +57,10 @@ def deleteEnterprise(current_user):
         if enterprise_service.deleteEnterprise(id):
             return jsonify({'message': 'enterprise deleted'})
         else:
+            logger.warn('Enterprise with id ' + id + ' is not temporary and cannot be deleted')
             return jsonify({'message': 'enterprise is not temporary'})
     else:
+        logger.warn('Enterprise not found with id : ' + id)
         return jsonify({'message': 'enterprise not found'})
     
 @enterprise_blueprint.route('/getEntrepriseId', methods=['GET'])
@@ -69,13 +74,16 @@ def getEntrepriseId(current_user):
 def getEnterprise(current_user):
     id = request.args.get('id')
     if id is None:
+        logger.warn('ID is missing')
         return jsonify({'message': 'ID is missing'}), 400
     try:
         id = int(id)  # Convert the id to an integer
     except ValueError:
+        logger.warn('ID must be an integer')
         return jsonify({'message': 'ID must be an integer'}), 400
     enterprise = enterprise_service.getEnterprise(id)
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
+        logger.warn('Enterprise not found with id : ' + id)
         return jsonify({'message': 'enterprise not found'}), 404

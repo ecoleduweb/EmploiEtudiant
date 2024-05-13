@@ -19,7 +19,9 @@ study_program_service = StudyProgramService()
 employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from logging import getLogger
 
+logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 @job_offer_blueprint.route('/createJobOffer', methods=['POST'])
@@ -37,7 +39,6 @@ def createJobOffer(current_user):
         return jsonify({'message': 'Job offer created successfully'}) 
     else:
         employer = Employers.query.filter_by(userId=user.id).first()
-        print(employer)
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
@@ -61,6 +62,7 @@ def offreEmploi():
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:
+        logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
 @job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
@@ -76,7 +78,8 @@ def offresEmploiEmployeur(current_user):
     try:
         employerId = employer_service.getEmployerByUserId(user.id).id
     except Exception as e:
-        return jsonify([]), 200
+        logger.warn('Employer not found : ' + str(e))
+        return jsonify([])
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
@@ -85,7 +88,6 @@ def offresEmploiEmployeur(current_user):
 def updateJobOffer(current_user):
     data = request.get_json()
     jobOffer = jobOffer_service.updateJobOffer(data)
-    print(data['studyPrograms'])
     # update offerProgram
     if 'studyPrograms' in data:
         offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
@@ -93,6 +95,7 @@ def updateJobOffer(current_user):
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:
+        logger.warn('Job offer not found with data : ' + str(data))
         return jsonify({'message': 'Job offer not found'}), 404
 
 @job_offer_blueprint.route('/offresEmploi', methods=['GET'])

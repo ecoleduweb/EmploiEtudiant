@@ -10,6 +10,7 @@ from flask import Flask, jsonify
 
 from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
+from logging import getLogger
 
 dictConfig({
     "version": 1,
@@ -47,6 +48,8 @@ db = SQLAlchemy()
 
 load_dotenv()
 
+logger = getLogger(__name__)
+
 def create_app():
     app = Flask(__name__)
     # Temporary CORS bypass
@@ -61,8 +64,7 @@ def create_app():
         else:
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_DEV_URL')
     except Exception as e:
-        print(e)
-        print("Error loading environment variables.")
+        logger.warn("Error loading environment variables : " + str(e))
         return jsonify({'message': 'Error loading environment variables'}), 500
 
     db.init_app(app)
