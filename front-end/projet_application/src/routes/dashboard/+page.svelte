@@ -90,6 +90,7 @@
     scheduleId: -1,
     employerId: 1,
     isApproved: false,
+    approbationMessage: "",
   };
 
   let error: jobOffer = {
@@ -111,6 +112,7 @@
     scheduleId: 0,
     employerId: 0,
     isApproved: false,
+    approbationMessage: "",
   };
 
   let entreprise: Entreprise = {
@@ -258,43 +260,48 @@
 <Footer />
 
 <style scoped>
+  body {
+    margin: 0;
+    padding: 0;
+  }
   main {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    min-height: 81vh;
-    height: 100%;
+    align-items: center; 
+    padding: 2vh; 
+    min-height: 77vh;
   }
   .haut {
-    display: flex;
-    widows: 85%;
+    width: 100%;
+    margin-bottom: 2vh; 
   }
   .haut-gauche {
-    display: flex;
     width: 30%;
+    display: flex;
     justify-content: center;
     align-items: center;
   }
   .divFlex {
     display: flex;
-    margin-bottom: 40px;
+    margin-bottom: 2vh;
   }
   .offres {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    margin-left: 10%;
   }
   .textOffre {
     font-size: 2.5em;
     margin: 0;
-    margin-bottom: 1%;
+    margin-bottom: 2vh;
     color: white;
   }
   .textSections {
     font-size: 1.8em;
     margin: 0;
-    margin-top: 60px;
+    margin-top: 5vh;
     color: white;
   }
 </style>
+
