@@ -14,8 +14,6 @@ class JobOffer(db.Model):
     deadlineApply = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(255), nullable=False)
     hoursPerWeek = db.Column(db.Float, nullable=False)
-    compliantEmployer = db.Column(db.Boolean, nullable=False)
-    internship = db.Column(db.Boolean, nullable=False)
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
@@ -34,8 +32,6 @@ class JobOffer(db.Model):
           deadlineApply='{self.deadlineApply}',
           email='{self.email}',
           hoursPerWeek={self.hoursPerWeek},
-          compliantEmployer={self.compliantEmployer},
-          internship={self.internship},
           offerLink='{self.offerLink}',
           salary='{self.salary}',
           active={self.active},
@@ -55,8 +51,6 @@ class JobOffer(db.Model):
             'deadlineApply': str(self.deadlineApply),  # Convert date to string
             'email': self.email,
             'hoursPerWeek': self.hoursPerWeek,
-            'compliantEmployer': self.compliantEmployer,
-            'internship': self.internship,
             'offerLink': self.offerLink,
             'salary': self.salary,
             'active': self.active,

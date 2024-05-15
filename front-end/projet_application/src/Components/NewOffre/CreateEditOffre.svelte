@@ -87,8 +87,6 @@
     deadlineApply: new Date().toISOString().split("T")[0],
     email: "",
     hoursPerWeek: 0,
-    compliantEmployer: false,
-    internship: false,
     offerLink: "https://",
     offerStatus: 0,
     active: true,
@@ -96,7 +94,6 @@
     scheduleId: -1,
     employerId: 1, // HARDCODER
     isApproved: false,
-    approbationMessage: "",
   };
 
   let errors: jobOffer = {
@@ -109,8 +106,6 @@
     deadlineApply: "",
     email: "",
     hoursPerWeek: 0,
-    compliantEmployer: false,
-    internship: false,
     offerLink: "",
     offerStatus: 0,
     active: true,
@@ -118,7 +113,6 @@
     scheduleId: 0,
     employerId: 0, // HARDCODER
     isApproved: false,
-    approbationMessage: "",
   };
 
   export let entreprise: Entreprise = {
@@ -238,23 +232,18 @@
   let programmeSelected = [{ label: "", value: 0 }];
   let programmeFromSelectedOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let programmesOption = [
-    { label: "Art lettres et communication", value: 12 },
-    { label: "Arts visuels", value: 9 },
     { label: "Design d'intérieur", value: 1 },
     { label: "Éducation à l'enfance", value: 2 },
-    { label: "Génie électrique", value: 13 },
     { label: "Gestion et intervention en loisir", value: 3 },
     { label: "Graphisme", value: 4 },
     { label: "Informatique", value: 5 },
     { label: "Inhalothérapie", value: 6 },
     { label: "Pharmacie", value: 7 },
+    { label: "Soins infirmiers", value: 8 },
+    { label: "Arts visuels", value: 9 },
     { label: "Sciences de la nature", value: 10 },
     { label: "Sciences humaines", value: 11 },
-    { label: "Soins infirmiers", value: 8 },
-    { label: "Soins pré-hospitalier d'urgence", value: 15 },
-    { label: "Technique administrative", value: 14 },
-    { label: "Tous les programmes", value: 16 },
-    { label: "Autres", value: 17 },
+    { label: "Tous les programmes", value: 12 },
   ];
   let scheduleSelected: { label: string; value: number } = { label: "", value: 0 };
   let scheduleFromExistingOffer: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -301,8 +290,6 @@
         deadlineApply: "",
         email: "",
         hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
         offerLink: "",
         offerStatus: 0,
         active: false,
@@ -310,7 +297,6 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
-        approbationMessage: "",
       };
           entreprise.cityId = villeSelected[0].value;
           console.log("ENTEPRISE :" + entreprise.cityId);
@@ -361,8 +347,6 @@
         deadlineApply: "",
         email: "",
         hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
         offerLink: "",
         offerStatus: 0,
         active: false,
@@ -370,7 +354,6 @@
         scheduleId: 0,
         employerId: 0,
         isApproved: false,
-        approbationMessage: "",
       };
       errorsEntreprise = {
         id: 0,
@@ -458,7 +441,11 @@
       {/if}
     {/if}
     {#if offre.approbationMessage}
-    <h3 style="color: red;">Raison du refus: {offre.approbationMessage}</h3>
+        {#if offre.isApproved === true}
+          <h3>Messagge du modérateur: {offre.approbationMessage}</h3>
+        {:else if offre.isApproved === false}
+          <h3>Raison du refus: {offre.approbationMessage}</h3>
+        {/if}
     {/if}
     {#if isJobOfferEdit === true}
       <h1>Modification d'une entreprise</h1>
@@ -622,7 +609,7 @@
       </p>
     </div>
     <div class="form-group-vertical">
-      <label for="duree">Programme visé*</label>
+      <label for="duree">Programme visée*</label>
       <MultiSelect
         id="programme"
         options={programmesOption}
@@ -659,27 +646,6 @@
     <p class="errors-input">
       {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
     </p>
-    <div class="form-group-horizontal">
-      <label for="internship">Stage ?</label>
-      <input
-        type="checkbox"
-        bind:checked={offre.internship}
-        class="form-control"
-        id="internship"
-      />
-    </div>
-    <p class="errors-input">
-      {#if errors.internship}{errors.internship}{/if}
-    </p>
-    <div class="form-group-horizontal">
-      <label for="conciliation">Conciliation</label>
-      <input
-        type="checkbox"
-        bind:checked={offre.compliantEmployer}
-        class="form-control"
-        id="compliantEmployer"
-      />
-    </div>
     <div class="form-group-vertical">
       <label for="offerLink">Adresse URL vers l'offre d'emploi détaillé</label>
       <input
@@ -725,7 +691,7 @@
           class="form-control-acceptCondition"
           id="acceptCondition"
         />
-        <label for="acceptCondition">J'acceptes les condtions </label>
+        <label for="acceptCondition">J'accepte que le Cégep de Rivière-du-loup diffuse mon adresse courriel sur le portail d'offre d'emploi.</label>
       </div>
       <div class="send">
         <Button
