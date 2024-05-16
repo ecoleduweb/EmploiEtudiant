@@ -39,37 +39,29 @@ USE H2024;
 Prendre le script de création de la BD à `/back-end/scriptBD.sql` et l'exécuter, ensuite créer un utilisateur admin et lui ajouter les accès:
 ```sql
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-GRANT ALL PRIVILEGES ON H2024test.* TO 'admin'@'localhost';
+GRANT ALL PRIVILEGES ON H2024.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
+Mettre à jour le .env avec l'url de la base de données
 
-### Setting migration
+### Mise en place des migrations
 
-## To set the database for the first time
+## Instanciation de la base de données pour la première fois
 1. Créer la Base de données selon les étapes du dernier point
-2. Instancier le dossier de migration (s'il n'existe pas déjà)
+2. Mettre à jour le .env avec les infos du user admin
+3. Instanciation des dernières migrations
 ```bash
-flask db init (to initialise the database)
-```
-
-3. Effectuer une migration
-```bash
-flask db migrate -m "Nom_Migration"
 flask db upgrade
 ```
-4. Delete the version of alembic in the database
-```sql
-DELETE FROM alembic_version;
-```
-5. Restore the previous migration folder
-6. Upgrade with the previous database
+
+## Effectuer une migration
 ```bash
+flask db migrate -m "Nom_Migration"
 flask db upgrade
 ```
 
 ## Résumé des commandes:
 ```bash
-flask db init (Pour instancier les migrations dès la première utilisation)
 flask db migrate -m "Nom_de_la_migration" (cree une nouvelle migration)
 flask db upgrade (pour update les changements)
 flask db downgrade (pour revenir en arriere)
