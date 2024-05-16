@@ -19,42 +19,55 @@ CORS=http://localhost
 
 SECRET_KEY=clé secrète
 RECAPTCHA_KEY="myPrivateCaptchaKey"
+
+MAIL_PORT = Port du Serveur SMTP (habituellement 587)
+MAIL_ADMINISTRATOR_ADDRESS = L'adresse qui recevra les alertes de créations d'offre d'emplois, de modification de celles-ci, etc
+MAIL_SERVER = URL du serveur SMTP
+MAIL_SENDER = Destinateur du courriel
+MAIL_SERVER_LOGIN = Courriel de Login sur le serveur SMTP
+MAIL_SERVER_PASSWORD = Mot de passe de Login sur le serveur SMTP
 ```
-### Setting migration
+
+### Mise en place de la Base de Données
+
+# Créer la base de données de test avec ce script:
+
+```sql
+CREATE DATABASE H2024;
+USE H2024;
+```
+Prendre le script de création de la BD à `/back-end/scriptBD.sql` et l'exécuter, ensuite créer un utilisateur admin et lui ajouter les accès:
+```sql
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON H2024.* TO 'admin'@'localhost';
+FLUSH PRIVILEGES;
+```
+Mettre à jour le .env avec l'url de la base de données
+
+### Mise en place des migrations
+
+## Instanciation de la base de données pour la première fois
+1. Créer la Base de données selon les étapes du dernier point
+2. Mettre à jour le .env avec les infos du user admin
+3. Instanciation des dernières migrations
 ```bash
-flask db init
-flask db migrate -m "Nom_de_la_migration"(cree une nouvelle migration)
+flask db upgrade
+```
+
+## Effectuer une migration
+```bash
+flask db migrate -m "Nom_Migration"
+flask db upgrade
+```
+
+## Résumé des commandes:
+```bash
+flask db migrate -m "Nom_de_la_migration" (cree une nouvelle migration)
 flask db upgrade (pour update les changements)
 flask db downgrade (pour revenir en arriere)
 flask db history (voir toutes les migration)
 flask db branches (Afficher les points de branchement actuels)
 ```
-### To set the database for the first time
-1. Wipe the /migrations folder
-2. Create the Database
-```sql
-CREATE DATABASE H2024
-```
-3. Create your migration folder
-```bash
-flask db init (to initialise the database)
-```
-4. Do the migration 
-```bash
-flask db migrate -m "Nom_Migration"
-flask db upgrade
-```
-5. Delete the version of alembic in the database
-```sql
-DELETE FROM alembic_version;
-```
-6. Restore the previous migration folder
-7. Upgrade with the previous database
-```bash
-flask db upgrade
-```
-
-
 
 ### Logging
 Import logger:
@@ -92,93 +105,7 @@ python -m flask run
 flask run --host=0.0.0.0
 ```
 
-### Routes
-#### /user
-- /createUser
-    - POST
-    - Créer un utilisateur
-    - Token requis
-    - Paramètres:
-        - email: string
-        - password: string
-
-- /login
-    - POST
-    - Se connecter
-    - Paramètres:
-        - email: string
-        - password: string
-
-- /updatePassword
-    - PUT
-    - Mettre à jour le mot de passe
-    - Token requis
-    - Paramètres:
-        - email: string
-        - password: string
-
-- /getUser
-    - GET
-    - Récupérer un utilisateur
-    - Token requis
-    - Paramètres:
-        - email: string
-
-- /getAllUsers
-    - GET
-    - Récupérer tous les utilisateurs
-    - Token requis
-
-#### /jobOffer
-
-- /offreEmploi/:id
-    - GET
-    - Récupérer une offre d'emploi selon l'id
-    - Paramètres:
-        - id: int
-
-- /offresEmploi
-    - GET
-    - Récupérer toutes les offres d'emploi
-
-
 ### Running the tests
-
-Créer la base de données de test avec ce script:
-```sql
-CREATE DATABASE H2024test;
-USE H2024test;
-CREATE TABLE user (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) DEFAULT FALSE,
-    active BOOLEAN DEFAULT FALSE,
-    isModerator BOOLEAN DEFAULT FALSE
-);
-CREATE TABLE IF NOT EXISTS job_offer (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    dateEntryOffice DATETIME NOT NULL,
-    deadlineApply DATE NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    hoursPerWeek FLOAT NOT NULL,
-    compliantEmploymentStandards BOOLEAN NOT NULL,
-    internship BOOLEAN NOT NULL,
-    offerStatus INT NOT NULL,
-    offerLink VARCHAR(255) NOT NULL,
-    urgent BOOLEAN NOT NULL,
-    active BOOLEAN NOT NULL,
-    employerId INT NOT NULL,
-    scheduleId INT NOT NULL
-);
-
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-GRANT ALL PRIVILEGES ON H2024test.* TO 'admin'@'localhost';
-FLUSH PRIVILEGES;
-```
-Pour les tests, mettre un token valide dans le .env
 
 Lancer les tests avec la commande:
 ```bash
