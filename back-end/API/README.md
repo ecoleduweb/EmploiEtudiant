@@ -55,6 +55,9 @@ flask db upgrade
 ```
 
 ## Effectuer une migration
+
+1. Modifier le modèle visé dans Flask
+2. Créer la migration
 ```bash
 flask db migrate -m "Nom_Migration"
 flask db upgrade
