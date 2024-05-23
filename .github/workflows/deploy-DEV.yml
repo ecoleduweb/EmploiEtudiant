@@ -22,7 +22,7 @@ jobs:
             rm -r dev_project
             mkdir dev_project
             cd dev_project
-            git clone -b dev https://github.com/ecoleduweb/ProjetApplicationH2024.git
+            git clone -b dev git@github.com:ecoleduweb/ProjetApplicationH2024.git
             echo 'Deployment successful to DEV server'
             echo 'Installing backend packages'
             sudo apt-get update -y
