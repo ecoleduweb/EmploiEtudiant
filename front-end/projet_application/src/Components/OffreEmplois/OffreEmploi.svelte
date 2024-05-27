@@ -11,7 +11,7 @@
   const getEnterprises = async (employerId: number) => {
     try {
       const response = await GET<any>(
-        "/enterprise/getEnterpriseByEmployer?id=" + employerId
+        `/enterprise/employer/${employerId}`
       );
       entreprise.set(response.name);
     } catch (error) {

@@ -24,5 +24,5 @@ def token_required(f):
             except Exception as e:
                 logger.warn('Could not decode token : ' + str(e))
                 return jsonify({'message': 'token is invalid'}), 401
-            return f(current_user)
+            return f(current_user, *args, **kwargs)
         return decorated

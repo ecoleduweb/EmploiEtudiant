@@ -7,7 +7,7 @@ Se mettre dans le répertoire /API
 Python (s'assurer d'avoir le python dans le path)
 
 ### Requis
-
+Dans le dossier back-end
 ```bash
 pip install -r requirements.txt
 ```
@@ -29,6 +29,14 @@ FLUSH PRIVILEGES;
 ```
 Finalement, rouler les migrations
 `flask db upgrade`
+
+note : Si flaks n'est pas installé en global, tu peux utiliser 
+`python -m flask db upgrade`
+
+### Demarre l'app
+`flask run --debug` debug permet de redémarrer l'application quand on modifie le code.
+
+Pour se connecter, utiliser les identifiants `test@gmail.com` et le mot de passe `phil123`
 
 ## Comment effectuer une migration
 Falsk utilise alembic. L'idée ici est d'y aller code first. Ça implique donc que lorsqu'on modifie le modèle dans le code en python, on peut écrire une suite de commandes pour mettre à jour la bd.

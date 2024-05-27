@@ -12,7 +12,7 @@
 
     const getCity = async (id: number) => {
         try {
-            ville = await GET<any>(`/city/oneCity?id=${id}`);
+            ville = await GET<any>(`/city/${id}`);
             nomVille = ville.city;
         } catch (error) {
             console.error("Error fetching city:", error);

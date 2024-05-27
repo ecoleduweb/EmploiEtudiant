@@ -83,4 +83,3 @@ class JobOfferRepo:
         jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
         db.session.commit()
-        return jsonify({'message': 'job offer approved'})

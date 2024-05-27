@@ -18,5 +18,4 @@ class CaptchaService:
             return True
         else:
             logger.warn("Captcha verification failed")
-            print("Captcha verification failed")
             return False

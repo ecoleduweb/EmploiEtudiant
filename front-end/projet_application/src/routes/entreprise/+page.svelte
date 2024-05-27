@@ -38,7 +38,7 @@
     const entreprises = writable<Entreprise[]>([]);
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/getEnterprises");
+            const response = await GET<any>("/enterprise/all");
             entreprises.set(response);
         } catch (error) {
             console.error("Error fetching job offers:", error);

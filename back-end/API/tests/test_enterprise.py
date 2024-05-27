@@ -61,7 +61,7 @@ def test_getEnterprises(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.get('/enterprise/getEnterprises', headers={"Authorization": token})
+    response = client.get('/enterprise/all', headers={"Authorization": token})
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -79,7 +79,7 @@ def test_createEnterprise(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.post('/enterprise/createEnterprise', json=data, headers={"Authorization": token})
+    response = client.post('/enterprise/new', json=data, headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "id": 3,
@@ -106,31 +106,10 @@ def test_updateEnterprise(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.put('/enterprise/updateEntreprise?id=1', json=data, headers={"Authorization": token})
+    response = client.put('/enterprise/1', json=data, headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "message": 'enterprise updated'
-    }
-
-def test_deleteEnterprise(client):
-    data = {
-        "id": 2,
-        "name": "Développeur",
-        "email": "test2@test.com",
-        "phone": "123-123-1234",
-        "address": "123 rue de la",
-        "cityId": 1,
-    }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.delete('/enterprise/deleteEnterprise?id=2', headers={"Authorization": token})
-    assert response.status_code == 200
-    assert response.json == {
-        "message": 'enterprise deleted'
     }
 
 def test_getEnterprise(client):
@@ -140,6 +119,6 @@ def test_getEnterprise(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.get('/enterprise/getEnterprise?id=1', headers={"Authorization": token})
+    response = client.get('/enterprise/1', headers={"Authorization": token})
     assert response.status_code == 200
     assert len(response.json) == 7

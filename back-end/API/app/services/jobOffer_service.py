@@ -3,6 +3,9 @@ jobOffer_repo = JobOfferRepo()
 
 class JobOfferService:
 
+    def offresEmploi(self):
+        return jobOffer_repo.offresEmploi()
+    
     def createJobOffer(self, data, employerId, isApproved):
         return jobOffer_repo.createJobOffer(data, employerId, isApproved)
     
@@ -12,12 +15,9 @@ class JobOfferService:
     def updateJobOffer(self, data):
         return jobOffer_repo.updateJobOffer(data)
 
-    def offreEmploi(self, data):
-        return jobOffer_repo.offreEmploi(data)
+    def findById(self, id):
+        return jobOffer_repo.offreEmploi(id)
 
-    def offresEmploi(self):
-        return jobOffer_repo.offresEmploi()
-    
     def offresEmploiApproved(self):
         return jobOffer_repo.offresEmploiApproved()
     

@@ -150,13 +150,13 @@
   const fetchEnterprise = async () => {
     let response = undefined;
     if (isJobOfferEdit === true) {
-      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+      response = await GET<any>(`/enterprise/employer/${offre.employerId}`);
 
     }
     else if (!isModerator){
-      const employer = await GET<any>("/employer/getEmployerByUserId");
+      const employer = await GET<any>("/employer/currentEmployer");
     if (employer)
-      response = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + employer.id);
+      response = await GET<any>(`/enterprise/employer/${employer.id}`);
     }
     if (response !== undefined) {
         entreprise = response;
@@ -189,7 +189,7 @@
         if (schedule) {
           scheduleSelected = { label: schedule.label, value: schedule.value };
         }
-        const response = await GET<any>(`/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`);
+        const response = await GET<any>(`/offerProgram/${offre.id}`);
             programmeSelected = response.map((programId: number) => {
             let program = programmesOption.find(p => p.value === programId);
             return program ? { label: program.label, value: program.value } : null;
@@ -204,28 +204,21 @@
   let enterpriseFromSelectedEnterprise: [] = []; // valeur de l'offre actuel (lorsque l'on editera une offre existante)
   let enterpriseOption: { label: string; value: number }[] = [];
   const getAllEnterprise = async () => {
-    const response = await GET<any>("/enterprise/getEnterprises");
+    const response = await GET<any>("/enterprise/all");
     enterpriseOption = response.map((e: Entreprise) => {
       return { label: e.name, value: e.id };
     });
   };
 
-    const getEnterprise = async (enterpriseId: number) => {
-    const response = await GET<any>(`/enterprise/getEnterprise?id=${enterpriseId}`);
-      entreprise = response;
-      const city = villesOption.find(ville => ville.value === response.cityId);
-      if (city) {
-          villeSelected = [city];
-      }
-      if (entreprise === undefined)
-      {
-        isEnterpriseSelected = false;
-      }
-      else
-      {
-        isEnterpriseSelected = true;
-      }
-    };
+  const getEnterprise = async (enterpriseId: number) => {
+    const response = await GET<any>(`/enterprise/${enterpriseId}`);
+    entreprise = response;
+    const city = villesOption.find(ville => ville.value === response.cityId);
+    if (city) {
+        villeSelected = [city];
+    }
+    isEnterpriseSelected = entreprise !== undefined
+  };
 
   //--------------------------------------------------
 
@@ -311,7 +304,7 @@
         studyPrograms: programmeName,
       };
       const response = await POST<any, any>(
-        "/jobOffer/createJobOffer",
+        "/jobOffer/new",
         requestData,
       );
       if (response.message === "Job offer created successfully") {
@@ -377,7 +370,7 @@
       };
       console.log(requestData.jobOffer);
       const response = await PUT<any, any>(
-        "/jobOffer/updateJobOffer",
+        `jobOffer/${requestData.jobOffer.id}`,
         requestData
 
       );

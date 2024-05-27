@@ -146,7 +146,7 @@
 
   const getJobOffersEmployeur = async () => {
     try {
-      const responseOffre = await GET<any>("/jobOffer/offresEmploiEmployeur");
+      const responseOffre = await GET<any>("/jobOffer/employer/all");
       jobOffers.set(responseOffre);
     } catch (error) {
       console.error("Error fetching job offers:", error);

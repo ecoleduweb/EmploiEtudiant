@@ -9,6 +9,25 @@ from argon2 import PasswordHasher
 
 hasher = PasswordHasher()
 
+job_offer1_data = {
+        "id": 1,
+        "title": "Développeur",
+        "address": "123 rue de la rue",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2121-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "offerLink": "www.google.com",
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": None,
+        "scheduleId": None,
+        "isApproved": True
+    }
+
 @pytest.fixture(scope='module')
 def client(app):
     return app.test_client()
@@ -18,24 +37,6 @@ def app():
     app = create_app()
     with app.app_context():
         db.create_all()
-        job_offer1_data = {
-            "id": 1,
-            "title": "Développeur",
-            "address": "123 rue de la rue",
-            "description": "Développeur fullstack",
-            "dateEntryOffice": "2021-12-12",
-            "deadlineApply": "2021-12-12",
-            "email": "test@gmail.com",
-            "hoursPerWeek": 40,
-            "offerLink": "www.google.com",
-            "salary": '1000',
-            "offerDebut": "2021-12-12",
-            "active": True,
-            "approbationMessage": "Super offre!",
-            "employerId": None,
-            "scheduleId": None,
-            "isApproved": True
-        }
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
         job_offer2_data = {
@@ -44,7 +45,7 @@ def app():
             "address": "123 rue de la rue",
             "description": "Développeur front-end",
             "dateEntryOffice": "2021-12-12",
-            "deadlineApply": "2021-12-12",
+            "deadlineApply": "2121-12-12",
             "email": "test@gmail.com",
             "hoursPerWeek": 40,
             "offerLink": "www.google.com",
@@ -87,57 +88,25 @@ def app():
 
 
 def test_offreEmploi(client):
-    response = client.get('/jobOffer/offreEmploi?id=1')
+    response = client.get('/jobOffer/1')
     assert response.status_code == 200
-    assert response.json == {
-        "id": 1,
-        "title": "Développeur",
-        "address": "123 rue de la rue",
-        "description": "Développeur fullstack",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2021-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": 40,
-        "offerLink": "www.google.com",
-        "salary": "1000",
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": "Super offre!",
-        "employerId": None,
-        "scheduleId": None,
-        "isApproved": True
-    }
+    assert response.json == job_offer1_data
 
-def test_offresEmploi(client):
+def test_offresEmploiApprouvees(client):
     data1 = {
         "email": "test@gmail.com",
         "password": "test123"
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.get('/jobOffer/offresEmploi', headers={'Authorization': token})
+    response = client.get('/jobOffer/approved', headers={'Authorization': token})
     assert response.status_code == 200
-    assert len(response.json) == 2
+    assert len(response.json) == 1
 
 def test_userCreateOffresEmploi(client):
     data = {
             "jobOffer": 
-            {
-                "title": "Développeur",
-                "address": "123 rue de la rue",
-                "description": "Développeur front-end",
-                "dateEntryOffice": "2021-12-12",
-                "deadlineApply": "2021-12-12",
-                "email": "test@gmail.com",
-                "hoursPerWeek": 40,
-                "offerLink": "www.google.com",
-                "salary": '1000',
-                "offerDebut": "2021-12-12",
-                "active": True,
-                "employerId": 1,
-                "scheduleId": 1,
-                "isApproved": False
-            },
+            job_offer1_data,
             "enterprise": 
             {
                 "id": 1,
@@ -158,8 +127,8 @@ def test_userCreateOffresEmploi(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.post('/jobOffer/createJobOffer', json=data, headers={'Authorization': token})
-    assert response.status_code == 200
+    response = client.post('/jobOffer/new', json=data, headers={'Authorization': token})
+    assert response.status_code == 201
 
 def test_approveJobOffer(client):
     data = {
@@ -173,30 +142,30 @@ def test_approveJobOffer(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.put('/jobOffer/approveJobOffer', json=data, headers={'Authorization': token})
-    assert response.status_code == 200
+    response = client.put(f'/jobOffer/approve/1', json=data, headers={'Authorization': token})
+    assert response.status_code == 204
 
 def test_updateJobOffer(client):
     data = {
-         "jobOffer": {
-            "id": 1,
-            "title": "Développeur Fullstack",
-            "address": "123 rue de la liberte",
-            "description": "Développeur fullstack",
-            "dateEntryOffice": "2021-12-12",
-            "deadlineApply": "2021-12-12",
-            "email": "test@gmail.com",
-            "hoursPerWeek": 40,
-            "offerLink": "www.google.com",
-            "salary": '1000',
-            "offerDebut": "2021-12-12",
-            "active": True,
-            "approbationMessage": "Super offre!",
-            "employerId": 1,
-            "scheduleId": 1,
-            "isApproved": True
-         },
-         "studyPrograms": [5, 6] 
+        "jobOffer": {
+        "id": 1,
+        "title": "Développeur Fullstack",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "scheduleId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] 
     }
 
     data1 = {
@@ -205,7 +174,7 @@ def test_updateJobOffer(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.put('/jobOffer/updateJobOffer', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
     assert response.json == {
         "id": 1,
