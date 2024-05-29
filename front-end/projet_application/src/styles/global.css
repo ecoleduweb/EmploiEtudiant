@@ -1,21 +1,21 @@
 body {
-  background-color: #1E2634;
-  margin: 0px;
+    background-color: #1e2634;
+    margin: 0px;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 h1 {
-  font-family: RobotoCondensed-Black;
-  text-align: left;
-  color: #333;
+    font-family: RobotoCondensed-Black;
+    text-align: left;
+    color: #333;
 }
 
 h2 {
-  font-family: RobotoCondensed-Ligth;
+    font-family: RobotoCondensed-Ligth;
 }
 
 p,
@@ -31,10 +31,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: RobotoCondensed-Regular;
+    font-family: RobotoCondensed-Regular;
 }
 
 .errors-input {
-  color: red;
-  font-size: 0.8rem;
+    color: red;
+    font-size: 0.8rem;
 }

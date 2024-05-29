@@ -1,10 +1,10 @@
 <script lang="ts">
-    export let handleModalClick: () => void;
+    export let handleModalClick: () => void
 
     const handleButtonClick = (event: MouseEvent) => {
-        event.preventDefault();
-        handleModalClick();
-    };
+        event.preventDefault()
+        handleModalClick()
+    }
 </script>
 
 <button class="overlay" on:click={handleButtonClick}>
