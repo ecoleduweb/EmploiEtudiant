@@ -8,17 +8,16 @@ employer_service = EmployerService()
 logger = getLogger(__name__)
 employer_blueprint = Blueprint('employer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-@employer_blueprint.route('/createEmployer', methods=['POST'])
+@employer_blueprint.route('/new', methods=['POST'])
 @token_admin_required
 def createEmployer(current_user):
     data = request.get_json()
     employer = employer_service.createEmployer(data["enterpriseId"], data["userId"])
     return jsonify(employer.to_json_string())
 
-@employer_blueprint.route('/getEmployer', methods=['GET'])
+@employer_blueprint.route('/<int:id>', methods=['GET'])
 @token_required
-def getEmployer(current_user):
-    id = request.args.get('id')
+def getEmployer(current_user, id):
     employer = employer_service.getEmployer(id)
     if employer:
         return jsonify(employer.to_json_string())
@@ -32,16 +31,9 @@ def linkEmployerEnterprise(current_user):
     data = request.get_json()
     return employer_service.linkEmployerEnterprise(data)
 
-@employer_blueprint.route('/getEmployerByEnterpriseId/<int:id>', methods=['GET'])
+@employer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_admin_required
-def getEmployerByEnterpriseId():
-    id = request.args.get('id')
-    return employer_service.getEmployerByEnterpriseId(id)
-
-@employer_blueprint.route('/updateEmployer', methods=['PUT'])
-@token_admin_required
-def updateEmployer(current_user):
-    id = request.args.get('id')
+def updateEmployer(current_user, id):
     employer = employer_service.getEmployer(id)
     if employer:
         data = request.get_json()
@@ -51,26 +43,12 @@ def updateEmployer(current_user):
         logger.warn('Employer not found with id : ' + id)
         return jsonify({'message': 'employer not found'}), 404
     
-@employer_blueprint.route('/deleteEmployer', methods=['DELETE'])
-@token_admin_required
-def deleteEmployer(current_user):
-    id = request.args.get('id')
-    employer = employer_service.getEmployer(id)
-    if employer:
-        employer_service.deleteEmployer(id)
-        return jsonify({'message': 'employer deleted'})
-    else:
-        logger.warn('Employer not found with id : ' + id)
-        return jsonify({'message': 'employer not found'}), 404
-
-@employer_blueprint.route('/getEmployerByUserId', methods=['GET'])
+@employer_blueprint.route('/currentEmployer', methods=['GET'])
 @token_required
 def getEmployerByUserId(current_user):
-    id = request.args.get('id')
-    if not id: id = current_user.id
-    employer = employer_service.getEmployerByUserId(id)
+    employer = employer_service.getEmployerByUserId(current_user.id)
     if employer:
         return jsonify(employer.to_json_string())
     else:
-        logger.warn('Employer not found with id : ' + id)
+        logger.warn(f'Current user with id {current_user.id} has no employer')
         return jsonify({'message': 'employer not found'}), 404

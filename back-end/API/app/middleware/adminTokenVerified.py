@@ -25,7 +25,7 @@ def token_admin_required(f):
                 logger.warn('Could not decode token : ' + str(e))
                 return jsonify({'message': 'token is invalid'}), 401
             if current_user.isModerator:
-                return f(current_user)
+                return f(current_user, *args, **kwargs)
             else:
                 logger.warn('user is not admin')
                 return jsonify({'message': 'user is not admin'}), 401

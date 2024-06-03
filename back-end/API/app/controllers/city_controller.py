@@ -8,28 +8,29 @@ logger = getLogger(__name__)
 city_blueprint = Blueprint('city', __name__)
 city_service = CityService()
 
-@city_blueprint.route('/oneCity', methods=['GET'])
+@city_blueprint.route('/<int:id>', methods=['GET'])
 @token_required
-def oneCity(self):
-    city_id = request.args.get('id')
-    if not city_id:
+def oneCity(current_user, id):
+    if not id:
         logger.warn('no city_id provided')
         return jsonify({'message': 'no id provided'}), 400
-    city = city_service.oneCity(city_id)
+    city = city_service.oneCity(id)
     if not city:
-        logger.warn('no city found for id : ' + city_id + ' in the database')
+        logger.warn('no city found for id : ' + id + ' in the database')
         return jsonify({'message': 'no city found'}), 404
     region = Region.query.filter_by(id=city.idRegion).first()
     return jsonify({'id': city.id, 'city': city.city, 'region': region.region})
 
 @city_blueprint.route('/allCities', methods=['GET'])
 @token_required
-def allCities(self):
+def allCities(current_user):
     cities = city_service.allCities()
     if not cities:
         logger.warn('no cities found in the database')
         return jsonify({'message': 'no cities found'}), 404
     cities_list = []
+    
+    # ACM : Si on est en mesure d'utiliser l'ORM de façon efficace, on pourra faire le join dans la bd directement.
     for city in cities:
         region = Region.query.filter_by(id=city.idRegion).first()
         cities_list.append({'id': city.id, 'city': city.city, 'region': region.region})

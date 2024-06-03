@@ -24,21 +24,21 @@ class JobOffer(db.Model):
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
-          title='{self.title}',
-          address='{self.address}',
-          description='{self.description}',
-          offerDebut='{self.offerDebut}' ,
-          dateEntryOffice='{self.dateEntryOffice}',
-          deadlineApply='{self.deadlineApply}',
-          email='{self.email}',
-          hoursPerWeek={self.hoursPerWeek},
-          offerLink='{self.offerLink}',
-          salary='{self.salary}',
-          active={self.active},
-          approbationMessage='{self.approbationMessage}',
-          employerId={self.employerId},
-          scheduleId={self.scheduleId}),
-          isApproved={self.isApproved}'''
+        title='{self.title}',
+        address='{self.address}',
+        description='{self.description}',
+        offerDebut='{self.offerDebut}' ,
+        dateEntryOffice='{self.dateEntryOffice}',
+        deadlineApply='{self.deadlineApply}',
+        email='{self.email}',
+        hoursPerWeek={self.hoursPerWeek},
+        offerLink='{self.offerLink}',
+        salary='{self.salary}',
+        active={self.active},
+        approbationMessage='{self.approbationMessage}',
+        employerId={self.employerId},
+        scheduleId={self.scheduleId}),
+        isApproved={self.isApproved}'''
 
     def to_json_string(self):
         return {

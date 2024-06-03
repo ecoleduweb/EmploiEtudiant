@@ -43,7 +43,7 @@ def test_employmentSchedules(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.get('/employmentSchedule/employmentSchedules', headers={"Authorization": token})
+    response = client.get('/employmentSchedule/all', headers={"Authorization": token})
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -54,5 +54,5 @@ def test_employmentSchedule(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.get('/employmentSchedule/employmentSchedule/1', headers={"Authorization": token})
+    response = client.get('/employmentSchedule/1', headers={"Authorization": token})
     assert response.status_code == 200

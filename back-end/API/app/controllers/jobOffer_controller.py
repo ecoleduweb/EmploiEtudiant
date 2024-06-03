@@ -26,99 +26,89 @@ import os
 logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-@job_offer_blueprint.route('/createJobOffer', methods=['POST'])
+@job_offer_blueprint.route('/new', methods=['POST'])
 @token_required
 def createJobOffer(current_user):
     data = request.get_json()
-    token = request.headers.get('Authorization')
-    decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-    user = User.query.filter_by(email = decoded_token['email']).first()
-    employer = None
-    if user.isModerator:
+    if current_user.isModerator:
         employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         isApproved = True
     else:
+        # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
         isApproved = None
-        employer = Employers.query.filter_by(userId=user.id).first()
+        employer = Employers.query.filter_by(userId=current_user.id).first()
+        # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
         if employer is None:
             entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
             entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
-            employer = employer_service.createEmployer(entrepriseId, user.id)
+            employer = employer_service.createEmployer(entrepriseId, current_user.id)
     jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
     for studyProgram in data["studyPrograms"]:
         studyProgramId = study_program_service.studyProgramId(studyProgram)
         offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
-    return jsonify({'message': 'Job offer created successfully'})
+    # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+    return jobOffer.to_json_string(), 201
 
-@job_offer_blueprint.route('/offreEmploi', methods=['GET'])
-def offreEmploi():
-    id = request.args.get('id')
-    jobOffer = jobOffer_service.offreEmploi(id)
+@job_offer_blueprint.route('/<int:id>', methods=['GET'])
+def offreEmploi(id):
+    jobOffer = jobOffer_service.findById(id)
     if jobOffer:
         return jsonify(jobOffer.to_json_string())
     else:
         logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
-@job_offer_blueprint.route('/offresEmploiEmployeur', methods=['GET'])
+@job_offer_blueprint.route('/employer/all', methods=['GET'])
 @token_required
 def offresEmploiEmployeur(current_user):
-    token = request.headers.get('Authorization')
-    decoded_token = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-    user = User.query.filter_by(email = decoded_token['email']).first()
-    if user.isModerator:
+    if current_user.isModerator:
         jobOffers = jobOffer_service.offresEmploi()
         return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
     #Si il n'y a pas d'offre d'emploi pour l'employeur, on retourne un tableau vide
     try:
-        employerId = employer_service.getEmployerByUserId(user.id).id
+        employerId = employer_service.getEmployerByUserId(current_user.id).id
     except Exception as e:
         logger.warn('Employer not found : ' + str(e))
-        return jsonify([])
+        return jsonify([]), 404
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@job_offer_blueprint.route('/updateJobOffer', methods=['PUT'])
+@job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
-def updateJobOffer(current_user):
-    data = request.get_json()
-    if not current_user.isModerator:
-        data["jobOffer"]["isApproved"] = None
-        data["jobOffer"]["approbationMessage"] = None
-    jobOffer = jobOffer_service.updateJobOffer(data)
-    # update offerProgram
-    if 'studyPrograms' in data:
-        offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
+def updateJobOffer(current_user, id):
+    jobOfferToUpdate = jobOffer_service.findById(id)
+    if jobOfferToUpdate:
+        data = request.get_json()
+        # ACM Mettre toute la logique dans le service.
+        if not current_user.isModerator:
+            data["jobOffer"]["isApproved"] = None
+            data["jobOffer"]["approbationMessage"] = None
+            # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
+            # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
+        jobOffer = jobOffer_service.updateJobOffer(data)
+        # update offerProgram
+        if 'studyPrograms' in data:
+            offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
+        if jobOffer:
+            # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            return jsonify(jobOffer.to_json_string()), 200
+    logger.warn('Job offer not found with data : ' + str(data))
+    return jsonify({'message': 'Job offer not found'}), 404
 
-    if jobOffer:    
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
-        return jsonify(jobOffer.to_json_string())
-    else:
-        logger.warn('Job offer not found with data : ' + str(data))
-        return jsonify({'message': 'Job offer not found'}), 404
-
-@job_offer_blueprint.route('/offresEmploi', methods=['GET'])
-def offresEmploi():
-    jobOffers = jobOffer_service.offresEmploi()
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
-
-@job_offer_blueprint.route('/offresEmploiApproved', methods=['GET'])
+@job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
     jobOffers = jobOffer_service.offresEmploiApproved()
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@job_offer_blueprint.route('/linkJobOfferEmployer', methods=['PUT'])
-@token_required
-def linkJobOfferEmployer(current_user):
-    data = request.get_json()
-    return jobOffer_service.linkJobOfferEmployer(data)
-
-@job_offer_blueprint.route('/approveJobOffer', methods=['PUT'])
+@job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required
-def approveJobOffer(current_user):
-    data = request.get_json()
-    email = current_user.email
-    title = jobOffer_service.offreEmploi(data["id"]).title
-    sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
-    return jobOffer_service.approveJobOffer(data)
+def approveJobOffer(current_user, id):
+    jobOfferToUpdate = jobOffer_service.findById(id)
+    if jobOfferToUpdate:
+        data = request.get_json()
+        # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
+        # sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
+        jobOffer_service.approveJobOffer(data)
+        return jsonify({'message': 'job offer approved'}), 204
+    logger.warn('Job offer not found with data : ' + str(data))
+    return jsonify({'message': 'Job offer not found'}), 404

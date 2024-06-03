@@ -93,7 +93,7 @@
   
     const getEntreprise = async () => {
       try {
-        const responseEntreprise = await GET<any>("/enterprise/getEnterpriseByEmployer?id=" + offre.employerId);
+        const responseEntreprise = await GET<any>(`/enterprise/employer/${offre.employerId}`);
         entreprise = responseEntreprise;
       } catch (error) {
         console.error("Error fetching entreprise:", error);
@@ -105,7 +105,7 @@
     const entreprises = writable<Entreprise[]>([]);
     const getEnterprises = async () => {
       try {
-        const response = await GET<any>("/enterprise/getEnterprises");
+        const response = await GET<any>("/enterprise/all");
         const data = await response.json();
         entreprises.set(data);
         entrepriseOptions = data.map((e: any) => {

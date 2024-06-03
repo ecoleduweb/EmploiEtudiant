@@ -3,6 +3,7 @@ from app import create_app, db
 from argon2 import PasswordHasher
 hasher=PasswordHasher()
 from app.models.user_model import User
+from app.models.offer_programm_model import OfferProgram
 
 @pytest.fixture(scope='module')
 def app():
@@ -21,6 +22,12 @@ def app():
         }
         user = User(**data)
         db.session.add(user)
+        db.session.add(OfferProgram(**{
+            "id": 1,
+            "programId": 1,
+            "offerId": 1
+        }))
+        
         db.session.commit()
         yield app
         db.session.remove()
@@ -30,20 +37,6 @@ def app():
 def client(app):
     return app.test_client()
 
-def test_linkOfferProgram(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    data = {
-        "studyProgramId": 1,
-        "offerId": 1
-    }
-    response = client.post('/offerProgram/linkOfferProgram', json=data, headers={"Authorization": token})
-    assert response.status_code == 200
-
 def test_getProgramIdByOfferId(client):
     dataLogin = {
         "email": "test@test.com",
@@ -51,5 +44,5 @@ def test_getProgramIdByOfferId(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.get('/offerProgram/getProgramIdByOfferId?offerId=1', headers={"Authorization": token})
+    response = client.get('/offerProgram/1', headers={"Authorization": token})
     assert response.status_code == 200
