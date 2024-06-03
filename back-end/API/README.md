@@ -18,13 +18,14 @@ Voir les variables dans le fichier .env.template et y mettre les bonnes valeurs.
 ### To set the database for the first time
 ```sql
 CREATE DATABASE H2024;
-USE H2024;
+CREATE DATABASE H2024TEST;
 ```
 Prendre le script de création de la BD à `/back-end/scriptBD.sql` et l'exécuter, ensuite créer un utilisateur admin et lui ajouter les accès.
 Note : Il est aussi possible d'utiliser root en développement local.
 ```sql
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON H2024.* TO 'admin'@'localhost';
+GRANT ALL PRIVILEGES ON H2024TEST.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
 Finalement, rouler les migrations
