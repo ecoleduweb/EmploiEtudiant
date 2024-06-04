@@ -4,126 +4,45 @@
     import Footer from "../../Components/Common/Footer.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import { writable } from "svelte/store"
-    import type { jobOffer } from "../../Models/Offre"
-    import type { Entreprise } from "../../Models/Entreprise"
-    import type { User } from "../../Models/User"
-    import OfferRow from "../../Components/OffreEmplois/OfferRow.svelte"
-    import CreateEditOffre from "../../Components/NewOffre/CreateEditOffre.svelte"
-    import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte"
-    import ApprouveOffre from "../../Components/OffreEmplois/ApprouveOffre.svelte"
+    import type { JobOffer } from "../../Models/Offre"
+    import type { Enterprise } from "../../Models/Enterprise"
+    import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
+    import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
+    import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
 
+    let showApproveModal = false;
+    let showCreateEditOffer = false;
+    let jobOfferToEditOrApprove: JobOffer = {} as any
     let isJobOfferEdit = false
     let isModerator = false
-    const handleOffreEmploi = () => {
-        isJobOfferEdit = false
-        openModal(0)
+    const handleCreateOffer = () => {
+        showCreateEditOffer = true
+        jobOfferToEditOrApprove = undefined as any
     }
 
-    const modal = writable(false)
-    const selectedEmploiId = writable(0)
-    const openModal = (id: number) => {
-        modal.set(true)
-        selectedEmploiId.set(id)
+    const handleEditEmploiClick = (offer: JobOffer) => {
+        jobOfferToEditOrApprove = offer;
+        showCreateEditOffer = true
     }
-    const closeModal = () => {
-        modal.set(false)
+    const handleApproveClick = (jobOffer: JobOffer) => {
+        jobOfferToEditOrApprove = jobOffer;
+        showApproveModal = true;
     }
-    const handleEditEmploiClick = (offreId: number) => {
-        isJobOfferEdit = true
-        const offre = $jobOffers.find((x) => x.id === offreId)
-        if (offre) {
-            offre.isApproved = null
-        }
-        openModal(offreId)
-    }
-
-    const modalApprove = writable(false)
-    const selectedEmploiIdApprove = writable(0)
-    const openModalApprove = (id: number) => {
-        modalApprove.set(true)
-        selectedEmploiIdApprove.set(id)
-    }
+    
     const closeModalApprove = () => {
-        modalApprove.set(false)
+        showApproveModal = false        
     }
-    const handleApproveClick = (offreId: number) => {
-        console.log(offreId)
-        openModalApprove(offreId)
-    }
-
-    let user: User = {
-        id: 0,
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        phone: "",
-        address: "",
-        cityId: 0,
-        roleId: 0,
-        active: true,
-        token: "",
+    const closeModalCreateEdit = () => 
+    {
+        showCreateEditOffer = false
     }
 
-    let offre: jobOffer = {
-        id: 0,
-        title: "",
-        address: "",
-        description: "",
-        offerDebut: "",
-        dateEntryOffice: "",
-        deadlineApply: "",
-        email: "",
-        hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
-        offerLink: "",
-        offerStatus: 0,
-        active: true,
-        salary: "",
-        scheduleId: -1,
-        employerId: 1,
-        isApproved: false,
-        approbationMessage: "",
-    }
 
-    let error: jobOffer = {
-        id: 0,
-        title: "",
-        address: "",
-        description: "",
-        offerDebut: "",
-        dateEntryOffice: "",
-        deadlineApply: "",
-        email: "",
-        hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
-        offerLink: "",
-        offerStatus: 0,
-        active: true,
-        salary: "",
-        scheduleId: 0,
-        employerId: 0,
-        isApproved: false,
-        approbationMessage: "",
-    }
-
-    let entreprise: Entreprise = {
-        id: 0,
-        name: "",
-        address: "",
-        email: "",
-        phone: "",
-        cityId: 0,
-        isTemporary: false,
-    }
-
-    let errorEntreprise: Entreprise = {
+    let enterprise: Enterprise = {
         id: 0,
         name: "",
         address: "",
@@ -136,22 +55,24 @@
     onMount(async () => {
         const token = localStorage.getItem("token")
         if (token) {
-            user = jwtDecode(token)
-            if (user.isModerator === true) {
-                isModerator = true
-            }
+            const user: any = jwtDecode(token)
+            isModerator = user.isModerator === true
             await getJobOffersEmployeur()
         }
     })
 
-    const jobOffers = writable<jobOffer[]>([])
+    const jobOffers = writable<JobOffer[]>([])
 
     const getJobOffersEmployeur = async () => {
         try {
-            const responseOffre = await GET<any>(
-                "/jobOffer/offresEmploiEmployeur",
+            // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
+            const response = await GET<any>(
+                "/jobOffer/employer/all",
             )
-            jobOffers.set(responseOffre)
+            if (response) 
+            {
+                jobOffers.set(response)
+            }
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -184,7 +105,7 @@
         <div class="haut-gauche">
             <div class="divFlex">
                 <Button
-                    onClick={handleOffreEmploi}
+                    onClick={handleCreateOffer}
                     text="Créer une nouvelle offre"
                 />
             </div>
@@ -197,96 +118,79 @@
         {#if isModerator === false}
             <p class="textOffre">Mes offres d'emplois</p>
         {/if}
-        <!-- {#if toBeApprovedOffer.length > 0}
-      <h2 class="textSections">En attente d'approbation</h2>
-      {#each toBeApprovedOffer as offre}
-        <OfferRow user={user} offre={offre} handleEditModalClick={handleEditEmploiClick} handleApproveModalClick={handleApproveClick} />
-     {/each}
-    {/if} -->
         {#if isRefusedOffer.length > 0}
             <h2 class="textSections">Offres refusées</h2>
-            {#each isRefusedOffer as offre}
+            {#each isRefusedOffer as offer}
                 <OfferRow
-                    {user}
-                    {offre}
-                    handleEditModalClick={handleEditEmploiClick}
-                    handleApproveModalClick={handleApproveClick}
+                    {isModerator}
+                    offer={offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
                 />
             {/each}
         {/if}
         {#if toBeApprovedOffer.length > 0}
             <h2 class="textSections">Offres en attente d'approbation</h2>
-            {#each toBeApprovedOffer as offre}
+            {#each toBeApprovedOffer as offer}
                 <OfferRow
-                    {user}
-                    {offre}
-                    handleEditModalClick={handleEditEmploiClick}
-                    handleApproveModalClick={handleApproveClick}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
                 />
             {/each}
         {/if}
         {#if offerToCome.length > 0}
             <h2 class="textSections">Offres bientôt affichées</h2>
-            {#each offerToCome as offre}
+            {#each offerToCome as offer}
                 <OfferRow
-                    {user}
-                    {offre}
-                    handleEditModalClick={handleEditEmploiClick}
-                    handleApproveModalClick={handleApproveClick}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
                 />
             {/each}
         {/if}
         {#if offerDisplayed.length > 0}
             <h2 class="textSections">Offres affichées</h2>
-            {#each offerDisplayed as offre}
+            {#each offerDisplayed as offer}
                 <OfferRow
-                    {user}
-                    {offre}
-                    handleEditModalClick={handleEditEmploiClick}
-                    handleApproveModalClick={handleApproveClick}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
                 />
             {/each}
         {/if}
         {#if expiredOffer.length > 0}
             <h2 class="textSections">Offres expirées</h2>
-            {#each expiredOffer as offre}
+            {#each expiredOffer as offer}
                 <OfferRow
-                    {user}
-                    {offre}
-                    handleEditModalClick={handleEditEmploiClick}
-                    handleApproveModalClick={handleApproveClick}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
                 />
             {/each}
         {/if}
     </section>
-    {#if $modal}
-        {#if isJobOfferEdit === false}
-            <CreateEditOffre handleEmploiClick={closeModal} {isJobOfferEdit} />
-        {/if}
-        {#if isJobOfferEdit === true}
-            {#each $jobOffers as offre}
-                {#if offre.id === $selectedEmploiId}
-                    <CreateEditOffre
-                        {offre}
-                        handleEmploiClick={closeModal}
-                        {isJobOfferEdit}
-                    />
-                {/if}
-            {/each}
-        {/if}
+    {#if showApproveModal}    
+    <Modal handleCloseClick={closeModalApprove}>
+        <ApprouveOffre
+            offer={jobOfferToEditOrApprove}
+            {enterprise}
+            handleApproveClick={closeModalApprove}
+        />
+    </Modal>
     {/if}
-    {#if $modalApprove}
-        {#each $jobOffers as emploi}
-            {#if emploi.id === $selectedEmploiIdApprove}
-                <Modal handleModalClick={closeModalApprove}>
-                    <ApprouveOffre
-                        offre={emploi}
-                        {entreprise}
-                        handleApproveClick={closeModalApprove}
-                    />
-                </Modal>
-            {/if}
-        {/each}
+    {#if showCreateEditOffer}    
+    <Modal handleCloseClick={closeModalCreateEdit}>
+        <CreateEditJobOffer
+            isJobOfferEdit={isJobOfferEdit}
+            jobOffer={jobOfferToEditOrApprove}
+            {enterprise}
+        />
+    </Modal>
     {/if}
 </main>
 <Footer />

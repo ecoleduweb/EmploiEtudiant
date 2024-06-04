@@ -21,7 +21,7 @@ def oneCity(current_user, id):
     region = Region.query.filter_by(id=city.idRegion).first()
     return jsonify({'id': city.id, 'city': city.city, 'region': region.region})
 
-@city_blueprint.route('/allCities', methods=['GET'])
+@city_blueprint.route('/all', methods=['GET'])
 @token_required
 def allCities(current_user):
     cities = city_service.allCities()

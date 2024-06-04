@@ -3,19 +3,14 @@
     import Header from "../../Components/Common/Header.svelte"
     import Footer from "../../Components/Common/Footer.svelte"
     import { writable } from "svelte/store"
-    import type { jobOffer } from "../../Models/Offre"
-    import type { Entreprise } from "../../Models/Entreprise"
+    import type { JobOffer } from "../../Models/Offre"
+    import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte"
+    import EnterpriseRow from "../../Components/Enterprise/EnterpriseRow.svelte"
     import { MultiSelect } from "svelte-multiselect"
 
     let isJobOfferEdit = false
-
-    const handleOffreEmploi = () => {
-        isJobOfferEdit = false
-        openModal(0)
-    }
 
     const modal = writable(false)
     const selectedEmploiId = writable(0)
@@ -23,14 +18,11 @@
         modal.set(true)
         selectedEmploiId.set(id)
     }
-    const closeModal = () => {
-        modal.set(false)
-    }
     const handleEmploiClick = (offreId: number) => {
         isJobOfferEdit = true
         openModal(offreId)
     }
-    let offre: jobOffer = {
+    let jobOffer: JobOffer = {
         id: 0,
         title: "",
         address: "",
@@ -40,39 +32,19 @@
         deadlineApply: "",
         email: "",
         hoursPerWeek: 0,
-        compliantEmployer: false,
         internship: false,
         offerLink: "",
         offerStatus: 0,
         active: true,
-        salary: 0,
+        salary: "",
         scheduleId: -1,
         employerId: 1,
         isApproved: false,
     }
 
-    let error: jobOffer = {
-        id: 0,
-        title: "",
-        address: "",
-        description: "",
-        offerDebut: "",
-        dateEntryOffice: "",
-        deadlineApply: "",
-        email: "",
-        hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
-        offerLink: "",
-        offerStatus: 0,
-        active: true,
-        salary: 0,
-        scheduleId: 0,
-        employerId: 0,
-        isApproved: false,
-    }
+    let error: any = {}
 
-    let entreprise: Entreprise = {
+    let enterprise: Enterprise = {
         id: 0,
         name: "",
         address: "",
@@ -82,42 +54,32 @@
         isTemporary: false,
     }
 
-    let errorEntreprise: Entreprise = {
-        id: 0,
-        name: "",
-        address: "",
-        email: "",
-        phone: "",
-        cityId: 0,
-        isTemporary: false,
-    }
-
-    const getEntreprise = async () => {
+    const getEnterprise = async () => {
         try {
-            const responseEntreprise = await GET<any>(
-                "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId,
+            const responseEnterprise = await GET<any>(
+                `/enterprise/employer/${jobOffer.employerId}`
             )
-            entreprise = responseEntreprise
+            enterprise = responseEnterprise
         } catch (error) {
-            console.error("Error fetching entreprise:", error)
+            console.error("Error fetching enterprise:", error)
         }
     }
-    onMount(getEntreprise)
+    onMount(getEnterprise)
 
-    let entrepriseOptions: { label: string; value: number }[] = []
-    const entreprises = writable<Entreprise[]>([])
+    let enterpriseOptions: { label: string; value: number }[] = []
+    const enterprises = writable<Enterprise[]>([])
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/getEnterprises")
+            const response = await GET<any>("/enterprise/all")
             const data = await response.json()
-            entreprises.set(data)
-            entrepriseOptions = data.map((e: any) => {
+            enterprises.set(data)
+            enterpriseOptions = data.map((e: any) => {
                 return { label: e.name, value: e.id }
             })
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
-        console.log(entrepriseOptions)
+        console.log(enterpriseOptions)
     }
     onMount(getEnterprises)
 </script>
@@ -130,9 +92,9 @@
         </h1>
     </div>
     <section class="haut">
-        <EntrepriseRow {entreprise} handleModalClick={handleEmploiClick} />
+        <EnterpriseRow enterprise={enterprise} handleModalClick={handleEmploiClick} />
     </section>
-    <MultiSelect options={entrepriseOptions} placeholder="Select entreprise" />
+    <MultiSelect options={enterpriseOptions} placeholder="Select entreprise" />
 </main>
 <Footer />
 

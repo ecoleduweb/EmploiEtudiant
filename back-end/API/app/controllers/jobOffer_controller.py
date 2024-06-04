@@ -39,13 +39,12 @@ def createJobOffer(current_user):
         employer = Employers.query.filter_by(userId=current_user.id).first()
         # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
         if employer is None:
-            entreprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            entrepriseId = enterprise_service.getEntrepriseId(entreprise.name)
-            employer = employer_service.createEmployer(entrepriseId, current_user.id)
+            enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
+            enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
+            employer = employer_service.createEmployer(enterpriseId, current_user.id)
     jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
-    for studyProgram in data["studyPrograms"]:
-        studyProgramId = study_program_service.studyProgramId(studyProgram)
-        offerProgram = offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    for studyProgramId in data["studyPrograms"]:
+        offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
     return jobOffer.to_json_string(), 201
 
@@ -106,9 +105,9 @@ def approveJobOffer(current_user, id):
     jobOfferToUpdate = jobOffer_service.findById(id)
     if jobOfferToUpdate:
         data = request.get_json()
+        jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
         # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
         # sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
-        jobOffer_service.approveJobOffer(data)
         return jsonify({'message': 'job offer approved'}), 204
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404

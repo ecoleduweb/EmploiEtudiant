@@ -14,5 +14,5 @@ class Employers(db.Model):
             'id': self.id,
             'verified': self.verified,
             'userId': self.userId,
-            'entrepriseId': self.enterpriseId
+            'enterpriseId': self.enterpriseId
         }

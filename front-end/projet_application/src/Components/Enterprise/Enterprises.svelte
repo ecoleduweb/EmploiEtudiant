@@ -1,18 +1,18 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
-    import type { Entreprise } from "../../Models/Entreprise"
+    import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import type { City } from "../../Models/City"
-    export let entreprise: Entreprise
-    export let handleEntrepriseClick: () => void
+    export let enterprise: Enterprise
+    export let handleEnterpriseClick: () => void
 
     let ville: City
     let nomVille: string
 
     const getCity = async (id: number) => {
         try {
-            ville = await GET<any>(`/city/oneCity?id=${id}`)
+            ville = await GET<any>(`/city/${id}`)
             nomVille = ville.city
         } catch (error) {
             console.error("Error fetching city:", error)
@@ -20,22 +20,22 @@
     }
 
     onMount(() => {
-        getCity(entreprise.cityId)
+        getCity(enterprise.cityId)
     })
 </script>
 
-<Modal handleModalClick={handleEntrepriseClick}>
+<Modal handleCloseClick={handleEnterpriseClick}>
     <div class="container">
         <div class="titleContainer">
-            <h3 class="title">{entreprise.name}</h3>
+            <h3 class="title">{enterprise.name}</h3>
         </div>
         <div class="info">
             <h5 class="infoTitle">Adresse courriel</h5>
-            <p class="text">{entreprise.email}</p>
+            <p class="text">{enterprise.email}</p>
             <h5 class="infoTitle">Numéro de téléphone</h5>
-            <p class="text">{entreprise.phone}</p>
-            <h5 class="infoTitle">Adresse de l'entreprise</h5>
-            <p class="text">{entreprise.address}</p>
+            <p class="text">{enterprise.phone}</p>
+            <h5 class="infoTitle">Adresse de l'enterprise</h5>
+            <p class="text">{enterprise.address}</p>
             <h5 class="infoTitle">Ville</h5>
             <p class="text">{nomVille}</p>
         </div>

@@ -3,16 +3,13 @@
     import Header from "../../Components/Common/Header.svelte"
     import Footer from "../../Components/Common/Footer.svelte"
     import { onMount } from "svelte"
-    import { get, writable } from "svelte/store"
+    import { writable } from "svelte/store"
     import { GET } from "../../ts/server"
     import type { User } from "../../Models/User"
-    import UserRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
     import UserComponent from "../../Components/Utilisateur/Utilisateurs.svelte"
-    import Button from "../../Components/Inputs/Button.svelte"
     import UtilisateurRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
 
     const modal = writable(false)
-    const modalAdd = writable(false)
     const selectedUserId = writable(0)
 
     const handleUserClick = (id: number) => {
@@ -29,7 +26,7 @@
     const users = writable<User[]>([])
     const getUsers = async () => {
         try {
-            const response = await GET<any>("/user/getAllUsers")
+            const response = await GET<any>("/user/all")
             users.set(response.users)
         } catch (error) {
             console.error("Error fetching users:", error)
