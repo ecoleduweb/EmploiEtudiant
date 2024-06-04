@@ -19,8 +19,8 @@
 <style lang="scss" scoped>
     .FooterDiv 
     {
-        position: absolute;
+        position: fixed;
         bottom: 0;
-        min-width: 125%;
+        min-width: 100%;
     }
 </style>
