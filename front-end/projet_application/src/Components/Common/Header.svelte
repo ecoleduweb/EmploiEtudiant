@@ -3,7 +3,6 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
-    import { browser } from "$app/environment"
     import { isLoggedIn } from "$lib" // La variable writable de login.
 
     let firstName = "" // Déclarer une variable pour stocker l'email
