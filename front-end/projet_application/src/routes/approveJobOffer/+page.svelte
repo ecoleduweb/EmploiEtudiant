@@ -18,7 +18,6 @@
         modal.set(true)
         selectedEmploiId.set(id)
     }
-
     const handleEmploiClick = (offreId: number) => {
         isJobOfferEdit = true
         openModal(offreId)

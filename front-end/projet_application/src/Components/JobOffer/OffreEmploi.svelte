@@ -3,10 +3,9 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import { writable } from "svelte/store"
     export let offer: JobOffer
 
-    export let enterprise: Enterprise 
+    let enterprise: Enterprise 
     const getEnterprises = async (employerId: number) => {
         try {
             const response = await GET<any>(
@@ -57,8 +56,8 @@
 <div class="container">
     <div class="titleContainer">
         <h3 class="title">{offer.title}</h3>
-        {#if $enterprise}
-            <h4 class="subtitle">Chez {$enterprise}</h4>
+        {#if enterprise}
+            <h4 class="subtitle">Chez {enterprise.name}</h4>
         {/if}
     </div>
     <div class="info">
