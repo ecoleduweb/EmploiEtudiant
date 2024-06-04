@@ -6,9 +6,8 @@
     import { POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
-    import { goto, invalidateAll } from "$app/navigation"
+    import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
-    import Header from "../../Components/Common/Header.svelte"
     import { isLoggedIn } from "$lib"
 
 
