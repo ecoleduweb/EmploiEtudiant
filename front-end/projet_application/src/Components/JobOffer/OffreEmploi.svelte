@@ -1,27 +1,25 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte"
-    import type { jobOffer } from "../../Models/Offre"
-    import type { Entreprise } from "../../Models/Entreprise"
+    import type { JobOffer } from "../../Models/Offre"
+    import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import { writable } from "svelte/store"
-    export let offre: jobOffer
+    export let offer: JobOffer
 
-    const entreprise = writable<string>()
+    let enterprise: Enterprise 
     const getEnterprises = async (employerId: number) => {
         try {
             const response = await GET<any>(
-                "/enterprise/getEnterpriseByEmployer?id=" + employerId,
+                `/enterprise/employer/${employerId}`
             )
-            entreprise.set(response.name)
+            enterprise = response
         } catch (error) {
-            console.error("Error fetching entreprise:", error)
+            console.error("Error fetching enterprise:", error)
         }
     }
     onMount(async () => {
-        getEnterprises(offre.employerId)
+        getEnterprises(offer.employerId)
         const response = await GET<any>(
-            `/offerProgram/getProgramIdByOfferId?offerId=${offre.id}`,
+            `/offerProgram/${offer.id}`,
         )
         try {
             programmeSelected = response
@@ -57,38 +55,36 @@
 
 <div class="container">
     <div class="titleContainer">
-        <h3 class="title">{offre.title}</h3>
-        {#if $entreprise}
-            <h4 class="subtitle">Chez {$entreprise}</h4>
+        <h3 class="title">{offer.title}</h3>
+        {#if enterprise}
+            <h4 class="subtitle">Chez {enterprise.name}</h4>
         {/if}
     </div>
     <div class="info">
         <h5 class="infoTitle">Type de poste</h5>
-        <p class="text">{offre.title}</p>
+        <p class="text">{offer.title}</p>
         <h5 class="infoTitle">Adresse du lieu de travail</h5>
-        <p class="text">{offre.address}</p>
+        <p class="text">{offer.address}</p>
         <h5 class="infoTitle">Date de début</h5>
-        <p class="text">{offre.offerDebut}</p>
+        <p class="text">{offer.offerDebut}</p>
         <h5 class="infoTitle">Date d'entrée en fonction</h5>
-        <p class="text">{offre.dateEntryOffice}</p>
+        <p class="text">{offer.dateEntryOffice}</p>
         <h5 class="infoTitle">Date limite pour postuler</h5>
-        <p class="text">{offre.deadlineApply}</p>
+        <p class="text">{offer.deadlineApply}</p>
         <h5 class="infoTitle">Salaire</h5>
-        <p class="text">{offre.salary}</p>
+        <p class="text">{offer.salary}</p>
         <h5 class="infoTitle">Heure par semaine</h5>
-        <p class="text">{offre.hoursPerWeek}</p>
+        <p class="text">{offer.hoursPerWeek}</p>
         <h5 class="infoTitle">Stage ?</h5>
-        <p class="text">{offre.internship ? "Oui" : "Non"}</p>
-        <h5 class="infoTitle">Employeur Conciliant ?</h5>
-        <p class="text">{offre.compliantEmployer ? "Oui" : "Non"}</p>
+        <p class="text">{offer.internship ? "Oui" : "Non"}</p>
         <h5 class="infoTitle">Programme</h5>
         <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
         <h5 class="infoTitle">Description du poste</h5>
-        <p class="text">{offre.description}</p>
+        <p class="text">{offer.description}</p>
         <h5 class="infoTitle">Adresse URL vers l'offre d'emploi détaillé</h5>
-        <p class="text">{offre.offerLink}</p>
+        <p class="text">{offer.offerLink}</p>
         <h5 class="infoTitle">Où envoyer votre candidature</h5>
-        <p class="text">{offre.email}</p>
+        <p class="text">{offer.email}</p>
     </div>
 </div>
 

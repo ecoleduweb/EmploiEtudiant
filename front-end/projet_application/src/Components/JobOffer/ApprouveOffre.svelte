@@ -1,22 +1,21 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
-    import type { jobOffer } from "../../Models/Offre"
-    import type { Entreprise } from "../../Models/Entreprise"
+    import type { JobOffer } from "../../Models/Offre"
+    import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
     import { GET, POST, PUT } from "../../ts/server"
-    export let offre: jobOffer
-    export let entreprise: Entreprise
-    import { onMount } from "svelte"
+    export let offer: JobOffer
+    export let enterprise: Enterprise
     import OffreEmploi from "./OffreEmploi.svelte"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
-    let isApproved: boolean = false
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            const response = await PUT<any, any>("/jobOffer/approveJobOffer", {
-                id: offre.id,
+            const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}`, 
+            {
+                id: offer.id,
                 approbationMessage: approbationMessage,
                 isApproved: isApproved,
             })
@@ -29,7 +28,7 @@
 </script>
 
 <div class="main-div">
-    <OffreEmploi {offre} {entreprise} />
+    <OffreEmploi {offer} {enterprise} />
     <div class="container">
         <div>
             <h5 class="infoTitle">Message d'approbation</h5>

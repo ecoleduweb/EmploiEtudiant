@@ -24,9 +24,6 @@ jobs:
           node-version: "20" # or any other version you want
 
       - name: Install dependencies
-        uses: bahmutov/npm-install@v1
-
-      - name: Install dependencies
         working-directory: front-end
         run: |
           cd projet_application

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { Entreprise } from "../../Models/Entreprise"
-    export let entreprise: Entreprise
+    import type { Enterprise } from "../../Models/Enterprise"
+    export let enterprise: Enterprise
     import type { City } from "../../Models/City"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
@@ -10,7 +10,7 @@
 
     const getCity = async (id: number) => {
         try {
-            ville = await GET<any>(`/city/oneCity?id=${id}`)
+            ville = await GET<any>(`/city/${id}`)
             nomVille = ville.city
         } catch (error) {
             console.error("Error fetching city:", error)
@@ -18,17 +18,17 @@
     }
 
     onMount(() => {
-        getCity(entreprise.cityId)
+        getCity(enterprise.cityId)
     })
 </script>
 
-<button class="entreprise" on:click={() => handleModalClick(entreprise.id)}>
+<button class="enterprise" on:click={() => handleModalClick(enterprise.id)}>
     <div class="emploi">
         <div class="info">
-            <p class="textTitre">{entreprise.name}</p>
-            <p class="text">{entreprise.email}</p>
-            <p class="text">{entreprise.phone}</p>
-            <p class="text">{entreprise.address}</p>
+            <p class="textTitre">{enterprise.name}</p>
+            <p class="text">{enterprise.email}</p>
+            <p class="text">{enterprise.phone}</p>
+            <p class="text">{enterprise.address}</p>
             <p class="text">{nomVille}</p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
@@ -36,7 +36,7 @@
 </button>
 
 <style scoped>
-    .entreprise {
+    .enterprise {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
