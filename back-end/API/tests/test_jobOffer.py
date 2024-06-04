@@ -117,8 +117,8 @@ def test_userCreateOffresEmploi(client):
                 "cityId": 1
             },
             "studyPrograms": [
-                "Informatique",
-                "Génie logiciel"
+                1,
+                2
             ]
         }
     data1 = {
