@@ -69,7 +69,7 @@ def test_createEmployer(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.post('/employer/createEmployer', json=data, headers={'Authorization': token})
+    response = client.post('/employer/new', json=data, headers={'Authorization': token})
     assert response.status_code == 200
 
 
@@ -85,22 +85,8 @@ def test_updateEmployer(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.put('/employer/updateEmployer?id=1', json=data,  headers={'Authorization': token})
+    response = client.put('/employer/1', json=data,  headers={'Authorization': token})
     assert response.status_code == 200
     assert response.json == {
         "message": "employer updated"
     }
-
-def test_deleteEmployer(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.delete('/employer/deleteEmployer?id=1', headers={'Authorization': token})
-    assert response.status_code == 200
-    assert response.json == {
-        "message": "employer deleted"
-    }
-

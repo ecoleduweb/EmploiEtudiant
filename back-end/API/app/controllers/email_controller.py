@@ -4,6 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from flask import Blueprint
 import os
 
+# ACM Mettre ça dans un service.
 # Configuration
 port = os.environ.get('MAIL_PORT')
 smtp_server = os.environ.get('MAIL_SERVER')
@@ -11,6 +12,7 @@ sender_email = os.environ.get('MAIL_SENDER')
 login = os.environ.get('MAIL_SERVER_LOGIN')
 password = os.environ.get('MAIL_SERVER_PASSWORD')
 
+# ACM : Quand on va envoyer un mail, ajouter un check pour s'assurer qu'on n'est pas en test pour éviter l'envoi.
 def sendMail(receiver_email, subject, content):
 
     # subject = "Site de recrutement - " + subject

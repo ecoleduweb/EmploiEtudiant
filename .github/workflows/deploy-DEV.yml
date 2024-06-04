@@ -22,7 +22,7 @@ jobs:
             rm -r dev_project
             mkdir dev_project
             cd dev_project
-            git clone -b dev https://github.com/ecoleduweb/ProjetApplicationH2024.git
+            git clone -b dev git@github.com:ecoleduweb/ProjetApplicationH2024.git
             echo 'Deployment successful to DEV server'
             echo 'Installing backend packages'
             sudo apt-get update -y
@@ -38,8 +38,8 @@ jobs:
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo MAIL_SERVER=${{ secrets.SMTP_SERVER }} >> .env
             echo MAIL_PORT=${{ secrets.SMTP_PORT }} >> .env
-            echo MAIL_SENDER=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
-            echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
+            echo MAIL_SENDER=${{ secrets.SMTP_SENDER_ }} >> .env
+            echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_LOGIN }} >> .env
             echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_PASSWORD }} >> .env
             echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env

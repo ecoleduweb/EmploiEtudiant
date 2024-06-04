@@ -14,8 +14,6 @@ class JobOffer(db.Model):
     deadlineApply = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(255), nullable=False)
     hoursPerWeek = db.Column(db.Float, nullable=False)
-    compliantEmployer = db.Column(db.Boolean, nullable=False)
-    internship = db.Column(db.Boolean, nullable=False)
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
@@ -26,23 +24,21 @@ class JobOffer(db.Model):
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
-          title='{self.title}',
-          address='{self.address}',
-          description='{self.description}',
-          offerDebut='{self.offerDebut}' ,
-          dateEntryOffice='{self.dateEntryOffice}',
-          deadlineApply='{self.deadlineApply}',
-          email='{self.email}',
-          hoursPerWeek={self.hoursPerWeek},
-          compliantEmployer={self.compliantEmployer},
-          internship={self.internship},
-          offerLink='{self.offerLink}',
-          salary='{self.salary}',
-          active={self.active},
-          approbationMessage='{self.approbationMessage}',
-          employerId={self.employerId},
-          scheduleId={self.scheduleId}),
-          isApproved={self.isApproved}'''
+        title='{self.title}',
+        address='{self.address}',
+        description='{self.description}',
+        offerDebut='{self.offerDebut}' ,
+        dateEntryOffice='{self.dateEntryOffice}',
+        deadlineApply='{self.deadlineApply}',
+        email='{self.email}',
+        hoursPerWeek={self.hoursPerWeek},
+        offerLink='{self.offerLink}',
+        salary='{self.salary}',
+        active={self.active},
+        approbationMessage='{self.approbationMessage}',
+        employerId={self.employerId},
+        scheduleId={self.scheduleId}),
+        isApproved={self.isApproved}'''
 
     def to_json_string(self):
         return {
@@ -55,8 +51,6 @@ class JobOffer(db.Model):
             'deadlineApply': str(self.deadlineApply),  # Convert date to string
             'email': self.email,
             'hoursPerWeek': self.hoursPerWeek,
-            'compliantEmployer': self.compliantEmployer,
-            'internship': self.internship,
             'offerLink': self.offerLink,
             'salary': self.salary,
             'active': self.active,

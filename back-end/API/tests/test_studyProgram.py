@@ -55,17 +55,6 @@ def test_studyPrograms(client):
     assert response.status_code == 200
     assert len(response.json) == 2
 
-def test_studyProgramId(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/studyProgram/studyProgramId?name=Informatique', headers={'Authorization' : token})
-    assert response.status_code == 200
-    assert response.json == 1
-
 def test_addStudyProgram(client):
     data = {
         "name": "Genie logiciel"

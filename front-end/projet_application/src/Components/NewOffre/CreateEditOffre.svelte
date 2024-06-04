@@ -109,8 +109,6 @@
         deadlineApply: "",
         email: "",
         hoursPerWeek: 0,
-        compliantEmployer: false,
-        internship: false,
         offerLink: "",
         offerStatus: 0,
         active: true,

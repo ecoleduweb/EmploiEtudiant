@@ -17,8 +17,6 @@ class JobOfferRepo:
          deadlineApply=data['deadlineApply'],
          email=data['email'],
          hoursPerWeek=data['hoursPerWeek'],
-         compliantEmployer=data['compliantEmployer'],
-         internship=data['internship'],
          offerLink=data['offerLink'],
          salary=data['salary'],
          active=data['active'],
@@ -43,8 +41,6 @@ class JobOfferRepo:
         jobOffer.deadlineApply = data['jobOffer']['deadlineApply']
         jobOffer.email = data['jobOffer']['email']
         jobOffer.hoursPerWeek = data['jobOffer']['hoursPerWeek']
-        jobOffer.compliantEmployer = data['jobOffer']['compliantEmployer']
-        jobOffer.internship = data['jobOffer']['internship']
         jobOffer.offerLink = data['jobOffer']['offerLink']
         jobOffer.salary = data['jobOffer']['salary']
         jobOffer.active = data['jobOffer']['active']
@@ -87,4 +83,3 @@ class JobOfferRepo:
         jobOffer.isApproved = data['isApproved']
         jobOffer.approbationMessage = data['approbationMessage']
         db.session.commit()
-        return jsonify({'message': 'job offer approved'})
