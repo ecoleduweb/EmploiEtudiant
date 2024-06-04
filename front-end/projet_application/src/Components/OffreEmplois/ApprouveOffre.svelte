@@ -1,49 +1,51 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte";
-    import type { jobOffer } from "../../Models/Offre";
-    import type { Entreprise } from "../../Models/Entreprise";
-    import Button from "../Inputs/Button.svelte";
-    import { GET, POST, PUT } from "../../ts/server";
-    export let offre: jobOffer;
+    import Modal from "../Common/Modal.svelte"
+    import type { jobOffer } from "../../Models/Offre"
+    import type { Entreprise } from "../../Models/Entreprise"
+    import Button from "../Inputs/Button.svelte"
+    import { GET, POST, PUT } from "../../ts/server"
+    export let offre: jobOffer
     export let entreprise: Entreprise
-    import { onMount } from "svelte";
-    import OffreEmploi from "./OffreEmploi.svelte";
-    export let handleApproveClick: () => void;
+    import { onMount } from "svelte"
+    import OffreEmploi from "./OffreEmploi.svelte"
+    export let handleApproveClick: () => void
 
-    let approbationMessage: string = "";
-    let isApproved: boolean = false;
+    let approbationMessage: string = ""
+    let isApproved: boolean = false
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            const response = await PUT<any, any>(`/jobOffer/approve/${offre.id}`, { approbationMessage: approbationMessage, isApproved: isApproved});    
-            window.location.reload();
+            const response = await PUT<any, any>("/jobOffer/approveJobOffer", {
+                id: offre.id,
+                approbationMessage: approbationMessage,
+                isApproved: isApproved,
+            })
+            window.location.reload()
         } catch (error) {
-            console.error("Error approving job offer:", error);
+            console.error("Error approving job offer:", error)
         }
-        handleApproveClick();
-    };
-
+        handleApproveClick()
+    }
 </script>
-    <div class="main-div">
-        <OffreEmploi offre={offre} entreprise={entreprise} />
-        <div class="container">
-                <div>
-                    <h5 class="infoTitle">Message d'approbation</h5>
-                    <textarea bind:value={approbationMessage} placeholder="Message d'approbation" class="input" />
-                </div>
-                <div class="button">
-                    <Button 
-                        text="Approuver"
-                        onClick={() => approveOffer(true)}
-                    />
-                    
-                    <Button 
-                        text="Refuser"
-                        onClick={() => approveOffer(false)}
-                    />
-                </div>
+
+<div class="main-div">
+    <OffreEmploi {offre} {entreprise} />
+    <div class="container">
+        <div>
+            <h5 class="infoTitle">Message d'approbation</h5>
+            <textarea
+                bind:value={approbationMessage}
+                placeholder="Message d'approbation"
+                class="input"
+            />
+        </div>
+        <div class="button">
+            <Button text="Approuver" onClick={() => approveOffer(true)} />
+
+            <Button text="Refuser" onClick={() => approveOffer(false)} />
         </div>
     </div>
+</div>
 
 <style scoped>
     .container {
@@ -64,13 +66,13 @@
         background-color: transparent;
         margin-bottom: 1.5vw;
     }
-    .button{
+    .button {
         display: flex;
         flex-direction: row;
         justify-content: center;
         gap: 1vw;
     }
-    .main-div{
+    .main-div {
         flex-direction: column;
         margin: auto;
     }

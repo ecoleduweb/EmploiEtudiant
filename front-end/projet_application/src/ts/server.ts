@@ -1,108 +1,108 @@
-import { env } from "$env/dynamic/public";
+import { env } from "$env/dynamic/public"
 
 export async function GET<T>(url: string): Promise<T> {
-  try {
-    var token = localStorage.getItem("token");
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      headers: {
-        'Authorization': `${token}`
-      }
-    });
+    try {
+        var token = localStorage.getItem("token")
+        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        })
 
-    const data = await handleResponse<T>(response);
-    return data as T;
-  } catch (error) {
-    console.error("Error fetching:", error);
-    throw error;
-  }
+        const data = await handleResponse<T>(response)
+        return data as T
+    } catch (error) {
+        console.error("Error fetching:", error)
+        throw error
+    }
 }
 
 export async function POST<T, T1>(url: string, body: T): Promise<T1> {
-  try {
-    var token = localStorage.getItem("token");
-    if (!token) token = "";
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+    try {
+        var token = localStorage.getItem("token")
+        if (!token) token = ""
+        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${token}`,
+            },
+            body: JSON.stringify(body),
+        })
 
-    const data = await handleResponse<T1>(response);
-    return data as T1;
-  } catch (error) {
-    console.error("Error posting:", error);
-    throw error;
-  }
+        const data = await handleResponse<T1>(response)
+        return data as T1
+    } catch (error) {
+        console.error("Error posting:", error)
+        throw error
+    }
 }
 
 export async function DELETE(url: string): Promise<void> {
-  try {
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: "DELETE",
-    });
+    try {
+        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "DELETE",
+        })
 
-    await handleResponse(response);
-  } catch (error) {
-    console.error("Error deleting:", error);
-    throw error;
-  }
+        await handleResponse(response)
+    } catch (error) {
+        console.error("Error deleting:", error)
+        throw error
+    }
 }
 
 export async function PUT<T, T1>(url: string, body: T): Promise<T1> {
-  try {
-    var token = localStorage.getItem("token");
-    if (!token) token = "";
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(body),
-    });
+    try {
+        var token = localStorage.getItem("token")
+        if (!token) token = ""
+        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(body),
+        })
 
-    const data = await handleResponse<T1>(response);
-    return data as T1;
-    //await handleResponse(response);
-  } catch (error) {
-    console.error("Error putting:", error);
-    throw error;
-  }
+        const data = await handleResponse<T1>(response)
+        return data as T1
+        //await handleResponse(response);
+    } catch (error) {
+        console.error("Error putting:", error)
+        throw error
+    }
 }
 
 export async function PATCH<T>(url: string, body: T): Promise<void> {
-  try {
-    const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+    try {
+        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        })
 
-    await handleResponse(response);
-  } catch (error) {
-    console.error("Error patching:", error);
-    throw error;
-  }
+        await handleResponse(response)
+    } catch (error) {
+        console.error("Error patching:", error)
+        throw error
+    }
 }
 
-
-
 async function handleResponse<T>(response: Response): Promise<T | undefined> {
-  if (!response.ok) {
-    if (response.status === 500) {
-      window.location.href = "/500";
-    } else if (response.status === 404) {
-      return undefined as T;
-    } else if (response.status === 401) {
-      window.location.href = "/login";
-    } else {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    if (!response.ok) {
+        if (response.status === 500) {
+            window.location.href = "/500"
+        } else if (response.status === 404) {
+            return undefined as T
+        } else if (response.status === 401) {
+            window.location.href = "/login"
+        } else {
+            throw new Error(
+                `Error: ${response.status} - ${response.statusText}`,
+            )
+        }
     }
-  }
-  return await response.json() as T;
+    return (await response.json()) as T
 }

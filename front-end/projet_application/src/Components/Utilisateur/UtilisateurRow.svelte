@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { User } from "../../Models/User";
-    export let user: User;
-    import { GET } from "../../ts/server";
-    import { onMount } from "svelte";
-    export let handleModalClick: (id: number) => void;
-
+    import type { User } from "../../Models/User"
+    export let user: User
+    import { GET } from "../../ts/server"
+    import { onMount } from "svelte"
+    export let handleModalClick: (id: number) => void
 </script>
+
 <div class="userTitre">
     <div class="user">
         <div class="info">
@@ -13,11 +13,11 @@
             <p class="text">{user.firstName}</p>
             <p class="text">{user.lastName}</p>
         </div>
-            <button class="button" on:click={() => handleModalClick(user.id)}>
-                <img class="image" src="check.svg" alt="approve" />
-            </button>
+        <button class="button" on:click={() => handleModalClick(user.id)}>
+            <img class="image" src="check.svg" alt="approve" />
+        </button>
     </div>
-    </div>
+</div>
 
 <style scoped>
     .userTitre {

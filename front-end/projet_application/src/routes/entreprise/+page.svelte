@@ -1,63 +1,64 @@
 <script lang="ts">
-    import "../../styles/global.css";
-    import Header from "../../Components/Common/Header.svelte";
-    import Footer from "../../Components/Common/Footer.svelte";
-    import { onMount } from "svelte";
-    import { get, writable } from "svelte/store";
-    import { GET } from "../../ts/server";
-    import type { Entreprise } from "../../Models/Entreprise";
-    import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte";
-    import Entreprises from "../../Components/Entreprise/Entreprises.svelte";
-    import Button from "../../Components/Inputs/Button.svelte";
-    import AddEntreprise from "../../Components/Entreprise/AddEntreprise.svelte";
+    import "../../styles/global.css"
+    import Header from "../../Components/Common/Header.svelte"
+    import Footer from "../../Components/Common/Footer.svelte"
+    import { onMount } from "svelte"
+    import { writable } from "svelte/store"
+    import { GET } from "../../ts/server"
+    import type { Entreprise } from "../../Models/Entreprise"
+    import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte"
+    import Entreprises from "../../Components/Entreprise/Entreprises.svelte"
+    import Button from "../../Components/Inputs/Button.svelte"
+    import AddEntreprise from "../../Components/Entreprise/AddEntreprise.svelte"
 
-    const modal = writable(false);
-    const modalAdd = writable(false);
-    const selectedEntrepriseId = writable(0);
+    const modal = writable(false)
+    const modalAdd = writable(false)
+    const selectedEntrepriseId = writable(0)
     const openModal = (id: number) => {
-        modal.set(true);
-        selectedEntrepriseId.set(id);
-    };
+        modal.set(true)
+        selectedEntrepriseId.set(id)
+    }
     const closeModal = () => {
-        modal.set(false);
-    };
+        modal.set(false)
+    }
     const handleEntrepriseClick = (offreId: number) => {
-        openModal(offreId);
-    };
+        openModal(offreId)
+    }
     const openModalAdd = () => {
-        modalAdd.set(true);
-    };
+        modalAdd.set(true)
+    }
     const closeModalAdd = () => {
-        modalAdd.set(false);
-        getEnterprises();
-    };
+        modalAdd.set(false)
+        getEnterprises()
+    }
     const handleEntreprise = () => {
-        openModalAdd();
-    };
+        openModalAdd()
+    }
 
-    const entreprises = writable<Entreprise[]>([]);
+    const entreprises = writable<Entreprise[]>([])
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/all");
-            entreprises.set(response);
+            const response = await GET<any>("/enterprise/getEnterprises")
+            entreprises.set(response)
         } catch (error) {
-            console.error("Error fetching job offers:", error);
+            console.error("Error fetching job offers:", error)
         }
-    };
-    onMount(getEnterprises);
-
-    
-
+    }
+    onMount(getEnterprises)
 </script>
-<Header/>
+
+<Header />
 <main>
     <section class="haut">
         <div class="haut-gauche">
-          <div class="divFlex">
-            <Button onClick={handleEntreprise} text="Créer une nouvelle entreprise" />
-          </div>
+            <div class="divFlex">
+                <Button
+                    onClick={handleEntreprise}
+                    text="Créer une nouvelle entreprise"
+                />
+            </div>
         </div>
-      </section>
+    </section>
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
@@ -68,7 +69,10 @@
     </section>
     <section class="offres">
         {#each $entreprises as entreprise}
-            <EntrepriseRow entreprise={entreprise} handleModalClick={handleEntrepriseClick}/>
+            <EntrepriseRow
+                {entreprise}
+                handleModalClick={handleEntrepriseClick}
+            />
         {/each}
     </section>
     {#if $modal}
@@ -81,9 +85,8 @@
     {#if $modalAdd}
         <AddEntreprise handleEntrepriseClick={closeModalAdd} />
     {/if}
-
 </main>
-<Footer/>
+<Footer />
 
 <style scoped>
     .title {
