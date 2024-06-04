@@ -2,10 +2,10 @@
     import "../../styles/global.css"
     import Header from "../../Components/Common/Header.svelte"
     import Footer from "../../Components/Common/Footer.svelte"
-    import EmploiRow from "../../Components/OffreEmplois/EmploiRow.svelte"
-    import OffreEmploi from "../../Components/OffreEmplois/OffreEmploi.svelte"
+    import EmploiRow from "../../Components/JobOffer/EmploiRow.svelte"
+    import OffreEmploi from "../../Components/JobOffer/OffreEmploi.svelte"
     import { writable } from "svelte/store"
-    import type { jobOffer } from "../../Models/Offre"
+    import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
@@ -23,10 +23,10 @@
         openModal(offreId)
     }
 
-    const jobOffers = writable<jobOffer[]>([])
+    const jobOffers = writable<JobOffer[]>([])
     const getJobOffers = async () => {
         try {
-            const response = await GET<any>("/jobOffer/offresEmploiApproved")
+            const response = await GET<any>("/jobOffer/approved")
             jobOffers.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
@@ -54,8 +54,8 @@
     {#if $modal}
         {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
-                <Modal handleModalClick={closeModal}>
-                    <OffreEmploi offre={emploi} />
+                <Modal handleCloseClick={closeModal}>
+                    <OffreEmploi offer={emploi} />
                 </Modal>
             {/if}
         {/each}

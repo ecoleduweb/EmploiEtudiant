@@ -20,5 +20,5 @@ class EnterpriseService:
     
     def deleteEnterprise(self, id):
         return enterprise_repo.deleteEnterprise(id)
-    def getEntrepriseId(self, name):
-        return enterprise_repo.getEntrepriseId(name)
+    def getEnterpriseId(self, name):
+        return enterprise_repo.getEnterpriseId(name)

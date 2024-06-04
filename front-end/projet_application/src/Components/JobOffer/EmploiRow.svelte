@@ -1,21 +1,21 @@
 <script lang="ts">
-    import type { jobOffer } from "../../Models/Offre"
+    import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
 
-    export let offre: jobOffer
+    export let offre: JobOffer
     export let handleModalClick: (id: number) => void
 
-    const entreprise = writable<string>()
+    const enterprise = writable<string>()
     const getEnterprises = async () => {
         try {
             const response = await GET<any>(
-                "/enterprise/getEnterpriseByEmployer?id=" + offre.employerId,
+                `/enterprise/employer/${offre.employerId}`
             )
-            entreprise.set(response.name)
+            enterprise.set(response.name)
         } catch (error) {
-            console.error("Error fetching entreprise:", error)
+            console.error("Error fetching enterprise:", error)
         }
     }
     onMount(() => {
@@ -27,7 +27,7 @@
     <div class="emploi">
         <div class="info">
             <p class="text">{offre.title}</p>
-            <p class="text">{$entreprise}</p>
+            <p class="text">{$enterprise}</p>
             <p class="text">{offre.deadlineApply}</p>
             <p class="description">{offre.description}</p>
         </div>

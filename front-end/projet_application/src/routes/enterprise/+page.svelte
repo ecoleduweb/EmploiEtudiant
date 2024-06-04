@@ -5,23 +5,23 @@
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
     import { GET } from "../../ts/server"
-    import type { Entreprise } from "../../Models/Entreprise"
-    import EntrepriseRow from "../../Components/Entreprise/EntrepriseRow.svelte"
-    import Entreprises from "../../Components/Entreprise/Entreprises.svelte"
+    import type { Enterprise } from "../../Models/Enterprise"
+    import EnterpriseRow from "../../Components/Enterprise/EnterpriseRow.svelte"
+    import Enterprises from "../../Components/Enterprise/Enterprises.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import AddEntreprise from "../../Components/Entreprise/AddEntreprise.svelte"
+    import AddEnterprise from "../../Components/Enterprise/AddEnterprise.svelte"
 
     const modal = writable(false)
     const modalAdd = writable(false)
-    const selectedEntrepriseId = writable(0)
+    const selectedEnterpriseId = writable(0)
     const openModal = (id: number) => {
         modal.set(true)
-        selectedEntrepriseId.set(id)
+        selectedEnterpriseId.set(id)
     }
     const closeModal = () => {
         modal.set(false)
     }
-    const handleEntrepriseClick = (offreId: number) => {
+    const handleEnterpriseClick = (offreId: number) => {
         openModal(offreId)
     }
     const openModalAdd = () => {
@@ -31,15 +31,15 @@
         modalAdd.set(false)
         getEnterprises()
     }
-    const handleEntreprise = () => {
+    const handleEnterprise = () => {
         openModalAdd()
     }
 
-    const entreprises = writable<Entreprise[]>([])
+    const enterprises = writable<Enterprise[]>([])
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/getEnterprises")
-            entreprises.set(response)
+            const response = await GET<any>("/enterprise/all")
+            enterprises.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -53,8 +53,8 @@
         <div class="haut-gauche">
             <div class="divFlex">
                 <Button
-                    onClick={handleEntreprise}
-                    text="Créer une nouvelle entreprise"
+                    onClick={handleEnterprise}
+                    text="Créer une nouvelle enterprise"
                 />
             </div>
         </div>
@@ -68,22 +68,22 @@
         </div>
     </section>
     <section class="offres">
-        {#each $entreprises as entreprise}
-            <EntrepriseRow
-                {entreprise}
-                handleModalClick={handleEntrepriseClick}
+        {#each $enterprises as enterprise}
+            <EnterpriseRow
+                {enterprise}
+                handleModalClick={handleEnterpriseClick}
             />
         {/each}
     </section>
     {#if $modal}
-        {#each $entreprises as entreprise}
-            {#if entreprise.id === $selectedEntrepriseId}
-                <Entreprises {entreprise} handleEntrepriseClick={closeModal} />
+        {#each $enterprises as enterprise}
+            {#if enterprise.id === $selectedEnterpriseId}
+                <Enterprises {enterprise} handleEnterpriseClick={closeModal} />
             {/if}
         {/each}
     {/if}
     {#if $modalAdd}
-        <AddEntreprise handleEntrepriseClick={closeModalAdd} />
+        <AddEnterprise handleEnterpriseClick={closeModalAdd} />
     {/if}
 </main>
 <Footer />

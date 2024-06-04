@@ -1,20 +1,20 @@
 <script lang="ts">
-    export let handleModalClick: () => void
+    export let handleCloseClick: () => void
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault()
-        handleModalClick()
+        handleCloseClick()
     }
 </script>
 
-<button class="overlay" on:click={handleButtonClick}>
-    <button class="modal" on:click|stopPropagation>
+<div class="overlay">
+    <div class="modal">
         <slot />
         <button class="close" on:click={handleButtonClick}>
             <img src="cancel.svg" class="image" alt="close" />
         </button>
-    </button>
-</button>
+    </div>
+</div>
 
 <style scoped>
     .overlay {
@@ -38,17 +38,16 @@
         padding: 20px;
         width: 80%;
         max-width: 600px;
+        max-height: 100%;
         box-sizing: border-box;
         text-align: center;
     }
 
     .close {
-        width: 5%;
         background: none;
         border: none;
-        top: 10px;
-        right: 10px;
         cursor: pointer;
+        height: 100%;
     }
 
     .image {

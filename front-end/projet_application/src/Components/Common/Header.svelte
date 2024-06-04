@@ -24,7 +24,7 @@
         goto("/emplois")
     }
     const handleEnterprise = () => {
-        goto("/entreprise")
+        goto("/enterprise")
     }
     const handleDashboard = () => {
         goto("/dashboard")

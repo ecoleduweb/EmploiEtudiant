@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { redirect } from "@sveltejs/kit"
-    import type { jobOffer } from "../../Models/Offre"
-    import type { User } from "../../Models/User"
-    import { goto } from "$app/navigation"
-    export let user: User
-    export let offre: jobOffer
+    import type { JobOffer } from "../../Models/Offre"
+    export let isModerator: boolean
+    export let offer: JobOffer
     export let handleEditModalClick: (id: number) => void
     export let handleApproveModalClick: (id: number) => void
 </script>
@@ -12,19 +9,19 @@
 <div class="offreEmploi">
     <div class="emploi">
         <div class="info">
-            <p class="text">{offre.title}</p>
-            <p class="text">{offre.offerDebut}</p>
-            <p class="text">{offre.description}</p>
+            <p class="text">{offer.title}</p>
+            <p class="text">{offer.offerDebut}</p>
+            <p class="text">{offer.description}</p>
         </div>
-        {#if user.isModerator === true}
+        {#if isModerator === true}
             <button
                 class="button"
-                on:click={() => handleApproveModalClick(offre.id)}
+                on:click={() => handleApproveModalClick(offer.id)}
             >
                 <img class="image" src="check.svg" alt="approve" />
             </button>
         {/if}
-        <button class="button" on:click={() => handleEditModalClick(offre.id)}>
+        <button class="button" on:click={() => handleEditModalClick(offer.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
         <button class="button">
