@@ -5,10 +5,10 @@
 Before starting the app, create a .env file and add the required fields. Alternativately, the file can be found on Discord, in #front-end.
 
 ```env
-PUBLIC_BASE_URL = 
-PUBLIC_MEASUREMENT_ID = 
-HOST = 
-PUBLIC_RECAPTCHA_KEY = "myPublicKey"
+PUBLIC_BASE_URL=
+PUBLIC_MEASUREMENT_ID=
+HOST=
+PUBLIC_RECAPTCHA_KEY="myPublicKey"
 ```
 
 ## Developing
@@ -35,12 +35,15 @@ You can preview the production build with `npm run preview`.
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
 ## Recaptcha
+
 This website use recaptcha, a recaptcha public key and API is required for the website. It is located in the .env,
 and is used for the register. Here's an example :
+
 ```svelte
 <svelte:head>
-  <script src="https://www.google.com/recaptcha/api.js?render={key}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render={key}"></script>
 </svelte:head>
 ```
+
 This will be use to identify the recaptcha api, that will be used eventualy to generate a recaptcha token. The token is required
 to call the /register method in the API.

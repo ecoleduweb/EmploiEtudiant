@@ -1,8 +1,8 @@
 <script>
-  import "../styles/font.css";
-  import CookieBanner from "../Components/Common/CookieBanner.svelte";
+    import "../styles/font.css"
+    import CookieBanner from "../Components/Common/CookieBanner.svelte"
 </script>
 
-<CookieBanner/>
+<CookieBanner />
 
 <slot />

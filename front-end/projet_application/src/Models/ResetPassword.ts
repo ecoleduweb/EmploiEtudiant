@@ -1,4 +1,4 @@
 export interface ResetPassword {
-    password: string;
-    confirmPassword: string;
+    password: string
+    confirmPassword: string
 }

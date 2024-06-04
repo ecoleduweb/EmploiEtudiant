@@ -1,11 +1,10 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte";
-    import type { User } from "../../Models/User";
-    import { GET } from "../../ts/server";
-    import { onMount } from "svelte";
-    export let user: User;
-    export let handleUserClick: () => void;
-
+    import Modal from "../Common/Modal.svelte"
+    import type { User } from "../../Models/User"
+    import { GET } from "../../ts/server"
+    import { onMount } from "svelte"
+    export let user: User
+    export let handleUserClick: () => void
 </script>
 
 <Modal handleModalClick={handleUserClick}>
