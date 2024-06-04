@@ -1,7 +1,5 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import Header from "../../Components/Common/Header.svelte"
-    import Footer from "../../Components/Common/Footer.svelte"
     import { onMount } from "svelte"
     import { get, writable } from "svelte/store"
     import { GET } from "../../ts/server"
@@ -38,7 +36,6 @@
     onMount(getUsers)
 </script>
 
-<Header />
 <main>
     <section class="haut">
         <div class="haut-gauche">
@@ -74,7 +71,6 @@
         {/each}
     {/if}
 </main>
-<Footer />
 
 <style scoped>
     .title {

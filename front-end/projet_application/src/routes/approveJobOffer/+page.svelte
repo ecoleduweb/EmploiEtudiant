@@ -1,7 +1,5 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import Header from "../../Components/Common/Header.svelte"
-    import Footer from "../../Components/Common/Footer.svelte"
     import { writable } from "svelte/store"
     import type { jobOffer } from "../../Models/Offre"
     import type { Entreprise } from "../../Models/Entreprise"
@@ -122,7 +120,6 @@
     onMount(getEnterprises)
 </script>
 
-<Header />
 <main>
     <div class="haut-gauche">
         <h1 class="title">
@@ -134,7 +131,6 @@
     </section>
     <MultiSelect options={entrepriseOptions} placeholder="Select entreprise" />
 </main>
-<Footer />
 
 <style scoped>
     main {

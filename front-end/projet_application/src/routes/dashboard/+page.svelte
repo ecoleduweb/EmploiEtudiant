@@ -1,7 +1,5 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import Header from "../../Components/Common/Header.svelte"
-    import Footer from "../../Components/Common/Footer.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import { writable } from "svelte/store"
     import type { jobOffer } from "../../Models/Offre"
@@ -178,7 +176,6 @@
     })
 </script>
 
-<Header />
 <main>
     <section class="haut">
         <div class="haut-gauche">
@@ -289,7 +286,6 @@
         {/each}
     {/if}
 </main>
-<Footer />
 
 <style scoped>
     body {

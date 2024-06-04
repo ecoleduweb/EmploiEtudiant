@@ -1,7 +1,5 @@
 <script lang="ts">
     import "../styles/global.css"
-    import Header from "../Components/Common/Header.svelte"
-    import Footer from "../Components/Common/Footer.svelte"
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
 
@@ -10,7 +8,6 @@
     }
 </script>
 
-<Header />
 <main>
     <section class="haut">
         <div class="haut-gauche">
@@ -36,11 +33,10 @@
         </div>
     </section>
 </main>
-<Footer />
 
 <style scoped>
     main {
-        height: 100%;
+        height: 80%;
     }
     h2 {
         color: white;
