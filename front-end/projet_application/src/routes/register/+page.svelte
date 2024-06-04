@@ -5,7 +5,6 @@
     import type { Register } from "../../Models/Register.ts"
     import { extractErrors } from "../../ts/utils"
     import * as yup from "yup"
-    import "../../styles/global.css"
     import { POST } from "../../ts/server"
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"

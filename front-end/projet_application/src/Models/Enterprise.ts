@@ -1,4 +1,4 @@
-export type Entreprise = {
+export type Enterprise = {
     id?: number
     name: string
     email: string

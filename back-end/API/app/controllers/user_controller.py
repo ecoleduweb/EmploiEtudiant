@@ -54,7 +54,7 @@ def updatePassword():
     
     return user_service.updatePassword(data)
 
-@user_blueprint.route('/getAllUsers', methods=['GET'])
+@user_blueprint.route('/all', methods=['GET'])
 @token_admin_required
 def getAllUsers(current_user):
     response = user_service.getAllUsers()

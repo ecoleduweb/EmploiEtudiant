@@ -35,7 +35,7 @@ def getEnterpriseByEmployer(id):
 
 @enterprise_blueprint.route('/<int:id>', methods=['PUT'])
 @token_admin_required
-def updateEntreprise(current_user, id):
+def updateEnterprise(current_user, id):
     enterprise = enterprise_service.getEnterprise(id)
     if enterprise:
         data = request.get_json()

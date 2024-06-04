@@ -1,4 +1,4 @@
-export interface jobOffer {
+export interface JobOffer {
     id: number // id de l'offre
     title: string // titre de l'offre
     address: string // lieu de travail
@@ -8,7 +8,6 @@ export interface jobOffer {
     deadlineApply: string // date limite pour postuler
     email: string // courriel de la personne à contacter
     hoursPerWeek: number // nombre d'heures par semaine
-    compliantEmployer: boolean // employeur conciliant ou non
     internship: boolean // si l'offre est un stage
     offerLink: string // lien vers l'offre ou site web de l'employeur
     offerStatus: number

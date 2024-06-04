@@ -1,16 +1,15 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import Button from "../../Components/Inputs/Button.svelte"
+    import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
-    import { writable, type Writable } from "svelte/store"
-    import { GET, POST } from "../../ts/server"
+    import fetchCity from "../../Service/CityService"
+    import { POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
-    import type { Entreprise } from "../../Models/Entreprise"
-    import { goto } from "$app/navigation"
+    import type { Enterprise } from "../../Models/Enterprise"
     import Modal from "../Common/Modal.svelte"
     import { onMount } from "svelte"
-    export let handleEntrepriseClick: () => void
+    export let handleEnterpriseClick: () => void
 
     const schema = yup.object().shape({
         name: yup.string().required("Le nome de l'entreprise est requis."),
@@ -35,7 +34,7 @@
         cityId: yup.number().required("La ville est requise"),
     })
 
-    let enterprise: Entreprise = {
+    let enterprise: Enterprise = {
         id: 0,
         name: "",
         email: "",
@@ -49,22 +48,19 @@
         label: "",
         value: 0,
     }
-    let villeFromSelectedEntreprise: [] = []
-    let villeOption: { label: string; value: number }[] = []
+    let cityFromSelectedEnterprise: [] = []
+    let cityOptions: { label: string; value: number }[] = []
 
     const getAllCities = async () => {
         try {
-            const response = await GET<any>("/city/allCities")
-            villeOption = response.map((city: any) => {
-                return { label: city.city, value: city.id }
-            })
+            cityOptions = await fetchCity()
         } catch (error) {
             console.error("Error fetching cities:", error)
         }
     }
     onMount(getAllCities)
 
-    let errors: Entreprise = {
+    let errors: Enterprise = {
         id: 0,
         name: "",
         email: "",
@@ -92,10 +88,10 @@
             }
             updateCityId()
             const response = await POST<any, any>(
-                "/enterprise/createEnterprise",
+                "/enterprise/new",
                 enterprise,
             )
-            handleEntrepriseClick()
+            handleEnterpriseClick()
         } catch (err) {
             console.log(err)
             if (err instanceof yup.ValidationError) {
@@ -106,7 +102,7 @@
     }
 </script>
 
-<Modal handleModalClick={handleEntrepriseClick}>
+<Modal handleCloseClick={handleEnterpriseClick}>
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
         <h1 class="title">Créer une nouvelle entreprise</h1>
         <div class="form-group-vertical">
@@ -161,10 +157,10 @@
             <label for="title">Ville*</label>
             <MultiSelect
                 id="ville"
-                options={villeOption}
+                options={cityOptions}
                 placeholder="Choisir une ville..."
                 bind:value={villeSelected}
-                bind:selected={villeFromSelectedEntreprise}
+                bind:selected={cityFromSelectedEnterprise}
                 closeDropdownOnSelect={true}
                 maxSelect={1}
             ></MultiSelect>
