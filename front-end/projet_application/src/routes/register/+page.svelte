@@ -10,6 +10,7 @@
     import { jwtDecode } from "jwt-decode"
     import { env } from "$env/dynamic/public"
     import { writable, get } from "svelte/store"
+    import { currentUser, isLoggedIn } from "$lib"
 
     const schema = yup.object({
         user: yup.object({
@@ -114,9 +115,13 @@
                 })
 
                 if (response.token) {
-                    const decodedToken = jwtDecode(response.token)
                     localStorage.setItem("token", response.token) // Store the token
+                    
+                    const decodedToken = jwtDecode(response.token)
+                    currentUser.set(decodedToken) //Sauvegarder l'utilisateur décodé
+
                     goto("/dashboard") // Redirect to the dashboard
+                    isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }
             } else {
                 console.log("Captcha failed")
