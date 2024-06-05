@@ -3,14 +3,15 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
+    import { isLoggedIn } from "$lib" // La variable writable de login.
 
-    let isLoggedIn = false
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
     let isModerator = false
 
+    
     onMount(async () => {
-        isLoggedIn = !!localStorage.getItem("token")
+        isLoggedIn.set(!!localStorage.getItem("token"))
         const token = localStorage.getItem("token")
         if (token) {
             var decoded = jwtDecode<Token>(token)
@@ -19,7 +20,7 @@
             isModerator = decoded.isModerator
         }
     })
-
+    
     const handleEmploi = () => {
         goto("/emplois")
     }
@@ -34,7 +35,7 @@
     }
 
     const handleLogout = () => {
-        isLoggedIn = false
+        isLoggedIn.set(false)
         goto("/")
         localStorage.removeItem("token")
     }
@@ -46,7 +47,7 @@
     </div>
     <div class="ul-group">
         <ul class="ul-menu">
-            {#if isLoggedIn}
+            {#if $isLoggedIn}
                 <div class="option">
                     <p class="email">
                         <br />Connecté en tant que <br />{firstName}

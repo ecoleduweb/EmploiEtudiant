@@ -8,6 +8,8 @@
     import { extractErrors } from "../../ts/utils"
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
+    import { isLoggedIn } from "$lib"
+
 
     const schema = yup.object().shape({
         email: yup
@@ -41,6 +43,7 @@
                     const token = jwtDecode(response.token)
                     localStorage.setItem("token", response.token)
                     goto("/dashboard")
+                    isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }
             } catch (error) {
                 errors = {
