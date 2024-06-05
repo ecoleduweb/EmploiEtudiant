@@ -97,7 +97,7 @@ async function handleResponse<T>(response: Response): Promise<T | undefined> {
         } else if (response.status === 404) {
             return undefined as T
         } else if (response.status === 401) {
-            window.location.href = "/login"
+
         } else {
             throw new Error(
                 `Error: ${response.status} - ${response.statusText}`,
