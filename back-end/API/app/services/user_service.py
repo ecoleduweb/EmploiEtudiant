@@ -20,14 +20,14 @@ class UserService:
         user = auth_repo.getUser(email)
         if user is None:
             logger.warn("Login attempt failed on user: " + email + " user not found")
-            return jsonify({'message': 'user not found'}), 200
+            return jsonify({'message': 'user not found'}), 401
         try:
             if hasher.verify(user.password, password):
                 token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
                 return jsonify({'token' : token})
         except Exception as e:
             logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
-            return jsonify({'message': "could not verify"}), 200
+            return jsonify({'message': "could not verify"}), 401
 
     def register(self, data):
         if not current_app.config.get('TESTING'):
