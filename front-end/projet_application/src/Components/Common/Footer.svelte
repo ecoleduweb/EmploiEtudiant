@@ -67,7 +67,7 @@
 
 <style lang="scss" scoped>
     footer {
-        position: sticky;
+        position: absolute;
         bottom: 0;
         display: flex;
         flex-direction: column;
