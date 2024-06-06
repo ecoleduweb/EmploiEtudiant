@@ -65,6 +65,6 @@ label {
 @media screen and (max-width: 900px) and (min-width: 300px) {
     .login 
     {
-        width: 50% !important;
+        width: 50%;
     }
 }
