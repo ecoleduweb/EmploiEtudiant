@@ -53,8 +53,7 @@
 
     onMount(async () => {
         if ($isLoggedIn) {
-            const user: any = $currentUser
-            isModerator = user.isModerator === true
+            isModerator = ($currentUser as any).isModerator === true
             await getJobOffersEmployeur()
         }
     })

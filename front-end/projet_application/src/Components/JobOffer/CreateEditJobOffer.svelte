@@ -89,8 +89,7 @@
     onMount(async () => {
         cityOptions = await fetchCity()
         if ($isLoggedIn) {
-            var decoded: any = $currentUser
-            isModerator = decoded.isModerator
+            isModerator = ($currentUser as any).isModerator
         }
         if (isModerator === true) {
             enterpriseOption = await getAllEnterprise()
