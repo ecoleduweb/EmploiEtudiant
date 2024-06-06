@@ -3,7 +3,7 @@ from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
-from datetime import date
+from datetime import date, timedelta
 from flask import Flask, jsonify
 
 class JobOfferRepo:
@@ -82,4 +82,9 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         jobOffer.isApproved = isApproved
         jobOffer.approbationMessage = approbationMessage
+        db.session.commit()
+
+    def archiveJobOffer(self, id):
+        jobOffer = JobOffer.query.filter_by(id=id).first()
+        jobOffer.deadlineApply = date.today() - timedelta(days=1)
         db.session.commit()
