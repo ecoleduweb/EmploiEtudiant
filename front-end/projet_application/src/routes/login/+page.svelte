@@ -8,7 +8,8 @@
     import { extractErrors } from "../../ts/utils"
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
-    import { isLoggedIn } from "$lib"
+    import { currentUser, isLoggedIn } from "$lib"
+    import { userToken } from "../../stores"
 
 
     const schema = yup.object().shape({
@@ -40,8 +41,11 @@
             try {
                 const response = await POST<Login, any>("/user/login", form)
                 if (response.token != "") {
-                    const token = jwtDecode(response.token)
                     localStorage.setItem("token", response.token)
+                    
+                    const decodedUser = jwtDecode(response.token)
+                    currentUser.set(decodedUser) //Sauvegarder l'utilisateur décodé
+
                     goto("/dashboard")
                     isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }

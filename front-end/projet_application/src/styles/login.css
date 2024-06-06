@@ -61,3 +61,10 @@ label {
 .submit {
     margin: 10px;
 }
+
+@media screen and (max-width: 900px) and (min-width: 300px) {
+    .login 
+    {
+        width: 50%;
+    }
+}

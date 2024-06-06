@@ -96,3 +96,32 @@ Reste à mettre ça responsive :wink:
     max-width: 80%;
     margin-bottom: 4%;
 }
+
+@media screen and (max-width: 900px) and (min-width: 300px) {
+    .form-register {
+        width: 85%;
+    }
+
+    .container > h1 {
+        margin-bottom: 13px;
+        margin-top: 13px;
+    }
+
+    .form-inputs 
+    {
+        margin-left: 0px;
+        margin-right: 6%;
+        width: 50%;
+    }
+
+    ul 
+    {
+        padding-left: 20px;
+        min-width: 20%;
+    }
+
+    ul > li > div > div 
+    {
+        height: 40%;
+    }
+}

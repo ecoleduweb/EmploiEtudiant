@@ -3,7 +3,7 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
-    import { isLoggedIn } from "$lib" // La variable writable de login.
+    import { isLoggedIn, currentUser } from "$lib" // La variable writable de login.
 
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
@@ -11,10 +11,13 @@
 
     
     onMount(async () => {
-        isLoggedIn.set(!!localStorage.getItem("token"))
         const token = localStorage.getItem("token")
+        isLoggedIn.set(!!token)
         if (token) {
             var decoded = jwtDecode<Token>(token)
+            
+            currentUser.set(decoded)
+
             firstName = decoded.firstName
             lastName = decoded.lastName
             isModerator = decoded.isModerator
