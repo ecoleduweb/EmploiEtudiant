@@ -101,5 +101,21 @@
         .divFlex {
             display: flex;
         }
+
+        .buttonDiv 
+        {
+            height: unset;
+        }
+
+        .radiant 
+        {
+            width: 110%;
+            height: 22px;
+        }
+
+        .text 
+        {
+            font-size: 3.3vw;
+        }
     }
 </style>

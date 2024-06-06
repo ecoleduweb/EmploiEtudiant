@@ -154,3 +154,41 @@ a {
     width: 15%;
     height: 100%;
 }
+@media screen and (max-width: 900px) and (min-width: 300px) {
+    header 
+    {
+        min-height: 100px;
+    }
+
+    .dropdown-content 
+    {
+        width: 25%;
+    }
+
+    a.image 
+    {
+        width: 55%;
+    }
+
+    a:not(.image) 
+    {
+        height: 10.25vw;
+        font-size: 2.7vw;
+    }
+
+    .option 
+    {
+        width: 50%;
+    }
+
+    .textBusiness, .textSearch
+    {
+        font-size: 2.5vw;
+        font-weight: bold;
+    }
+
+    .iconeBusiness, .iconeSearch 
+    {
+        width: 25%;
+    }
+}

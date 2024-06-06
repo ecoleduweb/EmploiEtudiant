@@ -108,4 +108,12 @@
         flex-direction: column;
         width: 100%;
     }
+
+    @media screen and (max-width: 900px) and (min-width: 300px) 
+    {
+        .text 
+        {
+            font-size: 3.3vw;
+        }
+    }
 </style>
