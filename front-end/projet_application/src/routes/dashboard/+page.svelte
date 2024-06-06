@@ -11,6 +11,7 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
+    import { currentUser, isLoggedIn } from "$lib"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -51,10 +52,8 @@
     }
 
     onMount(async () => {
-        const token = localStorage.getItem("token")
-        if (token) {
-            const user: any = jwtDecode(token)
-            isModerator = user.isModerator === true
+        if ($isLoggedIn) {
+            isModerator = ($currentUser as any).isModerator === true
             await getJobOffersEmployeur()
         }
     })

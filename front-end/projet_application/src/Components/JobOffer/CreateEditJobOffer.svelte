@@ -12,6 +12,7 @@
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
+    import { currentUser, isLoggedIn } from "$lib"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -87,10 +88,8 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
-        const token = localStorage.getItem("token")
-        if (token) {
-            var decoded = jwtDecode<Token>(token)
-            isModerator = decoded.isModerator
+        if ($isLoggedIn) {
+            isModerator = ($currentUser as any).isModerator
         }
         if (isModerator === true) {
             enterpriseOption = await getAllEnterprise()
