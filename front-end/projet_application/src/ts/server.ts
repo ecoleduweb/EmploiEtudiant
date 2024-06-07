@@ -17,18 +17,33 @@ export async function GET<T>(url: string): Promise<T> {
     }
 }
 
-export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<T1> {
+export async function POST<T, T1>(url: string, body?: T, redirectToLoginOn401?: boolean): Promise<T1> {
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
-        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `${token}`,
-            },
-            body: JSON.stringify(body),
-        })
+
+        var response: Response;
+        if (body !== undefined) 
+        {
+            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`,
+                },
+                body: JSON.stringify(body),
+            })
+        }
+        else 
+        {
+            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `${token}`
+                }
+            })
+        }
+
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
         return data as T1
@@ -73,8 +88,7 @@ export async function PUT<T, T1>(url: string, body?: T): Promise<T1> {
             response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `${localStorage.getItem("token")}`,
+                    Authorization: `${localStorage.getItem("token")}`
                 }
             })
         }
@@ -114,9 +128,7 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401 : bool
         } else if (response.status === 401 && redirectToLoginOn401) {
             window.location.href = "/login"
         } else {
-            throw new Error(
-                `Error: ${response.status} - ${response.statusText}`,
-            )
+            throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }
     }
     return (await response.json()) as T
