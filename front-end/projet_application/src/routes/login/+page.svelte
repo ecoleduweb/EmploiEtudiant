@@ -39,7 +39,7 @@
                 password: "",
             }
             try {
-                const response = await POST<Login, any>("/user/login", form)
+                const response = await POST<Login, any>("/user/login", form, false)
                 if (response.token != "") {
                     localStorage.setItem("token", response.token)
                     
