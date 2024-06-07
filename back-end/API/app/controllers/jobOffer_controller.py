@@ -111,3 +111,13 @@ def approveJobOffer(current_user, id):
         return jsonify({'message': 'job offer approved'}), 204
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
+
+@job_offer_blueprint.route('/archive/<int:id>', methods=['PUT'])
+@token_required
+def archiveJobOffer(current_user, id):
+    jobOfferToArchive = jobOffer_service.findById(id)
+    if jobOfferToArchive:
+        jobOffer_service.archiveJobOffer(id)
+        return jsonify({'message': 'job offer archived'}), 200
+    logger.warn('Job offer not found with data : ' + str(data))
+    return jsonify({'message': 'Job offer not found'}), 404

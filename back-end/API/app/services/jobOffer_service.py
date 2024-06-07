@@ -27,3 +27,5 @@ class JobOfferService:
     def approveJobOffer(self, id, isApproved, approbationMessage):
         return jobOffer_repo.approveJobOffer(id, isApproved, approbationMessage)
     
+    def archiveJobOffer(self, id):
+        return jobOffer_repo.archiveJobOffer(id)
