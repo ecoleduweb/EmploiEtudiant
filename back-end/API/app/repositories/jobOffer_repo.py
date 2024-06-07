@@ -88,3 +88,6 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         jobOffer.deadlineApply = date.today() - timedelta(days=1)
         db.session.commit()
+
+    def jobOfferExist(self, id):
+        return JobOffer.query.filter_by(id=id).first() is not None

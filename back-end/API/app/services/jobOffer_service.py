@@ -1,4 +1,5 @@
 from app.repositories.jobOffer_repo import JobOfferRepo
+from app.customexception.CustomException import NotFoundException
 jobOffer_repo = JobOfferRepo()
 
 class JobOfferService:
@@ -28,4 +29,7 @@ class JobOfferService:
         return jobOffer_repo.approveJobOffer(id, isApproved, approbationMessage)
     
     def archiveJobOffer(self, id):
-        return jobOffer_repo.archiveJobOffer(id)
+        if jobOffer_repo.jobOfferExist(id):
+            jobOffer_repo.archiveJobOffer(id)
+        raise NotFoundException("Job not found")
+        

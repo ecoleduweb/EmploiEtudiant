@@ -21,6 +21,7 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.controllers.email_controller import sendMail
+from app.customexception.CustomException import NotFoundException
 import os
 
 logger = getLogger(__name__)
@@ -108,16 +109,15 @@ def approveJobOffer(current_user, id):
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
         # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
         # sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
-        return jsonify({'message': 'job offer approved'}), 204
+        return ('', 204)
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
 
-@job_offer_blueprint.route('/archive/<int:id>', methods=['PUT'])
+@job_offer_blueprint.route('/archive/<int:id>', methods=['POST'])
 @token_required
 def archiveJobOffer(current_user, id):
-    jobOfferToArchive = jobOffer_service.findById(id)
-    if jobOfferToArchive:
+    try:
         jobOffer_service.archiveJobOffer(id)
-        return jsonify({'message': 'job offer archived'}), 200
-    logger.warn('Job offer not found with data : ' + str(data))
-    return jsonify({'message': 'Job offer not found'}), 404
+        return ('', 204)
+    except NotFoundException as e:
+        return jsonify({'message': e.message}), e.errorCode
