@@ -46,6 +46,9 @@ def createJobOffer(current_user):
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+    if jobOffer.isApproved:
+        jobOffer_service.updateApprovedDate(id)
+
     return jobOffer.to_json_string(), 201
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
@@ -56,6 +59,11 @@ def offreEmploi(id):
     else:
         logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
+
+
+@job_offer_blueprint.route('/getMostRecents', methods=['GET'])
+def getMostRecentsOffers():
+    return jsonify({'message': 'Work in progress'}), 200
 
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
 @token_required
@@ -90,6 +98,11 @@ def updateJobOffer(current_user, id):
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            if jobOffer.isApproved:
+                jobOffer_service.updateApprovedDate(id)
+            elif jobOffer.isApproved == False:
+                jobOffer_service.resetApprovedDate(id)
+            
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
