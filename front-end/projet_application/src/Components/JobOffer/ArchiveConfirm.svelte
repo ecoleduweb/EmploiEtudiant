@@ -14,7 +14,7 @@
         if (isApproved) 
         {
             try {
-            const response = await POST<any, any>(`/jobOffer/archive/${offer.id}`)
+            const response = await POST<any, any>(`/jobOffer/archive/${offer.id}`, {})
 
             // TODO ajouter l'offre à la page sans recharger.
             window.location.reload()

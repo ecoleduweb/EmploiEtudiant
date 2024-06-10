@@ -17,32 +17,19 @@ export async function GET<T>(url: string): Promise<T> {
     }
 }
 
-export async function POST<T, T1>(url: string, body?: T, redirectToLoginOn401?: boolean): Promise<T1> {
+export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<T1> {
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
 
-        var response: Response;
-        if (body !== undefined) 
-        {
-            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `${token}`,
-                },
-                body: JSON.stringify(body),
-            })
-        }
-        else 
-        {
-            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-                method: "POST",
-                headers: {
-                    Authorization: `${token}`
-                }
-            })
-        }
+        var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${token}`,
+            },
+            body: JSON.stringify(body),
+        })
 
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
@@ -66,32 +53,19 @@ export async function DELETE(url: string): Promise<void> {
     }
 }
 
-export async function PUT<T, T1>(url: string, body?: T): Promise<T1> {
+export async function PUT<T, T1>(url: string, body: T): Promise<T1> {
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
 
-        var response: Response;
-        if (body !== undefined) 
-        {
-            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify(body),
-            })
-        }
-        else 
-        {
-            response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `${localStorage.getItem("token")}`
-                }
-            })
-        }
+        var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(body),
+        })
 
         const data = await handleResponse<T1>(response)
         return data as T1

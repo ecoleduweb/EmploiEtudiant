@@ -25,9 +25,11 @@
         <button class="button" on:click={() => handleEditModalClick(offer.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
-        <button class="button" on:click={() => handleArchiveModalClick(offer.id)}>
-            <img class="image" src="archive.svg" alt="supprimer" />
-        </button>
+        {#if offer.isApproved && ((new Date().toISOString().split("T")[0]) <= (new Date(offer.deadlineApply).toISOString().split("T")[0]))}
+            <button class="button" on:click={() => handleArchiveModalClick(offer.id)}>
+                <img class="image" src="archive.svg" alt="supprimer" />
+            </button>
+        {/if}
     </div>
 </div>
 
