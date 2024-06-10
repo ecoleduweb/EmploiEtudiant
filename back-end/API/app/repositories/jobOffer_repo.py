@@ -5,10 +5,11 @@ from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
 from datetime import date
 from flask import Flask, jsonify
+from operator import attrgetter
 
 class JobOfferRepo:
 
-    def createJobOffer(self, data, employerId, isApproved, approvedDate):
+    def createJobOffer(self, data, employerId, isApproved, approvedDate=None):
         new_job_offer = JobOffer(title=data['title'],
          description=data['description'],
          offerDebut=data["offerDebut"],
@@ -94,3 +95,16 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         jobOffer.approvedDate = None
         db.session.commit()
+
+    def getMostRecents(self):
+        today = date.today()
+        
+        jobOffers = JobOffer.query.filter(
+            JobOffer.isApproved == True,
+            JobOffer.offerDebut <= today,
+            JobOffer.deadlineApply >= today
+        ).all()
+
+        jobOffersOrdred = sorted(jobOffers, key=attrgetter("approvedDate"), reverse=True)[:5] #J'ai beaucoup de problèmes avec celle-ci (devras voir)
+
+        return jobOffersOrdred

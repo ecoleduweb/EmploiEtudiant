@@ -47,7 +47,7 @@ def createJobOffer(current_user):
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
     if jobOffer.isApproved:
-        jobOffer_service.updateApprovedDate(id)
+        jobOffer_service.updateApprovedDate(jobOffer.id)
 
     return jobOffer.to_json_string(), 201
 
@@ -63,7 +63,8 @@ def offreEmploi(id):
 
 @job_offer_blueprint.route('/getMostRecents', methods=['GET'])
 def getMostRecentsOffers():
-    return jsonify({'message': 'Work in progress'}), 200
+    jobOffers = jobOffer_service.getMostRecents()
+    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
 @token_required
@@ -99,9 +100,9 @@ def updateJobOffer(current_user, id):
         if jobOffer:
             # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
             if jobOffer.isApproved:
-                jobOffer_service.updateApprovedDate(id)
+                jobOffer_service.updateApprovedDate(jobOffer.id)
             elif jobOffer.isApproved == False:
-                jobOffer_service.resetApprovedDate(id)
+                jobOffer_service.resetApprovedDate(jobOffer.id)
             
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))

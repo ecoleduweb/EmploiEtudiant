@@ -33,3 +33,6 @@ class JobOfferService:
 
     def resetApprovedDate(self, id):
         jobOffer_repo.resetApprovedDate(id)
+
+    def getMostRecents(self):
+        return jobOffer_repo.getMostRecents()
