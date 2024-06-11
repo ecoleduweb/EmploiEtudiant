@@ -19,7 +19,6 @@ class JobOffer(db.Model):
     active = db.Column(db.Boolean, nullable=False)
     approbationMessage = db.Column(db.String(6000))
     employerId = db.Column(db.Integer, nullable=True)
-    scheduleId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
 
     def __repr__(self):
@@ -37,7 +36,6 @@ class JobOffer(db.Model):
         active={self.active},
         approbationMessage='{self.approbationMessage}',
         employerId={self.employerId},
-        scheduleId={self.scheduleId}),
         isApproved={self.isApproved}'''
 
     def to_json_string(self):
@@ -56,6 +54,5 @@ class JobOffer(db.Model):
             'active': self.active,
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
-            'scheduleId': self.scheduleId,
             'isApproved': self.isApproved
         }

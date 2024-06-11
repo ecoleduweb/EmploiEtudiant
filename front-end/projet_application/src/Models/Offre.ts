@@ -13,7 +13,6 @@ export interface JobOffer {
     offerStatus: number
     active: boolean // si l'offre est active ou non
     salary: string // salaire de lheure                     ** A AJOUTER BD **
-    scheduleId: number // id de l'horaire de travail
     employerId: number // id de l'employeur
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation

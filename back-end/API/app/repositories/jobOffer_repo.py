@@ -21,7 +21,6 @@ class JobOfferRepo:
          salary=data['salary'],
          active=data['active'],
          employerId=employerId,
-         scheduleId=data['scheduleId'],
          isApproved=isApproved)
         db.session.add(new_job_offer)
         db.session.commit()
@@ -45,7 +44,6 @@ class JobOfferRepo:
         jobOffer.salary = data['jobOffer']['salary']
         jobOffer.active = data['jobOffer']['active']
         jobOffer.employerId = data['jobOffer']['employerId']
-        jobOffer.scheduleId = data['jobOffer']['scheduleId']
 
         if 'isApproved' in data['jobOffer']:
             jobOffer.isApproved = data['jobOffer']['isApproved']

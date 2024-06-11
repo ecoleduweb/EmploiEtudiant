@@ -31,7 +31,6 @@
         offerStatus: 0,
         active: true,
         salary: "",
-        scheduleId: -1,
         employerId: -1,
         isApproved: false,
         approbationMessage: "",
@@ -56,6 +55,9 @@
     let selectedCity: { label: string; value: number }[] = []
     let cityFromEnterprise: [] = []
     let cityOptions: { label: string; value: number }[] = []
+    let scheduleIds: number[] = []
+
+    $: console.log('scheduleSelected:', scheduleSelected);
     
 
     const fetchEnterprise = async () => {
@@ -96,15 +98,15 @@
         }
         await fetchEnterprise()
         if (isJobOfferEdit === true) {
-            const schedule = scheduleOption.find(
-                (s) => s.value === jobOffer.scheduleId,
-            )
-            if (schedule) {
-                scheduleSelected = {
-                    label: schedule.label,
-                    value: schedule.value,
-                }
-            }
+        const schedules = scheduleOption.filter(
+            (s) => scheduleIds.includes(s.value),
+        )
+        if (schedules.length > 0) {
+            scheduleSelected = schedules.map(schedule => ({
+                label: schedule.label,
+                value: schedule.value,
+            }));
+        }
             const programs = await GET<any>(
                 `/offerProgram/${jobOffer.id}`,
             )
@@ -162,15 +164,16 @@
         { label: "Tous les programmes", value: 16 },
         { label: "Autres", value: 17 },
     ]
-    let scheduleSelected: { label: string; value: number } = {
+    let scheduleSelected: { label: string; value: number }[] = [{
         label: "",
         value: 0,
-    }
+    }]
     let scheduleFromExistingOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
     let scheduleOption = [
         { label: "Temps plein", value: 1 },
         { label: "Emploi d'été", value: 2 },
         { label: "Temps partiel", value: 3 },
+        { label: "Stage", value: 4 },
     ]
 
     //--------------------------------------------------
@@ -198,17 +201,19 @@
     
     const prepareAndJobOfferIsValid = async () => {
         try {
-            jobOffer.scheduleId = (scheduleSelected as any)?.value
+            scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
+            console.log(scheduleIds)
             enterprise.cityId = selectedCity[0].value
             await ValidationSchema.validate(jobOffer, { abortEarly: false })
             return {
                     enterprise: {
                         ...enterprise,
-                    },
+                    }, 
                     jobOffer: {
                         ...jobOffer,
                     },
                     studyPrograms: selectedPrograms.map((p) => p.value),
+                    scheduleIds: scheduleIds,
                 }
         }
         catch(err) {
@@ -400,7 +405,6 @@
             <MultiSelect
                 id="schedule"
                 options={scheduleOption}
-                maxSelect={1}
                 closeDropdownOnSelect={true}
                 placeholder="Choisir période(s)..."
                 bind:value={scheduleSelected}
@@ -506,18 +510,6 @@
         </div>
         <p class="errors-input">
             {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
-        </p>
-        <div class="form-group-horizontal">
-            <label for="internship">Stage ?</label>
-            <input
-                type="checkbox"
-                bind:checked={jobOffer.internship}
-                class="form-control"
-                id="internship"
-            />
-        </div>
-        <p class="errors-input">
-            {#if errors.internship}{errors.internship}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
