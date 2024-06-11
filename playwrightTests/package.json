@@ -3,12 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test",
+    "flask": "cd ../back-end/API && python -m flaks run"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.43.1",
     "@types/node": "^20.11.16"
+  },
+  "dependencies": {
+    "playwright": "^1.44.1"
   }
 }
