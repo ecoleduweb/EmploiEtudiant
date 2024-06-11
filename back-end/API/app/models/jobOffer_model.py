@@ -21,7 +21,7 @@ class JobOffer(db.Model):
     employerId = db.Column(db.Integer, nullable=True)
     scheduleId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
-    approvedDate = db.Column(db.Date, nullable=True, default=None)
+    approvedDate = db.Column(db.DateTime, nullable=True, default=None)
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},

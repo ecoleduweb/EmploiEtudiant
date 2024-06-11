@@ -25,7 +25,7 @@ class JobOfferService:
         return jobOffer_repo.linkJobOfferEmployer(data)
     
     def approveJobOffer(self, id, isApproved, approbationMessage):
-        jobOffer_repo.updateApprovedDate(id)
+        #jobOffer_repo.updateApprovedDate(id)
         return jobOffer_repo.approveJobOffer(id, isApproved, approbationMessage)
     
     def updateApprovedDate(self, id):

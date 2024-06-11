@@ -3,7 +3,7 @@ from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
-from datetime import date
+from datetime import date, datetime
 from flask import Flask, jsonify
 from operator import attrgetter
 
@@ -84,6 +84,8 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         jobOffer.isApproved = isApproved
         jobOffer.approbationMessage = approbationMessage
+        if jobOffer.isApproved:
+            jobOffer.approvedDate = datetime.now()
         db.session.commit()
 
     def updateApprovedDate(self, id):
