@@ -11,7 +11,7 @@
     const jobOffers = writable<JobOffer[]>([])
     const getJobOffers = async () => {
         try {
-            const response = await GET<any>("/jobOffer/getMostRecents")
+            const response = await GET<any>("/jobOffer/approved")
             jobOffers.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
@@ -49,7 +49,7 @@
         </div>
     </section>
     <section class="offres">
-        {#each $jobOffers as offre}
+        {#each ($jobOffers).slice(0, 5) as offre}
             <EmploiRow {offre} handleModalClick={(function() {})} />
         {/each}
     </section>

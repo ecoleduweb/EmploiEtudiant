@@ -9,25 +9,10 @@ from operator import attrgetter
 
 class JobOfferRepo:
 
-    def createJobOffer(self, data, employerId, isApproved, approvedDate=None):
-        new_job_offer = JobOffer(title=data['title'],
-         description=data['description'],
-         offerDebut=data["offerDebut"],
-         address=data['address'],
-         dateEntryOffice=data['dateEntryOffice'],
-         deadlineApply=data['deadlineApply'],
-         email=data['email'],
-         hoursPerWeek=data['hoursPerWeek'],
-         offerLink=data['offerLink'],
-         salary=data['salary'],
-         active=data['active'],
-         employerId=employerId,
-         scheduleId=data['scheduleId'],
-         isApproved=isApproved,
-         approvedDate=approvedDate)
-        db.session.add(new_job_offer)
+    def createJobOffer(self, newJobOffer):
+        db.session.add(newJobOffer)
         db.session.commit()
-        return new_job_offer
+        return newJobOffer
     
     def offresEmploiEmployeur(self, employerId):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
@@ -71,7 +56,7 @@ class JobOfferRepo:
             JobOffer.isApproved == True,
             JobOffer.offerDebut <= today,
             JobOffer.deadlineApply >= today
-        ).all()
+        ).order_by(JobOffer.approvedDate.desc()).all()
         return jobOffers
     
     def linkJobOfferEmployer(self, data):
@@ -87,26 +72,3 @@ class JobOfferRepo:
         if jobOffer.isApproved:
             jobOffer.approvedDate = datetime.now()
         db.session.commit()
-
-    def updateApprovedDate(self, id):
-        jobOffer = JobOffer.query.filter_by(id=id).first()
-        jobOffer.approvedDate = date.today()
-        db.session.commit()
-
-    def resetApprovedDate(self, id):
-        jobOffer = JobOffer.query.filter_by(id=id).first()
-        jobOffer.approvedDate = None
-        db.session.commit()
-
-    def getMostRecents(self):
-        today = date.today()
-        
-        jobOffers = JobOffer.query.filter(
-            JobOffer.isApproved == True,
-            JobOffer.offerDebut <= today,
-            JobOffer.deadlineApply >= today
-        ).all()
-
-        jobOffersOrdred = sorted(jobOffers, key=attrgetter("approvedDate"), reverse=True)[:5] #J'ai beaucoup de problèmes avec celle-ci (devras voir)
-
-        return jobOffersOrdred

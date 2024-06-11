@@ -1,4 +1,5 @@
 from flask import jsonify, request, Blueprint
+from datetime import datetime
 import os
 from app.models.user_model import User
 from app.models.employers_model import Employers
@@ -46,8 +47,6 @@ def createJobOffer(current_user):
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
-    if jobOffer.isApproved:
-        jobOffer_service.updateApprovedDate(jobOffer.id)
 
     return jobOffer.to_json_string(), 201
 
@@ -59,12 +58,6 @@ def offreEmploi(id):
     else:
         logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
-
-
-@job_offer_blueprint.route('/getMostRecents', methods=['GET'])
-def getMostRecentsOffers():
-    jobOffers = jobOffer_service.getMostRecents()
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
 @token_required
@@ -93,16 +86,15 @@ def updateJobOffer(current_user, id):
             data["jobOffer"]["approbationMessage"] = None
             # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
             # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
+            if data["jobOffer"]["isApproved"] == True:
+                data["jobOffer"]["approvedDate"] = datetime.now()
+
         jobOffer = jobOffer_service.updateJobOffer(data)
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
-            if jobOffer.isApproved:
-                jobOffer_service.updateApprovedDate(jobOffer.id)
-            elif jobOffer.isApproved == False:
-                jobOffer_service.resetApprovedDate(jobOffer.id)
             
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
