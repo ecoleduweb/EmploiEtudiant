@@ -12,6 +12,7 @@
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
     import { currentUser, isLoggedIn } from "$lib"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -60,6 +61,14 @@
 
     const jobOffers = writable<JobOffer[]>([])
 
+    let loaded = writable(0)
+
+    const loadedOffer = () => 
+    {
+        loaded.set($loaded+1)
+    }
+
+
     const getJobOffersEmployeur = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
@@ -107,6 +116,11 @@
             </div>
         </div>
     </section>
+
+    <section class="Loading">
+        <LoadingSpinner />
+    </section>
+
     <section class="offres">
         {#if isModerator === true}
             <p class="textOffre">Les offres d'emplois</p>
@@ -122,6 +136,7 @@
                     offer={offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    OnLoaded={loadedOffer}
                 />
             {/each}
         {/if}
@@ -133,6 +148,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    OnLoaded={loadedOffer}
                 />
             {/each}
         {/if}
@@ -144,6 +160,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    OnLoaded={loadedOffer}
                 />
             {/each}
         {/if}
@@ -155,6 +172,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    OnLoaded={loadedOffer}
                 />
             {/each}
         {/if}
@@ -166,10 +184,45 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    OnLoaded={loadedOffer}
                 />
             {/each}
         {/if}
     </section>
+
+    {#if !(($loaded) == ($jobOffers).length)}
+        <style scoped>
+            .Loading 
+            {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+            }
+
+            .offres 
+            {
+                display: none !important;
+            }
+        </style>
+    {/if}
+
+    {#if (($loaded) == ($jobOffers).length)}
+        <style scoped>
+            section.offres 
+            {
+                display: block !important;
+            }
+            .Loading 
+            {
+                display: none;
+            }
+        </style>
+    {/if}
+
+
     {#if showApproveModal}    
     <Modal handleCloseClick={closeModalApprove}>
         <ApprouveOffre
@@ -191,10 +244,6 @@
 </main>
 
 <style scoped>
-    body {
-        margin: 0;
-        padding: 0;
-    }
     main {
         flex: 1;
         display: flex;

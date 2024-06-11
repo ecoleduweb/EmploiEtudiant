@@ -6,6 +6,7 @@
 
     export let offre: JobOffer
     export let handleModalClick: (id: number) => void
+    export let OnLoaded: () => void
 
     const enterprise = writable<string>()
     const getEnterprises = async () => {
@@ -18,8 +19,12 @@
             console.error("Error fetching enterprise:", error)
         }
     }
-    onMount(() => {
-        if (offre) getEnterprises()
+    onMount(async () => {
+        if (offre) 
+        {
+            await getEnterprises(); 
+            OnLoaded()
+        }
     })
 </script>
 

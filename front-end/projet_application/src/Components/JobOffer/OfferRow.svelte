@@ -1,9 +1,15 @@
 <script lang="ts">
+    import { onMount } from "svelte"
     import type { JobOffer } from "../../Models/Offre"
     export let isModerator: boolean
     export let offer: JobOffer
     export let handleEditModalClick: (id: number) => void
     export let handleApproveModalClick: (id: number) => void
+    export let OnLoaded: () => void
+
+    onMount(() => {
+        setTimeout(OnLoaded, 100)
+    })
 </script>
 
 <div class="offreEmploi">

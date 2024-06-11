@@ -8,10 +8,19 @@
     import Enterprises from "../../Components/Enterprise/Enterprises.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import AddEnterprise from "../../Components/Enterprise/AddEnterprise.svelte"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     const modal = writable(false)
     const modalAdd = writable(false)
     const selectedEnterpriseId = writable(0)
+
+    let loaded = writable(0)
+
+    const loadedOffer = () => 
+    {
+        loaded.set($loaded+1)
+    }
+
     const openModal = (id: number) => {
         modal.set(true)
         selectedEnterpriseId.set(id)
@@ -64,14 +73,53 @@
             </h1>
         </div>
     </section>
+
+    <section class="Loading">
+        <LoadingSpinner />
+    </section>
+
     <section class="offres">
         {#each $enterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
                 handleModalClick={handleEnterpriseClick}
+                OnLoaded={loadedOffer}
             />
         {/each}
     </section>
+
+    {#if !(($loaded) == ($enterprises).length)}
+        <style scoped>
+            .Loading 
+            {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+            }
+
+            .offres 
+            {
+                display: none !important;
+            }
+        </style>
+    {/if}
+
+    {#if (($loaded) == ($enterprises).length)}
+        <style scoped>
+            section.offres 
+            {
+                display: block !important;
+            }
+            .Loading 
+            {
+                display: none;
+            }
+        </style>
+    {/if}
+
     {#if $modal}
         {#each $enterprises as enterprise}
             {#if enterprise.id === $selectedEnterpriseId}

@@ -3,6 +3,7 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     export let offer: JobOffer
 
     let enterprise: Enterprise 
@@ -16,8 +17,11 @@
             console.error("Error fetching enterprise:", error)
         }
     }
+
+    let Loaded = false;
+
     onMount(async () => {
-        getEnterprises(offer.employerId)
+        await getEnterprises(offer.employerId)
         const response = await GET<any>(
             `/offerProgram/${offer.id}`,
         )
@@ -35,6 +39,8 @@
         } catch (error) {
             console.error("Error fetching program:", error)
         }
+
+        Loaded = true;
     })
     let programmeSelected = [] as any
     let programmesOption = [
@@ -53,7 +59,12 @@
     ]
 </script>
 
+
 <div class="container">
+    <div class="Loading2">
+        <LoadingSpinner />
+    </div>
+
     <div class="titleContainer">
         <h3 class="title">{offer.title}</h3>
         {#if enterprise}
@@ -87,6 +98,34 @@
         <p class="text">{offer.email}</p>
     </div>
 </div>
+
+{#if !Loaded}
+<style scoped>
+    .container > .Loading2 
+    {
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .container > .titleContainer, .container > .info
+    {
+        display: none !important;
+    }
+</style>
+{/if}
+
+{#if Loaded}
+<style scoped>
+    .container > .titleContainer, .container > .info
+    {
+        display: block !important;
+    }
+    .container > .Loading2 
+    {
+        display: none;
+    }
+</style>
+{/if}
 
 <style scoped>
     .titleContainer {

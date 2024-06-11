@@ -2,9 +2,15 @@
     import "../styles/global.css"
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
+    import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
 
     const handleEmploi = () => {
         goto("/emplois")
+    }
+
+    const test = () => 
+    {
+        
     }
 </script>
 
@@ -32,6 +38,7 @@
             </div>
         </div>
     </section>
+    <LoadingSpinner /> <!--Quand les offres récentes vont être push, tu pourras faire le chargement.-->
 </main>
 
 <style scoped>

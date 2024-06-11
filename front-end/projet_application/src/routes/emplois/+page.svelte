@@ -7,8 +7,17 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     const modal = writable(false)
+
+    let loaded = writable(0)
+
+    const loadedOffer = () => 
+    {
+        loaded.set($loaded+1)
+    }
+
     const selectedEmploiId = writable(0)
     const openModal = (id: number) => {
         modal.set(true)
@@ -43,11 +52,51 @@
             </h1>
         </div>
     </section>
+
+    
+    <section class="Loading">
+        <LoadingSpinner />
+    </section>
+
     <section class="offres">
         {#each $jobOffers as offre}
-            <EmploiRow {offre} handleModalClick={handleEmploiClick} />
-        {/each}
+            <EmploiRow {offre} handleModalClick={handleEmploiClick} OnLoaded={loadedOffer} />
+       {/each}
     </section>
+
+    {#if !(($loaded) == ($jobOffers).length)}
+        <style scoped>
+            .Loading 
+            {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+            }
+
+            .offres 
+            {
+                display: none !important;
+            }
+        </style>
+    {/if}
+
+    {#if (($loaded) == ($jobOffers).length)}
+        <style scoped>
+            section.offres 
+            {
+                display: block !important;
+            }
+            .Loading 
+            {
+                display: none;
+            }
+        </style>
+    {/if}
+
+
     {#if $modal}
         {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
