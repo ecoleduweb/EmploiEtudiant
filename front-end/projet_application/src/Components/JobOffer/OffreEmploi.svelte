@@ -5,6 +5,8 @@
     import { onMount } from "svelte"
     export let offer: JobOffer
 
+    let HideURL = false;
+
     let enterprise: Enterprise 
     const getEnterprises = async (employerId: number) => {
         try {
@@ -32,9 +34,16 @@
                         : null
                 })
                 .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
+
+                if (offer.offerLink == "https://" || offer.offerLink == "http://") 
+                {
+                    HideURL = true;
+                }
+
         } catch (error) {
             console.error("Error fetching program:", error)
         }
+
     })
     let programmeSelected = [] as any
     let programmesOption = [
@@ -81,10 +90,17 @@
         <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
         <h5 class="infoTitle">Description du poste</h5>
         <p class="text">{offer.description}</p>
-        <h5 class="infoTitle">Adresse URL vers l'offre d'emploi détaillé</h5>
-        <p class="text">{offer.offerLink}</p>
+        <h5 class={HideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
+        <p class={HideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
         <h5 class="infoTitle">Où envoyer votre candidature</h5>
         <p class="text">{offer.email}</p>
+
+        <style scoped>
+            .CanBeHidden 
+            {
+                display: none;
+            }
+        </style>
     </div>
 </div>
 
