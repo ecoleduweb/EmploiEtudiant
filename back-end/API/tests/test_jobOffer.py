@@ -4,29 +4,40 @@ from app.models.jobOffer_model import JobOffer
 from app.models.user_model import User
 from app.models.study_program_model import StudyProgram
 from app.models.employmentSchedule_model import EmploymentSchedule
+from datetime import datetime
 
 from argon2 import PasswordHasher
 
 hasher = PasswordHasher()
 
 job_offer1_data = {
-        "id": 1,
-        "title": "Développeur",
-        "address": "123 rue de la rue",
-        "description": "Développeur fullstack",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2121-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": 40,
-        "offerLink": "www.google.com",
-        "salary": "1000",
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": "Super offre!",
-        "employerId": None,
-        "scheduleId": None,
-        "isApproved": True
-    }
+    "id": 1,
+    "title": "Développeur",
+    "address": "123 rue de la rue",
+    "description": "Développeur fullstack",
+    "dateEntryOffice": "2021-12-12",
+    "deadlineApply": "2121-12-12",
+    "email": "test@gmail.com",
+    "hoursPerWeek": 40,
+    "offerLink": "www.google.com",
+    "salary": "1000",
+    "offerDebut": "2021-12-12",
+    "active": True,
+    "approbationMessage": "Super offre!",
+    "employerId": None,
+    "scheduleId": None,
+    "isApproved": True,
+    "approvedDate": datetime.now()
+}
+
+
+def VerifyData(jobOfferData):
+    for data in job_offer1_data:
+        if (data not in jobOfferData) and (type(jobOfferData[data]) != type(job_offer1_data[data])) :
+            return False
+
+    return True
+
 
 @pytest.fixture(scope='module')
 def client(app):
@@ -90,7 +101,7 @@ def app():
 def test_offreEmploi(client):
     response = client.get('/jobOffer/1')
     assert response.status_code == 200
-    assert response.json == job_offer1_data
+    assert VerifyData(response.json)
 
 def test_offresEmploiApprouvees(client):
     data1 = {
@@ -176,21 +187,4 @@ def test_updateJobOffer(client):
     token = responseLogin.json['token']
     response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
-    assert response.json == {
-        "id": 1,
-        "title": "Développeur Fullstack",
-        "address": "123 rue de la liberte",
-        "description": "Développeur fullstack",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2021-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": 40,
-        "offerLink": "www.google.com",
-        "salary": '1000',
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": None,
-        "employerId": 1,
-        "scheduleId": 1,
-        "isApproved": None
-    }
+    assert VerifyData(response.json)

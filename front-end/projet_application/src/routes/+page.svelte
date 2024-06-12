@@ -2,6 +2,22 @@
     import "../styles/global.css"
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
+    import EmploiRow from "../Components/JobOffer/EmploiRow.svelte"
+    import { writable } from "svelte/store"
+    import type { JobOffer } from "../Models/Offre"
+    import { GET } from "../ts/server"
+    import { onMount } from "svelte"
+
+    const jobOffers = writable<JobOffer[]>([])
+    const getJobOffers = async () => {
+        try {
+            const response = await GET<any>("/jobOffer/approved")
+            jobOffers.set(response)
+        } catch (error) {
+            console.error("Error fetching job offers:", error)
+        }
+    }
+    onMount(getJobOffers)
 
     const handleEmploi = () => {
         goto("/emplois")
@@ -31,6 +47,11 @@
                 </div>
             </div>
         </div>
+    </section>
+    <section class="offres">
+        {#each ($jobOffers).slice(0, 5) as offre}
+            <EmploiRow {offre} handleModalClick={(function() {})} />
+        {/each}
     </section>
 </main>
 

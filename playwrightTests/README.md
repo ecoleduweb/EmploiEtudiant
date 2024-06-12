@@ -18,26 +18,22 @@ Looking for Playwright for [Python](https://playwright.dev/python/docs/intro), [
 
 ## Installation
 
-Playwright has its own test runner for end-to-end tests, we call it Playwright Test.
+La base de données utilisée est celle des tests. Elle est supprimée chaque fois qu'un test est fait.
+Un utilisateur avec les accès `admin@gmail.com:test123` est créé comme administrateur pour le besoin des tests.
+Un utilisateur avec les accès `user@gmail.com:test123` est créé comme employeur pour le besoin des tests.
+Installer les modules npm `npm install`.
 
-To install and use Playwright test, you need to install :
+exécuter la commande  `npx playwright install`
 
-Playwright Test for VSCode : [Lien](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
+Ajouter l'extension au module vscode : [Lien](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
 
-Install Playwright in your project using :
+## Rouler les tests
 
-```Shell
-npm init playwright@latest
-```
+Pour rouler les test, faire `npm run test`
 
+La commande va démarrer flask et svelte et en suite rouler les tests.
 
-If the project is already made and you only need to install it, use :
-```Shell
-npm i
-```
-
-Then, you can open and run the test to see the results on screen using Visual Studio's test section !
-## Usage
+## Ajouter des tests
 
 Pour ajouter des tests, il suffit de créer un nouveau fichier dans le dossier tests et que ce fichier se termine 
 par .specs.ts.
@@ -61,11 +57,4 @@ test('Nom du test', async ({ page }) => {
 Pour obtenir la liste des actions possibles (.getByLabel, getByRole...) 
 
 Consulter ce lien : [ICI](https://playwright.dev/docs/library)
-
-La section Docs contient la majorité  des actions nécessaires pour faire des tests.
-
-```
-```
-
-End of the ReadMe
 

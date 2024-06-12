@@ -21,6 +21,7 @@ class JobOffer(db.Model):
     employerId = db.Column(db.Integer, nullable=True)
     scheduleId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
+    approvedDate = db.Column(db.DateTime, nullable=True, default=None)
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
@@ -34,11 +35,12 @@ class JobOffer(db.Model):
         hoursPerWeek={self.hoursPerWeek},
         offerLink='{self.offerLink}',
         salary='{self.salary}',
-        active={self.active},
+        active='{self.active}',
         approbationMessage='{self.approbationMessage}',
-        employerId={self.employerId},
-        scheduleId={self.scheduleId}),
-        isApproved={self.isApproved}'''
+        employerId='{self.employerId}',
+        scheduleId='{self.scheduleId}',
+        isApproved='{self.isApproved}',
+        approvedDate='{self.approvedDate}')'''
 
     def to_json_string(self):
         return {
@@ -57,5 +59,6 @@ class JobOffer(db.Model):
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
             'scheduleId': self.scheduleId,
-            'isApproved': self.isApproved
+            'isApproved': self.isApproved,
+            'approvedDate': self.approvedDate
         }
