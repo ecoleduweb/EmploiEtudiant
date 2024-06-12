@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 from dotenv import load_dotenv
 import os
-import pymysql
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask import Flask, jsonify
@@ -56,9 +55,13 @@ def create_app():
     CORS(app)
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
-   
+
     try:
-        if any("pytest" in arg for arg in sys.argv):
+        # port 5001 is used for playwright tests
+        if any("5001" in arg for arg in sys.argv):
+            app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_PLAYWRIGHT_URL')
+            print("Ready for playwright")
+        elif any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
             print("Running tests")
@@ -69,8 +72,10 @@ def create_app():
         return jsonify({'message': 'Error loading environment variables'}), 500
 
     db.init_app(app)
+
+    #Do not remove.
     migrate = Migrate(app, db)
-    
+    # END do not remove
     from app.controllers.user_controller import user_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
     from app.controllers.city_controller import city_blueprint
@@ -93,5 +98,11 @@ def create_app():
 
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
     
+
+    with app.app_context(): 
+        if any("5001" in arg for arg in sys.argv):
+            print("Refreshing the database")
+            db.create_all()
+            print("database refreshed")
 
     return app

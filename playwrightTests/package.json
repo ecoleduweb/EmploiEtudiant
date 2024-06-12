@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test",
-    "flask": "cd ../back-end/API && python -m flaks run"
+    "playwright": "playwright test",
+    "flask": "cd ../back-end/API && python -m flask run --port 5001",
+    "svelte": "cd ../front-end/projet_application && npm run playwright",
+    "tests": "concurrently -k \"npm run flask\" \"npm run svelte\" \"npm run playwright\""
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
     "@types/node": "^20.11.16"
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "playwright": "^1.44.1"
   }
 }
