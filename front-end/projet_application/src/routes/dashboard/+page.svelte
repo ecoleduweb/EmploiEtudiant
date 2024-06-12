@@ -11,25 +11,32 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
+    import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
-    let jobOfferToEditOrApprove: JobOffer = {} as any
+    let showArchiveModal = false;
+    let jobOfferSelected: JobOffer = {} as any
     let isJobOfferEdit = false
     let isModerator = false
     const handleCreateOffer = () => {
         showCreateEditOffer = true
-        jobOfferToEditOrApprove = undefined as any
+        jobOfferSelected = undefined as any
     }
 
-    const handleEditEmploiClick = (offer: JobOffer) => {
-        jobOfferToEditOrApprove = offer;
+    const handleEditEmploiClick = (jobOffer: JobOffer) => {
+        jobOfferSelected = jobOffer;
         showCreateEditOffer = true
     }
     const handleApproveClick = (jobOffer: JobOffer) => {
-        jobOfferToEditOrApprove = jobOffer;
+        jobOfferSelected = jobOffer;
         showApproveModal = true;
+    }
+    const handleArchiveClick = (jobOffer: JobOffer) => 
+    {
+        jobOfferSelected = jobOffer;
+        showArchiveModal = true;
     }
     
     const closeModalApprove = () => {
@@ -38,6 +45,10 @@
     const closeModalCreateEdit = () => 
     {
         showCreateEditOffer = false
+    }
+    const closeModalArchive = () => 
+    {
+        showArchiveModal = false
     }
 
 
@@ -122,6 +133,7 @@
                     offer={offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
         {/if}
@@ -133,6 +145,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
         {/if}
@@ -144,6 +157,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
         {/if}
@@ -155,6 +169,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
         {/if}
@@ -166,6 +181,7 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
         {/if}
@@ -173,7 +189,7 @@
     {#if showApproveModal}    
     <Modal handleCloseClick={closeModalApprove}>
         <ApprouveOffre
-            offer={jobOfferToEditOrApprove}
+            offer={jobOfferSelected}
             {enterprise}
             handleApproveClick={closeModalApprove}
         />
@@ -183,18 +199,22 @@
     <Modal handleCloseClick={closeModalCreateEdit}>
         <CreateEditJobOffer
             isJobOfferEdit={isJobOfferEdit}
-            jobOffer={jobOfferToEditOrApprove}
+            jobOffer={jobOfferSelected}
             {enterprise}
+        />
+    </Modal>
+    {/if}
+    {#if showArchiveModal}
+    <Modal handleCloseClick={closeModalArchive}>
+        <ArchiveConfirm
+            offer={jobOfferSelected}
+            handleApproveClick={closeModalArchive}
         />
     </Modal>
     {/if}
 </main>
 
 <style scoped>
-    body {
-        margin: 0;
-        padding: 0;
-    }
     main {
         flex: 1;
         display: flex;

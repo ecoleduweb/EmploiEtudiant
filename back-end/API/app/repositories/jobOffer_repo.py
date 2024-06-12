@@ -3,7 +3,7 @@ from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
-from datetime import date, datetime
+from datetime import date, timedelta, datetime
 from flask import Flask, jsonify
 from operator import attrgetter
 
@@ -72,3 +72,11 @@ class JobOfferRepo:
         if jobOffer.isApproved:
             jobOffer.approvedDate = datetime.now()
         db.session.commit()
+
+    def archiveJobOffer(self, id):
+        jobOffer = JobOffer.query.filter_by(id=id).first()
+        jobOffer.deadlineApply = date.today() - timedelta(days=1)
+        db.session.commit()
+
+    def jobOfferExist(self, id):
+        return JobOffer.query.filter_by(id=id).first() is not None
