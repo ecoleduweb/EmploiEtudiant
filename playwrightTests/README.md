@@ -18,9 +18,9 @@ Looking for Playwright for [Python](https://playwright.dev/python/docs/intro), [
 
 ## Installation
 
-Pour la mise en place, ajouter la bas de données H2024Playwright dans le serveur et la clé
-DATABASE_PLAYWRIGHT_URL avec le chemin vers la bd dans le .env. Le template devrait déjà contenir cette info.
-
+La base de données utilisée est celle des tests. Elle est supprimée chaque fois qu'un test est fait.
+Un utilisateur avec les accès `admin@gmail.com:test123` est créé comme administrateur pour le besoin des tests.
+Un utilisateur avec les accès `user@gmail.com:test123` est créé comme employeur pour le besoin des tests.
 Installer les modules npm `npm install`.
 
 exécuter la commande  `npx playwright install`
