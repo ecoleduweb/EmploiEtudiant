@@ -9,19 +9,22 @@ study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'a
 #ACM il faudra utiliser ce controlleur lorsque la gestion des programmes sera mise en place. Il faudra aussi la tester adéquatement
 
 @study_program_blueprint.route('/studyPrograms', methods=['GET'])
-@token_required
-def studyPrograms(current_user):
-    print("test")
-    print(current_user)
+def studyPrograms():
     studyPrograms = study_program_service.studyPrograms()
     return jsonify(studyPrograms)
 
-@study_program_blueprint.route('/studyProgram/<string:id>', methods=['GET'])
-@token_required
-def studyProgramId(current_user,name):
-    studyProgramId = study_program_service.studyProgramId(name)
-    return jsonify(studyProgramId)
+@study_program_blueprint.route('/editStudyProgram/<int:id>', methods=['POST'])
+@token_admin_required
+def editStudyProgram(current_user, id):
+    try:
+        data = request.get_json()
+        study_program_service.editStudyProgram(id, data["name"])
+        return jsonify({'message': 'Study program edited successfully'})
+    except Exception as e:
+        return jsonify({'message': 'An error occured.'}), 500
+    
 
+    
 @study_program_blueprint.route('/addStudyProgram', methods=['POST'])
 @token_admin_required
 def addStudyProgram(current_user):

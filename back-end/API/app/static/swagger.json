@@ -566,34 +566,6 @@
         }
       }
     },
-    "/studyProgramId": {
-      "get": {
-        "description": "Get the ID of a study program based on its name",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "description": "Name of the study program",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Study program ID successfully fetched"
-          },
-          "400": {
-            "description": "Missing study program name"
-          },
-          "404": {
-            "description": "Study program not found"
-          }
-        }
-      }
-    },
     "/addStudyProgram": {
       "post": {
         "description": "Add a study program",
