@@ -128,7 +128,7 @@
         color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
-        max-height: 700px;
+        max-height: 60vh;
         overflow-y: auto;
     }
 </style>
