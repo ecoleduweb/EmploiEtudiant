@@ -36,6 +36,9 @@
     const handleUtilisateur = () => {
         goto("/utilisateur")
     }
+    const handleProgrammes = () => {
+        goto("/programmes")
+    }
 
     const handleLogout = () => {
         isLoggedIn.set(false)
@@ -93,6 +96,19 @@
                             on:click={handleUtilisateur}
                         >
                             <p class="textLogout">Utilisateurs</p>
+                        </button>
+                    </div>
+                    <div class="option">
+                        <button
+                            class="button logout-button"
+                            on:click={handleProgrammes}
+                        >
+                            <p class="textLogout">Modifier les programmes</p>
+                            <img
+                                class="iconeLogout"
+                                src="edit.svg"
+                                alt="Logout icon"
+                            />
                         </button>
                     </div>
                 {/if}
