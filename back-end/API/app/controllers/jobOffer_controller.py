@@ -1,4 +1,5 @@
 from flask import jsonify, request, Blueprint
+from datetime import datetime
 import os
 from app.models.user_model import User
 from app.models.employers_model import Employers
@@ -47,6 +48,7 @@ def createJobOffer(current_user):
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+
     return jobOffer.to_json_string(), 201
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
@@ -85,12 +87,16 @@ def updateJobOffer(current_user, id):
             data["jobOffer"]["approbationMessage"] = None
             # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
             # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
+            if data["jobOffer"]["isApproved"] == True:
+                data["jobOffer"]["approvedDate"] = datetime.now()
+
         jobOffer = jobOffer_service.updateJobOffer(data)
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404

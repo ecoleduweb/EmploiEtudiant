@@ -3,29 +3,16 @@ from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from flask import Flask, jsonify
+from operator import attrgetter
 
 class JobOfferRepo:
 
-    def createJobOffer(self, data, employerId, isApproved):
-        new_job_offer = JobOffer(title=data['title'],
-         description=data['description'],
-         offerDebut=data["offerDebut"],
-         address=data['address'],
-         dateEntryOffice=data['dateEntryOffice'],
-         deadlineApply=data['deadlineApply'],
-         email=data['email'],
-         hoursPerWeek=data['hoursPerWeek'],
-         offerLink=data['offerLink'],
-         salary=data['salary'],
-         active=data['active'],
-         employerId=employerId,
-         scheduleId=data['scheduleId'],
-         isApproved=isApproved)
-        db.session.add(new_job_offer)
+    def createJobOffer(self, newJobOffer):
+        db.session.add(newJobOffer)
         db.session.commit()
-        return new_job_offer
+        return newJobOffer
     
     def offresEmploiEmployeur(self, employerId):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
@@ -69,7 +56,7 @@ class JobOfferRepo:
             JobOffer.isApproved == True,
             JobOffer.offerDebut <= today,
             JobOffer.deadlineApply >= today
-        ).all()
+        ).order_by(JobOffer.approvedDate.desc()).all()
         return jobOffers
     
     def linkJobOfferEmployer(self, data):
@@ -82,6 +69,8 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         jobOffer.isApproved = isApproved
         jobOffer.approbationMessage = approbationMessage
+        if jobOffer.isApproved:
+            jobOffer.approvedDate = datetime.now()
         db.session.commit()
 
     def archiveJobOffer(self, id):

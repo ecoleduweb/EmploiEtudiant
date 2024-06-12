@@ -1,4 +1,6 @@
 from app.repositories.jobOffer_repo import JobOfferRepo
+from app.models.jobOffer_model import JobOffer
+from datetime import datetime
 from app.customexception.CustomException import NotFoundException
 jobOffer_repo = JobOfferRepo()
 
@@ -8,7 +10,23 @@ class JobOfferService:
         return jobOffer_repo.offresEmploi()
     
     def createJobOffer(self, data, employerId, isApproved):
-        return jobOffer_repo.createJobOffer(data, employerId, isApproved)
+        new_job_offer = JobOffer(title=data['title'],
+         description=data['description'],
+         offerDebut=data["offerDebut"],
+         address=data['address'],
+         dateEntryOffice=data['dateEntryOffice'],
+         deadlineApply=data['deadlineApply'],
+         email=data['email'],
+         hoursPerWeek=data['hoursPerWeek'],
+         offerLink=data['offerLink'],
+         salary=data['salary'],
+         active=data['active'],
+         employerId=employerId,
+         scheduleId=data['scheduleId'],
+         isApproved=isApproved,
+         approvedDate=datetime.now() if isApproved else None)
+
+        return jobOffer_repo.createJobOffer(new_job_offer)
     
     def offresEmploiEmployeur(self, employerId):
         return jobOffer_repo.offresEmploiEmployeur(employerId)
