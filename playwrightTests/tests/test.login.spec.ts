@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('login', async () => {
+test.describe('login', () => {
   test.beforeEach(async ({ page }) => {
     // se connecte au site (ADRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
     await page.goto("http://localhost:5002/");
@@ -9,7 +9,7 @@ test.describe('login', async () => {
   });
 
 
-  test.only('Register', async ({ page }) => {
+  test('Register', async ({ page }) => {
     // Ouvre la page de connexion
     // Hover sur le bouton "Offrir un emploi" pour faire apparaitre le sous-menu
     await page.hover('text=Offrir un emploi');
@@ -21,8 +21,6 @@ test.describe('login', async () => {
     await page.getByLabel('Prénom').press('Tab');
     await page.getByLabel('Nom de famille').fill('test');
     await page.getByLabel('Nom de famille').press('Tab');
-    await page.getByLabel('Courriel').fill('test');
-    await page.getByLabel('Courriel').press('Alt+Control+2');
     await page.getByLabel('Courriel').fill('test@test.ca');
     await page.getByLabel('Mot de passe').click();
     await page.getByLabel("Mot de passe").fill("Password1234!");
@@ -40,9 +38,9 @@ test.describe('login', async () => {
     await page.hover('text=Offrir un emploi');
     await page.getByRole('link', { name: 'Connexion Entreprise' }).click();
     await page.getByLabel('Nom d\'utilisateur').click();
-    await page.getByLabel('Nom d\'utilisateur').fill('test@test.ca');
+    await page.getByLabel('Nom d\'utilisateur').fill('admin@gmail.com');
     await page.getByLabel('Nom d\'utilisateur').press('Tab');
-    await page.getByLabel('Mot de passe').fill('Patate123');
+    await page.getByLabel('Mot de passe').fill('test123');
     // Clique sur le bouton de connexion
     await page.getByRole('button', { name: 'Se connecter' }).click();
     // MANQUE LA VALIDATION AVEC API... A faire

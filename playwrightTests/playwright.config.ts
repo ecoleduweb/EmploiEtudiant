@@ -69,9 +69,17 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer:
+    [
+      {
+        command: 'cd ../back-end/API && python -m flask run --port 5001',
+        url: 'http://localhost:5001/ping',
+        reuseExistingServer: !process.env.CI
+      },
+      {
+        command: 'cd ../front-end/projet_application && npm run playwright',
+        url: 'http://localhost:5002',
+        reuseExistingServer: !process.env.CI
+      },
+    ]
 });

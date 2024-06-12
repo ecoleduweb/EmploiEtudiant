@@ -21,13 +21,15 @@ Looking for Playwright for [Python](https://playwright.dev/python/docs/intro), [
 Pour la mise en place, ajouter la bas de données H2024Playwright dans le serveur et la clé
 DATABASE_PLAYWRIGHT_URL avec le chemin vers la bd dans le .env. Le template devrait déjà contenir cette info.
 
-Installer les modules npm
+Installer les modules npm `npm install`.
+
+exécuter la commande  `npx playwright install`
 
 Ajouter l'extension au module vscode : [Lien](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
 
 ## Rouler les tests
 
-Pour rouler les test, faire npm run tests
+Pour rouler les test, faire `npm run test`
 
 La commande va démarrer flask et svelte et en suite rouler les tests.
 

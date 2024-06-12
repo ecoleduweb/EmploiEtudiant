@@ -10,6 +10,11 @@ from flask import Flask, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
 from logging import getLogger
+from argon2 import PasswordHasher
+
+
+hasher = PasswordHasher()
+
 
 dictConfig({
     "version": 1,
@@ -101,8 +106,13 @@ def create_app():
 
     with app.app_context(): 
         if any("5001" in arg for arg in sys.argv):
+            from app.models.user_model import User 
             print("Refreshing the database")
             db.create_all()
+            hashed_password = hasher.hash("test123")
+            user = User(firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True)
+            db.session.add(user)
+            db.session.commit()
             print("database refreshed")
 
     return app
