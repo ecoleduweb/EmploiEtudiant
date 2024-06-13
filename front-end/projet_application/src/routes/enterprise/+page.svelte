@@ -14,11 +14,11 @@
     const modalAdd = writable(false)
     const selectedEnterpriseId = writable(0)
 
-    let loaded = writable(0)
+    let loaded = 0
 
     const loadedOffer = () => 
     {
-        loaded.set($loaded+1)
+        loaded++
     }
 
     const openModal = (id: number) => {
@@ -74,11 +74,11 @@
         </div>
     </section>
 
-    <section class="Loading">
+    <section class={loaded == ($enterprises).length ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class="offres">
+    <section class={loaded == ($enterprises).length ? "offres" : "CanBeHidden"}>
         {#each $enterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
@@ -88,37 +88,22 @@
         {/each}
     </section>
 
-    {#if !(($loaded) == ($enterprises).length)}
-        <style scoped>
-            .Loading 
-            {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-            }
+    <style scoped>
+        .CanBeHidden 
+        {
+            display: none !important
+        }
 
-            .offres 
-            {
-                display: none !important;
-            }
-        </style>
-    {/if}
-
-    {#if (($loaded) == ($enterprises).length)}
-        <style scoped>
-            section.offres 
-            {
-                display: block !important;
-            }
-            .Loading 
-            {
-                display: none;
-            }
-        </style>
-    {/if}
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
 
     {#if $modal}
         {#each $enterprises as enterprise}

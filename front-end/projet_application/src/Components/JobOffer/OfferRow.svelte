@@ -8,9 +8,7 @@
     export let handleArchiveModalClick: (id: number) => void
     export let OnLoaded: () => void
 
-    onMount(() => {
-        setTimeout(OnLoaded, 100)
-    })
+    onMount(OnLoaded)
 </script>
 
 <div class="offreEmploi">

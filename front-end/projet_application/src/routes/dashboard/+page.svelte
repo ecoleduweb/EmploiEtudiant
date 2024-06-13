@@ -72,11 +72,11 @@
 
     const jobOffers = writable<JobOffer[]>([])
 
-    let loaded = writable(0)
+    let loaded = 0
 
     const loadedOffer = () => 
     {
-        loaded.set($loaded+1)
+        loaded++
     }
 
 
@@ -128,11 +128,11 @@
         </div>
     </section>
 
-    <section class="Loading">
+    <section class={loaded == ($jobOffers).length ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class="offres">
+    <section class={loaded == ($jobOffers).length ? "offres" : "CanBeHidden"}>
         {#if isModerator === true}
             <p class="textOffre">Les offres d'emplois</p>
         {/if}
@@ -206,37 +206,22 @@
         {/if}
     </section>
 
-    {#if !(($loaded) == ($jobOffers).length)}
-        <style scoped>
-            .Loading 
-            {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-            }
+    <style scoped>
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
 
-            .offres 
-            {
-                display: none !important;
-            }
-        </style>
-    {/if}
-
-    {#if (($loaded) == ($jobOffers).length)}
-        <style scoped>
-            section.offres 
-            {
-                display: block !important;
-            }
-            .Loading 
-            {
-                display: none;
-            }
-        </style>
-    {/if}
+        .CanBeHidden 
+        {
+            display: none !important;
+        }
+    </style>
 
 
     {#if showApproveModal}    

@@ -1,7 +1,7 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import EmploiRow from "../../Components/JobOffer/EmploiRow.svelte"
-    import OffreEmploi from "../../Components/JobOffer/OffreEmploi.svelte"
+    import DetailOfferRow from "../../Components/JobOffer/DetailOfferRow.svelte"
+    import OfferDetail from "../../Components/JobOffer/OfferDetail.svelte"
     import { writable } from "svelte/store"
     import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
@@ -11,11 +11,11 @@
 
     const modal = writable(false)
 
-    let loaded = writable(0)
+    let loaded = 0
 
     const loadedOffer = () => 
     {
-        loaded.set($loaded+1)
+        loaded++
     }
 
     const selectedEmploiId = writable(0)
@@ -54,54 +54,38 @@
     </section>
 
     
-    <section class="Loading">
+    <section class={loaded == ($jobOffers).length ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class="offres">
+    <section class={loaded == ($jobOffers).length ? "offres" : "CanBeHidden"}>
         {#each $jobOffers as offre}
-            <EmploiRow {offre} handleModalClick={handleEmploiClick} OnLoaded={loadedOffer} />
+            <DetailOfferRow {offre} handleModalClick={handleEmploiClick} OnLoaded={loadedOffer} />
        {/each}
     </section>
 
-    {#if !(($loaded) == ($jobOffers).length)}
-        <style scoped>
-            .Loading 
-            {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-            }
+    <style scoped>
+        .CanBeHidden 
+        {
+            display: none !important;
+        }
 
-            .offres 
-            {
-                display: none !important;
-            }
-        </style>
-    {/if}
-
-    {#if (($loaded) == ($jobOffers).length)}
-        <style scoped>
-            section.offres 
-            {
-                display: block !important;
-            }
-            .Loading 
-            {
-                display: none;
-            }
-        </style>
-    {/if}
-
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
 
     {#if $modal}
         {#each $jobOffers as emploi}
             {#if emploi.id === $selectedEmploiId}
                 <Modal handleCloseClick={closeModal}>
-                    <OffreEmploi offer={emploi} />
+                    <OfferDetail offer={emploi} />
                 </Modal>
             {/if}
         {/each}

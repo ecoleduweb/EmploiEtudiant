@@ -70,17 +70,17 @@
 
 
 <div class="container">
-    <div class="Loading2">
+    <div class={Loaded ? "CanBeHidden" : "Loading2"}>
         <LoadingSpinner />
     </div>
 
-    <div class="titleContainer">
+    <div class={Loaded ? "titleContainer" : "CanBeHidden"}>
         <h3 class="title">{offer.title}</h3>
         {#if enterprise}
             <h4 class="subtitle">Chez {enterprise.name}</h4>
         {/if}
     </div>
-    <div class="info">
+    <div class={Loaded ? "info" : "CanBeHidden"}>
         <h5 class="infoTitle">Type de poste</h5>
         <p class="text">{offer.title}</p>
         <h5 class="infoTitle">Adresse du lieu de travail</h5>
@@ -111,37 +111,15 @@
             {
                 display: none;
             }
+
+            .container > .Loading2 
+            {
+                display: flex !important;
+                justify-content: center !important;
+            }
         </style>
     </div>
 </div>
-
-{#if !Loaded}
-<style scoped>
-    .container > .Loading2 
-    {
-        display: flex !important;
-        justify-content: center !important;
-    }
-
-    .container > .titleContainer, .container > .info
-    {
-        display: none !important;
-    }
-</style>
-{/if}
-
-{#if Loaded}
-<style scoped>
-    .container > .titleContainer, .container > .info
-    {
-        display: block !important;
-    }
-    .container > .Loading2 
-    {
-        display: none;
-    }
-</style>
-{/if}
 
 <style scoped>
     .titleContainer {

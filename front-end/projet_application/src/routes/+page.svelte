@@ -3,11 +3,18 @@
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
-    import EmploiRow from "../Components/JobOffer/EmploiRow.svelte"
+    import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
     import { writable } from "svelte/store"
     import type { JobOffer } from "../Models/Offre"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
+
+    let loaded = 0
+
+    const loadedOffer = () => 
+    {
+        loaded++
+    }
 
     const jobOffers = writable<JobOffer[]>([])
     const getJobOffers = async () => {
@@ -22,11 +29,6 @@
 
     const handleEmploi = () => {
         goto("/emplois")
-    }
-
-    const test = () => 
-    {
-        
     }
 </script>
 
@@ -54,12 +56,41 @@
             </div>
         </div>
     </section>
-    <LoadingSpinner /> <!--Quand les offres récentes vont être push, tu pourras faire le chargement.-->
-    <section class="offres">
+
+    <section class={loaded == (($jobOffers).slice(0, 5)).length ? "CanBeHidden" : "Loading"}>
+        <LoadingSpinner />
+    </section>
+
+    <section class={loaded == (($jobOffers).slice(0, 5)).length ? "offres" : "CanBeHidden"}>
         {#each ($jobOffers).slice(0, 5) as offre}
-            <EmploiRow {offre} handleModalClick={(function() {})} />
+            <DetailOfferRow {offre} 
+            handleModalClick={(function() {})}
+            OnLoaded={loadedOffer} />
         {/each}
     </section>
+
+    <style scoped>
+        section.CanBeHidden 
+        {
+            display: none !important;
+        }
+
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
+
+    <style scoped>
+
+    </style>
+
+
 </main>
 
 <style scoped>

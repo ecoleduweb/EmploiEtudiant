@@ -6,7 +6,7 @@
     import { GET, POST, PUT } from "../../ts/server"
     export let offer: JobOffer
     export let enterprise: Enterprise
-    import OffreEmploi from "./OffreEmploi.svelte"
+    import OfferDetail from "./OfferDetail.svelte"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
@@ -28,7 +28,7 @@
 </script>
 
 <div class="main-div">
-    <OffreEmploi {offer} {enterprise} />
+    <OfferDetail {offer} {enterprise} />
     <div class="container">
         <div>
             <h5 class="infoTitle">Message d'approbation</h5>
