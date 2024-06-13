@@ -298,7 +298,7 @@
                 <Link text="Retour" href="/" />
             </div>
             <div class="form-buttons">
-                <Button submit={true} text="Créer" onClick={() => {}} />
+                <Button cssId="submitButton" submit={true} text="Créer" onClick={() => {}} />
             </div>
         </div>
     </form>

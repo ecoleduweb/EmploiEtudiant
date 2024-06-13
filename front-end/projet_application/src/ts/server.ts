@@ -21,7 +21,8 @@ export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: b
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
-        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+
+        var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -29,6 +30,7 @@ export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: b
             },
             body: JSON.stringify(body),
         })
+
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
         return data as T1
@@ -55,7 +57,8 @@ export async function PUT<T, T1>(url: string, body: T): Promise<T1> {
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
-        const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+
+        var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -99,9 +102,7 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401 : bool
         } else if (response.status === 401 && redirectToLoginOn401) {
             window.location.href = "/login"
         } else {
-            throw new Error(
-                `Error: ${response.status} - ${response.statusText}`,
-            )
+            throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }
     }
     return (await response.json()) as T

@@ -6,6 +6,8 @@
     import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     export let offer: JobOffer
 
+    let hideURL = false;
+
     let enterprise: Enterprise 
     const getEnterprises = async (employerId: number) => {
         try {
@@ -36,11 +38,18 @@
                         : null
                 })
                 .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
+
+                if (offer.offerLink == "https://" || offer.offerLink == "http://") 
+                {
+                    hideURL = true;
+                }
+
         } catch (error) {
             console.error("Error fetching program:", error)
         }
 
         Loaded = true;
+
     })
     let programmeSelected = [] as any
     let programmesOption = [
@@ -92,10 +101,17 @@
         <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
         <h5 class="infoTitle">Description du poste</h5>
         <p class="text">{offer.description}</p>
-        <h5 class="infoTitle">Adresse URL vers l'offre d'emploi détaillé</h5>
-        <p class="text">{offer.offerLink}</p>
+        <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
+        <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
         <h5 class="infoTitle">Où envoyer votre candidature</h5>
         <p class="text">{offer.email}</p>
+
+        <style scoped>
+            .CanBeHidden 
+            {
+                display: none;
+            }
+        </style>
     </div>
 </div>
 
@@ -167,7 +183,7 @@
         color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
-        max-height: 700px;
+        max-height: 60vh;
         overflow-y: auto;
     }
 </style>

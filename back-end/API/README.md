@@ -1,7 +1,5 @@
 # API
 
-## Mise en place
-Se mettre dans le répertoire /API
 
 ### Logiciels
 Python (s'assurer d'avoir le python dans le path)

@@ -34,7 +34,6 @@ jobs:
           echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_SENDER_LOGIN }} >> .env
           echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_PASSWORD }} >> .env
           echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
-          cat .env
 
       - name: Run tests
         working-directory: back-end/API/tests
