@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 from dotenv import load_dotenv
 import os
-import pymysql
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask import Flask, jsonify
@@ -11,6 +10,11 @@ from flask import Flask, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
 from logging import getLogger
+from argon2 import PasswordHasher
+
+
+hasher = PasswordHasher()
+
 
 dictConfig({
     "version": 1,
@@ -56,9 +60,10 @@ def create_app():
     CORS(app)
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
-   
+
     try:
-        if any("pytest" in arg for arg in sys.argv):
+        # port 5001 is used for playwright tests
+        if any("pytest" in arg for arg in sys.argv) or any("5001" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
             print("Running tests")
@@ -69,8 +74,10 @@ def create_app():
         return jsonify({'message': 'Error loading environment variables'}), 500
 
     db.init_app(app)
+
+    #Do not remove.
     migrate = Migrate(app, db)
-    
+    # END do not remove
     from app.controllers.user_controller import user_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
     from app.controllers.city_controller import city_blueprint
@@ -93,5 +100,21 @@ def create_app():
 
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
     
+
+    with app.app_context(): 
+        if any("5001" in arg for arg in sys.argv):
+            from app.models.user_model import User 
+            from app.models.city_model import City
+            from app.models.region_model import Region
+            print("Refreshing the database")
+            db.drop_all()
+            db.create_all()
+            hashed_password = hasher.hash("test123")
+            db.session.add(User(firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True))
+            db.session.add(User(firstName="user", lastName="user", email="user@gmail.com", password=hashed_password, active=True, isModerator=False))
+            db.session.add(Region(region="region"))
+            db.session.add(City(city="ville", idRegion="1"))
+            db.session.commit()
+            print("database refreshed")
 
     return app

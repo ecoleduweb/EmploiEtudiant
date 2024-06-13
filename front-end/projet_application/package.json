@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
+		"playwright": "cross-env PUBLIC_BASE_URL=http://localhost:5001 vite dev --port 5002 ",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -15,6 +16,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"carbon-components-svelte": "^0.82.10",
+		"cross-env": "^7.0.3",
 		"prettier": "3.2.5",
 		"prettier-plugin-svelte": "^3.2.3",
 		"svelte": "^4.2.7",

@@ -1,4 +1,5 @@
 from flask import jsonify, request, Blueprint
+from datetime import datetime
 import os
 from app.models.user_model import User
 from app.models.employers_model import Employers
@@ -21,6 +22,7 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.controllers.email_controller import sendMail
+from app.customexception.CustomException import NotFoundException
 import os
 
 logger = getLogger(__name__)
@@ -47,6 +49,7 @@ def createJobOffer(current_user):
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+
     return jobOffer.to_json_string(), 201
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
@@ -85,6 +88,9 @@ def updateJobOffer(current_user, id):
             data["jobOffer"]["approbationMessage"] = None
             # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
             # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
+            if data["jobOffer"]["isApproved"] == True:
+                data["jobOffer"]["approvedDate"] = datetime.now()
+
         jobOffer = jobOffer_service.updateJobOffer(data)
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         # update offerProgram
@@ -92,6 +98,7 @@ def updateJobOffer(current_user, id):
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
@@ -110,6 +117,15 @@ def approveJobOffer(current_user, id):
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
         # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
         # sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
-        return jsonify({'message': 'job offer approved'}), 204
+        return ('', 204)
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
+
+@job_offer_blueprint.route('/archive/<int:id>', methods=['POST'])
+@token_required
+def archiveJobOffer(current_user, id):
+    try:
+        jobOffer_service.archiveJobOffer(id)
+        return ('', 204)
+    except NotFoundException as e:
+        return jsonify({'message': e.message}), e.errorCode
