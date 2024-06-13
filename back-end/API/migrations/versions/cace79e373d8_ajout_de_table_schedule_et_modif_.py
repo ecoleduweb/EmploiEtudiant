@@ -1,8 +1,8 @@
-"""Ajout de la table employment_schedule__job_offer_link
+"""ajout de table schedule et modif jobOffer
 
-Revision ID: f475b8b21e94
-Revises: e6832be9051d
-Create Date: 2024-06-10 21:39:32.250092
+Revision ID: cace79e373d8
+Revises: 4dc45cb0a90a
+Create Date: 2024-06-12 22:43:42.833029
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = 'f475b8b21e94'
-down_revision = 'e6832be9051d'
+revision = 'cace79e373d8'
+down_revision = '4dc45cb0a90a'
 branch_labels = None
 depends_on = None
 

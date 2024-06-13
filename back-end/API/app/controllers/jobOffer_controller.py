@@ -76,7 +76,7 @@ def offresEmploiEmployeur(current_user):
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@job_offer_blueprint.route('/<int:id>', methods=['PUT'])
+@job_offer_blueprint.route('/edit/<int:id>', methods=['PUT'])
 @token_required
 def updateJobOffer(current_user, id):
     jobOfferToUpdate = jobOffer_service.findById(id)
