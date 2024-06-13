@@ -3,13 +3,14 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
     import type { Login } from "../../Models/Login"
-    import { POST } from "../../ts/server"
+    import { GET, POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
     import { currentUser, isLoggedIn } from "$lib"
     import { userToken } from "../../stores"
+    import { onMount } from "svelte"
 
 
     const schema = yup.object().shape({
@@ -59,6 +60,38 @@
             errors = extractErrors(err)
         }
     }
+
+    const isTokenValid = async () => 
+    {
+        let response
+        try 
+        {
+            response = await GET<any>("/jobOffer/employer/all", false)
+
+            if (response !== undefined) 
+            {
+                return true
+            }
+            else 
+            {
+                return false
+            }
+        }
+        catch 
+        {
+            return false
+        }
+    }
+
+    onMount(async () => 
+    {
+        if ($isLoggedIn && !(await isTokenValid())) 
+        {
+            localStorage.token = undefined
+            currentUser.set(undefined)
+            isLoggedIn.set(false)
+        }
+    })
 </script>
 
 <section>
