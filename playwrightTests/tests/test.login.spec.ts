@@ -4,8 +4,10 @@ test.describe('login', () => {
   test.beforeEach(async ({ page }) => {
     // se connecte au site (ADRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
     await page.goto("http://localhost:5002/");
-    await 1000;
     await page.waitForLoadState('networkidle');
+    if (await page.locator("#cookieBannerOk")) {
+      await page.locator("#cookieBannerOk").click()
+    }
   });
 
 
@@ -27,9 +29,9 @@ test.describe('login', () => {
     await page.locator('#confirm_password').click();
     await page.locator("#confirm_password").fill("Password1234!");
     //confirme la création du compte
-    await page.getByRole('button', { name: 'Créer' }).click();
-
+    await page.locator("#submitButton").click();
     // MANQUE LA VALIDATION AVEC API... A faire
+    await expect(page).toHaveURL(/.*dashboard.*/);
   });
 
   test('Login', async ({ page }) => {
