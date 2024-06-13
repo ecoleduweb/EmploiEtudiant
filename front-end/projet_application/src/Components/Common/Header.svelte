@@ -17,8 +17,6 @@
             `/studyProgram/studyPrograms`
         )
 
-        console.log(response)
-
         if (response !== undefined) 
         {
             let newArr = []
