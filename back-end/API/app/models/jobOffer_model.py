@@ -37,7 +37,6 @@ class JobOffer(db.Model):
         active='{self.active}',
         approbationMessage='{self.approbationMessage}',
         employerId='{self.employerId}',
-        scheduleId='{self.scheduleId}',
         isApproved='{self.isApproved}',
         approvedDate='{self.approvedDate}')'''
 
@@ -57,7 +56,6 @@ class JobOffer(db.Model):
             'active': self.active,
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
-            'scheduleId': self.scheduleId,
             'isApproved': self.isApproved,
             'approvedDate': self.approvedDate
         }
