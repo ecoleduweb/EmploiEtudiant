@@ -25,7 +25,6 @@ job_offer1_data = {
     "active": True,
     "approbationMessage": "Super offre!",
     "employerId": None,
-    "scheduleId": None,
     "isApproved": True,
     "approvedDate": datetime.now()
 }
@@ -64,7 +63,6 @@ def app():
             "offerDebut": "2021-12-12",
             "active": True,
             "employerId": None,
-            "scheduleId": None,
             "isApproved": False
         }
         job_offer2 = JobOffer(**job_offer2_data)
@@ -173,7 +171,6 @@ def test_updateJobOffer(client):
         "active": True,
         "approbationMessage": "Super offre!",
         "employerId": 1,
-        "scheduleId": 1,
         "isApproved": True
         },
         "studyPrograms": [5, 6] 
