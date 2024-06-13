@@ -28,3 +28,8 @@ class EmploymentScheduleRepo:
             link = EmploymentSchedule_JobOffer_link(jobOfferId=jobOfferId, employmentScheduleId=scheduleId)
             db.session.add(link)
         db.session.commit()
+
+    def getScheduleFromJobOffer(self, jobOfferId):
+        schedules = EmploymentSchedule.query.join(EmploymentSchedule_JobOffer_link, EmploymentSchedule_JobOffer_link.employmentScheduleId == EmploymentSchedule.id).filter(EmploymentSchedule_JobOffer_link.jobOfferId == jobOfferId).all()
+        print(schedules)
+        return schedules

@@ -57,7 +57,6 @@
     let cityOptions: { label: string; value: number }[] = []
     let scheduleIds: number[] = []
 
-    $: console.log('scheduleSelected:', scheduleSelected);
     
 
     const fetchEnterprise = async () => {
@@ -86,6 +85,14 @@
         } else {
             isEnterpriseSelected = false
         }
+    }
+
+    const fetchEmploymentSchedule = async () => {
+    const response = await GET<any>(`/employmentSchedule/getByOfferId/${jobOffer.id}`)
+
+    scheduleSelected = scheduleOption.filter((option: { label: string; value: number }) => 
+        response.some((schedule: { id: number }) => schedule.id === option.value)
+        )
     }
 
     onMount(async () => {
@@ -120,6 +127,9 @@
                         : null
                 })
                 .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
+        }
+        if (isJobOfferEdit === true) {
+            await fetchEmploymentSchedule()
         }
     })
 
@@ -202,7 +212,6 @@
     const prepareAndJobOfferIsValid = async () => {
         try {
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
-            console.log(scheduleIds)
             enterprise.cityId = selectedCity[0].value
             await ValidationSchema.validate(jobOffer, { abortEarly: false })
             return {

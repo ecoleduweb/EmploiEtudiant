@@ -84,8 +84,6 @@
         <p class="text">{offer.salary}</p>
         <h5 class="infoTitle">Heure par semaine</h5>
         <p class="text">{offer.hoursPerWeek}</p>
-        <h5 class="infoTitle">Stage ?</h5>
-        <p class="text">{offer.internship ? "Oui" : "Non"}</p>
         <h5 class="infoTitle">Programme</h5>
         <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
         <h5 class="infoTitle">Description du poste</h5>
