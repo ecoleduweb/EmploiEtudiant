@@ -19,15 +19,18 @@
     }
     const closeModal = () => {
         modal.set(false)
+        restart()
     }
     const openCreateStudy = () => {
         createStudyProgram = true
     }
     const closeCreateStudy = () => {
         createStudyProgram = false
+        restart()
     }
     const handleStudyProgramClick = (offreId: number) => {
         openModal(offreId)
+        restart()
     }
 
     const studyPrograms = writable<StudyProgram[]>([])
@@ -39,6 +42,14 @@
             console.error("Error fetching job offers:", error)
         }
     }
+
+    let unique = {} // Chaque {} sont unique
+
+    async function restart() {
+        await getStudyPrograms()
+        unique = {}
+    }
+
     onMount(getStudyPrograms)
 </script>
 
@@ -62,11 +73,13 @@
             </h1>
         </div>
     </section>
-    <section class="StudyPrograms">
-        {#each $studyPrograms as studyProgram}
-            <StudyProgramRow {studyProgram} handleModalClick={handleStudyProgramClick}/>
-        {/each}
-    </section>
+    {#key unique}
+        <section class="StudyPrograms">
+            {#each $studyPrograms as studyProgram}
+                <StudyProgramRow {studyProgram} handleModalClick={handleStudyProgramClick}/>
+            {/each}
+        </section>
+    {/key}
     {#if $modal}
         {#each $studyPrograms as studyProgram}
             {#if studyProgram.id === $selectedProgramId}

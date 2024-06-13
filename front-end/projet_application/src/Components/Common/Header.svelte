@@ -3,13 +3,35 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
-    import { isLoggedIn, currentUser } from "$lib" // La variable writable de login.
+    import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
+    import { GET } from "../../ts/server"
 
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
     let isModerator = false
 
-    
+
+    const fetchStudyPrograms = async () => 
+    {
+        let response = await GET<any>(
+            `/studyProgram/studyPrograms`
+        )
+
+        console.log(response)
+
+        if (response !== undefined) 
+        {
+            let newArr = []
+
+            for (const val of response) 
+            {
+                newArr[newArr.length] = {"label": val.name, "value": val.id}
+            }
+
+            return newArr
+        }
+    }
+
     onMount(async () => {
         const token = localStorage.getItem("token")
         isLoggedIn.set(!!token)
@@ -22,6 +44,8 @@
             lastName = decoded.lastName
             isModerator = decoded.isModerator
         }
+
+        studyPrograms.set(await fetchStudyPrograms())
     })
     
     const handleEmploi = () => {

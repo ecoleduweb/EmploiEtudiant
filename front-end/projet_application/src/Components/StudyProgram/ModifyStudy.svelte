@@ -14,7 +14,7 @@
                 name: newName
             })
 
-            window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
         } catch (error) {
             console.error("Error editing study program:", error)
         }
