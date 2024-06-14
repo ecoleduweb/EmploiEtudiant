@@ -20,3 +20,6 @@ class StudyProgramRepo:
         db.session.add(new_study_program)
         db.session.commit()
         return new_study_program
+
+    def studyProgramExist(self, id):
+        return StudyProgram.query.filter_by(id=id).first() is not None

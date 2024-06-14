@@ -9,7 +9,9 @@ class StudyProgramService:
         return study_program_repo.findById(id)
 
     def editStudyProgram(self, id, name):
-        return study_program_repo.editStudyProgram(id, name)
+        if jobOffer_repo.jobOfferExist(id):
+            return study_program_repo.editStudyProgram(id, name)
+        raise NotFoundException("Job not found")
 
     def addStudyProgram(self, name):
         return study_program_repo.addStudyProgram(name)

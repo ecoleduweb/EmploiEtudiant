@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 from app.services.study_program_service import StudyProgramService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
+from app.customexception.CustomException import NotFoundException
 study_program_service = StudyProgramService()
 
 study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -13,14 +14,14 @@ def studyPrograms():
     studyPrograms = study_program_service.studyPrograms()
     return jsonify(studyPrograms)
 
-@study_program_blueprint.route('/editStudyProgram/<int:id>', methods=['POST'])
+@study_program_blueprint.route('/studyProgram/<int:id>', methods=['PUT'])
 @token_admin_required
 def editStudyProgram(current_user, id):
     try:
         data = request.get_json()
         study_program_service.editStudyProgram(id, data["name"])
         return jsonify({'message': 'Study program edited successfully'})
-    except Exception as e:
+    except NotFoundException as e:
         return jsonify({'message': 'An error occured.'}), 500
     
 

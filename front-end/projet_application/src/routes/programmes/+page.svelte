@@ -9,6 +9,7 @@
     import ModifyStudy from "../../Components/StudyProgram/ModifyStudy.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import CreateStudy from "../../Components/StudyProgram/CreateStudy.svelte"
+    import { studyPrograms } from "$lib"
 
     const modal = writable(false)
     let createStudyProgram = false
@@ -33,7 +34,6 @@
         restart()
     }
 
-    const studyPrograms = writable<StudyProgram[]>([])
     const getStudyPrograms = async () => {
         try {
             const response = await GET<any>("/studyProgram/studyPrograms")

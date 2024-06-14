@@ -126,4 +126,5 @@ def archiveJobOffer(current_user, id):
         jobOffer_service.archiveJobOffer(id)
         return ('', 204)
     except NotFoundException as e:
+        logger.warn('Study Program not found with id : ' + str(id))
         return jsonify({'message': e.message}), e.errorCode

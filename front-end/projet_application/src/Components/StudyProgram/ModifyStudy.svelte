@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "../Inputs/Button.svelte"
-    import { POST } from "../../ts/server"
+    import { PUT } from "../../ts/server"
     import type { StudyProgram } from "../../Models/StudyProgram"
     export let studyProgram: StudyProgram
     export let handleApproveClick: () => void
@@ -9,7 +9,7 @@
 
     const editStudy = async (newName: string) => {
         try {
-            const response = await POST<any, any>(`/studyProgram/editStudyProgram/${studyProgram.id}`, 
+            const response = await PUT<any, any>(`/studyProgram/studyProgram/${studyProgram.id}`, 
             {
                 name: newName
             })
