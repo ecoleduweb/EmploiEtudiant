@@ -128,7 +128,7 @@
                 })
                 .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
         }
-        if (isJobOfferEdit === true) {
+        if (isJobOfferEdit) {
             await fetchEmploymentSchedule()
         }
     })
