@@ -34,7 +34,7 @@
         goto("/dashboard")
     }
     const handleUtilisateur = () => {
-        goto("/utilisateur")
+        goto("/users")
     }
 
     const handleLogout = () => {
