@@ -186,6 +186,6 @@ def test_updateJobOffer(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/edit/1', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
     assert VerifyData(response.json)

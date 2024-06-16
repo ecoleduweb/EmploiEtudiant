@@ -281,7 +281,7 @@
         try {
             const requestData = await prepareAndJobOfferIsValid()
             const response = await PUT<any, any>(
-                `/jobOffer/edit/${jobOffer.id}`,
+                `/jobOffer/${jobOffer.id}`,
                 requestData,
             )
             if (response) {
