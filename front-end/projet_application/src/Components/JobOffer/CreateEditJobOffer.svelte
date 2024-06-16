@@ -197,7 +197,6 @@
             label: schedule.description,
             value: schedule.id,
         }))
-        console.log(scheduleSelected)
     }
 
     let scheduleSelected: { label: string; value: number }[] = [{
