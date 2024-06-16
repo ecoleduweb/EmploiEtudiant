@@ -104,6 +104,7 @@
             enterpriseOption = await getAllEnterprise()
         }
         await fetchEnterprise()
+        await getSchedule()
         if (isJobOfferEdit === true) {
         const schedules = scheduleOption.filter(
             (s) => scheduleIds.includes(s.value),
@@ -174,17 +175,29 @@
         { label: "Tous les programmes", value: 16 },
         { label: "Autres", value: 17 },
     ]
+
+    const getSchedule = async () => {
+        const response = await GET<any>(
+            `/employmentSchedule/all`,
+        )
+        console.log(response)
+        scheduleOption = response.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+        console.log(scheduleOption)
+    }
+
     let scheduleSelected: { label: string; value: number }[] = [{
         label: "",
         value: 0,
     }]
     let scheduleFromExistingOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let scheduleOption = [
-        { label: "Temps plein", value: 1 },
-        { label: "Emploi d'été", value: 2 },
-        { label: "Temps partiel", value: 3 },
-        { label: "Stage", value: 4 },
-    ]
+    let scheduleOption: { label: string; value: number }[] = []
+    //     { label: "Temps plein", value: 1 },
+    //     { label: "Emploi d'été", value: 2 },
+    //     { label: "Temps partiel", value: 3 },
+    //     { label: "Stage", value: 4 },
 
     //--------------------------------------------------
 
