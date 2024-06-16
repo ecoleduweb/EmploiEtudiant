@@ -105,6 +105,9 @@
         }
         await fetchEnterprise()
         await getSchedule()
+        if (isJobOfferEdit) {
+            await getScheduleByOfferId()
+        }
         if (isJobOfferEdit === true) {
         const schedules = scheduleOption.filter(
             (s) => scheduleIds.includes(s.value),
@@ -180,12 +183,21 @@
         const response = await GET<any>(
             `/employmentSchedule/all`,
         )
-        console.log(response)
         scheduleOption = response.map((schedule: { id: number; description: string }) => ({
             label: schedule.description,
             value: schedule.id,
         }))
-        console.log(scheduleOption)
+    }
+
+    const getScheduleByOfferId = async () => {
+        const response = await GET<any>(
+            `/employmentSchedule/getByOfferId/${jobOffer.id}`,
+        )
+        scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+        console.log(scheduleSelected)
     }
 
     let scheduleSelected: { label: string; value: number }[] = [{
