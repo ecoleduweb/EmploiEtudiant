@@ -128,6 +128,9 @@ def test_userCreateOffresEmploi(client):
             "studyPrograms": [
                 1,
                 2
+            ],
+            "scheduleIds": [
+                1
             ]
         }
     data1 = {
@@ -157,7 +160,7 @@ def test_approveJobOffer(client):
 def test_updateJobOffer(client):
     data = {
         "jobOffer": {
-        "id": 1,
+        "id": 2,
         "title": "Développeur Fullstack",
         "address": "123 rue de la liberte",
         "description": "Développeur fullstack",
@@ -173,7 +176,8 @@ def test_updateJobOffer(client):
         "employerId": 1,
         "isApproved": True
         },
-        "studyPrograms": [5, 6] 
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
     }
 
     data1 = {
@@ -182,6 +186,6 @@ def test_updateJobOffer(client):
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/edit/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
     assert VerifyData(response.json)
