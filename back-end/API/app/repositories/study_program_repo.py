@@ -23,3 +23,6 @@ class StudyProgramRepo:
 
     def studyProgramExist(self, id):
         return StudyProgram.query.filter_by(id=id).first() is not None
+    
+    def doesAlreadyExist(self, name):
+        return StudyProgram.query.filter_by(name=name).first() is not None

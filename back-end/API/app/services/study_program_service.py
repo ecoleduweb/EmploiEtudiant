@@ -1,4 +1,5 @@
 from app.repositories.study_program_repo import StudyProgramRepo
+from app.customexception.CustomException import NotFoundException
 study_program_repo = StudyProgramRepo()
 
 class StudyProgramService:
@@ -9,9 +10,13 @@ class StudyProgramService:
         return study_program_repo.findById(id)
 
     def editStudyProgram(self, id, name):
-        if jobOffer_repo.jobOfferExist(id):
-            return study_program_repo.editStudyProgram(id, name)
+        if study_program_repo.studyProgramExist(id):
+            if not study_program_repo.doesAlreadyExist(name):
+                return study_program_repo.editStudyProgram(id, name)
+            raise Exception("Already created")
         raise NotFoundException("Job not found")
 
     def addStudyProgram(self, name):
-        return study_program_repo.addStudyProgram(name)
+        if not study_program_repo.doesAlreadyExist(name):
+            return study_program_repo.addStudyProgram(name)
+        raise Exception("Already created")

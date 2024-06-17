@@ -26,9 +26,12 @@ def editStudyProgram(current_user, id):
     
 
     
-@study_program_blueprint.route('/addStudyProgram', methods=['POST'])
+@study_program_blueprint.route('/new', methods=['POST'])
 @token_admin_required
 def addStudyProgram(current_user):
-    data = request.get_json()
-    studyProgram = study_program_service.addStudyProgram(data["name"])
-    return jsonify({'message': 'Study program added successfully'})
+    try:
+        data = request.get_json()
+        study_program_service.addStudyProgram(data["name"])
+        return jsonify({'message': 'Study program added successfully'})
+    except Exception as e:
+        return jsonify({'message', 'An error occured.'}), 500

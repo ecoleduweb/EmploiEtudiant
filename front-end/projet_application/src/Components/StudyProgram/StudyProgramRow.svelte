@@ -1,19 +1,20 @@
 <script lang="ts">
+    import type { Option } from "$lib"
     import type { StudyProgram } from "../../Models/StudyProgram"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
 
-    export let studyProgram: StudyProgram
+    export let studyProgram: Option
     export let handleModalClick: (id: number) => void
 </script>
 
-<button class="studyProgram" on:click={() => handleModalClick(studyProgram.id)}>
+<button class="studyProgram" on:click={() => handleModalClick(studyProgram.value)}>
     <div class="Program">
         <div class="info">
-            <p class="text">{studyProgram.name}</p>
+            <p class="text">{studyProgram.label}</p>
         </div>
-        <img class="image" src="add.svg" alt="ajouter" />
+        <img class="image" src="edit.svg" alt="ajouter" />
     </div>
 </button>
 

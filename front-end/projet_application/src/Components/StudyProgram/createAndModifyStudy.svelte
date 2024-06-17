@@ -1,15 +1,30 @@
 <script lang="ts">
     import Button from "../Inputs/Button.svelte"
-    import { PUT } from "../../ts/server"
+    import { POST, PUT } from "../../ts/server"
+    import type { studyProgramModalSettings } from "$lib";
     import type { StudyProgram } from "../../Models/StudyProgram"
-    export let studyProgram: StudyProgram
+    export let settings: studyProgramModalSettings
     export let handleApproveClick: () => void
 
     let nameChosen = ""
 
+    const addStudy = async (newName: string) => {
+        try {
+            const response = await POST<any, any>(`/studyProgram/new`, 
+            {
+                name: newName
+            })
+
+            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+        } catch (error) {
+            console.error("Error creating study program:", error)
+        }
+        handleApproveClick()
+    }
+
     const editStudy = async (newName: string) => {
         try {
-            const response = await PUT<any, any>(`/studyProgram/studyProgram/${studyProgram.id}`, 
+            const response = await PUT<any, any>(`/studyProgram/studyProgram/${settings.studyProgram?.value}`, 
             {
                 name: newName
             })
@@ -20,12 +35,13 @@
         }
         handleApproveClick()
     }
+
 </script>
 
 <div class="main-div">
     <div class="container">
         <div>
-            <h5 class="infoTitle">Veuillez choisir un nouveau nom pour le programme suivant: {studyProgram.name}</h5>
+            <h5 class="infoTitle">{settings.mode == 0 ? "Veuillez choisir un nouveau nom pour le nouveau programme" : "Veuillez choisir un nouveau nom pour le programme suivant: " + settings.studyProgram?.label}</h5>
             <input type="text"
                 bind:value={nameChosen}
                 placeholder="Nouveau nom"
@@ -33,7 +49,9 @@
             />
         </div>
         <div class="button">
-            <Button text="Modifier" onClick={() => editStudy(nameChosen)} />
+            <Button text={settings.mode == 0 ? "Créer" : "Modifier"} onClick={() => { 
+                settings.mode == 0 ? addStudy(nameChosen) : editStudy(nameChosen)
+            }}/>
 
             <Button text="Annuler" onClick={() => handleApproveClick()} />
         </div>

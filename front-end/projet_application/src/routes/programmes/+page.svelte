@@ -4,50 +4,57 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
-    import StudyProgramRow from "../../Components/StudyProgram/StudyProgramRow.svelte"
+    import StudyProgramRow from "../../Components/StudyProgram/studyProgramRow.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
-    import ModifyStudy from "../../Components/StudyProgram/ModifyStudy.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import CreateStudy from "../../Components/StudyProgram/CreateStudy.svelte"
+    import CreateAndModifyStudy from "../../Components/StudyProgram/createAndModifyStudy.svelte"
     import { studyPrograms } from "$lib"
+    import type { Option } from "$lib"
 
-    const modal = writable(false)
     let createStudyProgram = false
-    const selectedProgramId = writable(0)
+    let editStudyProgram = false
+    let selectedProgram: Option | undefined = undefined
     const openModal = (id: number) => {
-        modal.set(true)
-        selectedProgramId.set(id)
+        editStudyProgram = true
+
+        $studyPrograms.map((x: any) => {
+            if (x.value == id) 
+            {
+                selectedProgram = x
+            }
+        });
     }
     const closeModal = () => {
-        modal.set(false)
-        restart()
+        editStudyProgram = false
+        refresh()
     }
     const openCreateStudy = () => {
         createStudyProgram = true
     }
     const closeCreateStudy = () => {
         createStudyProgram = false
-        restart()
+        refresh()
     }
-    const handleStudyProgramClick = (offreId: number) => {
-        openModal(offreId)
-        restart()
+    const handleStudyProgramClick = (offerId: number) => {
+        openModal(offerId)
+        refresh()
     }
 
     const getStudyPrograms = async () => {
         try {
-            const response = await GET<any>("/studyProgram/studyPrograms")
-                studyPrograms.set(response)
+            let response = await GET<any>(
+            `/studyProgram/studyPrograms`
+            )
+
+            if (response)
+            studyPrograms.set( response.map((x: any) => ({"label": x.name, "value": x.id})) ) 
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
     }
 
-    let unique = {} // Chaque {} sont unique
-
-    async function restart() {
+    async function refresh() {
         await getStudyPrograms()
-        unique = {}
     }
 
     onMount(getStudyPrograms)
@@ -59,7 +66,7 @@
             <div class="divFlex">
                 <Button
                     onClick={openCreateStudy}
-                    text="Créer une nouvelle enterprise"
+                    text="Créer un nouveau programme"
                 />
             </div>
         </div>
@@ -73,26 +80,20 @@
             </h1>
         </div>
     </section>
-    {#key unique}
-        <section class="StudyPrograms">
-            {#each $studyPrograms as studyProgram}
-                <StudyProgramRow {studyProgram} handleModalClick={handleStudyProgramClick}/>
-            {/each}
-        </section>
-    {/key}
-    {#if $modal}
+    <section class="StudyPrograms">
         {#each $studyPrograms as studyProgram}
-            {#if studyProgram.id === $selectedProgramId}
-                <Modal handleCloseClick={closeModal}>
-                    <ModifyStudy {studyProgram} handleApproveClick={closeModal} />
-                </Modal>
-            {/if}
+            <StudyProgramRow {studyProgram} handleModalClick={handleStudyProgramClick}/>
         {/each}
+    </section>
+    {#if editStudyProgram}
+        <Modal handleCloseClick={closeModal}>
+            <CreateAndModifyStudy settings={( { mode: 1, studyProgram: selectedProgram} )} handleApproveClick={closeModal} />
+        </Modal>
     {/if}
 
     {#if createStudyProgram}
         <Modal handleCloseClick={closeCreateStudy}>
-            <CreateStudy handleApproveClick={closeCreateStudy} />
+            <CreateAndModifyStudy settings={( { mode: 0, studyProgram: undefined} )} handleApproveClick={closeCreateStudy} />
         </Modal>
     {/if}
 

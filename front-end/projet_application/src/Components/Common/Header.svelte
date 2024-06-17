@@ -13,20 +13,15 @@
 
     const fetchStudyPrograms = async () => 
     {
-        let response = await GET<any>(
+        try {
+            let response = await GET<any>(
             `/studyProgram/studyPrograms`
-        )
+            )
 
-        if (response !== undefined) 
-        {
-            let newArr = []
-
-            for (const val of response) 
-            {
-                newArr[newArr.length] = {"label": val.name, "value": val.id}
-            }
-
-            return newArr
+            if (response)
+            return response.map((x: any) => ({"label": x.name, "value": x.id}))
+        } catch (error) {
+            console.error("Error fetching job offers:", error)
         }
     }
 
