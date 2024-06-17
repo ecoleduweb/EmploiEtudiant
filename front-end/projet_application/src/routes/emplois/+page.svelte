@@ -9,37 +9,32 @@
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
-    const modal = writable(false)
+    let showModal = false
+    let loaded = false
+    let selectedOffer: JobOffer = undefined as any
 
-    let loaded = 0
-
-    const loadedOffer = () => 
-    {
-        loaded++
+    const handleAddJobOfferClick = (offer: JobOffer) => {
+        showModal = true
+        selectedOffer = offer
     }
-
-    const selectedEmploiId = writable(0)
-    const openModal = (id: number) => {
-        modal.set(true)
-        selectedEmploiId.set(id)
-    }
+    
     const closeModal = () => {
-        modal.set(false)
-    }
-    const handleEmploiClick = (offreId: number) => {
-        openModal(offreId)
+        showModal = false
     }
 
     const jobOffers = writable<JobOffer[]>([])
-    const getJobOffers = async () => {
+    onMount(async () => {
         try {
             const response = await GET<any>("/jobOffer/approved")
             jobOffers.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
-    }
-    onMount(getJobOffers)
+        finally
+        {
+            loaded = true
+        }
+    })
 </script>
 
 <main>
@@ -54,23 +49,20 @@
     </section>
 
     
-    <section class={loaded == ($jobOffers).length ? "CanBeHidden" : "Loading"}>
-        <LoadingSpinner />
-    </section>
-
-    <section class={loaded == ($jobOffers).length ? "offres" : "CanBeHidden"}>
-        {#each $jobOffers as offre}
-            <DetailOfferRow {offre} handleModalClick={handleEmploiClick} OnLoaded={loadedOffer} />
-       {/each}
+    <section>
+        {#if loaded}
+            {#each $jobOffers as offer}
+                <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
+            {/each}
+        {:else}
+            <div class="loading">
+                <LoadingSpinner />
+            </div>
+        {/if}
     </section>
 
     <style scoped>
-        .CanBeHidden 
-        {
-            display: none !important;
-        }
-
-        .Loading 
+        .loading 
         {
             height: 100%;
             width: 100%;
@@ -81,14 +73,10 @@
         }
     </style>
 
-    {#if $modal}
-        {#each $jobOffers as emploi}
-            {#if emploi.id === $selectedEmploiId}
-                <Modal handleCloseClick={closeModal}>
-                    <OfferDetail offer={emploi} />
-                </Modal>
-            {/if}
-        {/each}
+    {#if showModal}
+        <Modal handleCloseClick={closeModal}>
+            <OfferDetail offer={selectedOffer} />
+        </Modal>
     {/if}
 </main>
 
