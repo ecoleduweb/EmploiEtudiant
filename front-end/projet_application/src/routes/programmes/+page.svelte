@@ -4,10 +4,10 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
-    import StudyProgramRow from "../../Components/StudyProgram/studyProgramRow.svelte"
+    import StudyProgramRow from "../../Components/StudyProgram/StudyProgramRow.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import CreateAndModifyStudy from "../../Components/StudyProgram/createAndModifyStudy.svelte"
+    import CreateAndModifyStudy from "../../Components/StudyProgram/CreateAndModifyStudy.svelte"
     import { studyPrograms } from "$lib"
     import type { Option } from "$lib"
 
@@ -156,5 +156,5 @@
             font-size: 3.3vw;
         }
     }
-    
+
 </style>
