@@ -5,8 +5,10 @@ test.describe('diplayJobOffer', () => {
     test.beforeEach(async ({ page }) => {
         // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
         await page.goto('http://localhost:5173/emplois');
-        await 1000;
         await page.waitForLoadState('networkidle');
+        if (await page.locator("#cookieBannerOk")) {
+            await page.locator("#cookieBannerOk").click()
+        }
     });
 
     test('Afficher les offres', async ({ page }) => {

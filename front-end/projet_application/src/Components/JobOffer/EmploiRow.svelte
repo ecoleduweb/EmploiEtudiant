@@ -29,7 +29,7 @@
             <p class="text">{offre.title}</p>
             <p class="text">{$enterprise}</p>
             <p class="text">{offre.deadlineApply}</p>
-            <p class="description">{offre.description}</p>
+            <p class="text"></p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>

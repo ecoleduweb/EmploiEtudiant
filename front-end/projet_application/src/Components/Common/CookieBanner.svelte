@@ -47,7 +47,7 @@
                 >En savoir plus</a
             >.
         </p>
-        <button on:click={acceptCookies}>J'ai compris</button>
+        <button id="cookieBannerOk" on:click={acceptCookies}>J'ai compris</button>
     </div>
 {/if}
 
