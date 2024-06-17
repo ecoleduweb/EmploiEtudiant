@@ -2,10 +2,10 @@
     import "../../styles/global.css"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import StudyProgramRow from "../../Components/StudyProgram/StudyProgramRow.svelte"
+    import StudyProgramRow from "../../Components/StudyProgram/studyProgramRow.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import CreateAndModifyStudy from "../../Components/StudyProgram/CreateAndModifyStudy.svelte"
+    import CreateAndEditStudy from "../../Components/StudyProgram/createAndEditStudy.svelte"
     import { studyPrograms } from "$lib"
     import type { Option } from "$lib"
 
@@ -85,13 +85,13 @@
     </section>
     {#if editStudyProgram}
         <Modal handleCloseClick={closeModal}>
-            <CreateAndModifyStudy settings={( { mode: 1, studyProgram: selectedProgram} )} handleApproveClick={closeModal} />
+            <CreateAndEditStudy settings={( { mode: 1, studyProgram: selectedProgram} )} handleApproveClick={closeModal} />
         </Modal>
     {/if}
 
     {#if createStudyProgram}
         <Modal handleCloseClick={closeCreateStudy}>
-            <CreateAndModifyStudy settings={( { mode: 0, studyProgram: undefined} )} handleApproveClick={closeCreateStudy} />
+            <CreateAndEditStudy settings={( { mode: 0, studyProgram: undefined} )} handleApproveClick={closeCreateStudy} />
         </Modal>
     {/if}
 
