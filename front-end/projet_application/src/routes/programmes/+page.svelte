@@ -1,9 +1,7 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import { writable } from "svelte/store"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import type { StudyProgram } from "../../Models/StudyProgram"
     import StudyProgramRow from "../../Components/StudyProgram/StudyProgramRow.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
