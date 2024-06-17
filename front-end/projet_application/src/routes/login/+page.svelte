@@ -61,31 +61,18 @@
         }
     }
 
-    const isTokenValid = async () => 
-    {
-        let response
-        try 
-        {
-            response = await GET<any>("/jobOffer/employer/all", false)
-
-            if (response !== undefined) 
-            {
-                return true
-            }
-            else 
-            {
-                return false
-            }
-        }
-        catch 
-        {
-            return false
+    const isTokenExpired = (user: any) => {
+        try {
+            const currentTime = Math.floor(Date.now() / 1000);
+            return user.exp < currentTime
+        } catch (error) {
+            return true;
         }
     }
 
     onMount(async () => 
     {
-        if ($isLoggedIn && !(await isTokenValid())) 
+        if ($isLoggedIn && isTokenExpired(currentUser))
         {
             localStorage.token = undefined
             currentUser.set(undefined)

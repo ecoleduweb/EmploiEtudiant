@@ -9,12 +9,7 @@
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
 
-    let loaded = 0
-
-    const loadedOffer = () => 
-    {
-        loaded++
-    }
+    let loaded = false
 
     const jobOffers = writable<JobOffer[]>([])
     const getJobOffers = async () => {
@@ -25,7 +20,22 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    onMount(getJobOffers)
+    onMount(async () => {
+        try 
+        {
+            await getJobOffers()
+        }
+
+        catch (error) 
+        {
+            console.error("Error while loading the page", error)
+        }
+
+        finally
+        {
+            loaded = true
+        }
+    })
 
     const handleEmploi = () => {
         goto("/emplois")
@@ -57,15 +67,14 @@
         </div>
     </section>
 
-    <section class={loaded == (($jobOffers).slice(0, 5)).length ? "CanBeHidden" : "Loading"}>
+    <section class={loaded ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class={loaded == (($jobOffers).slice(0, 5)).length ? "offres" : "CanBeHidden"}>
-        {#each ($jobOffers).slice(0, 5) as offre}
-            <DetailOfferRow {offre} 
-            handleModalClick={(function() {})}
-            OnLoaded={loadedOffer} />
+    <section class={loaded ? "offres" : "CanBeHidden"}>
+        {#each ($jobOffers).slice(0, 5) as offer}
+            <DetailOfferRow {offer} 
+            handleModalClick={(function() {})}/>
         {/each}
     </section>
 

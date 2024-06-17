@@ -62,22 +62,30 @@
         cityId: 0,
         isTemporary: false,
     }
+    
+    let loaded = false
 
     onMount(async () => {
-        if ($isLoggedIn) {
-            isModerator = ($currentUser as any).isModerator === true
-            await getJobOffersEmployeur()
+        try 
+        {
+            if ($isLoggedIn) {
+                isModerator = ($currentUser as any).isModerator === true
+                await getJobOffersEmployeur()
+            }
+        }
+        catch (error) 
+        {
+            console.error("Error while loading:", error)
+        }
+
+        finally 
+        {
+            loaded = true
         }
     })
 
     const jobOffers = writable<JobOffer[]>([])
 
-    let loaded = 0
-
-    const loadedOffer = () => 
-    {
-        loaded++
-    }
 
 
     const getJobOffersEmployeur = async () => {
@@ -128,11 +136,11 @@
         </div>
     </section>
 
-    <section class={loaded == ($jobOffers).length ? "CanBeHidden" : "Loading"}>
+    <section class={loaded ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class={loaded == ($jobOffers).length ? "offres" : "CanBeHidden"}>
+    <section class={loaded ? "offres" : "CanBeHidden"}>
         {#if isModerator === true}
             <p class="textOffre">Les offres d'emplois</p>
         {/if}
@@ -147,7 +155,6 @@
                     offer={offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    OnLoaded={loadedOffer}
                     handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
@@ -160,7 +167,6 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    OnLoaded={loadedOffer}
                     handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
@@ -173,7 +179,6 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    OnLoaded={loadedOffer}
                     handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
@@ -186,7 +191,6 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    OnLoaded={loadedOffer}
                     handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}
@@ -199,7 +203,6 @@
                     {offer}
                     handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                     handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    OnLoaded={loadedOffer}
                     handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                 />
             {/each}

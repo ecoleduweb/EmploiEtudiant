@@ -6,9 +6,6 @@
     export let handleEditModalClick: (id: number) => void
     export let handleApproveModalClick: (id: number) => void
     export let handleArchiveModalClick: (id: number) => void
-    export let OnLoaded: () => void
-
-    onMount(OnLoaded)
 </script>
 
 <div class="offreEmploi">

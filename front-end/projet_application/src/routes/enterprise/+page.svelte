@@ -14,12 +14,7 @@
     const modalAdd = writable(false)
     const selectedEnterpriseId = writable(0)
 
-    let loaded = 0
-
-    const loadedOffer = () => 
-    {
-        loaded++
-    }
+    let loaded = false
 
     const openModal = (id: number) => {
         modal.set(true)
@@ -51,7 +46,24 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    onMount(getEnterprises)
+    onMount(async () => 
+    {
+        try 
+        {
+            await getEnterprises()
+        }
+
+        catch (error) 
+        {
+            console.error("Error while loading:", error)
+        }
+
+        finally 
+        {
+            loaded = true
+        }
+
+    })
 </script>
 
 <main>
@@ -74,16 +86,15 @@
         </div>
     </section>
 
-    <section class={loaded == ($enterprises).length ? "CanBeHidden" : "Loading"}>
+    <section class={loaded ? "CanBeHidden" : "Loading"}>
         <LoadingSpinner />
     </section>
 
-    <section class={loaded == ($enterprises).length ? "offres" : "CanBeHidden"}>
+    <section class={loaded ? "offres" : "CanBeHidden"}>
         {#each $enterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
                 handleModalClick={handleEnterpriseClick}
-                OnLoaded={loadedOffer}
             />
         {/each}
     </section>

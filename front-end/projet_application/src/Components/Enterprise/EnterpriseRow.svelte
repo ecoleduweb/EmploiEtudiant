@@ -5,7 +5,6 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     export let handleModalClick: (id: number) => void
-    export let OnLoaded: () => void
     let ville: City
     let nomVille: string
 
@@ -20,7 +19,6 @@
 
     onMount(async () => {
         await getCity(enterprise.cityId)
-        OnLoaded()
     })
 </script>
 
