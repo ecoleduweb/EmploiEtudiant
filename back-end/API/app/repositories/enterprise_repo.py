@@ -51,10 +51,22 @@ class EnterpriseRepo:
             db.session.delete(enterprise)
             db.session.commit()
         else:
-           logger.error('enterprise is not temporary')
-           return False
+            logger.error('enterprise is not temporary')
+            return False
         logger.warning('enterprise deleted')
         return True
+    
     def getEnterpriseId(self, name):
         enterprise = Enterprise.query.filter_by(name=name).first()
         return enterprise.id
+    
+def getEnterpriseByEmployerId(self, employerId):
+        employer = Employers.query \
+            .join(Enterprise, Employers.enterpriseId == Enterprise.id) \
+            .filter(Employers.id == employerId) \
+            .first()
+        print("************************************************************************")
+        print(employer)
+        print("************************************************************************")
+
+        return employer.enterprise
