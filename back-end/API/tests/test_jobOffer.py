@@ -158,6 +158,9 @@ def test_adminCreateOffer(client):
             "studyPrograms": [
                 1,
                 2
+            ],
+            "scheduleIds": [
+                1
             ]
         }
     data1 = {
