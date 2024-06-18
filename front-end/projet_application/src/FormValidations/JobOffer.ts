@@ -51,6 +51,10 @@ const schema = yup.object().shape({
             },
         ),
     idProgramme: yup.array().min(1, "Le programme visé est requis"),
+    acceptCondition: yup
+        .boolean()
+        .required("Vous devez accepter les conditions")
+        .oneOf([true], "Vous devez accepter les conditions"),
 })
 
 export default schema

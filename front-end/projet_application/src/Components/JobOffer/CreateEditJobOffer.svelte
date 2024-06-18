@@ -34,6 +34,7 @@
         employerId: -1,
         isApproved: false,
         approbationMessage: "",
+        acceptCondition: false,
     }
     export let enterprise: Enterprise = {
         id: 0,
@@ -205,22 +206,13 @@
     }]
     let scheduleFromExistingOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
     let scheduleOption: { label: string; value: number }[] = []
-    //     { label: "Temps plein", value: 1 },
-    //     { label: "Emploi d'été", value: 2 },
-    //     { label: "Temps partiel", value: 3 },
-    //     { label: "Stage", value: 4 },
 
     //--------------------------------------------------
 
     let errorsProgramme: string = "" // Define a variable to hold the error message for selected program
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
-    let acceptCondition = false
 
     const handleSubmit = async () => {
-        if (!acceptCondition) {
-            errorsAcceptCondition = "Vous devez accepter les conditions"
-            return
-        }
         if (isJobOfferEdit) {
             await updateJobOffer()
         } else {
@@ -243,7 +235,7 @@
                         ...enterprise,
                     }, 
                     jobOffer: {
-                        ...jobOffer,
+                        ...((({ acceptCondition, ...rest }) => rest)(jobOffer)),
                     },
                     studyPrograms: selectedPrograms.map((p) => p.value),
                     scheduleIds: scheduleIds,
@@ -587,7 +579,7 @@
             <div class="accept-horiz">
                 <input
                     type="checkbox"
-                    bind:checked={acceptCondition}
+                    bind:checked={jobOffer.acceptCondition}
                     class="form-control-acceptCondition"
                     id="acceptCondition"
                 />
@@ -595,6 +587,9 @@
                     >J'acceptes les condtions
                 </label>
             </div>
+            <p class="errors-input">
+                {#if errors.acceptCondition}{errors.acceptCondition}{/if}
+            </p>
             <div class="send">
                 <Button
                     submit={true}
@@ -604,9 +599,6 @@
                 />
             </div>
         </div>
-        <p class="errors-input">
-            {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
-        </p>
     </div>
 </form>
 

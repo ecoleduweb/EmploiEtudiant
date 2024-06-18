@@ -16,4 +16,5 @@ export interface JobOffer {
     employerId: number // id de l'employeur
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation
+    acceptCondition: boolean | null | undefined
 }
