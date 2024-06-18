@@ -31,10 +31,10 @@
         offerStatus: 0,
         active: true,
         salary: "",
-        scheduleId: -1,
         employerId: -1,
         isApproved: false,
         approbationMessage: "",
+        acceptCondition: false,
     }
     export let enterprise: Enterprise = {
         id: 0,
@@ -56,6 +56,8 @@
     let selectedCity: { label: string; value: number }[] = []
     let cityFromEnterprise: [] = []
     let cityOptions: { label: string; value: number }[] = []
+    let scheduleIds: number[] = []
+
     
 
     const fetchEnterprise = async () => {
@@ -86,6 +88,14 @@
         }
     }
 
+    const fetchEmploymentSchedule = async () => {
+    const response = await GET<any>(`/employmentSchedule/getByOfferId/${jobOffer.id}`)
+
+    scheduleSelected = scheduleOption.filter((option: { label: string; value: number }) => 
+        response.some((schedule: { id: number }) => schedule.id === option.value)
+        )
+    }
+
     onMount(async () => {
         cityOptions = await fetchCity()
         if ($isLoggedIn) {
@@ -95,16 +105,20 @@
             enterpriseOption = await getAllEnterprise()
         }
         await fetchEnterprise()
+        await getSchedule()
+        if (isJobOfferEdit) {
+            await getScheduleByOfferId()
+        }
         if (isJobOfferEdit === true) {
-            const schedule = scheduleOption.find(
-                (s) => s.value === jobOffer.scheduleId,
-            )
-            if (schedule) {
-                scheduleSelected = {
-                    label: schedule.label,
-                    value: schedule.value,
-                }
-            }
+        const schedules = scheduleOption.filter(
+            (s) => scheduleIds.includes(s.value),
+        )
+        if (schedules.length > 0) {
+            scheduleSelected = schedules.map(schedule => ({
+                label: schedule.label,
+                value: schedule.value,
+            }));
+        }
             const programs = await GET<any>(
                 `/offerProgram/${jobOffer.id}`,
             )
@@ -118,6 +132,9 @@
                         : null
                 })
                 .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
+        }
+        if (isJobOfferEdit) {
+            await fetchEmploymentSchedule()
         }
     })
 
@@ -162,28 +179,40 @@
         { label: "Tous les programmes", value: 16 },
         { label: "Autres", value: 17 },
     ]
-    let scheduleSelected: { label: string; value: number } = {
+
+    const getSchedule = async () => {
+        const response = await GET<any>(
+            `/employmentSchedule/all`,
+        )
+        scheduleOption = response.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+    }
+
+    const getScheduleByOfferId = async () => {
+        const response = await GET<any>(
+            `/employmentSchedule/getByOfferId/${jobOffer.id}`,
+        )
+        scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+    }
+
+    let scheduleSelected: { label: string; value: number }[] = [{
         label: "",
         value: 0,
-    }
+    }]
     let scheduleFromExistingOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let scheduleOption = [
-        { label: "Temps plein", value: 1 },
-        { label: "Emploi d'été", value: 2 },
-        { label: "Temps partiel", value: 3 },
-    ]
+    let scheduleOption: { label: string; value: number }[] = []
 
     //--------------------------------------------------
 
     let errorsProgramme: string = "" // Define a variable to hold the error message for selected program
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
-    let acceptCondition = false
 
     const handleSubmit = async () => {
-        if (!acceptCondition) {
-            errorsAcceptCondition = "Vous devez accepter les conditions"
-            return
-        }
         if (isJobOfferEdit) {
             await updateJobOffer()
         } else {
@@ -198,17 +227,18 @@
     
     const prepareAndJobOfferIsValid = async () => {
         try {
-            jobOffer.scheduleId = (scheduleSelected as any)?.value
+            scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
             await ValidationSchema.validate(jobOffer, { abortEarly: false })
             return {
                     enterprise: {
                         ...enterprise,
-                    },
+                    }, 
                     jobOffer: {
-                        ...jobOffer,
+                        ...((({ acceptCondition, ...rest }) => rest)(jobOffer)),
                     },
                     studyPrograms: selectedPrograms.map((p) => p.value),
+                    scheduleIds: scheduleIds,
                 }
         }
         catch(err) {
@@ -243,7 +273,7 @@
         try {
             const requestData = await prepareAndJobOfferIsValid()
             const response = await PUT<any, any>(
-                `/jobOffer/approve/${jobOffer.id}`,
+                `/jobOffer/${jobOffer.id}`,
                 requestData,
             )
             if (response) {
@@ -400,7 +430,6 @@
             <MultiSelect
                 id="schedule"
                 options={scheduleOption}
-                maxSelect={1}
                 closeDropdownOnSelect={true}
                 placeholder="Choisir période(s)..."
                 bind:value={scheduleSelected}
@@ -507,18 +536,6 @@
         <p class="errors-input">
             {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
         </p>
-        <div class="form-group-horizontal">
-            <label for="internship">Stage ?</label>
-            <input
-                type="checkbox"
-                bind:checked={jobOffer.internship}
-                class="form-control"
-                id="internship"
-            />
-        </div>
-        <p class="errors-input">
-            {#if errors.internship}{errors.internship}{/if}
-        </p>
         <div class="form-group-vertical">
             <label for="offerLink"
                 >Adresse URL vers l'offre d'emploi détaillé</label
@@ -562,7 +579,7 @@
             <div class="accept-horiz">
                 <input
                     type="checkbox"
-                    bind:checked={acceptCondition}
+                    bind:checked={jobOffer.acceptCondition}
                     class="form-control-acceptCondition"
                     id="acceptCondition"
                 />
@@ -570,6 +587,9 @@
                     >J'acceptes les condtions
                 </label>
             </div>
+            <p class="errors-input">
+                {#if errors.acceptCondition}{errors.acceptCondition}{/if}
+            </p>
             <div class="send">
                 <Button
                     submit={true}
@@ -579,9 +599,6 @@
                 />
             </div>
         </div>
-        <p class="errors-input">
-            {#if errorsAcceptCondition}{errorsAcceptCondition}{/if}
-        </p>
     </div>
 </form>
 

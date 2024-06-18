@@ -44,6 +44,8 @@
             console.error("Error fetching program:", error)
         }
 
+        await getScheduleByOfferId()
+
     })
     let programmeSelected = [] as any
     let programmesOption = [
@@ -60,6 +62,21 @@
         { label: "Sciences humaines", value: 11 },
         { label: "Tous les programmes", value: 12 },
     ]
+    
+    let scheduleSelected: { label: string; value: number }[] = [{
+        label: "",
+        value: 0,
+    }]
+
+    const getScheduleByOfferId = async () => {
+        const response = await GET<any>(
+            `/employmentSchedule/getByOfferId/${offer.id}`,
+        )
+        scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+    }
 </script>
 
 <div class="container">
@@ -70,7 +87,7 @@
         {/if}
     </div>
     <div class="info">
-        <h5 class="infoTitle">Type de poste</h5>
+        <h5 class="infoTitle">Nom du poste</h5>
         <p class="text">{offer.title}</p>
         <h5 class="infoTitle">Adresse du lieu de travail</h5>
         <p class="text">{offer.address}</p>
@@ -84,10 +101,10 @@
         <p class="text">{offer.salary}</p>
         <h5 class="infoTitle">Heure par semaine</h5>
         <p class="text">{offer.hoursPerWeek}</p>
-        <h5 class="infoTitle">Stage ?</h5>
-        <p class="text">{offer.internship ? "Oui" : "Non"}</p>
         <h5 class="infoTitle">Programme</h5>
         <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
+        <h5 class="infoTitle">Type du poste</h5>
+        <p class="text">{scheduleSelected.map((s) => s.label).join(", ")}</p>
         <h5 class="infoTitle">Description du poste</h5>
         <p class="text">{offer.description}</p>
         <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>

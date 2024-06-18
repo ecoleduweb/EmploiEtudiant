@@ -22,7 +22,6 @@ class JobOfferService:
          salary=data['salary'],
          active=data['active'],
          employerId=employerId,
-         scheduleId=data['scheduleId'],
          isApproved=isApproved,
          approvedDate=datetime.now() if isApproved else None)
 
