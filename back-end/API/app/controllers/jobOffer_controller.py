@@ -53,9 +53,14 @@ def createJobOffer(current_user):
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
+    entrepriseDetails = request.args.get("entrepriseDetails")
+    employmentScheduleDetails = request.args.get("employmentScheduleDetails")
+    studyProgramDetails = request.args.get("studyProgramDetails")
+
     jobOffer = jobOffer_service.findById(id)
     if jobOffer:
-        return jsonify(jobOffer.to_json_string())
+        studyPrograms = offer_program_service.getProgramIdByOfferId(id)
+        return jsonify(jobOffer_service.getInfo(jobOffer, entrepriseDetails, employmentScheduleDetails, studyProgramDetails, studyPrograms))
     else:
         logger.warn('Job offer not found with id : ' + id)
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404

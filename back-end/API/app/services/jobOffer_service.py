@@ -50,4 +50,17 @@ class JobOfferService:
         if jobOffer_repo.jobOfferExist(id):
             jobOffer_repo.archiveJobOffer(id)
         raise NotFoundException("Job not found")
+    
+    def getInfo(self, jobOffer, entrepriseDetails, employmentScheduleDetails, studyProgramDetails, studyPrograms):
+        data = jobOffer.to_json_string()
+
+        if entrepriseDetails != None and entrepriseDetails == "true":
+            print("Entreprise")
+    
+        if employmentScheduleDetails != None and employmentScheduleDetails == "true":
+            print("Employment schedule")
+
+        if studyProgramDetails != None and studyProgramDetails == "true":
+            data["studyProgram"] = studyPrograms
         
+        return data
