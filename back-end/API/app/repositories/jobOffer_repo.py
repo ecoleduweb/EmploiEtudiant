@@ -32,7 +32,6 @@ class JobOfferRepo:
         jobOffer.salary = data['jobOffer']['salary']
         jobOffer.active = data['jobOffer']['active']
         jobOffer.employerId = data['jobOffer']['employerId']
-        jobOffer.scheduleId = data['jobOffer']['scheduleId']
 
         if 'isApproved' in data['jobOffer']:
             jobOffer.isApproved = data['jobOffer']['isApproved']

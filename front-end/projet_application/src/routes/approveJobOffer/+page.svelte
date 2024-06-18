@@ -35,9 +35,9 @@
         offerStatus: 0,
         active: true,
         salary: "",
-        scheduleId: -1,
         employerId: 1,
         isApproved: false,
+        approbationMessage: "",
     }
 
     let error: any = {}

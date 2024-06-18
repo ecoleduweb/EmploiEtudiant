@@ -47,6 +47,7 @@ def createJobOffer(current_user):
     jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
     return jobOffer.to_json_string(), 201
@@ -91,6 +92,7 @@ def updateJobOffer(current_user, id):
                 data["jobOffer"]["approvedDate"] = datetime.now()
 
         jobOffer = jobOffer_service.updateJobOffer(data)
+        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])

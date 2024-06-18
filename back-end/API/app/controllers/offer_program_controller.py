@@ -8,8 +8,7 @@ logger = getLogger(__name__)
 offer_program_blueprint = Blueprint('offerProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 @offer_program_blueprint.route('/<int:id>', methods=['GET'])
-@token_required
-def getProgramIdByOfferId(current_user, id):
+def getProgramIdByOfferId(id):
     programs = offer_program_service.getProgramIdByOfferId(id)
     if programs:
         return jsonify(programs)
