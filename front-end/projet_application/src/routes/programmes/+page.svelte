@@ -2,12 +2,12 @@
     import "../../styles/global.css"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import StudyProgramRow from "../../Components/StudyProgram/studyProgramRow.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import CreateAndEditStudy from "../../Components/StudyProgram/createAndEditStudy.svelte"
     import { studyPrograms } from "$lib"
     import type { Option } from "$lib"
+    import StudyProgramRow from "../../Components/StudyProgram/ProgramRow.svelte"
 
     let createStudyProgram = false
     let editStudyProgram = false

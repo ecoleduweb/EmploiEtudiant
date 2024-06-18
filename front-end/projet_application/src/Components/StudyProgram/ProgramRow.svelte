@@ -1,9 +1,5 @@
 <script lang="ts">
     import type { Option } from "$lib"
-    import type { StudyProgram } from "../../Models/StudyProgram"
-    import { GET } from "../../ts/server"
-    import { onMount } from "svelte"
-    import { writable } from "svelte/store"
 
     export let studyProgram: Option
     export let handleModalClick: (id: number) => void
