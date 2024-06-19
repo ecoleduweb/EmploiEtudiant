@@ -15,20 +15,19 @@ class JobOfferService:
     
     def createJobOffer(self, data, employerId, isApproved):
         new_job_offer = JobOffer(title=data['title'],
-        description=data['description'],
-        offerDebut=data["offerDebut"],
-        address=data['address'],
-        dateEntryOffice=data['dateEntryOffice'],
-        deadlineApply=data['deadlineApply'],
-        email=data['email'],
-        hoursPerWeek=data['hoursPerWeek'],
-        offerLink=data['offerLink'],
-        salary=data['salary'],
-        active=data['active'],
-        employerId=employerId,
-        scheduleId=data['scheduleId'],
-        isApproved=isApproved,
-        approvedDate=datetime.now() if isApproved else None)
+         description=data['description'],
+         offerDebut=data["offerDebut"],
+         address=data['address'],
+         dateEntryOffice=data['dateEntryOffice'],
+         deadlineApply=data['deadlineApply'],
+         email=data['email'],
+         hoursPerWeek=data['hoursPerWeek'],
+         offerLink=data['offerLink'],
+         salary=data['salary'],
+         active=data['active'],
+         employerId=employerId,
+         isApproved=isApproved,
+         approvedDate=datetime.now() if isApproved else None)
 
         return jobOffer_repo.createJobOffer(new_job_offer)
     
@@ -53,7 +52,6 @@ class JobOfferService:
     def archiveJobOffer(self, id):
         if jobOffer_repo.jobOfferExist(id):
             jobOffer_repo.archiveJobOffer(id)
-        raise NotFoundException("Job not found")
     
     def getInfo(self, jobOfferModel, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOfferDetails = JobOfferDetails(jobOfferModel)

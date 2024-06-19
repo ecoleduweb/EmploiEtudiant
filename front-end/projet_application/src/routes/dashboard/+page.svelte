@@ -26,6 +26,7 @@
     }
 
     const handleEditEmploiClick = (jobOffer: JobOffer) => {
+        isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
     }

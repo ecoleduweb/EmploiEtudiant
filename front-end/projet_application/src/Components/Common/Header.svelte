@@ -52,7 +52,7 @@
         goto("/dashboard")
     }
     const handleUtilisateur = () => {
-        goto("/utilisateur")
+        goto("/users")
     }
     const handleProgrammes = () => {
         goto("/programmes")
