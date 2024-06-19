@@ -1,9 +1,13 @@
 from app.repositories.jobOffer_repo import JobOfferRepo
+from app.repositories.enterprise_repo import EnterpriseRepo
+from app.repositories.study_program_repo import StudyProgramRepo
 from app.models.jobOffer_model import JobOffer
+from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
 from app.customexception.CustomException import NotFoundException
 jobOffer_repo = JobOfferRepo()
-
+enterprise_repo = EnterpriseRepo()
+studyProgram_repo = StudyProgramRepo()
 class JobOfferService:
 
     def offresEmploi(self):
@@ -11,20 +15,20 @@ class JobOfferService:
     
     def createJobOffer(self, data, employerId, isApproved):
         new_job_offer = JobOffer(title=data['title'],
-         description=data['description'],
-         offerDebut=data["offerDebut"],
-         address=data['address'],
-         dateEntryOffice=data['dateEntryOffice'],
-         deadlineApply=data['deadlineApply'],
-         email=data['email'],
-         hoursPerWeek=data['hoursPerWeek'],
-         offerLink=data['offerLink'],
-         salary=data['salary'],
-         active=data['active'],
-         employerId=employerId,
-         scheduleId=data['scheduleId'],
-         isApproved=isApproved,
-         approvedDate=datetime.now() if isApproved else None)
+        description=data['description'],
+        offerDebut=data["offerDebut"],
+        address=data['address'],
+        dateEntryOffice=data['dateEntryOffice'],
+        deadlineApply=data['deadlineApply'],
+        email=data['email'],
+        hoursPerWeek=data['hoursPerWeek'],
+        offerLink=data['offerLink'],
+        salary=data['salary'],
+        active=data['active'],
+        employerId=employerId,
+        scheduleId=data['scheduleId'],
+        isApproved=isApproved,
+        approvedDate=datetime.now() if isApproved else None)
 
         return jobOffer_repo.createJobOffer(new_job_offer)
     
@@ -51,16 +55,19 @@ class JobOfferService:
             jobOffer_repo.archiveJobOffer(id)
         raise NotFoundException("Job not found")
     
-    def getInfo(self, jobOffer, entrepriseDetails, employmentScheduleDetails, studyProgramDetails, studyPrograms):
-        data = jobOffer.to_json_string()
+    def getInfo(self, jobOfferModel, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
+        jobOfferDetails = JobOfferDetails(jobOfferModel)
 
-        if entrepriseDetails != None and entrepriseDetails == "true":
-            print("Entreprise")
+        # Créer un objet jobOfferDetails et y passer le jobOffer dans le constructeur.
+
+        if entrepriseDetails != None and entrepriseDetails:
+            enterprise = enterprise_repo.getEnterpriseByEmployerId(jobOfferModel.employerId)
+            jobOfferDetails.AddEnterprise(enterprise)
     
-        if employmentScheduleDetails != None and employmentScheduleDetails == "true":
+        if employmentScheduleDetails != None and employmentScheduleDetails:
             print("Employment schedule")
 
-        if studyProgramDetails != None and studyProgramDetails == "true":
-            data["studyProgram"] = studyPrograms
+        #if studyProgramDetails != None and studyProgramDetails:
+        #    jobOfferDetails["studyProgram"] = studyPrograms
         
-        return data
+        return jobOfferDetails
