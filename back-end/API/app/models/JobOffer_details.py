@@ -14,7 +14,6 @@ class JobOfferDetails:
         self.active = jobOffer.active
         self.approbationMessage = jobOffer.approbationMessage
         self.employerId = jobOffer.employerId
-        self.scheduleId = jobOffer.scheduleId
         self.isApproved = jobOffer.isApproved
         self.approvedDate = jobOffer.approvedDate
         self.enterprise = None
