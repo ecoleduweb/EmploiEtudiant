@@ -1,56 +1,28 @@
 <script lang="ts">
     import Button from "../Inputs/Button.svelte"
-    import { POST, PUT } from "../../ts/server"
-    import type { studyProgramModalSettings } from "$lib";
     import type { StudyProgram } from "../../Models/StudyProgram"
-    export let settings: studyProgramModalSettings
-    export let handleApproveClick: () => void
+    import { onMount } from "svelte"
+    export let studyProgram: StudyProgram = {name: "", id: -1}
+    export let handleApproveClick: (studyProgram: StudyProgram | void) => void
 
-    let nameChosen = ""
-
-    const addStudy = async (newName: string) => {
-        try {
-            const response = await POST<any, any>(`/studyProgram/new`, 
-            {
-                name: newName
-            })
-
-            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
-        } catch (error) {
-            console.error("Error creating study program:", error)
-        }
-        handleApproveClick()
-    }
-
-    const editStudy = async (newName: string) => {
-        try {
-            const response = await PUT<any, any>(`/studyProgram/studyProgram/${settings.studyProgram?.value}`, 
-            {
-                name: newName
-            })
-
-            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
-        } catch (error) {
-            console.error("Error editing study program:", error)
-        }
-        handleApproveClick()
-    }
+    let savedName = studyProgram.name
 
 </script>
 
 <div class="main-div">
     <div class="container">
         <div>
-            <h5 class="infoTitle">{settings.mode == 0 ? "Veuillez choisir un nouveau nom pour le nouveau programme" : "Veuillez choisir un nouveau nom pour le programme suivant: " + settings.studyProgram?.label}</h5>
+            <h5 class="infoTitle">{studyProgram.id <= 0 ? "Veuillez choisir un nouveau nom pour le nouveau programme" : "Veuillez choisir un nouveau nom pour le programme suivant: " + savedName}</h5>
             <input type="text"
-                bind:value={nameChosen}
+                bind:value={studyProgram.name}
                 placeholder="Nouveau nom"
                 class="input"
             />
         </div>
         <div class="button">
-            <Button text={settings.mode == 0 ? "Créer" : "Modifier"} onClick={() => { 
-                settings.mode == 0 ? addStudy(nameChosen) : editStudy(nameChosen)
+            <Button text={studyProgram.id <= 0 ? "Créer" : "Modifier"} onClick={() => { 
+                handleApproveClick(studyProgram)
+                savedName = studyProgram.name
             }}/>
 
             <Button text="Annuler" onClick={() => handleApproveClick()} />

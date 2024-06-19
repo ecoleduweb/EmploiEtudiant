@@ -20,7 +20,7 @@
             )
 
             if (response)
-            return response.map((x: any) => ({"label": x.name, "value": x.id}))
+            return response
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }

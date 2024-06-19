@@ -1,6 +1,6 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import { GET } from "../../ts/server"
+    import { GET, POST, PUT } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -8,34 +8,93 @@
     import { studyPrograms } from "$lib"
     import type { Option } from "$lib"
     import StudyProgramRow from "../../Components/StudyProgram/ProgramRow.svelte"
+    import type { StudyProgram } from "../../Models/StudyProgram"
 
     let createStudyProgram = false
     let editStudyProgram = false
-    let selectedProgram: Option | undefined = undefined
-    const openModal = (id: number) => {
-        editStudyProgram = true
+    let selectedProgram: StudyProgram | undefined = undefined
 
+
+    const openEditModal = (id: number) => {
+        editStudyProgram = true
         $studyPrograms.map((x: any) => {
-            if (x.value == id) 
+            if (x.id == id) 
             {
                 selectedProgram = x
             }
         });
     }
-    const closeModal = () => {
+
+    const closeEditModal = () => {
         editStudyProgram = false
         refresh()
     }
+
+    const handleStudyProgramClick = (offer: StudyProgram) => {
+        openEditModal(offer.id)
+        refresh()
+    }
+
     const openCreateStudy = () => {
+        selectedProgram = undefined
         createStudyProgram = true
     }
+    
     const closeCreateStudy = () => {
         createStudyProgram = false
         refresh()
     }
-    const handleStudyProgramClick = (offerId: number) => {
-        openModal(offerId)
-        refresh()
+
+
+
+    const addStudy = async (offer: StudyProgram) => {
+        try {
+            const response = await POST<any, any>(`/studyProgram/new`, 
+            {
+                name: offer.name
+            })
+
+            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+        } catch (error) {
+            console.error("Error creating study program:", error)
+        }
+
+        await refresh()
+    }
+
+    const editStudy = async (offer: StudyProgram) => {
+        try {
+            const response = await PUT<any, any>(`/studyProgram/studyProgram/${offer.id}`, 
+            {
+                name: offer.name
+            })
+
+            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+        } catch (error) {
+            console.error("Error editing study program:", error)
+        }
+
+        await refresh()
+    }
+
+
+
+    const upsertStudyProgram = (offer: StudyProgram | void) => 
+    {
+        if (offer !== undefined)
+        {
+            if (offer.id >= 0) //Existant
+            {
+                editStudy(offer)
+            }
+            else //Nouveau 
+            {
+                addStudy(offer)
+            }
+        }
+        //Si offer.id >= 0, veut dire existant
+        //Si offer.id = -1, veut dire nouveau
+        //Si offer = undefined, veut dire annuler
     }
 
     const getStudyPrograms = async () => {
@@ -45,7 +104,7 @@
             )
 
             if (response)
-            studyPrograms.set( response.map((x: any) => ({"label": x.name, "value": x.id})) ) 
+            studyPrograms.set(response) 
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -55,7 +114,7 @@
         await getStudyPrograms()
     }
 
-    onMount(getStudyPrograms)
+    onMount(refresh)
 </script>
 
 <main>
@@ -80,18 +139,18 @@
     </section>
     <section class="StudyPrograms">
         {#each $studyPrograms as studyProgram}
-            <StudyProgramRow {studyProgram} handleModalClick={handleStudyProgramClick}/>
+            <StudyProgramRow {studyProgram} handleModalClick={() => handleStudyProgramClick(studyProgram)}/>
         {/each}
     </section>
     {#if editStudyProgram}
-        <Modal handleCloseClick={closeModal}>
-            <CreateAndEditStudy settings={( { mode: 1, studyProgram: selectedProgram} )} handleApproveClick={closeModal} />
+        <Modal handleCloseClick={closeEditModal}>
+            <CreateAndEditStudy studyProgram={selectedProgram} handleApproveClick={(offer) => upsertStudyProgram(offer)} />
         </Modal>
     {/if}
 
     {#if createStudyProgram}
         <Modal handleCloseClick={closeCreateStudy}>
-            <CreateAndEditStudy settings={( { mode: 0, studyProgram: undefined} )} handleApproveClick={closeCreateStudy} />
+            <CreateAndEditStudy studyProgram={selectedProgram} handleApproveClick={(offer) => upsertStudyProgram(offer)} />
         </Modal>
     {/if}
 

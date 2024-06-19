@@ -162,7 +162,7 @@
 
     let selectedPrograms = [{ label: "", value: 0 }]
     let programmeFromSelectedOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let programOptions: { label: string; value: number; }[] = $studyPrograms
+    let programOptions: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
 
     const getSchedule = async () => {
         const response = await GET<any>(

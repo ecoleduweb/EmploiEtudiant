@@ -49,7 +49,7 @@
 
     })
     let programmeSelected = [] as any
-    let programmesOption: { label: string; value: number; }[] = $studyPrograms
+    let programmesOption: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
     
     let scheduleSelected: { label: string; value: number }[] = [{
         label: "",
