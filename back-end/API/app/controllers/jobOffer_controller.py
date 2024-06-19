@@ -35,9 +35,10 @@ def createJobOffer(current_user):
     if current_user.isModerator:
         isApproved = True
 
-        enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
-        enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
-        employer = employer_service.createEmployer(enterpriseId, None)
+        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+        else:
+            return jsonify({'message', 'No enterprise selected.'}), 500
     else:
         # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
         isApproved = None

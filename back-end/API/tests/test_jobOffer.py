@@ -148,9 +148,9 @@ def test_adminCreateOffer(client):
             job_offer1_data,
             "enterprise": 
             {
-                "id": 2,
-                "name": "aa",
-                "email": "aa@gmail.com",
+                "id": 1,
+                "name": "Google",
+                "email": "google@gmail.com",
                 "phone": "1234567890",
                 "address": "123 rue google",
                 "cityId": 1
@@ -163,9 +163,20 @@ def test_adminCreateOffer(client):
                 1
             ]
         }
+    
     data1 = {
         "email": "admin@gmail.com",
         "password": "test123"
+    }
+
+    data2 = {
+        "id": 2,
+        "name": "Netflix",
+        "email": "netflix@gmail.com",
+        "phone": "8888888888",
+        "address": "14 rue de la rue",
+        "cityId": 1,
+        "isTemporary": True
     }
 
 
@@ -177,8 +188,9 @@ def test_adminCreateOffer(client):
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
     response = client.post('/jobOffer/new', json=data, headers={'Authorization': token})
+    response2 = client.post('http://localhost:5000/enterprise/new', json=data2, headers={'Authorization': token})
     EmployerCount = client.get('/enterprise/all', headers={'Authorization': token})
-    assert response.status_code == 201 and EmployerCount.status_code == 200 and len(EmployerCount.json) > 1
+    assert response.status_code == 201 and response2.status_code == 200 and EmployerCount.status_code == 200 and len(EmployerCount.json) > 1
 
 def test_approveJobOffer(client):
     data = {
