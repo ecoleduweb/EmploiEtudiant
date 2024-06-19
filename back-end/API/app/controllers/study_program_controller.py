@@ -3,6 +3,8 @@ from app.services.study_program_service import StudyProgramService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from app.customexception.CustomException import NotFoundException
+from logging import getLogger
+logger = getLogger(__name__)
 study_program_service = StudyProgramService()
 
 study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -22,7 +24,8 @@ def editStudyProgram(current_user, id):
         study_program_service.editStudyProgram(id, data["name"])
         return jsonify({'message': 'Study program edited successfully'})
     except NotFoundException as e:
-        return jsonify({'message': 'An error occured.'}), 500
+        logger.warn("Couldn't edit study with id: " + str(id))
+        return jsonify({'message': 'An error occured.'}), e.errorCode
     
 
     
@@ -34,4 +37,5 @@ def addStudyProgram(current_user):
         study_program_service.addStudyProgram(data["name"])
         return jsonify({'message': 'Study program added successfully'})
     except Exception as e:
+        logger.warn("Couldn't add study with name: " + str(data["name"]))
         return jsonify({'message', 'An error occured.'}), 500

@@ -15,7 +15,8 @@
     {
         try {
             let response = await GET<any>(
-            `/studyProgram/studyPrograms`
+                `/studyProgram/studyPrograms`,
+                false
             )
 
             if (response)
