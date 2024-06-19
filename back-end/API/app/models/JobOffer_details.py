@@ -38,7 +38,6 @@ class JobOfferDetails:
             'active': self.active,
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
-            'scheduleId': self.scheduleId,
             'isApproved': self.isApproved,
             'approvedDate': self.approvedDate
         }
