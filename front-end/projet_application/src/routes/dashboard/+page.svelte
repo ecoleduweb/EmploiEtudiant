@@ -9,10 +9,10 @@
     import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
+    import { currentUser, isLoggedIn } from "$lib"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -63,14 +63,30 @@
         isTemporary: false,
     }
     
+    let loaded = false
+    
     onMount(async () => {
-        if ($isLoggedIn) {
-            isModerator = ($currentUser as any).isModerator === true
-            await getJobOffersEmployeur()
+        try 
+        {
+            if ($isLoggedIn) {
+                isModerator = ($currentUser as any).isModerator === true
+                await getJobOffersEmployeur()
+            }
+        }
+        catch (error) 
+        {
+            console.error("Error while loading:", error)
+        }
+
+        finally 
+        {
+            loaded = true
         }
     })
 
     const jobOffers = writable<JobOffer[]>([])
+
+
 
     const getJobOffersEmployeur = async () => {
         try {
@@ -119,74 +135,95 @@
             </div>
         </div>
     </section>
-    <section class="offres">
-        {#if isModerator === true}
-            <p class="textOffre">Les offres d'emplois</p>
-        {/if}
-        {#if isModerator === false}
-            <p class="textOffre">Mes offres d'emplois</p>
-        {/if}
-        {#if isRefusedOffer.length > 0}
-            <h2 class="textSections">Offres refusées</h2>
-            {#each isRefusedOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    offer={offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if toBeApprovedOffer.length > 0}
-            <h2 class="textSections">Offres en attente d'approbation</h2>
-            {#each toBeApprovedOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if offerToCome.length > 0}
-            <h2 class="textSections">Offres bientôt affichées</h2>
-            {#each offerToCome as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if offerDisplayed.length > 0}
-            <h2 class="textSections">Offres affichées</h2>
-            {#each offerDisplayed as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if expiredOffer.length > 0}
-            <h2 class="textSections">Offres expirées</h2>
-            {#each expiredOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-    </section>
+
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#if isModerator === true}
+                <p class="textOffre">Les offres d'emplois</p>
+            {/if}
+            {#if isModerator === false}
+                <p class="textOffre">Mes offres d'emplois</p>
+            {/if}
+            {#if isRefusedOffer.length > 0}
+                <h2 class="textSections">Offres refusées</h2>
+                {#each isRefusedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        offer={offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if toBeApprovedOffer.length > 0}
+                <h2 class="textSections">Offres en attente d'approbation</h2>
+                {#each toBeApprovedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if offerToCome.length > 0}
+                <h2 class="textSections">Offres bientôt affichées</h2>
+                {#each offerToCome as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if offerDisplayed.length > 0}
+                <h2 class="textSections">Offres affichées</h2>
+                {#each offerDisplayed as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if expiredOffer.length > 0}
+                <h2 class="textSections">Offres expirées</h2>
+                {#each expiredOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+        </section>
+    {/if}
+
+    <style scoped>
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
+
+
     {#if showApproveModal}    
     <Modal handleCloseClick={closeModalApprove}>
         <ApprouveOffre

@@ -2,11 +2,14 @@
     import "../styles/global.css"
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
-    import EmploiRow from "../Components/JobOffer/EmploiRow.svelte"
+    import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
+    import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
     import { writable } from "svelte/store"
     import type { JobOffer } from "../Models/Offre"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
+
+    let loaded = false
 
     const jobOffers = writable<JobOffer[]>([])
     const getJobOffers = async () => {
@@ -17,8 +20,22 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    
-    onMount((getJobOffers))
+    onMount(async () => {
+        try 
+        {
+            await getJobOffers()
+        }
+
+        catch (error) 
+        {
+            console.error("Error while loading the page", error)
+        }
+
+        finally
+        {
+            loaded = true
+        }
+    })
 
     const handleEmploi = () => {
         goto("/emplois")
@@ -49,11 +66,32 @@
             </div>
         </div>
     </section>
-    <section class="offres">
-        {#each ($jobOffers).slice(0, 5) as offre}
-            <EmploiRow {offre} handleModalClick={(function() {})} />
-        {/each}
-    </section>
+
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#each ($jobOffers).slice(0, 5) as offer}
+                <DetailOfferRow {offer} 
+                handleModalClick={(function() {})}/>
+            {/each}
+        </section>
+    {/if}
+    
+    <style scoped>
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
+
 </main>
 
 <style scoped>

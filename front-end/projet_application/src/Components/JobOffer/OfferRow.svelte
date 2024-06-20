@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte"
     import type { JobOffer } from "../../Models/Offre"
     export let isModerator: boolean
     export let offer: JobOffer
