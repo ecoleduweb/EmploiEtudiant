@@ -9,10 +9,9 @@
     import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
+    import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     let showApproveModal = false;
