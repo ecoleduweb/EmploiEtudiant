@@ -11,38 +11,28 @@
     import type { StudyProgram } from "../../Models/StudyProgram"
 
     let createStudyProgram = false
-    let editStudyProgram = false
+    let modalOpened = false
     let selectedProgram: StudyProgram | undefined = undefined
 
 
-    const openEditModal = (id: number) => {
-        editStudyProgram = true
-        $studyPrograms.map((x: any) => {
-            if (x.id == id) 
-            {
-                selectedProgram = x
-            }
-        });
+    const openModal = () => {
+        modalOpened = true
     }
 
-    const closeEditModal = () => {
-        editStudyProgram = false
+    const closeModal = () => {
+        modalOpened = false
         refresh()
     }
 
-    const handleStudyProgramClick = (offer: StudyProgram) => {
-        openEditModal(offer.id)
+    const handleStudyProgramClick = (studyProgram: StudyProgram) => {
+        selectedProgram = studyProgram
+        openModal()
         refresh()
     }
 
     const openCreateStudy = () => {
         selectedProgram = undefined
-        createStudyProgram = true
-    }
-    
-    const closeCreateStudy = () => {
-        createStudyProgram = false
-        refresh()
+        modalOpened = true
     }
 
 
@@ -79,18 +69,24 @@
 
 
 
-    const upsertStudyProgram = (offer: StudyProgram | void) => 
+    const upsertStudyProgram = async (offer: StudyProgram | void) => 
     {
         if (offer !== undefined)
         {
             if (offer.id >= 0) //Existant
             {
-                editStudy(offer)
+                await editStudy(offer)
+                closeModal()
             }
             else //Nouveau 
             {
-                addStudy(offer)
+                await addStudy(offer)
+                closeModal()
             }
+        }
+        else 
+        {
+            closeModal()
         }
         //Si offer.id >= 0, veut dire existant
         //Si offer.id = -1, veut dire nouveau
@@ -142,14 +138,8 @@
             <StudyProgramRow {studyProgram} handleModalClick={() => handleStudyProgramClick(studyProgram)}/>
         {/each}
     </section>
-    {#if editStudyProgram}
-        <Modal handleCloseClick={closeEditModal}>
-            <CreateAndEditStudy studyProgram={selectedProgram} handleApproveClick={(offer) => upsertStudyProgram(offer)} />
-        </Modal>
-    {/if}
-
-    {#if createStudyProgram}
-        <Modal handleCloseClick={closeCreateStudy}>
+    {#if modalOpened}
+        <Modal handleCloseClick={closeModal}>
             <CreateAndEditStudy studyProgram={selectedProgram} handleApproveClick={(offer) => upsertStudyProgram(offer)} />
         </Modal>
     {/if}
