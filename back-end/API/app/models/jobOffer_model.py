@@ -19,7 +19,6 @@ class JobOffer(db.Model):
     active = db.Column(db.Boolean, nullable=False)
     approbationMessage = db.Column(db.String(6000))
     employerId = db.Column(db.Integer, nullable=True)
-    scheduleId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None)
 
@@ -38,7 +37,6 @@ class JobOffer(db.Model):
         active='{self.active}',
         approbationMessage='{self.approbationMessage}',
         employerId='{self.employerId}',
-        scheduleId='{self.scheduleId}',
         isApproved='{self.isApproved}',
         approvedDate='{self.approvedDate}')'''
 
@@ -58,7 +56,6 @@ class JobOffer(db.Model):
             'active': self.active,
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
-            'scheduleId': self.scheduleId,
             'isApproved': self.isApproved,
             'approvedDate': self.approvedDate
         }
