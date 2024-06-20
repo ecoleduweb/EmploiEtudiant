@@ -67,23 +67,20 @@
         </div>
     </section>
 
-    <section class={loaded ? "CanBeHidden" : "Loading"}>
-        <LoadingSpinner />
-    </section>
-
-    <section class={loaded ? "offres" : "CanBeHidden"}>
-        {#each ($jobOffers).slice(0, 5) as offer}
-            <DetailOfferRow {offer} 
-            handleModalClick={(function() {})}/>
-        {/each}
-    </section>
-
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#each ($jobOffers).slice(0, 5) as offer}
+                <DetailOfferRow {offer} 
+                handleModalClick={(function() {})}/>
+            {/each}
+        </section>
+    {/if}
+    
     <style scoped>
-        section.CanBeHidden 
-        {
-            display: none !important;
-        }
-
         .Loading 
         {
             height: 100%;
@@ -94,11 +91,6 @@
             position: fixed;
         }
     </style>
-
-    <style scoped>
-
-    </style>
-
 
 </main>
 

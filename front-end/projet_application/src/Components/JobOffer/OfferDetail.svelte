@@ -70,55 +70,60 @@
 
 
 <div class="container">
-    <div class={Loaded ? "CanBeHidden" : "Loading2"}>
-        <LoadingSpinner />
-    </div>
 
-    <div class={Loaded ? "titleContainer" : "CanBeHidden"}>
-        <h3 class="title">{offer.title}</h3>
-        {#if enterprise}
-            <h4 class="subtitle">Chez {enterprise.name}</h4>
-        {/if}
-    </div>
-    <div class={Loaded ? "info" : "CanBeHidden"}>
-        <h5 class="infoTitle">Type de poste</h5>
-        <p class="text">{offer.title}</p>
-        <h5 class="infoTitle">Adresse du lieu de travail</h5>
-        <p class="text">{offer.address}</p>
-        <h5 class="infoTitle">Date de début</h5>
-        <p class="text">{offer.offerDebut}</p>
-        <h5 class="infoTitle">Date d'entrée en fonction</h5>
-        <p class="text">{offer.dateEntryOffice}</p>
-        <h5 class="infoTitle">Date limite pour postuler</h5>
-        <p class="text">{offer.deadlineApply}</p>
-        <h5 class="infoTitle">Salaire</h5>
-        <p class="text">{offer.salary}</p>
-        <h5 class="infoTitle">Heure par semaine</h5>
-        <p class="text">{offer.hoursPerWeek}</p>
-        <h5 class="infoTitle">Stage ?</h5>
-        <p class="text">{offer.internship ? "Oui" : "Non"}</p>
-        <h5 class="infoTitle">Programme</h5>
-        <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
-        <h5 class="infoTitle">Description du poste</h5>
-        <p class="text">{offer.description}</p>
-        <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
-        <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
-        <h5 class="infoTitle">Où envoyer votre candidature</h5>
-        <p class="text">{offer.email}</p>
+    {#if Loaded}
+        <div class="Loading2">
+            <LoadingSpinner />
+        </div>
+    {:else}
+        <div class="titleContainer">
+            <h3 class="title">{offer.title}</h3>
+            {#if enterprise}
+                <h4 class="subtitle">Chez {enterprise.name}</h4>
+            {/if}
+        </div>
 
-        <style scoped>
-            .CanBeHidden 
-            {
-                display: none;
-            }
+        <div class="info">
+            <h5 class="infoTitle">Type de poste</h5>
+            <p class="text">{offer.title}</p>
+            <h5 class="infoTitle">Adresse du lieu de travail</h5>
+            <p class="text">{offer.address}</p>
+            <h5 class="infoTitle">Date de début</h5>
+            <p class="text">{offer.offerDebut}</p>
+            <h5 class="infoTitle">Date d'entrée en fonction</h5>
+            <p class="text">{offer.dateEntryOffice}</p>
+            <h5 class="infoTitle">Date limite pour postuler</h5>
+            <p class="text">{offer.deadlineApply}</p>
+            <h5 class="infoTitle">Salaire</h5>
+            <p class="text">{offer.salary}</p>
+            <h5 class="infoTitle">Heure par semaine</h5>
+            <p class="text">{offer.hoursPerWeek}</p>
+            <h5 class="infoTitle">Stage ?</h5>
+            <p class="text">{offer.internship ? "Oui" : "Non"}</p>
+            <h5 class="infoTitle">Programme</h5>
+            <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
+            <h5 class="infoTitle">Description du poste</h5>
+            <p class="text">{offer.description}</p>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
+            <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
+            <h5 class="infoTitle">Où envoyer votre candidature</h5>
+            <p class="text">{offer.email}</p>
+    
+            <style scoped>
+                .CanBeHidden 
+                {
+                    display: none;
+                }
+    
+                .container > .Loading2 
+                {
+                    display: flex !important;
+                    justify-content: center !important;
+                }
+            </style>
+        </div>
+    {/if}
 
-            .container > .Loading2 
-            {
-                display: flex !important;
-                justify-content: center !important;
-            }
-        </style>
-    </div>
 </div>
 
 <style scoped>

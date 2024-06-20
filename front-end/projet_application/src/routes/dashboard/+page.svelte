@@ -136,78 +136,80 @@
         </div>
     </section>
 
-    <section class={loaded ? "CanBeHidden" : "Loading"}>
-        <LoadingSpinner />
-    </section>
-
-    <section class={loaded ? "offres" : "CanBeHidden"}>
-        {#if isModerator === true}
-            <p class="textOffre">Les offres d'emplois</p>
-        {/if}
-        {#if isModerator === false}
-            <p class="textOffre">Mes offres d'emplois</p>
-        {/if}
-        {#if isRefusedOffer.length > 0}
-            <h2 class="textSections">Offres refusées</h2>
-            {#each isRefusedOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    offer={offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if toBeApprovedOffer.length > 0}
-            <h2 class="textSections">Offres en attente d'approbation</h2>
-            {#each toBeApprovedOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if offerToCome.length > 0}
-            <h2 class="textSections">Offres bientôt affichées</h2>
-            {#each offerToCome as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if offerDisplayed.length > 0}
-            <h2 class="textSections">Offres affichées</h2>
-            {#each offerDisplayed as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-        {#if expiredOffer.length > 0}
-            <h2 class="textSections">Offres expirées</h2>
-            {#each expiredOffer as offer}
-                <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                />
-            {/each}
-        {/if}
-    </section>
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#if isModerator === true}
+                <p class="textOffre">Les offres d'emplois</p>
+            {/if}
+            {#if isModerator === false}
+                <p class="textOffre">Mes offres d'emplois</p>
+            {/if}
+            {#if isRefusedOffer.length > 0}
+                <h2 class="textSections">Offres refusées</h2>
+                {#each isRefusedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        offer={offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if toBeApprovedOffer.length > 0}
+                <h2 class="textSections">Offres en attente d'approbation</h2>
+                {#each toBeApprovedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if offerToCome.length > 0}
+                <h2 class="textSections">Offres bientôt affichées</h2>
+                {#each offerToCome as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if offerDisplayed.length > 0}
+                <h2 class="textSections">Offres affichées</h2>
+                {#each offerDisplayed as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+            {#if expiredOffer.length > 0}
+                <h2 class="textSections">Offres expirées</h2>
+                {#each expiredOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
+            {/if}
+        </section>
+    {/if}
 
     <style scoped>
         .Loading 
@@ -218,11 +220,6 @@
             justify-content: center;
             align-items: center;
             position: fixed;
-        }
-
-        .CanBeHidden 
-        {
-            display: none !important;
         }
     </style>
 

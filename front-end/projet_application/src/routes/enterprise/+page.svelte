@@ -86,25 +86,22 @@
         </div>
     </section>
 
-    <section class={loaded ? "CanBeHidden" : "Loading"}>
-        <LoadingSpinner />
-    </section>
-
-    <section class={loaded ? "offres" : "CanBeHidden"}>
-        {#each $enterprises as enterprise}
-            <EnterpriseRow
-                {enterprise}
-                handleModalClick={handleEnterpriseClick}
-            />
-        {/each}
-    </section>
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#each $enterprises as enterprise}
+                <EnterpriseRow
+                    {enterprise}
+                    handleModalClick={handleEnterpriseClick}
+                />
+            {/each}
+        </section>
+    {/if}
 
     <style scoped>
-        .CanBeHidden 
-        {
-            display: none !important
-        }
-
         .Loading 
         {
             height: 100%;
