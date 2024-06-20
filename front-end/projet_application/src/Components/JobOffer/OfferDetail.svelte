@@ -20,7 +20,7 @@
         }
     }
 
-    let Loaded = false;
+    let loaded = false;
 
     onMount(async () => {
         await getEnterprises(offer.employerId)
@@ -50,7 +50,7 @@
 
         await getScheduleByOfferId()
         
-        Loaded = true;
+        loaded = true;
         
     })
     let programmeSelected = [] as any
@@ -88,7 +88,7 @@
 
 <div class="container">
 
-    {#if Loaded}
+    {#if !loaded}
         <div class="Loading2">
             <LoadingSpinner />
         </div>

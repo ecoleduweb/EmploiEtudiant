@@ -5,3 +5,4 @@ node_modules/
 /playwright/.cache/
 /build/
 logs.txt
+**/.DS_Store
