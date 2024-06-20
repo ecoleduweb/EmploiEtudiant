@@ -3,11 +3,4 @@
 </script>
   
   
-<h2>CHARGEMENT...</h2>
-
-<style>
-    h2 
-    {
-        color: #00ad9a;
-    }
-</style>
+<img src="Loading_logo_cegepRDL.gif" alt="Logo cegep chargement">
