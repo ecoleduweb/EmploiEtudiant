@@ -12,7 +12,7 @@
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -62,7 +62,7 @@
         cityId: 0,
         isTemporary: false,
     }
-
+    
     onMount(async () => {
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator === true

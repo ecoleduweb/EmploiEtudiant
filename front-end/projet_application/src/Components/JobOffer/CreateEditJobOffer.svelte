@@ -12,7 +12,8 @@
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
+    import type { StudyProgram } from "../../Models/StudyProgram"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -98,6 +99,7 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
+
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
         }
@@ -160,25 +162,7 @@
 
     let selectedPrograms = [{ label: "", value: 0 }]
     let programmeFromSelectedOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let programOptions = [
-        { label: "Art lettres et communication", value: 12 },
-        { label: "Arts visuels", value: 9 },
-        { label: "Design d'intérieur", value: 1 },
-        { label: "Éducation à l'enfance", value: 2 },
-        { label: "Génie électrique", value: 13 },
-        { label: "Gestion et intervention en loisir", value: 3 },
-        { label: "Graphisme", value: 4 },
-        { label: "Informatique", value: 5 },
-        { label: "Inhalothérapie", value: 6 },
-        { label: "Pharmacie", value: 7 },
-        { label: "Sciences de la nature", value: 10 },
-        { label: "Sciences humaines", value: 11 },
-        { label: "Soins infirmiers", value: 8 },
-        { label: "Soins pré-hospitalier d'urgence", value: 15 },
-        { label: "Technique administrative", value: 14 },
-        { label: "Tous les programmes", value: 16 },
-        { label: "Autres", value: 17 },
-    ]
+    let programOptions: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
 
     const getSchedule = async () => {
         const response = await GET<any>(

@@ -17,7 +17,8 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    onMount(getJobOffers)
+    
+    onMount((getJobOffers))
 
     const handleEmploi = () => {
         goto("/emplois")

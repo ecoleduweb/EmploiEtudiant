@@ -59,11 +59,16 @@ def createJobOffer(current_user):
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
+    needsEntrepriseDetails = request.args.get("entrepriseDetails") == "true"
+    needsEmploymentScheduleDetails = request.args.get("employmentScheduleDetails") == "true"
+    needsStudyProgramDetails = request.args.get("studyProgramDetails") == "true"
+
     jobOffer = jobOffer_service.findById(id)
     if jobOffer:
-        return jsonify(jobOffer.to_json_string())
+        jobOfferDetails = jobOffer_service.getInfo(jobOffer, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
+        return jsonify(jobOfferDetails.to_json_string())
     else:
-        logger.warn('Job offer not found with id : ' + id)
+        logger.warn(f'Job offer not found with id : {id}')
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
@@ -133,4 +138,5 @@ def archiveJobOffer(current_user, id):
         jobOffer_service.archiveJobOffer(id)
         return ('', 204)
     except NotFoundException as e:
+        logger.warn('Study Program not found with id : ' + str(id))
         return jsonify({'message': e.message}), e.errorCode

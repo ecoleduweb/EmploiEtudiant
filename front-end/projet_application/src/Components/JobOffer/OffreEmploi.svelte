@@ -3,6 +3,7 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
+    import { studyPrograms } from "$lib"
     export let offer: JobOffer
 
     let hideURL = false;
@@ -48,20 +49,7 @@
 
     })
     let programmeSelected = [] as any
-    let programmesOption = [
-        { label: "Design d'intérieur", value: 1 },
-        { label: "Éducation à l'enfance", value: 2 },
-        { label: "Gestion et intervention en loisir", value: 3 },
-        { label: "Graphisme", value: 4 },
-        { label: "Informatique", value: 5 },
-        { label: "Inhalothérapie", value: 6 },
-        { label: "Pharmacie", value: 7 },
-        { label: "Soins infirmiers", value: 8 },
-        { label: "Arts visuels", value: 9 },
-        { label: "Sciences de la nature", value: 10 },
-        { label: "Sciences humaines", value: 11 },
-        { label: "Tous les programmes", value: 12 },
-    ]
+    let programmesOption: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
     
     let scheduleSelected: { label: string; value: number }[] = [{
         label: "",
