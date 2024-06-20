@@ -12,7 +12,8 @@
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
+    import type { StudyProgram } from "../../Models/StudyProgram"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -98,6 +99,7 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
+
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
         }
@@ -160,25 +162,7 @@
 
     let selectedPrograms = [{ label: "", value: 0 }]
     let programmeFromSelectedOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let programOptions = [
-        { label: "Art lettres et communication", value: 12 },
-        { label: "Arts visuels", value: 9 },
-        { label: "Design d'intérieur", value: 1 },
-        { label: "Éducation à l'enfance", value: 2 },
-        { label: "Génie électrique", value: 13 },
-        { label: "Gestion et intervention en loisir", value: 3 },
-        { label: "Graphisme", value: 4 },
-        { label: "Informatique", value: 5 },
-        { label: "Inhalothérapie", value: 6 },
-        { label: "Pharmacie", value: 7 },
-        { label: "Sciences de la nature", value: 10 },
-        { label: "Sciences humaines", value: 11 },
-        { label: "Soins infirmiers", value: 8 },
-        { label: "Soins pré-hospitalier d'urgence", value: 15 },
-        { label: "Technique administrative", value: 14 },
-        { label: "Tous les programmes", value: 16 },
-        { label: "Autres", value: 17 },
-    ]
+    let programOptions: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
 
     const getSchedule = async () => {
         const response = await GET<any>(
@@ -305,10 +289,14 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if isModerator === true}
-            {#if isJobOfferEdit === true}
-                <!-- rien -->
-            {:else}
+        {#if jobOffer.approbationMessage}
+            <h3 style="color: red;">
+                Raison du refus: {jobOffer.approbationMessage}
+            </h3>
+        {/if}
+
+        {#if !isJobOfferEdit}
+            {#if isModerator}
                 <h1>Sélectionner une entreprise existante</h1>
                 <div class="form-group-horizontal">
                     <MultiSelect
@@ -328,91 +316,153 @@
                         onClick={() => handleEnterprise()}
                     />
                 </div>
-            {/if}
-        {/if}
-        {#if jobOffer.approbationMessage}
-            <h3 style="color: red;">
-                Raison du refus: {jobOffer.approbationMessage}
-            </h3>
-        {/if}
-        {#if isJobOfferEdit === true}
-            <h1>Modification d'une entreprise</h1>
-        {:else}
-            <h1>Création d'une nouvelle entreprise</h1>
-        {/if}
-        <div class="form-group-vertical">
-            <label for="title">Nom*</label>
-            <input
-                type="text"
-                bind:value={enterprise.name}
-                class="form-control"
-                id="titre"
-                readonly={!isJobOfferEdit && isEnterpriseSelected}
-            />
-        </div>
-        <p class="errors-input">
-            {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
-        </p>
-        <div class="form-group-vertical">
-            <label for="schedule">Adresse*</label>
-            <input
-                type="text"
-                bind:value={enterprise.address}
-                class="form-control"
-                id="address"
-                readonly={!isJobOfferEdit && isEnterpriseSelected}
-            />
-        </div>
-        <p class="errors-input">
-            {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
-        </p>
-        <div class="form-group-vertical">
-            <label for="lieu">Courriel*</label>
-            <input
-                type="text"
-                bind:value={enterprise.email}
-                class="form-control"
-                id="email"
-                readonly={!isJobOfferEdit && isEnterpriseSelected}
-            />
-        </div>
-        <p class="errors-input">
-            {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
-        </p>
-        <div class="form-group-vertical">
-            <label for="lieu">Téléphone*</label>
-            <input
-                type="text"
-                bind:value={enterprise.phone}
-                class="form-control"
-                id="phone"
-                readonly={!isJobOfferEdit && isEnterpriseSelected}
-            />
-        </div>
-        <p class="errors-input">
-            {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
-        </p>
-        <div class="form-group-vertical">
-            <label for="lieu">Ville*</label>
-            {#if cityOptions.length === 0}
-                <p>Chargement des villes...</p>
             {:else}
-                <MultiSelect
-                    id="ville"
-                    options={cityOptions}
-                    closeDropdownOnSelect={true}
-                    placeholder="Choisir ville..."
-                    bind:value={selectedCity}
-                    bind:selected={cityFromEnterprise}
-                    disabled={!isJobOfferEdit && isEnterpriseSelected}
+            <h1>Création d'une nouvelle entreprise</h1>
+            <div class="form-group-vertical">
+                <label for="title">Nom*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.name}
+                    class="form-control"
+                    id="titre"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
                 />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="schedule">Adresse*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.address}
+                    class="form-control"
+                    id="address"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="lieu">Courriel*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.email}
+                    class="form-control"
+                    id="email"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="lieu">Téléphone*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.phone}
+                    class="form-control"
+                    id="phone"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="lieu">Ville*</label>
+                {#if cityOptions.length === 0}
+                    <p>Chargement des villes...</p>
+                {:else}
+                    <MultiSelect
+                        id="ville"
+                        options={cityOptions}
+                        closeDropdownOnSelect={true}
+                        placeholder="Choisir ville..."
+                        bind:value={selectedCity}
+                        bind:selected={cityFromEnterprise}
+                        disabled={!isJobOfferEdit && isEnterpriseSelected}
+                    />
+                {/if}
+            </div>
             {/if}
-        </div>
-        {#if isJobOfferEdit === true}
-            <h1>Modification d'une offre d'emploi</h1>
-        {:else}
+
             <h1>Création d'une nouvelle offre d'emploi</h1>
+        {:else}
+            <h1>Modification d'une entreprise</h1>
+            <div class="form-group-vertical">
+                <label for="title">Nom*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.name}
+                    class="form-control"
+                    id="titre"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="schedule">Adresse*</label>
+                <input
+                    type="text"
+                    bind:value={enterprise.address}
+                    class="form-control"
+                    id="address"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+                </div>
+                <p class="errors-input">
+                    {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
+                </p>
+                <div class="form-group-vertical">
+                    <label for="lieu">Courriel*</label>
+                    <input
+                        type="text"
+                        bind:value={enterprise.email}
+                        class="form-control"
+                        id="email"
+                        readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="lieu">Téléphone*</label>
+                 <input
+                    type="text"
+                    bind:value={enterprise.phone}
+                    class="form-control"
+                    id="phone"
+                    readonly={!isJobOfferEdit && isEnterpriseSelected}
+                />
+            </div>
+            <p class="errors-input">
+                {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
+            </p>
+            <div class="form-group-vertical">
+                <label for="lieu">Ville*</label>
+                {#if cityOptions.length === 0}
+                    <p>Chargement des villes...</p>
+                {:else}
+                    <MultiSelect
+                        id="ville"
+                        options={cityOptions}
+                        closeDropdownOnSelect={true}
+                        placeholder="Choisir ville..."
+                        bind:value={selectedCity}
+                        bind:selected={cityFromEnterprise}
+                        disabled={!isJobOfferEdit && isEnterpriseSelected}
+                    />
+               {/if}
+            </div>
+
+            <h1>Modification d'une offre d'emploi</h1>
         {/if}
+
         <div class="form-group-vertical">
             <label for="title">Titre du poste*</label>
             <input

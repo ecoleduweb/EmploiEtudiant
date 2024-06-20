@@ -65,5 +65,5 @@ def test_addStudyProgram(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.post('/studyProgram/addStudyProgram', json=data, headers={'Authorization' : token})
+    response = client.post('/studyProgram/new', json=data, headers={'Authorization' : token})
     assert response.status_code == 200

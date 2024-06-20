@@ -51,6 +51,12 @@
     
     <section>
         {#if loaded}
+            <div class="rowTitles">
+                <h2 class="rowTitle">Titre</h2>
+                <h2 class="rowTitle">Employeur</h2>
+                <h2 class="rowTitle">Date d'entrée en vigueur</h2>
+                <h2 class="rowTitle">Programme</h2>
+            </div>
             {#each $jobOffers as offer}
                 <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
             {/each}
@@ -84,6 +90,18 @@
     main {
         height: 100%;
     }
+
+    .rowTitles {
+        display: flex;
+        margin-left: 5%;
+    }
+
+    .rowTitle {
+        color: #00ad9a;
+        text-align: center;
+        width: 22%;
+    }
+
     .title {
         left: 7.2%;
         margin: 0;

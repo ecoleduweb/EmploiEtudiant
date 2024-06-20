@@ -30,7 +30,7 @@ def getEnterpriseByEmployer(id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-        logger.warn(f'Enterprise not found with id : {id}')
+        logger.warn('Enterprise not found with id : ' + str(id))
         return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/<int:id>', methods=['PUT'])

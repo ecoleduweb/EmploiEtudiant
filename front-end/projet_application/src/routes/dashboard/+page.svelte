@@ -12,7 +12,7 @@
     import { jwtDecode } from "jwt-decode"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     let showApproveModal = false;
@@ -65,7 +65,7 @@
     }
     
     let loaded = false
-
+    
     onMount(async () => {
         try 
         {
