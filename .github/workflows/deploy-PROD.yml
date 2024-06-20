@@ -22,7 +22,7 @@ jobs:
             rm -r prod_project
             mkdir prod_project
             cd prod_project
-            git clone -b PROD https://github.com/ecoleduweb/ProjetApplicationH2024.git
+            git clone -b PRODUCTION git@github.com:ecoleduweb/ProjetApplicationH2024.git
             echo 'Deployment successful to PROD server'
             echo 'Installing backend packages'
             sudo apt-get update -y
