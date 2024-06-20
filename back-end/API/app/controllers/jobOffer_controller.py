@@ -33,8 +33,12 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 def createJobOffer(current_user):
     data = request.get_json()
     if current_user.isModerator:
-        employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         isApproved = True
+
+        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+        else:
+            return jsonify({'message', 'No enterprise selected.'}), 400
     else:
         # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
         isApproved = None
@@ -44,6 +48,7 @@ def createJobOffer(current_user):
             enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
             enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
             employer = employer_service.createEmployer(enterpriseId, current_user.id)
+
     jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
