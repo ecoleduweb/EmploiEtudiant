@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/public"
 
-export async function GET<T>(url: string): Promise<T> {
+export async function GET<T>(url: string, redirectToLoginOn401?: boolean): Promise<T> {
     try {
         var token = localStorage.getItem("token")
         const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
@@ -9,7 +9,7 @@ export async function GET<T>(url: string): Promise<T> {
             },
         })
 
-        const data = await handleResponse<T>(response)
+        const data = await handleResponse<T>(response, redirectToLoginOn401)
         return data as T
     } catch (error) {
         console.error("Error fetching:", error)
@@ -93,7 +93,7 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
     }
 }
 
-async function handleResponse<T>(response: Response, redirectToLoginOn401 : boolean = true): Promise<T | undefined> {
+async function handleResponse<T>(response: Response, redirectToLoginOn401: boolean = true): Promise<T | undefined> {
     if (!response.ok) {
         if (response.status === 500) {
             window.location.href = "/500"

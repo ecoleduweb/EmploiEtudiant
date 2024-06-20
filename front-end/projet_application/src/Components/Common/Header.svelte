@@ -3,13 +3,29 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
-    import { isLoggedIn, currentUser } from "$lib" // La variable writable de login.
+    import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
+    import { GET } from "../../ts/server"
 
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
     let isModerator = false
 
-    
+
+    const fetchStudyPrograms = async () => 
+    {
+        try {
+            let response = await GET<any>(
+                `/studyProgram/studyPrograms`,
+                false
+            )
+
+            if (response)
+            return response
+        } catch (error) {
+            console.error("Error fetching job offers:", error)
+        }
+    }
+
     onMount(async () => {
         const token = localStorage.getItem("token")
         isLoggedIn.set(!!token)
@@ -22,6 +38,8 @@
             lastName = decoded.lastName
             isModerator = decoded.isModerator
         }
+
+        studyPrograms.set(await fetchStudyPrograms())
     })
     
     const handleEmploi = () => {
@@ -34,7 +52,10 @@
         goto("/dashboard")
     }
     const handleUtilisateur = () => {
-        goto("/utilisateur")
+        goto("/users")
+    }
+    const handleProgrammes = () => {
+        goto("/programmes")
     }
 
     const handleLogout = () => {
@@ -93,6 +114,19 @@
                             on:click={handleUtilisateur}
                         >
                             <p class="textLogout">Utilisateurs</p>
+                        </button>
+                    </div>
+                    <div class="option">
+                        <button
+                            class="button logout-button"
+                            on:click={handleProgrammes}
+                        >
+                            <p class="textLogout">Modifier les programmes</p>
+                            <img
+                                class="iconeLogout"
+                                src="edit.svg"
+                                alt="Logout icon"
+                            />
                         </button>
                     </div>
                 {/if}

@@ -33,8 +33,12 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 def createJobOffer(current_user):
     data = request.get_json()
     if current_user.isModerator:
-        employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         isApproved = True
+
+        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+        else:
+            return jsonify({'message', 'No enterprise selected.'}), 400
     else:
         # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
         isApproved = None
@@ -44,20 +48,27 @@ def createJobOffer(current_user):
             enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
             enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
             employer = employer_service.createEmployer(enterpriseId, current_user.id)
+
     jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
     for studyProgramId in data["studyPrograms"]:
         offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+    employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
     # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
     return jobOffer.to_json_string(), 201
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
+    needsEntrepriseDetails = request.args.get("entrepriseDetails") == "true"
+    needsEmploymentScheduleDetails = request.args.get("employmentScheduleDetails") == "true"
+    needsStudyProgramDetails = request.args.get("studyProgramDetails") == "true"
+
     jobOffer = jobOffer_service.findById(id)
     if jobOffer:
-        return jsonify(jobOffer.to_json_string())
+        jobOfferDetails = jobOffer_service.getInfo(jobOffer, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
+        return jsonify(jobOfferDetails.to_json_string())
     else:
-        logger.warn('Job offer not found with id : ' + id)
+        logger.warn(f'Job offer not found with id : {id}')
         return jsonify({'message': 'offre d\'emploi non trouvée'}), 404
 
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
@@ -91,6 +102,7 @@ def updateJobOffer(current_user, id):
                 data["jobOffer"]["approvedDate"] = datetime.now()
 
         jobOffer = jobOffer_service.updateJobOffer(data)
+        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
@@ -126,4 +138,5 @@ def archiveJobOffer(current_user, id):
         jobOffer_service.archiveJobOffer(id)
         return ('', 204)
     except NotFoundException as e:
+        logger.warn('Study Program not found with id : ' + str(id))
         return jsonify({'message': e.message}), e.errorCode

@@ -17,8 +17,8 @@
         }
     }
 
-    onMount(() => {
-        getCity(enterprise.cityId)
+    onMount(async () => {
+        await getCity(enterprise.cityId)
     })
 </script>
 

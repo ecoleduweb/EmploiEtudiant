@@ -5,7 +5,6 @@
     import Button from "../Inputs/Button.svelte"
     import { GET, POST, PUT } from "../../ts/server"
     export let offer: JobOffer
-    import OffreEmploi from "./OffreEmploi.svelte"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
