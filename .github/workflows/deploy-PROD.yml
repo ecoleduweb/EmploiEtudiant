@@ -21,7 +21,7 @@ jobs:
             sudo systemctl stop back-end
             rm -r prod_project
             mkdir prod_project
-            cd dev_project
+            cd prod_project
             git clone -b PROD https://github.com/ecoleduweb/ProjetApplicationH2024.git
             echo 'Deployment successful to PROD server'
             echo 'Installing backend packages'
