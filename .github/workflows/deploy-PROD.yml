@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Deploy NodeJS app
-        uses: appleboy/ssh-action@v0.1.2
+        uses: appleboy/ssh-action@v1.03
 
         with:
           host: ${{secrets.PROD_SSH_HOST}}
