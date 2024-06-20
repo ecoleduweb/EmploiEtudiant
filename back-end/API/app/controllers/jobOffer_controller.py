@@ -38,7 +38,7 @@ def createJobOffer(current_user):
         if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
             employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         else:
-            return jsonify({'message', 'No enterprise selected.'}), 500
+            return jsonify({'message', 'No enterprise selected.'}), 400
     else:
         # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
         isApproved = None
