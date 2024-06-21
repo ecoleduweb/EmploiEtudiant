@@ -71,13 +71,82 @@
     </div>
     <div class="ul-group">
         <ul class="ul-menu">
-            {#if $isLoggedIn}
+            {#if isModerator}
+                <style scoped>
+                    .logo-img {
+                        width: 43% !important;
+                    }
+                </style>
+                
                 <div class="option">
-                    <p class="email">
-                        <br />Connecté en tant que <br />{firstName}
-                        {lastName}
-                    </p>
+                    <button
+                        class="button logout-button"
+                        on:click={handleEnterprise}
+                    >
+                        <p class="textLogout">Entreprises</p>
+                    </button>
                 </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleUtilisateur}
+                    >
+                        <p class="textLogout">Utilisateurs</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleProgrammes}
+                    >
+                        <p class="textLogout">Modifier les programmes</p>
+                        <img
+                            class="iconeLogout"
+                            src="edit.svg"
+                            alt="Logout icon"
+                        />
+                    </button>
+                </div>
+
+            {/if}
+
+            <div class="option">
+                <button class="button" on:click={handleEmploi}>
+                    <p class="textSearch">Trouver un emploi</p>
+                    <img
+                        class="iconeSearch"
+                        src="searchBar.svg"
+                        alt="Search icon"
+                    />
+                </button>
+            </div>
+
+            {#if $isLoggedIn}
+
+                {#if !isModerator}
+                    <style scoped>
+                        .logo-img {
+                            width: 45% !important;
+                        }
+                    </style>
+                {/if}
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleDashboard}
+                    >
+                        <p class="textLogout">Tableau de bord</p>
+                        <img
+                            class="iconeSearch"
+                            src="searchBar.svg"
+                            alt="Search icon"
+                        />
+                    </button>
+                </div>
+
                 <div class="option">
                     <button
                         class="button logout-button"
@@ -91,46 +160,16 @@
                         />
                     </button>
                 </div>
+
                 <div class="option">
-                    <button
-                        class="button logout-button"
-                        on:click={handleDashboard}
-                    >
-                        <p class="textLogout">Tableau de bord</p>
-                    </button>
+                    <p class="email">
+                        <br />Connecté en tant que <br />{firstName}
+                        {lastName}
+                    </p>
                 </div>
-                {#if isModerator}
-                    <div class="option">
-                        <button
-                            class="button logout-button"
-                            on:click={handleEnterprise}
-                        >
-                            <p class="textLogout">Entreprises</p>
-                        </button>
-                    </div>
-                    <div class="option">
-                        <button
-                            class="button logout-button"
-                            on:click={handleUtilisateur}
-                        >
-                            <p class="textLogout">Utilisateurs</p>
-                        </button>
-                    </div>
-                    <div class="option">
-                        <button
-                            class="button logout-button"
-                            on:click={handleProgrammes}
-                        >
-                            <p class="textLogout">Modifier les programmes</p>
-                            <img
-                                class="iconeLogout"
-                                src="edit.svg"
-                                alt="Logout icon"
-                            />
-                        </button>
-                    </div>
-                {/if}
+
             {:else}
+
                 <div class="option dropdown">
                     <button class="button dropbtn">
                         <p class="textBusiness">Offrir un emploi</p>
@@ -140,28 +179,24 @@
                             alt="Business icon"
                         />
                     </button>
+
                     <div class="dropdown-content">
                         <a href="/login">Connexion entreprise</a>
                         <a href="/register">Créer un compte entreprise</a>
                     </div>
                 </div>
             {/if}
-            <div class="option">
-                <button class="button" on:click={handleEmploi}>
-                    <p class="textSearch">Trouver un emploi</p>
-                    <img
-                        class="iconeSearch"
-                        src="searchBar.svg"
-                        alt="Search icon"
-                    />
-                </button>
-            </div>
         </ul>
     </div>
 </header>
 
 <style scoped>
     @import "../../styles/header.css";
+
+    .button {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
 
     .logout-button {
         background-color: transparent;
@@ -170,6 +205,7 @@
         display: flex;
         align-items: center;
     }
+
 
     .textLogout,
     .email {
