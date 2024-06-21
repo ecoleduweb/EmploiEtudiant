@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Deploy NodeJS app
-        uses: appleboy/ssh-action@v0.1.2
+        uses: appleboy/ssh-action@v1.0.3
 
         with:
           host: ${{secrets.PROD_SSH_HOST}}
@@ -21,8 +21,8 @@ jobs:
             sudo systemctl stop back-end
             rm -r prod_project
             mkdir prod_project
-            cd dev_project
-            git clone -b PROD https://github.com/ecoleduweb/ProjetApplicationH2024.git
+            cd prod_project
+            git clone -b PRODUCTION git@github.com:ecoleduweb/ProjetApplicationH2024.git
             echo 'Deployment successful to PROD server'
             echo 'Installing backend packages'
             sudo apt-get update -y
@@ -33,12 +33,12 @@ jobs:
             cd /${{ secrets.SSH_USERNAME}}/prod_project/ProjetApplicationH2024/back-end/API
             touch .env
             echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }} >> .env
-            echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
+            echo DATABASE_DEV_URL=${{ secrets.DATABASE_PROD_URL }} >> .env
             echo CORS=${{ secrets.PROD_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo MAIL_SERVER=${{ secrets.SMTP_SERVER }} >> .env
             echo MAIL_PORT=${{ secrets.SMTP_PORT }} >> .env
-            echo MAIL_SENDER=${{ secrets.SMTP_SENDER_ }} >> .env
+            echo MAIL_SENDER=${{ secrets.SMTP_SENDER }} >> .env
             echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_LOGIN }} >> .env
             echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_PASSWORD }} >> .env
             echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
@@ -51,7 +51,6 @@ jobs:
             npm i
             touch .env
             echo PUBLIC_BASE_URL = ${{ secrets.PROD_FRONT_PUBLIC_URL }} >> .env
-            echo HOST = ${{ secrets.FRONT_HOST }} >> .env
             echo PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY }} >> .env
             echo 'Building front-end'
             npm run build
