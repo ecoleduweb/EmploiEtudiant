@@ -11,7 +11,7 @@ jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
 studyProgram_repo = StudyProgramRepo()
 employmentSchedule_repo = EmploymentScheduleRepo()
-offer_program = OfferProgramRepo()
+offer_program_repo = OfferProgramRepo()
 class JobOfferService:
 
     def offresEmploi(self):
@@ -69,7 +69,7 @@ class JobOfferService:
             jobOfferDetails.setEmploymentSchedules(employmentSchedule)
 
         if studyProgramDetails != None and studyProgramDetails:
-            offer_programs = offer_program.getProgramIdByOfferId(jobOfferModel.id)
+            offer_programs = offer_program_repo.getProgramIdByOfferId(jobOfferModel.id)
             studyPrograms = []
             for programId in offer_programs:
                 studyProgram = studyProgram_repo.findById(programId)
