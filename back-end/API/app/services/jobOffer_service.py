@@ -59,10 +59,6 @@ class JobOfferService:
     
     def getInfo(self, jobOfferModel, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOfferDetails = JobOfferDetails(jobOfferModel)
-        
-        print("entrepriseDetails value:", entrepriseDetails)  # Pour débogage
-        print("employmentScheduleDetails value:", employmentScheduleDetails)  # Pour débogage
-        print("studyProgramDetails value:", studyProgramDetails)  # Pour débogage
 
         if entrepriseDetails != None and entrepriseDetails:
             enterprise = enterprise_repo.getEnterpriseByEmployerId(jobOfferModel.employerId)
