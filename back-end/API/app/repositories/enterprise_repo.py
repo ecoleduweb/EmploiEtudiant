@@ -60,13 +60,13 @@ class EnterpriseRepo:
         enterprise = Enterprise.query.filter_by(name=name).first()
         return enterprise.id
     
-def getEnterpriseByEmployerId(self, employerId):
+    def getEnterpriseByEmployerId(self, employerId):
         employer = Employers.query \
-            .join(Enterprise, Employers.enterpriseId == Enterprise.id) \
-            .filter(Employers.id == employerId) \
-            .first()
-        print("************************************************************************")
-        print(employer)
-        print("************************************************************************")
+        .join(Enterprise, Employers.enterpriseId == Enterprise.id) \
+        .filter(Employers.id == employerId) \
+        .first()
 
-        return employer.enterprise
+        if employer:
+            return Enterprise.query.filter_by(id=employer.enterpriseId).first()
+        else:
+            return None

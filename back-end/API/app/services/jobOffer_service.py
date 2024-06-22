@@ -1,6 +1,8 @@
 from app.repositories.jobOffer_repo import JobOfferRepo
 from app.repositories.enterprise_repo import EnterpriseRepo
 from app.repositories.study_program_repo import StudyProgramRepo
+from app.repositories.employmentSchedule_repo import EmploymentScheduleRepo
+from app.repositories.offer_program_repo import OfferProgramRepo
 from app.models.jobOffer_model import JobOffer
 from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
@@ -8,6 +10,8 @@ from app.customexception.CustomException import NotFoundException
 jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
 studyProgram_repo = StudyProgramRepo()
+employmentSchedule_repo = EmploymentScheduleRepo()
+offer_program = OfferProgramRepo()
 class JobOfferService:
 
     def offresEmploi(self):
@@ -55,17 +59,27 @@ class JobOfferService:
     
     def getInfo(self, jobOfferModel, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOfferDetails = JobOfferDetails(jobOfferModel)
-
-        # Créer un objet jobOfferDetails et y passer le jobOffer dans le constructeur.
+        
+        print("entrepriseDetails value:", entrepriseDetails)  # Pour débogage
+        print("employmentScheduleDetails value:", employmentScheduleDetails)  # Pour débogage
+        print("studyProgramDetails value:", studyProgramDetails)  # Pour débogage
 
         if entrepriseDetails != None and entrepriseDetails:
             enterprise = enterprise_repo.getEnterpriseByEmployerId(jobOfferModel.employerId)
-            jobOfferDetails.AddEnterprise(enterprise)
+            jobOfferDetails.setEnterprise(enterprise)
     
         if employmentScheduleDetails != None and employmentScheduleDetails:
-            print("Employment schedule")
+            employmentSchedule = employmentSchedule_repo.getScheduleFromJobOffer(jobOfferModel.id)
+            jobOfferDetails.setEmploymentSchedules(employmentSchedule)
 
-        #if studyProgramDetails != None and studyProgramDetails:
-        #    jobOfferDetails["studyProgram"] = studyPrograms
+        if studyProgramDetails != None and studyProgramDetails:
+            offer_programs = offer_program.getProgramIdByOfferId(jobOfferModel.id)
+            studyPrograms = []
+            for programId in offer_programs:
+                studyProgram = studyProgram_repo.findById(programId)
+                if studyProgram:
+                    studyPrograms.append(studyProgram)
+            
+            jobOfferDetails.setStudyPrograms(studyPrograms)
         
         return jobOfferDetails

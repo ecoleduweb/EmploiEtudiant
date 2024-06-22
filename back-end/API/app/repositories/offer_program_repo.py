@@ -1,5 +1,5 @@
 from app import db
-from app.models.offer_programm_model import OfferProgram
+from app.models.offer_program_model import OfferProgram
 
 class OfferProgramRepo:
     def linkOfferProgram(self, programId, offerId):
@@ -11,7 +11,7 @@ class OfferProgramRepo:
     def getProgramIdByOfferId(self, offerId):
         offerPrograms = OfferProgram.query.filter_by(offerId=offerId).all()
         if offerPrograms:
-            return [offerProgram.programId for offerProgram in offerPrograms]
+            return [offerProgram.id for offerProgram in offerPrograms]
         else:
             return []
         

@@ -1,51 +1,54 @@
 class JobOfferDetails:
-    def __init__(self, jobOffer):
-        self.id = jobOffer.id
-        self.title = jobOffer.title
-        self.address = jobOffer.address
-        self.description = jobOffer.description
-        self.offerDebut = jobOffer.offerDebut
-        self.dateEntryOffice = jobOffer.dateEntryOffice
-        self.deadlineApply = jobOffer.deadlineApply
-        self.email = jobOffer.email
-        self.hoursPerWeek = jobOffer.hoursPerWeek
-        self.offerLink = jobOffer.offerLink
-        self.salary = jobOffer.salary
-        self.active = jobOffer.active
-        self.approbationMessage = jobOffer.approbationMessage
-        self.employerId = jobOffer.employerId
-        self.isApproved = jobOffer.isApproved
-        self.approvedDate = jobOffer.approvedDate
-        self.enterprise = None
+    def __init__(self, jobOffer, enterprise=None, employmentSchedules=None, studyPrograms=None):
+        self.jobOffer = {
+            'id': jobOffer.id,
+            'title': jobOffer.title,
+            'address': jobOffer.address,
+            'description': jobOffer.description,
+            'offerDebut': str(jobOffer.offerDebut),
+            'dateEntryOffice': str(jobOffer.dateEntryOffice),
+            'deadlineApply': str(jobOffer.deadlineApply),
+            'email': jobOffer.email,
+            'hoursPerWeek': jobOffer.hoursPerWeek,
+            'offerLink': jobOffer.offerLink,
+            'salary': jobOffer.salary,
+            'active': jobOffer.active,
+            'approbationMessage': jobOffer.approbationMessage,
+            'employerId': jobOffer.employerId,
+            'isApproved': jobOffer.isApproved,
+            'approvedDate': str(jobOffer.approvedDate)  # Assurez-vous de convertir en chaîne si nécessaire
+        }
+        self.enterprise = enterprise if enterprise else {}
+        self.employmentSchedules = employmentSchedules if employmentSchedules else {}
+        self.studyPrograms = studyPrograms if studyPrograms else {}
 
-    def AddEnterprise(self, enterprise):
-        self.enterprise = enterprise
-
-    def to_json_string(self):
-        json =  {
-            'id': self.id,
-            'title': self.title,
-            'address': self.address,
-            'description': self.description,
-            'offerDebut': str(self.offerDebut),
-            'dateEntryOffice': str(self.dateEntryOffice),  # Convert datetime to string
-            'deadlineApply': str(self.deadlineApply),  # Convert date to string
-            'email': self.email,
-            'hoursPerWeek': self.hoursPerWeek,
-            'offerLink': self.offerLink,
-            'salary': self.salary,
-            'active': self.active,
-            'approbationMessage': self.approbationMessage,
-            'employerId': self.employerId,
-            'isApproved': self.isApproved,
-            'approvedDate': self.approvedDate
+    def setEnterprise(self, enterprise):
+        self.enterprise = {
+            'id': enterprise.id,
+            'name': enterprise.name,
+            'email': enterprise.email,
+            'phone': enterprise.phone,
+            'address': enterprise.address,
+            'cityId': enterprise.cityId,
+            'isTemporary': enterprise.isTemporary 
         }
 
-        if self.enterprise != None : 
-            json['enterprise'] = {
-                'name': self.enterprise.name
-            }
+    def setStudyPrograms(self, studyPrograms):
+        self.studyPrograms = [{
+            "id": studyProgram.id,
+            "name": studyProgram.name
+        } for studyProgram in studyPrograms]
 
-        # si jamais on a une liste, faire une boucle for pour ajouter les infos dans le json
+    def setEmploymentSchedules(self, employmentSchedules):
+        self.employmentSchedules = [{
+            "id": employmentSchedule.id,
+            "description": employmentSchedule.description
+        } for employmentSchedule in employmentSchedules]
 
-        return json
+    def to_json_string(self):
+        return {
+            'jobOffer': self.jobOffer,
+            'enterprise': self.enterprise,
+            'employmentSchedules': self.employmentSchedules,
+            'studyPrograms': self.studyPrograms
+        }

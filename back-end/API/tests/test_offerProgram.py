@@ -3,7 +3,7 @@ from app import create_app, db
 from argon2 import PasswordHasher
 hasher=PasswordHasher()
 from app.models.user_model import User
-from app.models.offer_programm_model import OfferProgram
+from app.models.offer_program_model import OfferProgram
 
 @pytest.fixture(scope='module')
 def app():

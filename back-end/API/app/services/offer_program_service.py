@@ -1,4 +1,4 @@
-from app.repositories.offer_programm_repo import OfferProgramRepo
+from app.repositories.offer_program_repo import OfferProgramRepo
 offer_program_repo = OfferProgramRepo()
 
 class OfferProgramService:
