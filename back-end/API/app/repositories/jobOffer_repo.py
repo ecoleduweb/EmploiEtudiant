@@ -2,10 +2,16 @@ from app import db
 from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
+from app.models.employmentSchedule_model import EmploymentSchedule
+from app.models.employmentSchedule_JobOffer_link_model import EmploymentSchedule_JobOffer_link
+from app.models.offer_program_model import OfferProgram
+from app.models.study_program_model import StudyProgram
+from app.models.JobOffer_details import JobOfferDetails
 from app.models.user_model import User
 from datetime import date, timedelta, datetime
 from flask import Flask, jsonify
 from operator import attrgetter
+from sqlalchemy.orm import joinedload
 
 class JobOfferRepo:
 
@@ -79,3 +85,16 @@ class JobOfferRepo:
 
     def jobOfferExist(self, id):
         return JobOffer.query.filter_by(id=id).first() is not None
+    
+    def getInfo(self, id, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
+        query = JobOffer.query.filter_by(id=id)
+        jobOfferDetails = query.first()
+
+        if jobOfferDetails:
+            return jobOfferDetails.to_dict(
+                include_employer=entrepriseDetails, 
+                include_employmentSchedules=employmentScheduleDetails, 
+                include_studyPrograms=studyProgramDetails
+            )
+        else:
+            return None

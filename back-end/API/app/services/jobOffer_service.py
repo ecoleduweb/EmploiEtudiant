@@ -57,25 +57,5 @@ class JobOfferService:
         if jobOffer_repo.jobOfferExist(id):
             jobOffer_repo.archiveJobOffer(id)
     
-    def getInfo(self, jobOfferModel, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
-        jobOfferDetails = JobOfferDetails(jobOfferModel)
-
-        if entrepriseDetails != None and entrepriseDetails:
-            enterprise = enterprise_repo.getEnterpriseByEmployerId(jobOfferModel.employerId)
-            jobOfferDetails.setEnterprise(enterprise)
-    
-        if employmentScheduleDetails != None and employmentScheduleDetails:
-            employmentSchedule = employmentSchedule_repo.getScheduleFromJobOffer(jobOfferModel.id)
-            jobOfferDetails.setEmploymentSchedules(employmentSchedule)
-
-        if studyProgramDetails != None and studyProgramDetails:
-            offer_programs = offer_program_repo.getProgramIdByOfferId(jobOfferModel.id)
-            studyPrograms = []
-            for programId in offer_programs:
-                studyProgram = studyProgram_repo.findById(programId)
-                if studyProgram:
-                    studyPrograms.append(studyProgram)
-            
-            jobOfferDetails.setStudyPrograms(studyPrograms)
-        
-        return jobOfferDetails
+    def getInfo(self, id, entrepriseDetails, employmentScheduleDetails, studyProgramDetails):
+        return jobOffer_repo.getInfo(id, entrepriseDetails, employmentScheduleDetails, studyProgramDetails)
