@@ -190,12 +190,38 @@ a {
 
     .textBusiness, .textSearch
     {
-        font-size: 2.5vw;
+        font-size: 1.75vw;
         font-weight: bold;
+        padding: 0;
     }
 
-    .iconeBusiness, .iconeSearch 
+    p,
+    a {
+        font-size: 1.75vw;
+        margin-right: 0 !important;
+    }
+
+    .button 
     {
-        width: 25%;
+        padding: 0;
+        padding-left: 5% !important;
+        padding-right: 0 !important;
+        margin-left: 1.6vw !important;
+        margin-right: 1.6vw !important;
+
+        text-align: center;
+    }
+
+    .email 
+    {
+        position: relative;
+        font-size: 1.5vw;
+        margin-left: 0 !important;
+    }
+
+    .iconeLogout, .iconeBusiness, .iconeSearch 
+    {
+        width: 25% !important;
+        padding: 0;
     }
 }

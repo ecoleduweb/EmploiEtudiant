@@ -289,10 +289,16 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage}
-            <h3 style="color: red;">
-                Raison du refus: {jobOffer.approbationMessage}
-            </h3>
+        {#if jobOffer.approbationMessage !== undefined}
+            {#if jobOffer.isApproved == true}
+                <h3 style="color: green;">
+                    Raison d'acceptation: {jobOffer.approbationMessage}
+                </h3>
+            {:else if jobOffer.isApproved == false}
+                <h3 style="color: red;">
+                    Raison du refus: {jobOffer.approbationMessage}
+                </h3>
+            {/if}
         {/if}
 
         {#if !isJobOfferEdit}
