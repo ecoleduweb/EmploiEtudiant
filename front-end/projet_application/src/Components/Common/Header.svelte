@@ -74,7 +74,7 @@
             {#if isModerator}
                 <style scoped>
                     .logo-img {
-                        width: 43% !important;
+                        width: 40% !important;
                     }
                 </style>
                 
@@ -194,6 +194,7 @@
     @import "../../styles/header.css";
 
     .button {
+        padding-left: 15px;
         margin-left: 15px;
         margin-right: 15px;
     }
@@ -213,6 +214,6 @@
     }
 
     .iconeLogout {
-        width: 24px;
+        width: 32px;
     }
 </style>

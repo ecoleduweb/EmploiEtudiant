@@ -136,7 +136,7 @@ a {
 .iconeSearch {
     display: flex;
     align-items: center;
-    width: 20%;
+    width: 32px;
     height: 100%;
 }
 
@@ -145,6 +145,7 @@ a {
     align-items: center;
     width: 60%;
     height: 100%;
+    margin-right: 8px;
 }
 
 .textBusiness {
