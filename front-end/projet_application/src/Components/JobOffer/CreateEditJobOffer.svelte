@@ -1,5 +1,4 @@
 <script lang="ts">
-    import fetchCity from "../../Service/CityService"
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
@@ -12,7 +11,7 @@
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
-    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
+    import { city, currentUser, isLoggedIn, studyPrograms } from "$lib"
     import type { StudyProgram } from "../../Models/StudyProgram"
     export let isJobOfferEdit: boolean
 
@@ -98,7 +97,7 @@
     }
 
     onMount(async () => {
-        cityOptions = await fetchCity()
+        cityOptions = $city.cities
 
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator

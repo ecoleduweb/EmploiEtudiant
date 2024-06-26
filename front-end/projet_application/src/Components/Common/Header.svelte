@@ -3,8 +3,9 @@
     import { onMount } from "svelte"
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
-    import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
+    import { isLoggedIn, currentUser, studyPrograms, city, maxTimeBeforeRefresh } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
+    import fetchCity from "../../Service/CityService"
 
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
@@ -26,6 +27,54 @@
         }
     }
 
+    const setupCity = async () => 
+    {
+        let currentCityObj = undefined
+        if ($city.cachingDate === new Date(0).getTime()) {
+            let Data = localStorage.getItem("city")
+            
+            if (Data !== null) 
+            {
+                try 
+                {
+                    let decoded = JSON.parse(Data)
+                    if (Data !== "{}") 
+                    {
+                        city.set(decoded)
+                    }
+                    else 
+                    {
+                        await fetchCity()
+                    }
+                }
+                catch 
+                {
+                    await fetchCity()
+                }
+            }
+        }
+        else 
+        {
+            currentCityObj = $city
+        }
+
+        if (currentCityObj) 
+        {
+            console.log(currentCityObj)
+            if (currentCityObj.cities.length === 0) 
+            {
+                await fetchCity()
+            }
+
+            if ($city.expiringDate <= new Date().getTime()) 
+            {
+                console.log("City data has expired, refreshing...")
+                await fetchCity()
+            }
+        }
+
+    }
+
     onMount(async () => {
         const token = localStorage.getItem("token")
         isLoggedIn.set(!!token)
@@ -40,6 +89,7 @@
         }
 
         studyPrograms.set(await fetchStudyPrograms())
+        await setupCity()
     })
     
     const handleEmploi = () => {
