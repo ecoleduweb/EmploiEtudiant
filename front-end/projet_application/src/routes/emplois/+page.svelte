@@ -9,6 +9,7 @@
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import { pushState } from "$app/navigation"
+    import { page } from '$app/stores'
 
     let showModal = false
     let loaded = false
@@ -38,20 +39,16 @@
         {
             loaded = true
 
-            let savedQuery = document.location.search
-            if (savedQuery.length > 0 && savedQuery.substring(0,4) == "?id=") 
+            const id = $page.url.searchParams.get('id')
+
+            if (id !== '') 
             {
-                let id = savedQuery.substring(4)
+                let jobOffer = $jobOffers.find((offer) => offer.id.toString() == id)
                 
-                if (id !== '') 
+                if (jobOffer) 
                 {
-                    $jobOffers.forEach(jobOffer => {
-                        if (jobOffer.id.toString() == id) 
-                        {
-                            showModal = true
-                            selectedOffer = jobOffer
-                        }
-                    });
+                    showModal = true
+                    selectedOffer = jobOffer
                 }
             }
         }
