@@ -116,7 +116,7 @@ def updateJobOffer(current_user, id):
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
     jobOffers = jobOffer_service.offresEmploiApproved()
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    return jsonify([jobOffer.to_json_string_without_approbation() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required

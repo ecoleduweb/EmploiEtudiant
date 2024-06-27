@@ -59,3 +59,22 @@ class JobOffer(db.Model):
             'isApproved': self.isApproved,
             'approvedDate': self.approvedDate
         }
+    
+    def to_json_string_without_approbation(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'address': self.address,
+            'description': self.description,
+            'offerDebut': str(self.offerDebut),
+            'dateEntryOffice': str(self.dateEntryOffice),  # Convert datetime to string
+            'deadlineApply': str(self.deadlineApply),  # Convert date to string
+            'email': self.email,
+            'hoursPerWeek': self.hoursPerWeek,
+            'offerLink': self.offerLink,
+            'salary': self.salary,
+            'active': self.active,
+            'employerId': self.employerId,
+            'isApproved': self.isApproved,
+            'approvedDate': self.approvedDate
+        }
