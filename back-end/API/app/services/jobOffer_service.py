@@ -40,8 +40,8 @@ class JobOfferService:
     def findById(self, id):
         return jobOffer_repo.offreEmploi(id)
 
-    def offresEmploiApproved(self):
-        return jobOffer_repo.offresEmploiApproved()
+    def offresEmploiApproved(self, getRecentOnly):
+        return jobOffer_repo.offresEmploiApproved(getRecentOnly)
     
     def linkJobOfferEmployer(self, data):
         return jobOffer_repo.linkJobOfferEmployer(data)

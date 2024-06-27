@@ -49,14 +49,33 @@ class JobOfferRepo:
         jobOffers = JobOffer.query.all()
         return jobOffers
     
-    def offresEmploiApproved(self):
-        today = date.today()
-        jobOffers = JobOffer.query.filter(
-            JobOffer.isApproved == True,
-            JobOffer.offerDebut <= today,
-            JobOffer.deadlineApply >= today
-        ).order_by(JobOffer.approvedDate.desc()).all()
-        return jobOffers
+    def offresEmploiApproved(self, getRecentOnly):
+        if getRecentOnly:
+            today = date.today()
+            last_week = today - timedelta(days=7)
+            jobOffers = JobOffer.query.filter(
+                JobOffer.isApproved == True,
+                JobOffer.offerDebut <= today,
+                JobOffer.deadlineApply >= today,
+                JobOffer.approvedDate > last_week
+            ).order_by(JobOffer.approvedDate.desc()).all()
+
+            if len(jobOffers) == 0:
+                jobOffers = JobOffer.query.filter(
+                    JobOffer.isApproved == True,
+                    JobOffer.offerDebut <= today,
+                    JobOffer.deadlineApply >= today
+                ).order_by(JobOffer.approvedDate.desc()).all()[:5]
+
+            return jobOffers
+        else:
+            today = date.today()
+            jobOffers = JobOffer.query.filter(
+                JobOffer.isApproved == True,
+                JobOffer.offerDebut <= today,
+                JobOffer.deadlineApply >= today
+            ).order_by(JobOffer.approvedDate.desc()).all()
+            return jobOffers
     
     def linkJobOfferEmployer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOfferId']).first()

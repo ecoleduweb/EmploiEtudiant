@@ -115,8 +115,14 @@ def updateJobOffer(current_user, id):
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
-    jobOffers = jobOffer_service.offresEmploiApproved()
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    getRecentOnly = request.args.get("getRecentOnly") == "true"
+
+    if getRecentOnly:
+        jobOffers = jobOffer_service.offresEmploiApproved(True)
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    else:
+        jobOffers = jobOffer_service.offresEmploiApproved(False)
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required

@@ -13,40 +13,15 @@
     let loaded = false
 
     const jobOffers = writable<JobOffer[]>([])
+
     let LatestJobOffers: JobOffer[] = []
     const getJobOffers = async () => {
         try {
-            const response = await GET<any>("/jobOffer/approved")
-            jobOffers.set(response)
+            const response1 = await GET<any>("/jobOffer/approved")
+            jobOffers.set(response1)
 
-            let JobOffersLen = $jobOffers.length
-
-            if (JobOffersLen > 0) //Vérifie s'il y a des éléments dans l'array
-            {
-                if (JobOffersLen > 5) //Il y a plus que 5
-                {
-                    //Cherche le dernier job offer et recupère ça date et vérifie s'il est plus que 7 jours (s'il est plus grand que 7, ça vas être 7)
-                    let OldestJobOfferDate = new Date($jobOffers[ ((JobOffersLen >= 7 ? 7 : 6) - 1) ].approvedDate).getTime()
-                        < new Date().getTime()
-
-                    if (JobOffersLen > 7 && OldestJobOfferDate) //S'il y en à plus que 7 et que la date, donne juste 7 offers
-                    {
-                        LatestJobOffers = ($jobOffers).slice(0, 7)
-                    }
-                    else if (JobOffersLen <= 7 && OldestJobOfferDate) //S'il y a 6
-                    {
-                        LatestJobOffers = ($jobOffers).slice(0, JobOffersLen)
-                    }
-                    else //Si la date est plus grand que 7 jour donc 5
-                    {
-                        LatestJobOffers = ($jobOffers).slice(0, 5)
-                    }
-                }
-                else //Il n'y a pas plus que 5
-                {
-                    LatestJobOffers = ($jobOffers).slice(0, JobOffersLen)
-                }
-            }
+            const response2 = await GET<any>("/jobOffer/approved?getRecentOnly=true")
+            LatestJobOffers = response2
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -64,10 +39,6 @@
 
         finally
         {
-            $jobOffers.forEach(element => {
-                console.log("Offer Name:" + element.title + " Approbation Date:" + new Date(element.approvedDate))
-            });
-            
             loaded = true
         }
     })
