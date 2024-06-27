@@ -8,8 +8,7 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import Modal from "../Common/Modal.svelte"
     import { onMount } from "svelte"
-    import { city } from "$lib"
-    import { json } from "@sveltejs/kit"
+    import fetchCity from "../../Service/CityService"
     export let handleEnterpriseClick: () => void
 
     const schema = yup.object().shape({
@@ -54,7 +53,7 @@
 
     const getAllCities = async () => {
         try {
-            cityOptions = $city.cities
+            cityOptions = await fetchCity()
         } catch (error) {
             console.error("Error fetching cities:", error)
         }

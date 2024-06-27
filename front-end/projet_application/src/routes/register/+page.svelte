@@ -9,7 +9,7 @@
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
     import { env } from "$env/dynamic/public"
-    import { writable, get } from "svelte/store"
+    import { writable } from "svelte/store"
     import { currentUser, isLoggedIn } from "$lib"
 
     const schema = yup.object({
