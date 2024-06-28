@@ -48,7 +48,6 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Heure/Semaine*').fill('25');
     await page.getByLabel('Salaire/H (0.00)').click();
     await page.getByLabel('Salaire/H (0.00)').fill('21');
-    await page.getByLabel('Stage ?').check();
     await page.locator('#compliantEmployer').check();
     await page.getByLabel('Urgente').check();
     await page.getByLabel('Lien*').click();
@@ -104,7 +103,6 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Heure/Semaine*').fill('23');
     await page.getByText('Veuillez entrer un nombre d\'').click();
     await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Stage ?').check();
     await page.locator('#compliantEmployer').check();
     await page.getByLabel('Urgente').check();
     await page.getByLabel('Lien*').click();
