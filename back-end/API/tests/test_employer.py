@@ -11,7 +11,6 @@ hasher = PasswordHasher()
 def app():
     app = create_app()
     with app.app_context():
-        db.reflect()
         db.drop_all()
         db.create_all()
         data = {
@@ -53,6 +52,7 @@ def app():
         }
         db.session.commit()
         yield app
+        db.drop_all()
         db.session.remove()
         
         
