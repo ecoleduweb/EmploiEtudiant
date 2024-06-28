@@ -9,6 +9,7 @@ from app.models.offer_programm_model import OfferProgram
 def app():
     app = create_app()
     with app.app_context():
+        db.reflect()
         db.drop_all()
         db.create_all()
         hashed_password = hasher.hash("test")

@@ -11,6 +11,7 @@ hasher = PasswordHasher()
 def app():
     app = create_app()
     with app.app_context():
+        db.reflect()
         db.drop_all()
         db.create_all()
         data = {

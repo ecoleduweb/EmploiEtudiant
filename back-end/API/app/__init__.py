@@ -107,6 +107,7 @@ def create_app():
             from app.models.city_model import City
             from app.models.region_model import Region
             print("Refreshing the database")
+            db.reflect()
             db.drop_all()
             db.create_all()
             hashed_password = hasher.hash("test123")
