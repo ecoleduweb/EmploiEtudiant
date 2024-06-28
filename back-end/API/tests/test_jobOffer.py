@@ -46,6 +46,7 @@ def client(app):
 def app():
     app = create_app()
     with app.app_context():
+        db.drop_all()
         db.create_all()
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)

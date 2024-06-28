@@ -10,6 +10,7 @@ hasher = PasswordHasher()
 def app():
     app = create_app()
     with app.app_context():
+        db.drop_all()
         db.create_all()
         hashed_password = hasher.hash("test123")
         user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)  # Removed 'name' attribute

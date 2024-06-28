@@ -11,6 +11,7 @@ hasher = PasswordHasher()
 def app():
     app = create_app()
     with app.app_context():
+        db.drop_all()
         db.create_all()
         data = {
             "id": 1,
@@ -52,7 +53,7 @@ def app():
         db.session.commit()
         yield app
         db.session.remove()
-        db.drop_all()
+        
         
 @pytest.fixture(scope='module')
 def client(app):
