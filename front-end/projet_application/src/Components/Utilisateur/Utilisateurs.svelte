@@ -1,13 +1,23 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
     import type { User } from "../../Models/User"
-    import { GET } from "../../ts/server"
+    import Button from "../Inputs/Button.svelte"
+    import { PUT } from "../../ts/server"
     import { onMount } from "svelte"
     export let user: User
     export let handleUserClick: () => void
+
+    let password: string
+
+    const ChangerMotDePasse = () => {
+        PUT<any, any>("/user/updatePassword", {
+            email: user.email,
+            password: password
+        })
+    }
 </script>
 
-<Modal handleModalClick={handleUserClick}>
+<Modal handleCloseClick={handleUserClick}>
     <div class="container">
         <div class="titleContainer">
             <h3 class="title">{user.email}</h3>
@@ -19,6 +29,23 @@
             <p class="text">{user.firstName}</p>
             <h5 class="infoTitle">Nom</h5>
             <p class="text">{user.lastName}</p>
+            <br>
+            <h5 class="infoTitle">Autre informations:</h5>
+        </div>
+
+        <div class="motDePasse">
+            <br>
+            <br>
+            <h5 class="infoTitle mdpContent">Mot de passe:</h5>
+            <input type="text"
+                bind:value={password}
+                placeholder="Nouveau mot de passe"
+                class="input"
+            />
+
+            <div class="button mdpContent">
+                <Button text="Changer" onClick={() => ChangerMotDePasse()}/>
+            </div>
         </div>
     </div>
 </Modal>
@@ -47,6 +74,13 @@
     }
     .info {
         color: black;
+    }
+    .motDePasse {
+        display: flex;
+        justify-content: space-evenly;
+        color: black;
+    }
+    .mdpContent {
     }
     .text {
         font-size: 1.1rem;
