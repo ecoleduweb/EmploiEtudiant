@@ -54,6 +54,24 @@ def updatePassword(current_user):
     
     return user_service.updatePassword(current_user, data)
 
+@user_blueprint.route('/updateUser', methods=['PUT'])
+@token_required
+def updateUser(current_user):
+    data = request.get_json()
+    if not isinstance(data, dict):
+        logger.warn('Invalid JSON data format in /updateUser : ' + str(data))
+        return jsonify({'message': 'Invalid JSON data format'}), 400
+    
+    lastname = data.get('lastname')
+    firstname = data.get('firstname')
+    email = data.get('email')
+    
+    if not all([lastname, firstname, email]):
+        logger.warn('Missing required fields in /updateUser : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    return user_service.updateUser(current_user, data)
+
 @user_blueprint.route('/all', methods=['GET'])
 @token_admin_required
 def getAllUsers(current_user):

@@ -7,14 +7,26 @@
     export let user: User
     export let handleUserClick: () => void
 
+    let lastname: string
+    let firstname: string
     let password: string
 
-    const ChangerMotDePasse = () => {
+    const ChangePassword = () => {
         PUT<any, any>("/user/updatePassword", {
             email: user.email,
             password: password
         })
     }
+
+    const ChangeUser = (lastName: string, firstName: string) => 
+    {
+        PUT<any, any>("/user/updateUser", {
+            lastname: lastName,
+            firstname: firstName,
+            email: user.email
+        })
+    }
+
 </script>
 
 <Modal handleCloseClick={handleUserClick}>
@@ -33,18 +45,40 @@
             <h5 class="infoTitle">Autre informations:</h5>
         </div>
 
-        <div class="motDePasse">
-            <br>
-            <br>
-            <h5 class="infoTitle mdpContent">Mot de passe:</h5>
+        <div class="editInfo">
+            <h5 class="infoTitle">Nom:</h5>
+            <input type="text"
+                bind:value={lastname}
+                placeholder="Nouveau nom:"
+                class="input"
+            />
+
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangeUser(lastname, " ")}/>
+            </div>
+        </div>
+        <div class="editInfo">
+            <h5 class="infoTitle">Prénom:</h5>
+            <input type="text"
+                bind:value={firstname}
+                placeholder="Nouveau prénom:"
+                class="input"
+            />
+
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
+            </div>
+        </div>
+        <div class="editInfo">
+            <h5 class="infoTitle">Mot de passe:</h5>
             <input type="text"
                 bind:value={password}
                 placeholder="Nouveau mot de passe"
                 class="input"
             />
 
-            <div class="button mdpContent">
-                <Button text="Changer" onClick={() => ChangerMotDePasse()}/>
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangePassword()}/>
             </div>
         </div>
     </div>
@@ -71,16 +105,19 @@
         font-size: 1.3rem;
         margin: 0px;
         margin-bottom: 0.5vw;
+        margin-right: 1.5vw;
+    }
+    .input 
+    {
+        margin-right: 1vw;
+        margin-bottom: 0.5vw;
     }
     .info {
         color: black;
     }
-    .motDePasse {
+    .editInfo {
         display: flex;
-        justify-content: space-evenly;
         color: black;
-    }
-    .mdpContent {
     }
     .text {
         font-size: 1.1rem;

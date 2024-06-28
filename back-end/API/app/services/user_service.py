@@ -44,3 +44,6 @@ class UserService:
     def updatePassword(self, current_user, data):
         return auth_repo.updatePassword(current_user, data)
     
+    def updateUser(self, current_user, data):
+        return auth_repo.updateUser(current_user, data)
+    
