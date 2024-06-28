@@ -17,7 +17,7 @@ class JobOffer(db.Model):
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
-    approbationMessage = db.Column(db.String, nullable=True) 
+    approbationMessage = db.Column(db.String(6000), nullable=True) 
     employerId = db.Column(db.Integer, db.ForeignKey('employers.id'), nullable=False)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None)
