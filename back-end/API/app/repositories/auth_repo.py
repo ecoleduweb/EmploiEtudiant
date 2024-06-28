@@ -37,7 +37,8 @@ class AuthRepo:
             user.password = hasher.hash(data['password'])
             db.session.commit()
         else:
-            current_user.password = hasher.hash(data['password'])
+            user = User.query.filter_by(email=current_user.email).first()
+            user.password = hasher.hash(data['password'])
             db.session.commit()
 
         return jsonify({'message': 'password updated'})
@@ -61,11 +62,14 @@ class AuthRepo:
 
             db.session.commit()
         else:
-            if data["lastname"] != "":
-                current_user.lastName = data["lastname"]
+            user = User.query.filter_by(email=current_user.email).first()
+
+            if type(data["lastname"]) == str and data["lastname"] != " ":
+                user.lastName = data["lastname"]
             
-            if data["firstname"] != "":
-                current_user.firstName = data["firstname"]
+            if type(data["firstname"]) == str and data["firstname"] != " ":
+                user.firstName = data["firstname"]
+
             db.session.commit()
         
         return jsonify({'message': 'user updated'})
