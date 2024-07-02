@@ -29,13 +29,10 @@
             <p class="text">{user.firstName}</p>
             <h5 class="infoTitle">Nom</h5>
             <p class="text">{user.lastName}</p>
-            <br>
             <h5 class="infoTitle">Autre informations:</h5>
         </div>
 
         <div class="motDePasse">
-            <br>
-            <br>
             <h5 class="infoTitle mdpContent">Mot de passe:</h5>
             <input type="text"
                 bind:value={password}
