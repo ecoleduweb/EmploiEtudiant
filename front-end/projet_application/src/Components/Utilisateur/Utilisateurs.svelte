@@ -41,7 +41,6 @@
             <p class="text">{user.firstName}</p>
             <h5 class="infoTitle">Nom</h5>
             <p class="text">{user.lastName}</p>
-            <br>
             <h5 class="infoTitle">Autre informations:</h5>
         </div>
 

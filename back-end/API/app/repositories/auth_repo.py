@@ -24,53 +24,30 @@ class AuthRepo:
             logger.warn("Register failed on email: " + data['email'] + " could not verify : " + str(e))
             return jsonify({'message': "could not verify"}), 401
 
-    def updatePassword(self, current_user, data):
-        if not current_user:
-                logger.warn("Couldn't update password, current user not found")
-                return jsonify({'message': 'current user not found'})
+    def updatePassword(self, email, password):
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            logger.warn("Couldn't update password for user with email: " + email + " user not found")
+            return jsonify({'message': 'no user found'})
         
-        if current_user.isModerator:
-            user = User.query.filter_by(email=data["email"]).first()
-            if not user:
-                logger.warn("Couldn't update password for user with email: " + data["email"] + " user not found")
-                return jsonify({'message': 'no user found'})
-            user.password = hasher.hash(data['password'])
-            db.session.commit()
-        else:
-            user = User.query.filter_by(email=current_user.email).first()
-            user.password = hasher.hash(data['password'])
-            db.session.commit()
+        user.password = hasher.hash(password)
+        db.session.commit()
 
         return jsonify({'message': 'password updated'})
     
-    def updateUser(self, current_user, data):
-        if not current_user:
-            logger.warn("Couldn't update user, current user not found")
-            return jsonify({'message': 'current user not found'})
-
-        if current_user.isModerator:
-            user = User.query.filter_by(email=data["email"]).first()
-            if not user:
-                logger.warn("Couldn't update user with email: " + data["email"] + ", user not found")
-                return jsonify({'message': 'no user found'})
+    def updateUser(self, email, data):
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            logger.warn("Couldn't update user with email: " + email + ", user not found")
+            return jsonify({'message': 'no user found'})
             
-            if type(data["lastname"]) == str and data["lastname"] != " ":
-                user.lastName = data["lastname"]
+        if type(data["lastname"]) == str and data["lastname"] != " ":
+            user.lastName = data["lastname"]
             
-            if type(data["firstname"]) == str and data["firstname"] != " ":
-                user.firstName = data["firstname"]
+        if type(data["firstname"]) == str and data["firstname"] != " ":
+            user.firstName = data["firstname"]
 
-            db.session.commit()
-        else:
-            user = User.query.filter_by(email=current_user.email).first()
-
-            if type(data["lastname"]) == str and data["lastname"] != " ":
-                user.lastName = data["lastname"]
-            
-            if type(data["firstname"]) == str and data["firstname"] != " ":
-                user.firstName = data["firstname"]
-
-            db.session.commit()
+        db.session.commit()
         
         return jsonify({'message': 'user updated'})
 
