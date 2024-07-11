@@ -3,7 +3,6 @@
     import type { User } from "../../Models/User"
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
-    import { onMount } from "svelte"
     export let user: User
     export let handleUserClick: () => void
 
