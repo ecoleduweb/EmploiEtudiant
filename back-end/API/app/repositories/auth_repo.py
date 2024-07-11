@@ -28,7 +28,7 @@ class AuthRepo:
         user = User.query.filter_by(email=email).first()
         if not user:
             logger.warn("Couldn't update password for user with email: " + email + " user not found")
-            return jsonify({'message': 'no user found'})
+            raise Exception("user not found")
         
         user.password = hasher.hash(password)
         db.session.commit()
@@ -37,7 +37,7 @@ class AuthRepo:
         user = User.query.filter_by(email=email).first()
         if not user:
             logger.warn("Couldn't update user with email: " + email + ", user not found")
-            return jsonify({'message': 'no user found'})
+            raise Exception("user not found")
             
         if type(data["lastname"]) == str and data["lastname"] != " ":
             user.lastName = data["lastname"]

@@ -79,6 +79,9 @@
                 <Button text="Changer" onClick={() => ChangePassword()}/>
             </div>
         </div>
+        <div>
+            <h5 class="info">Veuillez notez que le nom et prénom se met à jours seulement après reconnexion de l'utilisateur.</h5>
+        </div>
     </div>
 </Modal>
 

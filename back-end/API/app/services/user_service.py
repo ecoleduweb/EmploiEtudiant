@@ -43,10 +43,6 @@ class UserService:
 
     def updatePassword(self, current_user, data):
         email = ""
-
-        if not current_user:
-                logger.warn("Couldn't update password, current user not found")
-                return jsonify({'message': 'current user found'})
         
         if current_user.isModerator:
             email = data["email"]
@@ -60,10 +56,6 @@ class UserService:
     
     def updateUser(self, current_user, data):
         email = ""
-
-        if not current_user:
-                logger.warn("Couldn't update password, current user not found")
-                return jsonify({'message': 'current user found'})
 
         if current_user.isModerator:
             email = data["email"]
