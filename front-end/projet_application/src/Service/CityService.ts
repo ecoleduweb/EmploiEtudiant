@@ -1,5 +1,7 @@
-import { city } from "$lib";
+import type { City } from "$lib/interfaces";
 import { GET } from "../ts/server";
+
+let city: City;
 
 const getCityData = async () => {
   const response = await GET<any>("/city/all")
@@ -19,20 +21,16 @@ const cacheCity = async () => {
   let cityData: any;
 
   try {
-    let subscribedCity: any;
-
-    city.subscribe((c) => { subscribedCity = c })
-
-    if (subscribedCity) {
-      cityData = subscribedCity
+    if (city.cachingDate !== 0) {
+      cityData = city
     }
     else if (savedData) {
       cityData = JSON.parse(savedData)
     }
   }
   catch {
-    cityData = getCityData()
-    city.set(cityData)
+    cityData = await getCityData()
+    city = cityData
     localStorage.setItem("City", JSON.stringify(cityData))
   }
 
