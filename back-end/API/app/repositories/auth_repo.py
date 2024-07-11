@@ -33,8 +33,6 @@ class AuthRepo:
         user.password = hasher.hash(password)
         db.session.commit()
 
-        return jsonify({'message': 'password updated'})
-
     def getUser(self, email):
         try:
             user = User.query.filter_by(email=email).first()
