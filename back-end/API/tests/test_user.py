@@ -1,6 +1,7 @@
 import os
 import pytest
 from argon2 import PasswordHasher
+from jwt import decode
 from app import create_app, db
 from app.models.user_model import User 
 
@@ -41,6 +42,189 @@ def test_register(client):
     token = reponseLogin.json['token']
     response = client.post('/user/register', json=data, headers={"Authorization": token})
     assert response.status_code == 200
+
+def test_update(client):
+
+    #Utilisateur normale
+
+    #Connexion initiale
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    assert data["email"] != "" or data["email"] != " " 
+
+    #Changement de l'utilisateur
+    data2 = {
+        "email": "test@gmail.com",
+        "firstname": "TEST123",
+        "lastname": "TEST123"
+    }
+    response2 = client.put('/user/updateUser', json=data2, headers={"Authorization": token})
+    assert response2.status_code == 200
+
+    #Reconnexion
+    data3 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response3 = client.post('/user/login', json=data3)
+    assert response3.status_code == 200
+    assert 'token' in response3.json
+
+    token = response3.json['token']
+
+    data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    assert data["email"] != "" or data["email"] != " "
+
+    assert data["lastName"] == "TEST123"
+
+    #Administrateur
+
+    #Ajout d'utilisateur administrateur
+    hashed_password = hasher.hash("test123")
+    user = User(id=4, firstName="admin2", lastName="admin2", email="admin2@gmail.com", password=hashed_password, active=True, isModerator=True)
+    db.session.add(user)
+    db.session.commit()
+
+    #Ajout d'un autre utilisteur (non admin)
+    hashed_password = hasher.hash("test123")
+    user = User(id=5, firstName="pierre", lastName="Pierre", email="pierre@gmail.com", password=hashed_password, active=True, isModerator=False)
+    db.session.add(user)
+    db.session.commit()
+
+    #Connexion initiale
+    data1 = {
+        "email": "admin2@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Changement de l'utilisateur
+    data2 = {
+        "email": "pierre@gmail.com",
+        "firstname": "TEST1234",
+        "lastname": "TEST1234"
+    }
+    response2 = client.put('/user/updateUser', json=data2, headers={"Authorization": token})
+    assert response2.status_code == 200
+
+    #Connexion de l'utilisateur
+    data3 = {
+        "email": "pierre@gmail.com",
+        "password": "test123"
+    }
+    response3 = client.post('/user/login', json=data3)
+    assert response3.status_code == 200
+    assert 'token' in response3.json
+
+    token2 = response3.json['token']
+
+    data = decode(token2, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    assert data["email"] != "" or data["email"] != " " 
+
+    assert data["lastName"] == "TEST1234"
+
+def test_resetPassword(client):
+
+    #Utilisateur normale
+
+    #Connexion initiale
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Changement de mot de passe
+    data2 = {
+        "email": "test@gmail.com",
+        "password": "test1234"
+    }
+    response2 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token})
+    assert response2.status_code == 200
+
+    #Connexion avec le mot de passe modifié
+    data3 = {
+        "email": "test@gmail.com",
+        "password": "test1234"
+    }
+    response3 = client.post('/user/login', json=data3)
+    assert response3.status_code == 200
+    assert 'token' in response3.json
+
+    token2 = response3.json['token']
+
+    #Remodification du mot de passe
+    data2 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response4 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token2})
+    assert response4.status_code == 200
+
+
+    #Administrateur
+
+    #Ajout d'utilisateur administrateur
+    hashed_password = hasher.hash("test123")
+    user = User(id=3, firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True)
+    db.session.add(user)
+    db.session.commit()
+
+    #Connexion initiale
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Changement de mot de passe (avec token admin)
+    data2 = {
+        "email": "test@gmail.com",
+        "password": "test1234"
+    }
+    response2 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token})
+    assert response2.status_code == 200
+
+    #Connexion avec le mot de passe modifié
+    data3 = {
+        "email": "test@gmail.com",
+        "password": "test1234"
+    }
+    response3 = client.post('/user/login', json=data3)
+    assert response3.status_code == 200
+    assert 'token' in response3.json
+
+    token2 = response3.json['token']
+
+    #Remodification du mot de passe (avec token admin)
+    data2 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response4 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token})
+    assert response4.status_code == 200
+
 
 def test_login(client):
     data = {
