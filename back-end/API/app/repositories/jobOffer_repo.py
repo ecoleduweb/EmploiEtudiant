@@ -65,7 +65,7 @@ class JobOfferRepo:
                     JobOffer.isApproved == True,
                     JobOffer.offerDebut <= today,
                     JobOffer.deadlineApply >= today
-                ).order_by(JobOffer.approvedDate.desc()).all()[:5]
+                ).order_by(JobOffer.approvedDate.desc()).limit(5).all()
 
             return jobOffers
         else:
