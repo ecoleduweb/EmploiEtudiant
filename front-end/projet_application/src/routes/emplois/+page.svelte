@@ -1,36 +1,58 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import EmploiRow from "../../Components/JobOffer/EmploiRow.svelte"
-    import OffreEmploi from "../../Components/JobOffer/OffreEmploi.svelte"
+    import DetailOfferRow from "../../Components/JobOffer/DetailOfferRow.svelte"
+    import OfferDetail from "../../Components/JobOffer/OfferDetail.svelte"
     import { writable } from "svelte/store"
     import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import { pushState } from "$app/navigation"
+    import { page } from '$app/stores'
 
-    const modal = writable(false)
-    const selectedEmploiId = writable(0)
-    const openModal = (id: number) => {
-        modal.set(true)
-        selectedEmploiId.set(id)
+    let showModal = false
+    let loaded = false
+    let selectedOffer: JobOffer = undefined as any
+
+    const handleAddJobOfferClick = (offer: JobOffer) => {
+        showModal = true
+        selectedOffer = offer
+
+        pushState("?id=" + offer.id, {})
     }
+    
     const closeModal = () => {
-        modal.set(false)
-    }
-    const handleEmploiClick = (offreId: number) => {
-        openModal(offreId)
+        showModal = false
+        pushState("/emplois", {})
     }
 
     const jobOffers = writable<JobOffer[]>([])
-    const getJobOffers = async () => {
+    onMount(async () => {
         try {
             const response = await GET<any>("/jobOffer/approved")
             jobOffers.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
-    }
-    onMount(getJobOffers)
+        finally
+        {
+            loaded = true
+
+            const id = $page.url.searchParams.get('id')
+
+            if (id !== '') 
+            {
+                let jobOffer = $jobOffers.find((offer) => offer.id.toString() == id)
+                
+                if (jobOffer) 
+                {
+                    showModal = true
+                    selectedOffer = jobOffer
+                }
+            }
+        }
+    })
 </script>
 
 <main>
@@ -43,25 +65,42 @@
             </h1>
         </div>
     </section>
-    <section class="offres">
-        <div class="rowTitles">
-            <h2 class="rowTitle">Titre</h2>
-            <h2 class="rowTitle">Employeur</h2>
-            <h2 class="rowTitle">Date d'entrée en vigueur</h2>
-            <h2 class="rowTitle">Programme</h2>
-        </div>
-        {#each $jobOffers as offre}
-            <EmploiRow {offre} handleModalClick={handleEmploiClick} />
-        {/each}
+
+    
+    <section>
+        {#if loaded}
+            <div class="rowTitles">
+                <h2 class="rowTitle">Titre</h2>
+                <h2 class="rowTitle">Employeur</h2>
+                <h2 class="rowTitle">Date d'entrée en vigueur</h2>
+                <h2 class="rowTitle">Programme</h2>
+            </div>
+            {#each $jobOffers as offer}
+                <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
+            {/each}
+        {:else}
+            <div class="loading">
+                <LoadingSpinner />
+            </div>
+        {/if}
     </section>
-    {#if $modal}
-        {#each $jobOffers as emploi}
-            {#if emploi.id === $selectedEmploiId}
-                <Modal handleCloseClick={closeModal}>
-                    <OffreEmploi offer={emploi} />
-                </Modal>
-            {/if}
-        {/each}
+
+    <style scoped>
+        .loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
+
+    {#if showModal}
+        <Modal handleCloseClick={closeModal}>
+            <OfferDetail offer={selectedOffer} />
+        </Modal>
     {/if}
 </main>
 

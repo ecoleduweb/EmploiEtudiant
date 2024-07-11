@@ -3,6 +3,7 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     import { studyPrograms } from "$lib"
     export let offer: JobOffer
 
@@ -19,8 +20,11 @@
             console.error("Error fetching enterprise:", error)
         }
     }
+
+    let loaded = false;
+
     onMount(async () => {
-        getEnterprises(offer.employerId)
+        await getEnterprises(offer.employerId)
         const response = await GET<any>(
             `/offerProgram/${offer.id}`,
         )
@@ -46,7 +50,9 @@
         }
 
         await getScheduleByOfferId()
-
+        
+        loaded = true;
+        
     })
     let programmeSelected = [] as any
     let programmesOption: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
@@ -67,46 +73,62 @@
     }
 </script>
 
-<div class="container">
-    <div class="titleContainer">
-        <h3 class="title">{offer.title}</h3>
-        {#if enterprise}
-            <h4 class="subtitle">Chez {enterprise.name}</h4>
-        {/if}
-    </div>
-    <div class="info">
-        <h5 class="infoTitle">Nom du poste</h5>
-        <p class="text">{offer.title}</p>
-        <h5 class="infoTitle">Adresse du lieu de travail</h5>
-        <p class="text">{offer.address}</p>
-        <h5 class="infoTitle">Date de début</h5>
-        <p class="text">{offer.offerDebut}</p>
-        <h5 class="infoTitle">Date d'entrée en fonction</h5>
-        <p class="text">{offer.dateEntryOffice}</p>
-        <h5 class="infoTitle">Date limite pour postuler</h5>
-        <p class="text">{offer.deadlineApply}</p>
-        <h5 class="infoTitle">Salaire</h5>
-        <p class="text">{offer.salary}</p>
-        <h5 class="infoTitle">Heure par semaine</h5>
-        <p class="text">{offer.hoursPerWeek}</p>
-        <h5 class="infoTitle">Programme</h5>
-        <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
-        <h5 class="infoTitle">Type du poste</h5>
-        <p class="text">{scheduleSelected.map((s) => s.label).join(", ")}</p>
-        <h5 class="infoTitle">Description du poste</h5>
-        <p class="text">{offer.description}</p>
-        <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
-        <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
-        <h5 class="infoTitle">Où envoyer votre candidature</h5>
-        <p class="text">{offer.email}</p>
 
-        <style scoped>
-            .CanBeHidden 
-            {
-                display: none;
-            }
-        </style>
-    </div>
+<div class="container">
+
+    {#if !loaded}
+        <div class="Loading2">
+            <LoadingSpinner />
+        </div>
+    {:else}
+        <div class="titleContainer">
+            <h3 class="title">{offer.title}</h3>
+            {#if enterprise}
+                <h4 class="subtitle">Chez {enterprise.name}</h4>
+            {/if}
+        </div>
+
+        <div class="info">
+            <h5 class="infoTitle">Nom du poste</h5>
+            <p class="text">{offer.title}</p>
+            <h5 class="infoTitle">Adresse du lieu de travail</h5>
+            <p class="text">{offer.address}</p>
+            <h5 class="infoTitle">Date de début</h5>
+            <p class="text">{offer.offerDebut}</p>
+            <h5 class="infoTitle">Date d'entrée en fonction</h5>
+            <p class="text">{offer.dateEntryOffice}</p>
+            <h5 class="infoTitle">Date limite pour postuler</h5>
+            <p class="text">{offer.deadlineApply}</p>
+            <h5 class="infoTitle">Salaire</h5>
+            <p class="text">{offer.salary}</p>
+            <h5 class="infoTitle">Heure par semaine</h5>
+            <p class="text">{offer.hoursPerWeek}</p>
+            <h5 class="infoTitle">Programme</h5>
+            <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
+            <h5 class="infoTitle">Type du poste</h5>
+            <p class="text">{scheduleSelected.map((s) => s.label).join(", ")}</p>
+            <h5 class="infoTitle">Description du poste</h5>
+            <p class="text">{offer.description}</p>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
+            <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
+            <h5 class="infoTitle">Où envoyer votre candidature</h5>
+            <p class="text">{offer.email}</p>
+    
+            <style scoped>
+                .CanBeHidden 
+                {
+                    display: none;
+                }
+    
+                .container > .Loading2 
+                {
+                    display: flex !important;
+                    justify-content: center !important;
+                }
+            </style>
+        </div>
+    {/if}
+
 </div>
 
 <style scoped>

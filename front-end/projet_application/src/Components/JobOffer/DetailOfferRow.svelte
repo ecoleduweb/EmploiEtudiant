@@ -4,32 +4,35 @@
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
 
-    export let offre: JobOffer
-    export let handleModalClick: (id: number) => void
+    export let offer: JobOffer
+    export let handleModalClick: (offer: JobOffer) => void
 
     const enterprise = writable<string>()
     const getEnterprises = async () => {
         try {
             const response = await GET<any>(
-                `/enterprise/employer/${offre.employerId}`
+                `/enterprise/employer/${offer.employerId}`
             )
             enterprise.set(response.name)
         } catch (error) {
             console.error("Error fetching enterprise:", error)
         }
     }
-    onMount(() => {
-        if (offre) getEnterprises()
+    onMount(async () => {
+        if (offer) 
+        {
+            await getEnterprises(); 
+        }
     })
 </script>
 
-<button class="offreEmploi" on:click={() => handleModalClick(offre.id)}>
+<button class="offreEmploi" on:click={() => handleModalClick(offer)}>
     <div class="emploi">
         <div class="info">
-            <p class="text">{offre.title}</p>
+            <p class="text">{offer.title}</p>
             <p class="text">{$enterprise}</p>
-            <p class="text">{offre.deadlineApply}</p>
-            <p class="text"></p>
+            <p class="text">{offer.deadlineApply}</p>
+            <p class="description">{offer.description}</p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>

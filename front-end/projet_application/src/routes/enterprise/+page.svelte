@@ -8,10 +8,14 @@
     import Enterprises from "../../Components/Enterprise/Enterprises.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import AddEnterprise from "../../Components/Enterprise/AddEnterprise.svelte"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     const modal = writable(false)
     const modalAdd = writable(false)
     const selectedEnterpriseId = writable(0)
+
+    let loaded = false
+
     const openModal = (id: number) => {
         modal.set(true)
         selectedEnterpriseId.set(id)
@@ -42,7 +46,24 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    onMount(getEnterprises)
+    onMount(async () => 
+    {
+        try 
+        {
+            await getEnterprises()
+        }
+
+        catch (error) 
+        {
+            console.error("Error while loading:", error)
+        }
+
+        finally 
+        {
+            loaded = true
+        }
+
+    })
 </script>
 
 <main>
@@ -51,7 +72,7 @@
             <div class="divFlex">
                 <Button
                     onClick={handleEnterprise}
-                    text="Créer une nouvelle enterprise"
+                    text="Créer une nouvelle entreprise"
                 />
             </div>
         </div>
@@ -64,14 +85,34 @@
             </h1>
         </div>
     </section>
-    <section class="offres">
-        {#each $enterprises as enterprise}
-            <EnterpriseRow
-                {enterprise}
-                handleModalClick={handleEnterpriseClick}
-            />
-        {/each}
-    </section>
+
+    {#if !loaded}
+        <section class="Loading">
+            <LoadingSpinner />
+        </section>
+    {:else}
+        <section class="offres">
+            {#each $enterprises as enterprise}
+                <EnterpriseRow
+                    {enterprise}
+                    handleModalClick={handleEnterpriseClick}
+                />
+            {/each}
+        </section>
+    {/if}
+
+    <style scoped>
+        .Loading 
+        {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+        }
+    </style>
+
     {#if $modal}
         {#each $enterprises as enterprise}
             {#if enterprise.id === $selectedEnterpriseId}
