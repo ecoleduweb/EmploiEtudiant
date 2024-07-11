@@ -40,11 +40,13 @@ def register():
 
 @user_blueprint.route('/updatePassword', methods=['PUT'])
 @token_required
-def updatePassword():
+def updatePassword(current_user):
     data = request.get_json()
+    
     if not isinstance(data, dict):
         logger.warn('Invalid JSON data format in /updatePassword : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
+    
     email = data.get('email')
     password = data.get('password')
     
@@ -52,7 +54,20 @@ def updatePassword():
         logger.warn('Missing required fields in /updatePassword : \nEmail :' + email + ' \nPassword : ' + password)
         return jsonify({'message': 'Missing required fields'}), 400
     
-    return user_service.updatePassword(data)
+    try:
+        user_service.updatePassword(current_user, data)
+        return jsonify({'message': 'password updated'})
+    except Exception as e:
+        userEmail = ""
+
+        if current_user.isModerator:
+            userEmail = data["email"]
+        else:
+            userEmail = current_user.email
+
+        logger.warn("Failed to update password for email: " + userEmail, e)
+        return jsonify({'message': "could not change password"}), 500
+
 
 @user_blueprint.route('/all', methods=['GET'])
 @token_admin_required

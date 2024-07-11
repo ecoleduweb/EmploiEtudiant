@@ -24,14 +24,14 @@ class AuthRepo:
             logger.warn("Register failed on email: " + data['email'] + " could not verify : " + str(e))
             return jsonify({'message': "could not verify"}), 401
 
-    def updatePassword(self, data):
-        user = User.query.filter_by(email=data["email"]).first()
+    def updatePassword(self, email, password):
+        user = User.query.filter_by(email=email).first()
         if not user:
-            logger.warn("Couldn't update password for user with email: " + data["email"] + " user not found")
+            logger.warn("Couldn't update password for user with email: " + email + " user not found")
             return jsonify({'message': 'no user found'})
-        user.password = hasher.hash(data['password'])
+        
+        user.password = hasher.hash(password)
         db.session.commit()
-        return jsonify({'message': 'password updated'})
 
     def getUser(self, email):
         try:
