@@ -41,7 +41,7 @@ class JobOffer(db.Model):
         approvedDate='{self.approvedDate}')'''
 
     def to_json_string(self, noApprobationMessage=False):
-        result = {
+        return {
                 'id': self.id,
                 'title': self.title,
                 'address': self.address,
@@ -60,8 +60,8 @@ class JobOffer(db.Model):
                 'approvedDate': self.approvedDate
             }
         
-        if noApprobationMessage:
-            del result['approbationMessage']
-            return result
-        else:
-            return result
+    def to_json_string_without_approbation_message(self):
+        result = self.to_json_string()
+
+        del result['approbationMessage']
+        return result
