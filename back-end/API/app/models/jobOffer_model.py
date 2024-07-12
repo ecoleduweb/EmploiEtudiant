@@ -40,7 +40,7 @@ class JobOffer(db.Model):
         isApproved='{self.isApproved}',
         approvedDate='{self.approvedDate}')'''
 
-    def to_json_string(self, noApprobationMessage=False):
+    def to_json_string(self):
         return {
                 'id': self.id,
                 'title': self.title,
