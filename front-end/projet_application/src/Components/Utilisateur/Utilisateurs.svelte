@@ -19,7 +19,7 @@
 
     const ChangeUser = (lastName: string, firstName: string) => 
     {
-        PUT<any, any>("/user/updateUser", {
+        PUT<any, any>("/user/user", {
             lastname: lastName,
             firstname: firstName,
             email: user.email

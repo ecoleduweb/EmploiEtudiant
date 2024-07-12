@@ -22,13 +22,11 @@
 
     const ChangeUser = (lastName: string, firstName: string) => 
     {
-        PUT<any, any>("/user/updateUser", {
+        PUT<any, any>("/user/user", {
             lastname: lastName,
             firstname: firstName,
             email: ($currentUser as User).email
         })
-
-        //Bug, le lastname et le firstname ne refresh pas, car le client le prend du token, mais maintenant le lastname/firstname à changer, donc il faudra refetch
     }
 
 </script>

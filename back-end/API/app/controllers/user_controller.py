@@ -68,13 +68,13 @@ def updatePassword(current_user):
         logger.warn("Failed to update password for email: " + userEmail, e)
         return jsonify({'message': "could not change password"}), 500
 
-@user_blueprint.route('/updateUser', methods=['PUT'])
+@user_blueprint.route('/user', methods=['PUT'])
 @token_required
 def updateUser(current_user):
     data = request.get_json()
 
     if not isinstance(data, dict):
-        logger.warn('Invalid JSON data format in /updateUser : ' + str(data))
+        logger.warn('Invalid JSON data format in /user : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
     
     lastname = data.get('lastname')
@@ -82,7 +82,7 @@ def updateUser(current_user):
     email = data.get('email')
     
     if not all([lastname, firstname, email]):
-        logger.warn('Missing required fields in /updateUser : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
+        logger.warn('Missing required fields in /user : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
         return jsonify({'message': 'Missing required fields'}), 400
     
     try:

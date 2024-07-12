@@ -43,8 +43,7 @@ def test_register(client):
     response = client.post('/user/register', json=data, headers={"Authorization": token})
     assert response.status_code == 200
 
-def test_update(client):
-
+def test_updateUserNormal(client):
     #Utilisateur normale
 
     #Connexion initiale
@@ -67,7 +66,7 @@ def test_update(client):
         "firstname": "TEST123",
         "lastname": "TEST123"
     }
-    response2 = client.put('/user/updateUser', json=data2, headers={"Authorization": token})
+    response2 = client.put('/user/user', json=data2, headers={"Authorization": token})
     assert response2.status_code == 200
 
     #Reconnexion
@@ -86,6 +85,7 @@ def test_update(client):
 
     assert data["lastName"] == "TEST123"
 
+def test_updateUserAdmin(client):
     #Administrateur
 
     #Ajout d'utilisateur administrateur
@@ -117,7 +117,7 @@ def test_update(client):
         "firstname": "TEST1234",
         "lastname": "TEST1234"
     }
-    response2 = client.put('/user/updateUser', json=data2, headers={"Authorization": token})
+    response2 = client.put('/user/user', json=data2, headers={"Authorization": token})
     assert response2.status_code == 200
 
     #Connexion de l'utilisateur
@@ -136,8 +136,7 @@ def test_update(client):
 
     assert data["lastName"] == "TEST1234"
 
-def test_resetPassword(client):
-
+def test_resetPasswordNormal(client):
     #Utilisateur normale
 
     #Connexion initiale
@@ -170,15 +169,34 @@ def test_resetPassword(client):
 
     token2 = response3.json['token']
 
+    #Modification du mot de passe avec email d'un autre utilisateur/invalide
+    data4 = {
+        "email": "test123@gmail.com",
+        "password": "test12345"
+    }
+    response4 = client.put('/user/updatePassword', json=data4, headers={"Authorization": token2})
+    assert response4.status_code == 200
+
+    #Connexion avec le mot de passe modifié
+    data5 = {
+        "email": "test@gmail.com",
+        "password": "test12345"
+    }
+    response5 = client.post('/user/login', json=data5)
+    assert response5.status_code == 200
+    assert 'token' in response5.json
+
+    token3 = response5.json['token']
+
     #Remodification du mot de passe
-    data2 = {
+    data6 = {
         "email": "test@gmail.com",
         "password": "test123"
     }
-    response4 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token2})
-    assert response4.status_code == 200
+    response6 = client.put('/user/updatePassword', json=data6, headers={"Authorization": token3})
+    assert response6.status_code == 200
 
-
+def test_resetPasswordAdmin(client):
     #Administrateur
 
     #Ajout d'utilisateur administrateur
@@ -224,7 +242,6 @@ def test_resetPassword(client):
     }
     response4 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token})
     assert response4.status_code == 200
-
 
 def test_login(client):
     data = {
