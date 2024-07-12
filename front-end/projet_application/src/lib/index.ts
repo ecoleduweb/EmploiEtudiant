@@ -7,5 +7,3 @@ import type { User } from "../Models/User";
 export const isLoggedIn = writable(false);
 export const currentUser = writable<User | undefined>();
 export const studyPrograms = writable<StudyProgram[]>([]);
-
-export interface Option { label: string; value: number; }
