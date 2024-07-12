@@ -118,10 +118,10 @@ def offresEmploiApproved():
     getRecentOnly = request.args.get("getRecentOnly") == "true"
 
     if getRecentOnly:
-        jobOffers = jobOffer_service.offresEmploiApproved(True)
+        jobOffers = jobOffer_service.getRecentOffers()
         return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
     else:
-        jobOffers = jobOffer_service.offresEmploiApproved(False)
+        jobOffers = jobOffer_service.getOffers()
         return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])

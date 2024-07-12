@@ -12,16 +12,10 @@
 
     let loaded = false
 
-    const jobOffers = writable<JobOffer[]>([])
-
-    let LatestJobOffers: JobOffer[] = []
+    let latestJobOffers: JobOffer[] = []
     const getJobOffers = async () => {
         try {
-            const response1 = await GET<any>("/jobOffer/approved")
-            jobOffers.set(response1)
-
-            const response2 = await GET<any>("/jobOffer/approved?getRecentOnly=true")
-            LatestJobOffers = response2
+            latestJobOffers = await GET<any>("/jobOffer/approved?getRecentOnly=true")
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -79,7 +73,7 @@
         </section>
     {:else}
         <section class="offres">
-            {#each LatestJobOffers as offer}
+            {#each latestJobOffers as offer}
                 <DetailOfferRow {offer} 
                 handleModalClick={(function() {})}/>
             {/each}
