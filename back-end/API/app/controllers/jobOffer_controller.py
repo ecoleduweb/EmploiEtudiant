@@ -31,31 +31,35 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 @job_offer_blueprint.route('/new', methods=['POST'])
 @token_required
 def createJobOffer(current_user):
-    data = request.get_json()
-    if current_user.isModerator:
-        isApproved = True
+    try:
+        data = request.get_json()
+        if current_user.isModerator:
+            isApproved = True
 
-        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
-            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+            if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+                employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+            else:
+                return jsonify({'message', 'No enterprise selected.'}), 400
         else:
-            return jsonify({'message', 'No enterprise selected.'}), 400
-    else:
-        # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
-        isApproved = None
-        employer = Employers.query.filter_by(userId=current_user.id).first()
-        # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
-        if employer is None:
-            enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
-            employer = employer_service.createEmployer(enterpriseId, current_user.id)
+            # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
+            isApproved = None
+            employer = Employers.query.filter_by(userId=current_user.id).first()
+            # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
+            if employer is None:
+                enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
+                enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
+                employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
-    jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
-    for studyProgramId in data["studyPrograms"]:
-        offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-    employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-    # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
+        for studyProgramId in data["studyPrograms"]:
+            offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
+        # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
-    return jobOffer.to_json_string(), 201
+        return jobOffer.to_json_string(), 201
+    except Exception as e:
+        logger.warn("Could not create jobOffer, invalid data")
+        return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
