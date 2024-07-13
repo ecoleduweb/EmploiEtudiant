@@ -57,6 +57,10 @@
     const handleProgrammes = () => {
         goto("/programmes")
     }
+    const handleProfile = () => 
+    {
+        goto("/profile")
+    }
 
     const handleLogout = () => {
         isLoggedIn.set(false)
@@ -162,10 +166,16 @@
                 </div>
 
                 <div class="option">
-                    <p class="email">
-                        <br />Connecté en tant que <br />{firstName}
-                        {lastName}
-                    </p>
+                    <button
+                        class="button"
+                        on:click={handleProfile}
+                    >
+                        <p class="email">
+                            Connecté en 
+                            tant que 
+                            {firstName} {lastName}
+                        </p>
+                    </button>
                 </div>
 
             {:else}
@@ -255,7 +265,9 @@
 
     .email 
     {
-        margin-left: 35px;
+        margin-left: 8px;
+        margin-right: 8px;
+        text-align: center;
     }
 
     button:hover {
@@ -397,11 +409,10 @@
         button.button 
         {
             padding: 0;
-            padding-left: 5%;
-            padding-right: 0;
-            margin-left: 1.6vw;
-            margin-right: 1.6vw;
-
+            padding-left: 0;
+            padding-right: 5%;
+            margin-left: 1.4vw;
+            margin-right: 1vw;
             text-align: center;
         }
 
@@ -434,8 +445,7 @@
     }
 
 
-    .textLogout,
-    .email {
+    .textLogout {
         margin-right: 8px;
     }
 

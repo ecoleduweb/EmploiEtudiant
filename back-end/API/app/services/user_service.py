@@ -43,10 +43,6 @@ class UserService:
 
     def updatePassword(self, current_user, data):
         email = ""
-
-        if not current_user:
-                logger.warn("Couldn't update password, current user not found")
-                return jsonify({'message': 'current user found'})
         
         if current_user.isModerator:
             email = data["email"]
@@ -57,3 +53,16 @@ class UserService:
             auth_repo.updatePassword(email, data["password"])
         except Exception as e:
             raise Exception("Failed to update password")
+    
+    def updateUser(self, current_user, data):
+        email = ""
+
+        if current_user.isModerator:
+            email = data["email"]
+        else:
+            email = current_user.email
+        
+        try:
+            auth_repo.updateUser(email, data)
+        except Exception as e:
+            raise Exception("Failed to update user")

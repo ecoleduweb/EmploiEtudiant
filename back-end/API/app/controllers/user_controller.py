@@ -68,6 +68,36 @@ def updatePassword(current_user):
         logger.warn("Failed to update password for email: " + userEmail, e)
         return jsonify({'message': "could not change password"}), 500
 
+@user_blueprint.route('/user', methods=['PUT'])
+@token_required
+def updateUser(current_user):
+    data = request.get_json()
+
+    if not isinstance(data, dict):
+        logger.warn('Invalid JSON data format in /user : ' + str(data))
+        return jsonify({'message': 'Invalid JSON data format'}), 400
+    
+    lastname = data.get('lastname')
+    firstname = data.get('firstname')
+    email = data.get('email')
+    
+    if not all([lastname, firstname, email]):
+        logger.warn('Missing required fields in /user : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
+        return jsonify({'message': 'Missing required fields'}), 400
+    
+    try:
+        user_service.updateUser(current_user, data)
+        return jsonify({'message': 'user updated'})
+    except Exception as e:
+        userEmail = ""
+
+        if current_user.isModerator:
+            userEmail = data["email"]
+        else:
+            userEmail = current_user.email
+
+        logger.warn("Failed to update user with email: " + userEmail, e)
+        return jsonify({'message': 'could not update user'}), 500
 
 @user_blueprint.route('/all', methods=['GET'])
 @token_admin_required
