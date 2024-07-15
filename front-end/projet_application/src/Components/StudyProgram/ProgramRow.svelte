@@ -1,6 +1,4 @@
 <script lang="ts">
-    import type { Option } from "$lib"
-    import { onMount } from "svelte"
     import type { StudyProgram } from "../../Models/StudyProgram";
 
     export let studyProgram: StudyProgram

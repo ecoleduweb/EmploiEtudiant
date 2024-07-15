@@ -17,4 +17,5 @@ export interface JobOffer {
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation
     acceptCondition: boolean | null | undefined
+    approvedDate: string
 }

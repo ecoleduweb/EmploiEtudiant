@@ -8,6 +8,8 @@
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import { pushState } from "$app/navigation"
+    import { page } from '$app/stores'
 
     let showModal = false
     let loaded = false
@@ -16,10 +18,13 @@
     const handleAddJobOfferClick = (offer: JobOffer) => {
         showModal = true
         selectedOffer = offer
+
+        pushState("?id=" + offer.id, {})
     }
     
     const closeModal = () => {
         showModal = false
+        pushState("/emplois", {})
     }
 
     const jobOffers = writable<JobOffer[]>([])
@@ -33,6 +38,19 @@
         finally
         {
             loaded = true
+
+            const id = $page.url.searchParams.get('id')
+
+            if (id !== '') 
+            {
+                let jobOffer = $jobOffers.find((offer) => offer.id.toString() == id)
+                
+                if (jobOffer) 
+                {
+                    showModal = true
+                    selectedOffer = jobOffer
+                }
+            }
         }
     })
 </script>

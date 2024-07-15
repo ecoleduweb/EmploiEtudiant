@@ -1,19 +1,16 @@
 <script lang="ts">
-    import fetchCity from "../../Service/CityService"
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
     import ValidationSchema from "../../FormValidations/JobOffer"
-    import type Token from "../../Models/Token"
     import {ValidationError} from "yup"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET, POST, PUT } from "../../ts/server"
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
-    import { jwtDecode } from "jwt-decode"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
-    import type { StudyProgram } from "../../Models/StudyProgram"
+    import fetchCity from "../../Service/CityService"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -289,10 +286,16 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage}
-            <h3 style="color: red;">
-                Raison du refus: {jobOffer.approbationMessage}
-            </h3>
+        {#if jobOffer.approbationMessage !== undefined}
+            {#if jobOffer.isApproved == true}
+                <h3 style="color: green;">
+                    Raison d'acceptation: {jobOffer.approbationMessage}
+                </h3>
+            {:else if jobOffer.isApproved == false}
+                <h3 style="color: red;">
+                    Raison du refus: {jobOffer.approbationMessage}
+                </h3>
+            {/if}
         {/if}
 
         {#if !isJobOfferEdit}

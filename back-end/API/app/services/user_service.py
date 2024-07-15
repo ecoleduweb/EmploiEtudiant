@@ -41,6 +41,28 @@ class UserService:
     def getUser(self, email):
         return auth_repo.getUser(email)
 
-    def updatePassword(self, data):
-        return auth_repo.updatePassword(data)
+    def updatePassword(self, current_user, data):
+        email = ""
+        
+        if current_user.isModerator:
+            email = data["email"]
+        else:
+            email = current_user.email
+
+        try:
+            auth_repo.updatePassword(email, data["password"])
+        except Exception as e:
+            raise Exception("Failed to update password")
     
+    def updateUser(self, current_user, data):
+        email = ""
+
+        if current_user.isModerator:
+            email = data["email"]
+        else:
+            email = current_user.email
+        
+        try:
+            auth_repo.updateUser(email, data)
+        except Exception as e:
+            raise Exception("Failed to update user")

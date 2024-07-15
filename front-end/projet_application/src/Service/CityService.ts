@@ -1,10 +1,48 @@
+import type { City } from "$lib/interfaces";
 import { GET } from "../ts/server";
 
-const fetchCity = async () => {
+let city: City;
+
+const getCityData = async () => {
   const response = await GET<any>("/city/all")
-  return response.map((v: any) => {
-    return { label: v.city, value: v.id }
+
+  let cities = response.map((c: any) => {
+    return { label: c.city, value: c.id }
   })
+
+  return {
+    cities: cities,
+    cachingDate: new Date().getTime(),
+  }
+}
+
+const cacheCity = async () => {
+  let savedData = localStorage.getItem("City")
+  let cityData: any;
+
+  try {
+    if (city.cachingDate !== 0) {
+      cityData = city
+    }
+    else if (savedData) {
+      cityData = JSON.parse(savedData)
+    }
+  }
+  catch {
+    cityData = await getCityData()
+    city = cityData
+    localStorage.setItem("City", JSON.stringify(cityData))
+  }
+
+  finally {
+    return cityData.cities
+  }
+}
+
+const fetchCity = async () => {
+  console.log("Fetching cities...")
+
+  return cacheCity()
 }
 
 export default fetchCity;

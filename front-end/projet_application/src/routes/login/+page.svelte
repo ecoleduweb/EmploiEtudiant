@@ -9,7 +9,6 @@
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
     import { currentUser, isLoggedIn } from "$lib"
-    import { userToken } from "../../stores"
     import { onMount } from "svelte"
 
 
