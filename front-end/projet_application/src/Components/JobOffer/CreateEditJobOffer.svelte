@@ -282,11 +282,16 @@
 
     let todayMin = new Date()
     let minDateString = todayMin.toISOString().split("T")[0] // format as yyyy-mm-dd
+
+
+    console.log(jobOffer)
+    console.log(jobOffer.approbationMessage)
+    console.log(jobOffer.isApproved)
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== undefined}
+        {#if jobOffer.approbationMessage !== ""}
             {#if jobOffer.isApproved == true}
                 <h3 style="color: green;">
                     Raison d'acceptation: {jobOffer.approbationMessage}
