@@ -17,8 +17,9 @@
         modal.set(true)
         selectedUserId.set(id)
     }
-    const closeModal = () => {
+    const closeModal = async () => {
         modal.set(false)
+        await getUsers()
     }
 
     const users = writable<User[]>([])
@@ -26,10 +27,12 @@
         try {
             const response = await GET<any>("/user/all")
             users.set(response.users)
+            console.log(response.users)
         } catch (error) {
             console.error("Error fetching users:", error)
         }
     }
+    
     onMount(getUsers)
 </script>
 

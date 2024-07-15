@@ -3,8 +3,13 @@
     import type { User } from "../../Models/User"
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
+    import { writable, type Writable } from "svelte/store"
     export let user: User
     export let handleUserClick: () => void
+
+    let confirmModal = writable(false)
+    let confirmMode: number
+    let approbationMessage: string = ""
 
     let lastname: string
     let firstname: string
@@ -26,9 +31,78 @@
         })
     }
 
+    const MakeAdmin = async () => 
+    {
+        await PUT<any, any>("/user/makeAdmin", {
+            email: user.email
+        })
+    }
+
+    const ConfirmAccept = () => 
+    {
+        confirmModal.set(false)
+        if (confirmMode == 1) 
+        {
+            MakeAdmin()
+        }
+        else if (confirmMode == 2) 
+        {
+
+        }
+        else if (confirmMode == 3) 
+        {
+
+        }
+
+        handleUserClick()
+    }
+
+    const ConfirmRefuse = () => 
+    {
+        confirmModal.set(false)
+    }
+
+    const ConfirmBefore = (mode: number) => 
+    {
+        switch (mode) 
+        {
+            case 1: 
+            {
+                approbationMessage = "Voulez-vous vraiment donner/retirer les permissions administrateur à cet utilisateur?"
+                break
+            }
+            case 2: 
+            {
+                approbationMessage = "Voulez-vous vraiment supprimer cet utilisateur?"
+                break
+            }
+            case 3: 
+            {
+                approbationMessage = "Voulez-vous vraiment désactiver cet utilisateur?"
+                break
+            }
+        }
+
+        confirmMode = mode
+        confirmModal.set(true)
+    }
+
+    const ConfirmModalCallback = (result: boolean) => 
+    {
+        if (result) 
+        {
+            ConfirmAccept()
+        }
+        else 
+        {
+            ConfirmRefuse()
+        }
+    }
+
 </script>
 
 <Modal handleCloseClick={handleUserClick}>
+    {#if !$confirmModal}
     <div class="container">
         <div class="titleContainer">
             <h3 class="title">{user.email}</h3>
@@ -82,7 +156,61 @@
         <div>
             <h5 class="info">Veuillez notez que le nom et prénom se met à jours seulement après reconnexion de l'utilisateur.</h5>
         </div>
+        <div class="editInfo userActions">
+            <div class="button">
+                <Button text="Rendre administrateur" onClick={() => ConfirmBefore(1)}/>
+            </div>
+            <div class="button">
+                <Button text="Supprimer utilisateur" onClick={() => ConfirmBefore(2)}/>
+            </div>
+            <div class="button">
+                <Button text="Désactiver utilisateur" onClick={() => ConfirmBefore(3)}/>
+            </div>
+        </div>
     </div>
+    {:else}
+        <div class="main-confirm">
+            <div class="confirmContainer">
+                <div>
+                    <h5 class="infoTitle">{approbationMessage}</h5>
+                </div>
+                <div class="confirmButton">
+                    <Button text="Confirmer" onClick={() => ConfirmModalCallback(true)} />
+        
+                    <Button text="Refuser" onClick={() => ConfirmModalCallback(false)} />
+                </div>
+            </div>
+        </div>
+        <style scoped>
+            .confirmContainer {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                justify-content: space-between;
+                color: white;
+                border-radius: 4px;
+                transition: background-color 0.3s ease;
+            }
+        
+            .infoTitle {
+                color: black;
+                font-size: 1.6vw;
+            }
+            
+            .confirmButton {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                gap: 1vw;
+            }
+            .main-confirm {
+                flex-direction: column;
+                margin: auto;
+            }
+        </style>
+        
+    {/if}
 </Modal>
 
 <style scoped>
@@ -135,5 +263,10 @@
         color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
+    }
+    .userActions 
+    {
+        flex-direction: row;
+        justify-content: space-evenly;
     }
 </style>

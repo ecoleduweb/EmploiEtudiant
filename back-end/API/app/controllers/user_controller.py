@@ -117,3 +117,13 @@ def getUser(current_user):
         return jsonify({'message': 'Token not provided'}), 400
     user = user_service.getUser(email)
     return jsonify(user.to_json_string())
+
+@user_blueprint.route('/makeAdmin', methods=['PUT'])
+@token_admin_required
+def makeAdmin(current_user):
+    try:
+        data = request.get_json()
+        user_service.makeAdmin( user_service.getUser(data['email']) )
+        return jsonify({'message': 'Successfully updated user (' + data['email'] + ')'})
+    except Exception as e:
+        return jsonify({'message': 'Couldn\'t update user (' + data['email'] + ')'}), 400

@@ -66,3 +66,9 @@ class UserService:
             auth_repo.updateUser(email, data)
         except Exception as e:
             raise Exception("Failed to update user")
+        
+    def makeAdmin(self, user):
+        if not user.isModerator:
+            auth_repo.updateAdmin(user, True)
+        else:
+            auth_repo.updateAdmin(user, False)
