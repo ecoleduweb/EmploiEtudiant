@@ -72,7 +72,7 @@
             <div class="divFlex">
                 <Button
                     onClick={handleEnterprise}
-                    text="Créer une nouvelle enterprise"
+                    text="Créer une nouvelle entreprise"
                 />
             </div>
         </div>
