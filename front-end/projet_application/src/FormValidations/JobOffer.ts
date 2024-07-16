@@ -50,6 +50,19 @@ const schema = yup.object().shape({
                 return !isNaN(Number(value)) && Number(value) > 0
             },
         ),
+    salary: yup
+        .string()
+        .max(
+            255,
+            "Le salaire doit être de 255 caractères maximum",
+        )
+        .required("Le salaire est requis"),
+    approbationMessage: yup
+        .string()
+        .max(
+            6000,
+            "Le salaire doit être de 6000 caractères maximum",
+        ),
     idProgramme: yup.array().min(1, "Le programme visé est requis"),
     acceptCondition: yup
         .boolean()

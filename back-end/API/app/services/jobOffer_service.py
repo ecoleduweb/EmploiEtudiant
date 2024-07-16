@@ -4,6 +4,7 @@ from app.repositories.study_program_repo import StudyProgramRepo
 from app.models.jobOffer_model import JobOffer
 from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
+from app.middleware.lengthVerify import verifyStringLen
 from app.customexception.CustomException import NotFoundException
 jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
@@ -14,6 +15,13 @@ class JobOfferService:
         return jobOffer_repo.offresEmploi()
     
     def createJobOffer(self, data, employerId, isApproved):
+
+        verifyStringLen(data['title'], 255)
+        verifyStringLen(data['address'], 255)
+        verifyStringLen(data['email'], 255)
+        verifyStringLen(data['offerLink'], 255)
+        verifyStringLen(data['salary'], 255)
+
         new_job_offer = JobOffer(title=data['title'],
          description=data['description'],
          offerDebut=data["offerDebut"],
