@@ -50,20 +50,37 @@
         })
     }
 
+    const DesactivateUser = async () => 
+    {
+        await PUT<any, any>("/user/desactivateUser", 
+        {
+            email: user.email
+        })
+    }
+
     const ConfirmAccept = async () => 
     {
         confirmModal.set(false)
-        if (confirmMode == 1) 
-        {
-           await MakeAdmin()
-        }
-        else if (confirmMode == 2) 
-        {
-            await RemoveUser()
-        }
-        else if (confirmMode == 3) 
-        {
 
+        switch (confirmMode) 
+        {
+            case 1: 
+            {
+                await MakeAdmin()
+                break;
+            }
+
+            case 2: 
+            {
+                await RemoveUser()
+                break;
+            }
+
+            case 3: 
+            {
+                await DesactivateUser()
+                break;
+            }
         }
 
         handleUserClick()

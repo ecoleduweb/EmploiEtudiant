@@ -40,7 +40,15 @@
             }
             try {
                 const response = await POST<Login, any>("/user/login", form, false)
-                if (response.token != "") {
+                
+                if (response.AccountDesactivated) 
+                {
+                    errors = {
+                        email: "",
+                        password: "Compte désactivé",
+                    }
+                }
+                else if (response.token != "") {
                     localStorage.setItem("token", response.token)
                     
                     const decodedUser = jwtDecode(response.token)
@@ -48,13 +56,6 @@
 
                     goto("/dashboard")
                     isLoggedIn.set(true) //L'utilisateur est maintenant connecté
-                }
-                else if (response.AccountDesactivated) 
-                {
-                    errors = {
-                        email: "",
-                        password: "Compte désactivé",
-                    }
                 }
             } catch (error) {
                 errors = {

@@ -138,7 +138,7 @@ def deleteUser(current_user):
         return jsonify({'message': 'Successfully removed user (' + data['email'] + ')'})
     except Exception as e:
         logger.warn('Couldn\'t remove user (' + data['email'] + ')')
-        return jsonify({'message': 'Couldn\' remove user (' + data['email'] + ')'})
+        return jsonify({'message': 'Couldn\' remove user (' + data['email'] + ')'}), 400
     
 @user_blueprint.route('/desactivateUser', methods=['PUT'])
 @token_admin_required
@@ -146,7 +146,7 @@ def desactivateUser(current_user):
     try:
         data = request.get_json()
         user_service.desactivateUser(current_user, data['email'])
-        return jsonify({'message': 'Successfully desactivate user (' + data['email'] + ')'})
+        return jsonify({'message': 'Successfully desactivated user (' + data['email'] + ')'})
     except Exception as e:
         logger.warn('Couldn\'t desactivate user (' + data['email'] + ')')
-        return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'})
+        return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'}), 400

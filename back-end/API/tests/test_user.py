@@ -243,6 +243,112 @@ def test_resetPasswordAdmin(client):
     response4 = client.put('/user/updatePassword', json=data2, headers={"Authorization": token})
     assert response4.status_code == 200
 
+def test_makeAdmin(client):
+    #Ajout d'utilisateur administrateur
+    hashed_password = hasher.hash("test123")
+    user1 = User(id=6, firstName="admin3", lastName="admin3", email="admin3@gmail.com", password=hashed_password, active=True, isModerator=True)
+    db.session.add(user1)
+
+    #Ajout d'utilisateur utilisateur
+    hashed_password = hasher.hash("test123")
+    user2 = User(id=7, firstName="utilisateur1", lastName="utilisateur1", email="utilisateur1@gmail.com", password=hashed_password, active=True, isModerator=False)
+    db.session.add(user2)
+
+    db.session.commit()
+
+    #Connexion initiale
+    data1 = {
+        "email": "admin3@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Mettre l'utilisateur en admin
+    data2 = {
+        "email": "utilisateur1@gmail.com"
+    }
+    response1 = client.put('/user/makeAdmin', json=data2, headers={"Authorization": token})
+
+    assert user2.isModerator
+
+    #Le remettre en non admin
+    data2 = {
+        "email": "utilisateur1@gmail.com"
+    }
+    response1 = client.put('/user/makeAdmin', json=data2, headers={"Authorization": token})
+
+    assert not user2.isModerator
+
+
+def test_deleteUser(client):
+    #Ajout d'utilisateur utilisateur
+    hashed_password = hasher.hash("test123")
+    user = User(id=8, firstName="utilisateur2", lastName="utilisateur2", email="utilisateur2@gmail.com", password=hashed_password, active=True, isModerator=False)
+    db.session.add(user)
+    db.session.commit()
+
+    #Connexion initiale
+    data1 = {
+        "email": "admin3@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Supprimation de l'utilisateur 2
+    data2 = {
+        "email": "utilisateur2@gmail.com"
+    }
+    response1 = client.put('/user/deleteUser', json=data2, headers={"Authorization": token})
+
+    data3 = {
+        "email": "utilisateur2@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data3)
+    assert response1.status_code == 401
+
+
+def test_desactivateUser(client):
+    #Ajout d'utilisateur utilisateur
+    hashed_password = hasher.hash("test123")
+    user = User(id=8, firstName="utilisateur2", lastName="utilisateur2", email="utilisateur2@gmail.com", password=hashed_password, active=True, isModerator=False)
+    db.session.add(user)
+    db.session.commit()
+
+    #Connexion initiale
+    data1 = {
+        "email": "admin3@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    assert response1.status_code == 200
+    assert 'token' in response1.json
+
+    token = response1.json['token']
+
+    #Désactivation de l'utilisateur 2
+    data2 = {
+        "email": "utilisateur2@gmail.com"
+    }
+    response1 = client.put('/user/desactivateUser', json=data2, headers={"Authorization": token})
+
+    data3 = {
+        "email": "utilisateur2@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data3)
+
+    assert response1.json['AccountDesactivated'] == True
+
+
 def test_login(client):
     data = {
         "email": "test@gmail.com",

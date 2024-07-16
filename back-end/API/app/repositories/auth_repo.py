@@ -55,8 +55,8 @@ class AuthRepo:
         user.active = value
         db.session.commit()
 
-    def removeUser(self, user):
-        user.delete()
+    def removeUser(self, userEmail):
+        User.query.filter_by(email=userEmail).delete()
         db.session.commit()
 
     def getUser(self, email):

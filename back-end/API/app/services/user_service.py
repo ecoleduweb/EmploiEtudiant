@@ -24,11 +24,12 @@ class UserService:
             logger.warn("Login attempt failed on user: " + email + " user not found")
             return jsonify({'message': 'user not found'}), 401
         try:
-            if hasher.verify(user.password, password) and user.active:
-                token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
-                return jsonify({'token' : token})
-            elif not user.active:
-                return jsonify({'AccountDesactivated': True})
+            if user.active:
+                if hasher.verify(user.password, password):
+                    token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
+                    return jsonify({'token' : token})
+            else:
+                return jsonify({'AccountDesactivated': True}), 200
         except Exception as e:
             logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
             return jsonify({'message': "could not verify"}), 401
@@ -73,16 +74,17 @@ class UserService:
         
     def makeAdmin(self, user):
         auth_repo.updateAdmin(user, not user.isModerator)
+        db.session.commit()
 
     def removeUser(self, current_user, userEmail):
-        user = User.query.filter_by(email=userEmail)
+        user = User.query.filter_by(email=userEmail).first()
 
-        if user != current_user and user.exists():
+        if user != current_user:
             employer_repo.removeUserIdFromEmployer(user.id)
-            auth_repo.removeUser(user)
+            auth_repo.removeUser(userEmail)
 
     def desactivateUser(self, current_user, userEmail):
-        user = User.query.filter_by(email=userEmail)
+        user = User.query.filter_by(email=userEmail).first()
 
-        if user != current_user and user.exists():
+        if user != current_user:
             auth_repo.updateActive(user, not user.active)
