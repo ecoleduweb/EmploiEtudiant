@@ -66,7 +66,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
-            jobOffer.employerId = employer.id
+            jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
                     `/enterprise/employer/${employer.id}`
@@ -286,7 +286,7 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== ""}
+        {#if jobOffer.approbationMessage !== undefined}
             {#if jobOffer.isApproved == true}
                 <h3 style="color: green;">
                     Raison d'acceptation: {jobOffer.approbationMessage}
@@ -566,12 +566,12 @@
             {#if errorsProgramme}{errorsProgramme}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salaire">Salaire/H</label>
+            <label for="salary">Salaire/H</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
                 class="form-control"
-                id="salaire"
+                id="salary"
             />
         </div>
         <p class="errors-input">
