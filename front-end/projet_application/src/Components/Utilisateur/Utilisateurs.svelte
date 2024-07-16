@@ -107,7 +107,7 @@
             }
             case 3: 
             {
-                approbationMessage = "Voulez-vous vraiment désactiver cet utilisateur?"
+                approbationMessage = "Voulez-vous vraiment désactiver/activer cet utilisateur?"
                 break
             }
         }
