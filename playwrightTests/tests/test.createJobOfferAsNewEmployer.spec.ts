@@ -29,7 +29,37 @@ test.describe('createNewJobOffer', () => {
     await page.locator('div').filter({ hasText: 'Valider Mot de passe' }).nth(4).click();
     await page.locator('#confirm_password').fill('AAAaaa111!!!');
     await page.getByRole('button', { name: 'Créer' }).click();
-    await page.waitForLoadState('networkidle');
+    //await page.waitForLoadState('networkidle');
+    await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
+    await page.locator('#titre').first().click();
+    await page.locator('#titre').first().fill('Offre 1');
+    await page.locator('#address').first().click();
+    await page.locator('#address').first().fill('Addresse 1');
+    await page.locator('#email').first().click();
+    await page.locator('#email').first().fill('email@email.com');
+    await page.locator('#phone').click();
+    await page.locator('#phone').fill('4188886666');
+    await page.getByPlaceholder('Choisir ville...').click();
+    await page.getByRole('option', { name: 'ville' }).click();
+    await page.locator('#titre').nth(1).click();
+    await page.locator('#titre').nth(1).fill('Poste');
+    await page.getByPlaceholder('Choisir période(s)').click();
+    await page.getByRole('option', { name: 'temps plein' }).click();
+    await page.locator('#address').nth(1).click();
+    await page.locator('#address').nth(1).fill('Addresse Lieu 123');
+    await page.getByLabel('Date limite pour postuler*').fill('2024-08-04');
+    await page.getByPlaceholder('Choisir programme(s)').click();
+    await page.getByLabel('Salaire/H').click();
+    await page.getByLabel('Salaire/H').fill('44');
+    await page.getByLabel('Heure/Semaine*').click();
+    await page.getByLabel('Heure/Semaine*').fill('33');
+    await page.locator('#email').nth(1).click();
+    await page.locator('#email').nth(1).fill('email@email.com');
+    await page.getByLabel('Description du poste*').click();
+    await page.getByLabel('Description du poste*').fill('aa');
+    await page.getByLabel('J\'acceptes les condtions').check();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+
   });
 
   test('Offre Invalide', async ({ page }) => {
