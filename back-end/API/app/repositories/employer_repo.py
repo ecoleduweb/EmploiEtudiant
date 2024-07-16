@@ -32,4 +32,8 @@ class EmployerRepo:
         employer = Employers.query.filter_by(userId=userId).first()
         return employer
             
-
+    def removeUserIdFromEmployer(self, userId):
+        employers = Employers.query.filter_by(user_id=userId).all()
+        for employer in employers:
+                employer.userId = None
+        db.session.commit()

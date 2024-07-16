@@ -51,6 +51,14 @@ class AuthRepo:
         user.isModerator = value
         db.session.commit()
 
+    def updateActive(self, user, value: bool):
+        user.active = value
+        db.session.commit()
+
+    def removeUser(self, user):
+        user.delete()
+        db.session.commit()
+
     def getUser(self, email):
         try:
             user = User.query.filter_by(email=email).first()

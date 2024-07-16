@@ -3,7 +3,7 @@
     import type { User } from "../../Models/User"
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
-    import { writable, type Writable } from "svelte/store"
+    import { writable } from "svelte/store"
     export let user: User
     export let handleUserClick: () => void
 
@@ -15,20 +15,24 @@
     let firstname: string
     let password: string
 
-    const ChangePassword = () => {
-        PUT<any, any>("/user/updatePassword", {
+    const ChangePassword = async () => {
+        await PUT<any, any>("/user/updatePassword", {
             email: user.email,
             password: password
         })
+
+        handleUserClick()
     }
 
-    const ChangeUser = (lastName: string, firstName: string) => 
+    const ChangeUser = async (lastName: string, firstName: string) => 
     {
-        PUT<any, any>("/user/user", {
+        await PUT<any, any>("/user/user", {
             lastname: lastName,
             firstname: firstName,
             email: user.email
         })
+
+        handleUserClick()
     }
 
     const MakeAdmin = async () => 
@@ -38,16 +42,24 @@
         })
     }
 
-    const ConfirmAccept = () => 
+    const RemoveUser = async () => 
+    {
+        await PUT<any, any>("/user/deleteUser", 
+        {
+            email: user.email
+        })
+    }
+
+    const ConfirmAccept = async () => 
     {
         confirmModal.set(false)
         if (confirmMode == 1) 
         {
-            MakeAdmin()
+           await MakeAdmin()
         }
         else if (confirmMode == 2) 
         {
-
+            await RemoveUser()
         }
         else if (confirmMode == 3) 
         {

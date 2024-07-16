@@ -49,6 +49,13 @@
                     goto("/dashboard")
                     isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }
+                else if (response.AccountDesactivated) 
+                {
+                    errors = {
+                        email: "",
+                        password: "Compte désactivé",
+                    }
+                }
             } catch (error) {
                 errors = {
                     email: "",

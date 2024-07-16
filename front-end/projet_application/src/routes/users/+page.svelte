@@ -6,7 +6,9 @@
     import type { User } from "../../Models/User"
     import UserComponent from "../../Components/Utilisateur/Utilisateurs.svelte"
     import UtilisateurRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
+    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
+    let loaded = false
     const modal = writable(false)
     const selectedUserId = writable(0)
 
@@ -22,12 +24,14 @@
         await getUsers()
     }
 
-    const users = writable<User[]>([])
+    let users: User[]
+
     const getUsers = async () => {
         try {
             const response = await GET<any>("/user/all")
-            users.set(response.users)
-            console.log(response.users)
+            users = response.users
+            loaded = true
+
         } catch (error) {
             console.error("Error fetching users:", error)
         }
@@ -37,38 +41,45 @@
 </script>
 
 <main>
-    <section class="haut">
-        <div class="haut-gauche">
-            <h1 class="title">
-                <span class="text">Utilisateur</span>
-            </h1>
-        </div>
-    </section>
-    <section class="offres">
-        <h2 class="textSections">Admins</h2>
-        {#each $users.filter((user) => user.isModerator) as user}
-            <UtilisateurRow
-                {user}
-                handleModalClick={() => handleUserClick(user.id)}
-            />
-        {/each}
-    </section>
-    <section class="offres">
-        <h2 class="textSections">Utilisateurs</h2>
-        {#each $users.filter((user) => !user.isModerator) as user}
-            <UtilisateurRow
-                {user}
-                handleModalClick={() => handleUserClick(user.id)}
-            />
-        {/each}
-    </section>
+    {#if loaded}
+        <section class="haut">
+            <div class="haut-gauche">
+                <h1 class="title">
+                    <span class="text">Utilisateur</span>
+                </h1>
+            </div>
+        </section>
+        <section class="offres">
+            <h2 class="textSections">Admins</h2>
+            {#each users.filter((user) => user.isModerator) as user}
+                <UtilisateurRow
+                    {user}
+                    handleModalClick={() => handleUserClick(user.id)}
+                />
+            {/each}
+        </section>
+        <section class="offres">
+            <h2 class="textSections">Utilisateurs</h2>
+            {#each users.filter((user) => !user.isModerator) as user}
+                <UtilisateurRow
+                    {user}
+                    handleModalClick={() => handleUserClick(user.id)}
+                />
+            {/each}
+        </section>
 
-    {#if $modal}
-        {#each $users as user}
-            {#if user.id === $selectedUserId}
-                <UserComponent {user} handleUserClick={closeModal} />
-            {/if}
-        {/each}
+        {#if $modal}
+            {#each users as user}
+                {#if user.id === $selectedUserId}
+                    <UserComponent {user} handleUserClick={closeModal} />
+                {/if}
+            {/each}
+        {/if}
+
+    {:else}
+        <div class="loading">
+            <LoadingSpinner />
+        </div>
     {/if}
 </main>
 

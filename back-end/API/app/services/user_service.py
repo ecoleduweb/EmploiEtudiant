@@ -7,9 +7,11 @@ import datetime
 from jwt import encode
 import os
 from app.repositories.auth_repo import AuthRepo
+from app.repositories.employer_repo import EmployerRepo
 from app.services.captcha_service import CaptchaService
 auth_repo = AuthRepo()
 captcha_service = CaptchaService()
+employer_repo = EmployerRepo()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
@@ -22,9 +24,11 @@ class UserService:
             logger.warn("Login attempt failed on user: " + email + " user not found")
             return jsonify({'message': 'user not found'}), 401
         try:
-            if hasher.verify(user.password, password):
+            if hasher.verify(user.password, password) and user.active:
                 token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
                 return jsonify({'token' : token})
+            elif not user.active:
+                return jsonify({'AccountDesactivated': True})
         except Exception as e:
             logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
             return jsonify({'message': "could not verify"}), 401
@@ -68,7 +72,17 @@ class UserService:
             raise Exception("Failed to update user")
         
     def makeAdmin(self, user):
-        if not user.isModerator:
-            auth_repo.updateAdmin(user, True)
-        else:
-            auth_repo.updateAdmin(user, False)
+        auth_repo.updateAdmin(user, not user.isModerator)
+
+    def removeUser(self, current_user, userEmail):
+        user = User.query.filter_by(email=userEmail)
+
+        if user != current_user and user.exists():
+            employer_repo.removeUserIdFromEmployer(user.id)
+            auth_repo.removeUser(user)
+
+    def desactivateUser(self, current_user, userEmail):
+        user = User.query.filter_by(email=userEmail)
+
+        if user != current_user and user.exists():
+            auth_repo.updateActive(user, not user.active)
