@@ -346,7 +346,7 @@ def test_desactivateUser(client):
     }
     response1 = client.post('/user/login', json=data3)
 
-    assert response1.json['AccountDesactivated'] == True
+    assert response1.status_code == 403
 
 
 def test_login(client):
