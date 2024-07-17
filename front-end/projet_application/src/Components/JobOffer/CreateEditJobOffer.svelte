@@ -66,7 +66,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
-            jobOffer.employerId = employer.id
+            jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
                     `/enterprise/employer/${employer.id}`
