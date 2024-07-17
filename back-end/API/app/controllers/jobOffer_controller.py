@@ -21,7 +21,7 @@ employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
-from app.controllers.email_controller import sendMail
+from app.services.email_service import sendMail
 from app.customexception.CustomException import NotFoundException
 import os
 
@@ -53,8 +53,12 @@ def createJobOffer(current_user):
         jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
         for studyProgramId in data["studyPrograms"]:
             offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+        
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-        # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+        
+        #Emails
+        #sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créer. \nVotre offre sera public lorsqu'il sera vérifier.")
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
         return jobOffer.to_json_string(), 201
     except Exception as e:
