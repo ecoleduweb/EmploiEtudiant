@@ -9,6 +9,7 @@ import os
 from app.repositories.auth_repo import AuthRepo
 from app.repositories.employer_repo import EmployerRepo
 from app.services.captcha_service import CaptchaService
+from app.customexception.CustomException import LoginException
 auth_repo = AuthRepo()
 captcha_service = CaptchaService()
 employer_repo = EmployerRepo()
@@ -22,17 +23,20 @@ class UserService:
         user = auth_repo.getUser(email)
         if user is None:
             logger.warn("Login attempt failed on user: " + email + " user not found")
-            return jsonify({'message': 'user not found'}), 401
+            raise LoginException()
         try:
             if user.active:
                 if hasher.verify(user.password, password):
                     token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
-                    return jsonify({'token' : token})
+                    return token
             else:
-                return jsonify({'AccountDesactivated': True}), 200
+                raise LoginException(True)
         except Exception as e:
-            logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
-            return jsonify({'message': "could not verify"}), 401
+            if hasattr(e, 'errorCode') and e.errorCode == 403:
+                raise e
+            else:
+                logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
+                raise LoginException()
 
     def register(self, data):
         if not current_app.config.get('TESTING'):
@@ -82,9 +86,13 @@ class UserService:
         if user != current_user:
             employer_repo.removeUserIdFromEmployer(user.id)
             auth_repo.removeUser(userEmail)
+        else:
+            logger.warn("Admin (" + current_user.email + ") tried to remove itself")
 
     def desactivateUser(self, current_user, userEmail):
         user = User.query.filter_by(email=userEmail).first()
 
         if user != current_user:
             auth_repo.updateActive(user, not user.active)
+        else:
+            logger.warn("Admin (" + current_user.email + ") tried to desactivate itself")

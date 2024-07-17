@@ -187,7 +187,7 @@
         </div>
         <div class="editInfo userActions">
             <div class="button">
-                <Button text="Rendre administrateur" onClick={() => ConfirmBefore(1)}/>
+                <Button text="Modifier statut administrateur" onClick={() => ConfirmBefore(1)}/>
             </div>
             <div class="button">
                 <Button text="Supprimer utilisateur" onClick={() => ConfirmBefore(2)}/>

@@ -7,6 +7,7 @@ from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
+from app.customexception.CustomException import LoginException
 
 user_service = UserService()
 employer_service = EmployerService()
@@ -18,9 +19,21 @@ user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    return user_service.login(data["email"], data["password"])
-
+    try:
+        data = request.get_json()
+        token = user_service.login(data["email"], data["password"])
+        return jsonify({'token' : token})
+    except LoginException as e:
+        if data["email"] != "" and data["email"] != None:
+            if len(data["email"]) <= 255:
+                logger.warn("User (" + data["email"] + ") failed to login. Error message: " + e.message)
+            else:
+                logger.warn("User (EMAIL TOO BIG TO DISPLAY) failed to login and provided a huge email. Error message: " + e.message)
+            return jsonify({'message': e.message}), e.errorCode
+        else:
+            logger.warn("An unauthentificated user tried logging without an email.")
+            return jsonify({'message': "Impossible de se connecter: aucun email à été fournis"}), 401
+    
 @user_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -126,8 +139,8 @@ def makeAdmin(current_user):
         user_service.makeAdmin( user_service.getUser(data['email']) )
         return jsonify({'message': 'Successfully updated user (' + data['email'] + ')'})
     except Exception as e:
-        logger.warn('Couldn\'t update user (' + data['email'] + ')')
-        return jsonify({'message': 'Couldn\'t update user (' + data['email'] + ')'}), 400
+        logger.error('Couldn\'t update user (' + data['email'] + ')')
+        return jsonify({'message': 'Couldn\'t update user (' + data['email'] + ')'}), 500
     
 @user_blueprint.route('/deleteUser', methods=['PUT'])
 @token_admin_required
@@ -137,8 +150,8 @@ def deleteUser(current_user):
         user_service.removeUser(current_user, data['email'])
         return jsonify({'message': 'Successfully removed user (' + data['email'] + ')'})
     except Exception as e:
-        logger.warn('Couldn\'t remove user (' + data['email'] + ')')
-        return jsonify({'message': 'Couldn\' remove user (' + data['email'] + ')'}), 400
+        logger.error('Couldn\'t remove user (' + data['email'] + ')')
+        return jsonify({'message': 'Couldn\' remove user (' + data['email'] + ')'}), 500
     
 @user_blueprint.route('/desactivateUser', methods=['PUT'])
 @token_admin_required
@@ -148,5 +161,5 @@ def desactivateUser(current_user):
         user_service.desactivateUser(current_user, data['email'])
         return jsonify({'message': 'Successfully desactivated user (' + data['email'] + ')'})
     except Exception as e:
-        logger.warn('Couldn\'t desactivate user (' + data['email'] + ')')
-        return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'}), 400
+        logger.error('Couldn\'t desactivate user (' + data['email'] + ')')
+        return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'}), 500
