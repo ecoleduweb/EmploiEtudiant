@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, current_app
 from datetime import datetime
 import os
 from app.models.user_model import User
@@ -56,9 +56,9 @@ def createJobOffer(current_user):
         
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         
-        #Emails
-        #sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créer. \nVotre offre sera public lorsqu'il sera vérifier.")
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+        if not current_app.config.get('TESTING'):
+            #sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créer. \nVotre offre sera public lorsqu'il sera vérifier.")
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
         return jobOffer.to_json_string(), 201
     except Exception as e:
