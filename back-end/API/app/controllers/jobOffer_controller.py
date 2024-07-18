@@ -57,7 +57,7 @@ def createJobOffer(current_user):
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         
         
-        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créer. \nVotre offre sera public lorsqu'il sera vérifier.")
+        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créée. \nVotre offre sera public lorsqu'il sera vérifier.")
         sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
         return jobOffer.to_json_string(), 201
@@ -115,7 +115,7 @@ def updateJobOffer(current_user, id):
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
-            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée.")
             
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
@@ -144,7 +144,7 @@ def approveJobOffer(current_user, id):
         if data['isApproved'] == True:
             sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
         else:
-            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusé.")
+            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
         return ('', 204)
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
