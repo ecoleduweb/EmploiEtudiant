@@ -85,8 +85,8 @@ test.describe('createNewJobOffer', () => {
     await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'modifier' }).click();
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Offre modifier');
+    await page.locator('#titre').nth(1).click();
+    await page.locator('#titre').nth(1).fill('Poste modifier');
     await page.getByLabel('Date limite pour postuler*').fill('2024-09-08');
     await page.locator('#programme').click();
     await page.getByRole('option', { name: 'Programme 2' }).click();
@@ -94,7 +94,7 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
     await page.waitForLoadState('networkidle');
-    await page.waitForLoadState('networkidle');
+    await 5000;
 
   });
 
