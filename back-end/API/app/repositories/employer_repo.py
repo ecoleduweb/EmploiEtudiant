@@ -17,7 +17,7 @@ class EmployerRepo:
         return employer
     
     def linkEmployerEnterprise(self, data):
-        employer = Employers.query.filter_by(user_id=data['userId']).first()
+        employer = Employers.query.filter_by(userId=data['userId']).first()
         employer.enterprise_id = data['enterpriseId']
         db.session.commit()
         return jsonify({'message': 'employer linked to enterprise'})
@@ -32,4 +32,8 @@ class EmployerRepo:
         employer = Employers.query.filter_by(userId=userId).first()
         return employer
             
-
+    def removeUserIdFromEmployer(self, userId):
+        employers = Employers.query.filter_by(userId=userId).all()
+        for employer in employers:
+                employer.userId = None
+        db.session.commit()
