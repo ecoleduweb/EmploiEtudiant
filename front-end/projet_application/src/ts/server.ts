@@ -18,11 +18,13 @@ export async function GET<T>(url: string, redirectToLoginOn401?: boolean): Promi
 }
 
 export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<T1> {
+    var response
+
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
 
-        var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
+        response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -36,6 +38,7 @@ export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: b
         return data as T1
     } catch (error) {
         console.error("Error posting:", error)
+        error.name = response?.status
         throw error
     }
 }
