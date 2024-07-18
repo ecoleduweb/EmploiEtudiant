@@ -207,6 +207,16 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
+        
+        if (jobOffer?.approbationMessage === null) 
+        {
+            try 
+            {
+                jobOffer.approbationMessage = ""
+            }
+            catch (err) {}
+        }
+
         try {
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
@@ -286,7 +296,7 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== undefined}
+        {#if jobOffer.approbationMessage !== ""}
             {#if jobOffer.isApproved == true}
                 <h3 style="color: green;">
                     Raison d'acceptation: {jobOffer.approbationMessage}

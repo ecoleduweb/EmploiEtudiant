@@ -8,6 +8,28 @@ test.describe('createNewJobOffer', () => {
     if (await page.locator("#cookieBannerOk")) {
       await page.locator("#cookieBannerOk").click()
     }
+
+    await page.locator('#loginDropDown').hover();
+    await page.getByRole('link', { name: 'Connexion entreprise' }).click();
+    await page.getByLabel('Nom d\'utilisateur').click();
+    await page.getByLabel('Nom d\'utilisateur').fill('admin@gmail.com');
+    await page.getByLabel('Mot de passe').click();
+    await page.getByLabel('Mot de passe').fill('test123');
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+    await page.goto('http://localhost:5002/programmes');
+    await page.waitForLoadState('networkidle');
+
+    await page.getByRole('button', { name: 'Créer un nouveau programme' }).click();
+    await page.getByPlaceholder('Nouveau nom').click();
+    await page.getByPlaceholder('Nouveau nom').fill('Programme 1');
+    await page.getByRole('button', { name: 'Créer', exact: true }).click();
+
+    await page.getByRole('button', { name: 'Créer un nouveau programme' }).click();
+    await page.getByPlaceholder('Nouveau nom').click();
+    await page.getByPlaceholder('Nouveau nom').fill('Programme 2');
+    await page.getByRole('button', { name: 'Créer', exact: true }).click();
+
+    await page.getByRole('button', { name: 'Déconnexion Logout icon' }).click();
   });
 
   test.only('nouvelle offre', async ({ page }) => {
@@ -29,7 +51,6 @@ test.describe('createNewJobOffer', () => {
     await page.locator('div').filter({ hasText: 'Valider Mot de passe' }).nth(4).click();
     await page.locator('#confirm_password').fill('AAAaaa111!!!');
     await page.getByRole('button', { name: 'Créer' }).click();
-    //await page.waitForLoadState('networkidle');
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
     await page.locator('#titre').first().click();
     await page.locator('#titre').first().fill('Offre 1');
@@ -49,6 +70,7 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#address').nth(1).fill('Addresse Lieu 123');
     await page.getByLabel('Date limite pour postuler*').fill('2024-08-04');
     await page.getByPlaceholder('Choisir programme(s)').click();
+    await page.getByRole('option', { name: 'Programme 1' }).click();
     await page.getByLabel('Salaire/H').click();
     await page.getByLabel('Salaire/H').fill('44');
     await page.getByLabel('Heure/Semaine*').click();
@@ -59,6 +81,20 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Description du poste*').fill('aa');
     await page.getByLabel('J\'acceptes les condtions').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
+
+    await page.waitForLoadState('networkidle');
+
+    await page.getByRole('button', { name: 'modifier' }).click();
+    await page.locator('#titre').first().click();
+    await page.locator('#titre').first().fill('Offre modifier');
+    await page.getByLabel('Date limite pour postuler*').fill('2024-09-08');
+    await page.locator('#programme').click();
+    await page.getByRole('option', { name: 'Programme 2' }).click();
+    await page.getByLabel('J\'acceptes les condtions').check();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+
+    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('networkidle');
 
   });
 
