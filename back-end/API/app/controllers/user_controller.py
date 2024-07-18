@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 import os
 from logging import getLogger
 from jwt import decode
+import json
 from app.services.user_service import UserService
 from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
@@ -9,6 +10,8 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
 from app.services.email_service import sendMail
+from datetime import datetime
+from Crypto.Cipher import AES
 
 user_service = UserService()
 employer_service = EmployerService()
@@ -170,9 +173,15 @@ def requestResetPassword():
     try:
         data = request.get_json()
 
-        passwordResetToken = ""
+        #(Ce n'est pas encore fonctionelle, je vais voir demain comment bien l'utiliser)
+        #userData = {
+        #    email: data['email'],
+        #    resetDate: datetime.now()
+        #}
 
-        passwordResetLink = "http://localhost:5173/resetPassword?token=" + passwordResetToken
+        #passwordResetToken = AES.new(json.dumps(userData), AES.MODE_EAX, nonce=nonce)
+
+        #passwordResetLink = "http://localhost:5173/resetPassword?token=" + passwordResetToken
 
         sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demander un changement de mot de passe. Si vous n\'avez pas fait cette requête ignorer cette email.\n<a href="' + passwordResetLink + '" target="_blank">Appuyer ici pour changer votre mot de passe</a>')
     except Exception as e:

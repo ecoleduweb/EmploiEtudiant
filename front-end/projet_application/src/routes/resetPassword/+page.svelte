@@ -31,7 +31,7 @@
     }
 
     let resetPassword: ResetPassword = {
-        token: $page.url.searchParams.get('id'),
+        token: $page.url.searchParams.get('token'),
         password: "",
         confirmPassword: "",
     }
@@ -59,6 +59,7 @@
             {
                 const response = POST("/auth/resetPassword", resetPassword)
 
+                
             }
             catch (err) 
             {
