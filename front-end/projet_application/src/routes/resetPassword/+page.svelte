@@ -5,6 +5,7 @@
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { POST } from "../../ts/server"
+    import { page } from '$app/stores'
 
     const schema = yup.object({
         password: yup
@@ -24,11 +25,13 @@
     })
 
     let errors: ResetPassword = {
+        token: "",
         password: "",
         confirmPassword: "",
     }
 
     let resetPassword: ResetPassword = {
+        token: $page.url.searchParams.get('id'),
         password: "",
         confirmPassword: "",
     }
@@ -38,11 +41,33 @@
             // `abortEarly: false` to get all the errors
             await schema.validate(resetPassword, { abortEarly: false })
             errors = {
+                token: "",
                 password: "",
                 confirmPassword: "",
             }
 
-            const response = POST("/auth/resetPassword", resetPassword)
+            if (resetPassword.token == null || resetPassword.token == "") 
+            {
+                errors = {
+                    token: "",
+                    password: "",
+                    confirmPassword: "Lien invalide"
+                }
+            }
+
+            try 
+            {
+                const response = POST("/auth/resetPassword", resetPassword)
+
+            }
+            catch (err) 
+            {
+                errors = {
+                    token: "",
+                    password: "",
+                    confirmPassword: "Lien invalide ou expiré"
+                }
+            }
         } catch (err) {
             errors = extractErrors(err)
         }

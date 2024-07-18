@@ -8,6 +8,7 @@ from app.services.enterprise_service import EnterpriseService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
+from app.services.email_service import sendMail
 
 user_service = UserService()
 employer_service = EmployerService()
@@ -163,3 +164,16 @@ def desactivateUser(current_user):
     except Exception as e:
         logger.error('Couldn\'t desactivate user (' + data['email'] + ')')
         return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'}), 500
+    
+@user_blueprint.route('/requestResetPassword', methods=['POST'])
+def requestResetPassword():
+    try:
+        data = request.get_json()
+
+        passwordResetToken = ""
+
+        passwordResetLink = "http://localhost:5173/resetPassword?token=" + passwordResetToken
+
+        sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demander un changement de mot de passe. Si vous n\'avez pas fait cette requête ignorer cette email.\n<a href="' + passwordResetLink + '" target="_blank">Appuyer ici pour changer votre mot de passe</a>')
+    except Exception as e:
+        return jsonify({'Error while sending password request'}), 500

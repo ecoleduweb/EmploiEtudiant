@@ -5,6 +5,7 @@
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import type { ForgotPassword } from "../../Models/ForgotPassword.ts"
+    import { POST } from "../../ts/server"
     const schema = yup.object().shape({
         email: yup
             .string()
@@ -27,6 +28,8 @@
             errors = {
                 email: "",
             }
+
+            const response = POST<any, any>('/user/requestResetPassword', login)
         } catch (err) {
             errors = extractErrors(err)
         }
