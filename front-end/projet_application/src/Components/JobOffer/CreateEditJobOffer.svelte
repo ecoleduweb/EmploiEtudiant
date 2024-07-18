@@ -210,11 +210,7 @@
         
         if (jobOffer?.approbationMessage === null) 
         {
-            try 
-            {
-                jobOffer.approbationMessage = ""
-            }
-            catch (err) {}
+            jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
         }
 
         try {
@@ -296,12 +292,12 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== ""}
-            {#if jobOffer.isApproved == true}
+        {#if jobOffer.id !== 0}
+            {#if jobOffer.isApproved === true}
                 <h3 style="color: green;">
-                    Raison d'acceptation: {jobOffer.approbationMessage}
+                Raison d'acceptation: {jobOffer.approbationMessage}
                 </h3>
-            {:else if jobOffer.isApproved == false}
+            {:else if jobOffer.isApproved === false}
                 <h3 style="color: red;">
                     Raison du refus: {jobOffer.approbationMessage}
                 </h3>
