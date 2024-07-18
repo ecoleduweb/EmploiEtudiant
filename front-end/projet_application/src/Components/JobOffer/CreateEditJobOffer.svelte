@@ -207,6 +207,12 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
+        
+        if (jobOffer?.approbationMessage === null) 
+        {
+            jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
+        }
+
         try {
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
@@ -286,12 +292,12 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== ""}
-            {#if jobOffer.isApproved == true}
+        {#if jobOffer.id !== 0}
+            {#if jobOffer.isApproved === true}
                 <h3 style="color: green;">
-                    Raison d'acceptation: {jobOffer.approbationMessage}
+                Raison d'acceptation: {jobOffer.approbationMessage}
                 </h3>
-            {:else if jobOffer.isApproved == false}
+            {:else if jobOffer.isApproved === false}
                 <h3 style="color: red;">
                     Raison du refus: {jobOffer.approbationMessage}
                 </h3>
@@ -566,12 +572,12 @@
             {#if errorsProgramme}{errorsProgramme}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salaire">Salaire/H</label>
+            <label for="salary">Salaire/H</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
                 class="form-control"
-                id="salaire"
+                id="salary"
             />
         </div>
         <p class="errors-input">
