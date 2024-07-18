@@ -94,8 +94,6 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
     await page.waitForLoadState('networkidle');
-    await 5000;
-
   });
 
   test('Offre Invalide', async ({ page }) => {
