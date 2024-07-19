@@ -205,8 +205,12 @@ def resetPassword():
 
         if data['password'] == data['confirmPassword']:
             try:
-                auth_repo.updatePassword(decryptedData['email'], data['password'])
-                return jsonify({'message': 'Successfully resetted the password'})
+                if (data['resetDate'] + 3600) > datetime.now().timestamp():
+                    auth_repo.updatePassword(decryptedData['email'], data['password'])
+                    return jsonify({'message': 'Successfully resetted the password'})
+                else:
+                    logger.warn("A user tried to reset the password via a expired link")
+                    return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
             except Exception as e:
                 logger.warn("A user tried to reset the password but it failed")
                 return jsonify({'message': 'Error while trying to reset the password'}), 401
@@ -216,8 +220,8 @@ def resetPassword():
     
 
 #Todo:
-## Need to do a popup when reset request is sent (FRONT-END)
-## Need to do a popup when password is resetted correctly (FRONT-END)
-## Need to handle errors on the front end (FRONT-END)
-## Have a way to check if token has expired and refuse it (BACK-END)
+## Need to do a popup when reset request is sent (FRONT-END) (DONE)
+## Need to do a popup when password is resetted correctly (FRONT-END) (DONE)
+## Need to handle errors on the front end (FRONT-END) (DONE)
+## Have a way to check if token has expired and refuse it (BACK-END) (DONE)
 ## Have a way to check if token has been used multiple times and refuse it (BACK-END)

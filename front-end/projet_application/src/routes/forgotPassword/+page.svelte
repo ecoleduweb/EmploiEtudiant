@@ -6,6 +6,7 @@
     import { extractErrors } from "../../ts/utils"
     import type { ForgotPassword } from "../../Models/ForgotPassword.ts"
     import { POST } from "../../ts/server"
+    import Popup from "../../Components/Common/Popup.svelte"
     const schema = yup.object().shape({
         email: yup
             .string()
@@ -21,6 +22,17 @@
         email: "",
     }
 
+    let successPopupMessage = "La requête de changement de mot de passe à été envoyer."
+    let failedPopupMessage = "La requête de changement de mot de passe n'a pas pu être envoyer."
+
+    let popupMessage = ""
+    let showPopup = false
+
+    const handlePopupClose = async () => 
+    {
+        showPopup = false
+    }
+
     const handleSubmit = async () => {
         try {
             // `abortEarly: false` to get all the errors
@@ -29,7 +41,16 @@
                 email: "",
             }
 
-            const response = POST<any, any>('/user/requestResetPassword', login)
+            try 
+            {
+                await POST<any, any>('/user/requestResetPassword', login, false)
+                popupMessage = successPopupMessage
+            } catch (err) 
+            {
+                popupMessage = failedPopupMessage
+            }
+
+            showPopup = true
         } catch (err) {
             errors = extractErrors(err)
         }
@@ -69,6 +90,9 @@
             </div>
         </form>
     </div>
+    {#if showPopup}
+        <Popup handleApproveClick={handlePopupClose} approbationMessage={popupMessage}></Popup>
+    {/if}
 </section>
 
 <style scoped>
