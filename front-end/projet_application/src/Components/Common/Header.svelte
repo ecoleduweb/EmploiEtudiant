@@ -5,11 +5,53 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
+    import { number } from "yup"
 
     let firstName = "" // Déclarer une variable pour stocker l'email
     let lastName = "" // Déclarer une variable pour stocker l'email
     let isModerator = false
 
+    const isTokenExpired = (user: any) => {
+        try {
+            const currentTime = Math.floor(Date.now() / 1000);
+            return [user.exp < currentTime, user.exp - currentTime];
+        } catch (error) {
+            return [true, 0];
+        }
+    }
+
+    const waitTilTokenExpires = (user: any) => 
+    {
+        if (user != undefined) 
+        {
+            let [expired, timeTilReset] = isTokenExpired(user);
+            
+            if (!expired && typeof(timeTilReset) === "number") 
+            {
+                setTimeout(handleLogout, timeTilReset * 1000)
+            }
+            else 
+            {
+                handleLogout()
+            }
+        }
+    }
+
+    $: waitTilTokenExpires($currentUser)
+
+    const verifyModerator = (user: any) => 
+    {
+        if (user != undefined) 
+        {
+            if (user.isModerator && !isModerator) isModerator = user.isModerator
+        }
+        else 
+        {
+            isModerator = false
+        }
+    }
+
+    $: verifyModerator($currentUser)
 
     const fetchStudyPrograms = async () => 
     {
@@ -64,6 +106,7 @@
 
     const handleLogout = () => {
         isLoggedIn.set(false)
+        currentUser.set(undefined)
         goto("/")
         localStorage.removeItem("token")
     }
