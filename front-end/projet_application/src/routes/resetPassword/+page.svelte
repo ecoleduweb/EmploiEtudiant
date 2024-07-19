@@ -57,7 +57,7 @@
 
             try 
             {
-                const response = POST("/auth/resetPassword", resetPassword)
+                const response = POST("/user/resetPassword", resetPassword)
 
                 
             }

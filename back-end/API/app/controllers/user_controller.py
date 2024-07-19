@@ -11,7 +11,10 @@ from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
 from app.services.email_service import sendMail
 from datetime import datetime
-from Crypto.Cipher import AES
+from app.middleware.Encryption import encrypt, decrypt
+from app.repositories.auth_repo import AuthRepo
+
+auth_repo = AuthRepo()
 
 user_service = UserService()
 employer_service = EmployerService()
@@ -173,16 +176,48 @@ def requestResetPassword():
     try:
         data = request.get_json()
 
-        #(Ce n'est pas encore fonctionelle, je vais voir demain comment bien l'utiliser)
-        #userData = {
-        #    email: data['email'],
-        #    resetDate: datetime.now()
-        #}
+        if user_service.getUser(data['email']):
+            userData = {
+                "email": data['email'],
+                "resetDate": datetime.now().timestamp()
+            }
 
-        #passwordResetToken = AES.new(json.dumps(userData), AES.MODE_EAX, nonce=nonce)
+            passwordResetToken = encrypt(json.dumps(userData))
 
-        #passwordResetLink = "http://localhost:5173/resetPassword?token=" + passwordResetToken
+            passwordResetLink = (b"http://localhost:5173/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
-        sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demander un changement de mot de passe. Si vous n\'avez pas fait cette requête ignorer cette email.\n<a href="' + passwordResetLink + '" target="_blank">Appuyer ici pour changer votre mot de passe</a>')
+            logger.warn(passwordResetLink)
+            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demander un changement de mot de passe. Si vous n\'avez pas fait cette requête ignorer cette email.\n<a href="' + passwordResetLink + '" target="_blank">Appuyer ici pour changer votre mot de passe</a>')
+            return jsonify({'message': 'Successfully sent a password request'})
+        else:
+            logger.warn("A user tried to reset but provided a bad email")
+            return jsonify({'message': 'The email provided is invalid (No user found/invalid)'}), 401
     except Exception as e:
+        logger.warn("A user tried to send a reset password request but it failed")
         return jsonify({'Error while sending password request'}), 500
+    
+
+@user_blueprint.route('/resetPassword', methods=['POST'])
+def resetPassword():
+    try:
+        data = request.get_json()
+        decryptedData = json.loads(decrypt(data['token']))
+
+        if data['password'] == data['confirmPassword']:
+            try:
+                auth_repo.updatePassword(decryptedData['email'], data['password'])
+                return jsonify({'message': 'Successfully resetted the password'})
+            except Exception as e:
+                logger.warn("A user tried to reset the password but it failed")
+                return jsonify({'message': 'Error while trying to reset the password'}), 401
+    except Exception as e:
+        logger.warn("A user tried to use reset password with an invalid token")
+        return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403
+    
+
+#Todo:
+## Need to do a popup when reset request is sent (FRONT-END)
+## Need to do a popup when password is resetted correctly (FRONT-END)
+## Need to handle errors on the front end (FRONT-END)
+## Have a way to check if token has expired and refuse it (BACK-END)
+## Have a way to check if token has been used multiple times and refuse it (BACK-END)
