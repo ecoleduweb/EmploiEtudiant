@@ -181,7 +181,7 @@
             {:else}
 
                 <div class="option dropdown">
-                    <button class="button dropbtn">
+                    <button class="button dropbtn" id="loginDropDown">
                         <p class="textBusiness">Offrir un emploi</p>
                         <img
                             class="iconeBusiness"
