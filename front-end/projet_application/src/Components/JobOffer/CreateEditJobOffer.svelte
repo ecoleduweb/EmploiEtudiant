@@ -1,19 +1,16 @@
 <script lang="ts">
-    import fetchCity from "../../Service/CityService"
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
     import ValidationSchema from "../../FormValidations/JobOffer"
-    import type Token from "../../Models/Token"
     import {ValidationError} from "yup"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET, POST, PUT } from "../../ts/server"
     import { extractErrors } from "../../ts/utils"
     import { onMount } from "svelte"
-    import { jwtDecode } from "jwt-decode"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
-    import type { StudyProgram } from "../../Models/StudyProgram"
+    import fetchCity from "../../Service/CityService"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -69,7 +66,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
-            jobOffer.employerId = employer.id
+            jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
                     `/enterprise/employer/${employer.id}`
@@ -210,6 +207,12 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
+        
+        if (jobOffer?.approbationMessage === null) 
+        {
+            jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
+        }
+
         try {
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
@@ -289,10 +292,16 @@
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage}
-            <h3 style="color: red;">
-                Raison du refus: {jobOffer.approbationMessage}
-            </h3>
+        {#if jobOffer.id !== 0}
+            {#if jobOffer.isApproved === true}
+                <h3 style="color: green;">
+                Raison d'acceptation: {jobOffer.approbationMessage}
+                </h3>
+            {:else if jobOffer.isApproved === false}
+                <h3 style="color: red;">
+                    Raison du refus: {jobOffer.approbationMessage}
+                </h3>
+            {/if}
         {/if}
 
         {#if !isJobOfferEdit}
@@ -563,12 +572,12 @@
             {#if errorsProgramme}{errorsProgramme}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salaire">Salaire/H</label>
+            <label for="salary">Salaire/H</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
                 class="form-control"
-                id="salaire"
+                id="salary"
             />
         </div>
         <p class="errors-input">

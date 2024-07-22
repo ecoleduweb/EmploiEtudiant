@@ -8,3 +8,15 @@ class NotFoundException(Exception):
         return f"(Error {str(self.errorCode)}) {self.message}"
 
 
+class LoginException(Exception):
+    def __init__(self, AccountDesactivated: bool = False, message="Impossible de se connecter"):
+        errorCode = 401
+        errorMessage = message + ": informations invalide"
+
+        if AccountDesactivated:
+            errorCode = 403
+            errorMessage = message + ": compte désactiver"
+
+        super().__init__(errorMessage)
+        self.message = errorMessage
+        self.errorCode = errorCode

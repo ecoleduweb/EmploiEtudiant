@@ -9,8 +9,8 @@
     import { goto } from "$app/navigation"
     import { jwtDecode } from "jwt-decode"
     import { currentUser, isLoggedIn } from "$lib"
-    import { userToken } from "../../stores"
     import { onMount } from "svelte"
+    import Error from "../+error.svelte"
 
 
     const schema = yup.object().shape({
@@ -40,15 +40,34 @@
                 password: "",
             }
             try {
-                const response = await POST<Login, any>("/user/login", form, false)
-                if (response.token != "") {
-                    localStorage.setItem("token", response.token)
+                try {
+                    const response = await POST<Login, any>("/user/login", form, false)
                     
-                    const decodedUser = jwtDecode(response.token)
-                    currentUser.set(decodedUser) //Sauvegarder l'utilisateur décodé
+                    if (response.token != "") {
+                        localStorage.setItem("token", response.token)
+                        
+                        const decodedUser = jwtDecode(response.token)
+                        currentUser.set(decodedUser) //Sauvegarder l'utilisateur décodé
 
-                    goto("/dashboard")
-                    isLoggedIn.set(true) //L'utilisateur est maintenant connecté
+                        goto("/dashboard")
+                        isLoggedIn.set(true) //L'utilisateur est maintenant connecté
+                    }
+
+                }
+                catch (err) 
+                {
+                    if (err.name == 403) 
+                    {
+                        errors = {
+                            email: "",
+                            password: "Compte désactivé",
+                        }
+                    }
+                    else 
+                    {
+                        throw err
+                    }
+
                 }
             } catch (error) {
                 errors = {

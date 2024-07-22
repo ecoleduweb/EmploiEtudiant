@@ -6,7 +6,6 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import CreateAndEditStudy from "../../Components/StudyProgram/createAndEditStudy.svelte"
     import { studyPrograms } from "$lib"
-    import type { Option } from "$lib"
     import StudyProgramRow from "../../Components/StudyProgram/ProgramRow.svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
 

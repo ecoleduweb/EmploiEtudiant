@@ -1,8 +1,6 @@
 <script lang="ts">
     import type { User } from "../../Models/User"
     export let user: User
-    import { GET } from "../../ts/server"
-    import { onMount } from "svelte"
     export let handleModalClick: (id: number) => void
 </script>
 

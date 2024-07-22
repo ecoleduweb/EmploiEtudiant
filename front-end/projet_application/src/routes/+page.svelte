@@ -8,14 +8,14 @@
     import type { JobOffer } from "../Models/Offre"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
+    import { error } from "@sveltejs/kit"
 
     let loaded = false
 
-    const jobOffers = writable<JobOffer[]>([])
+    let latestJobOffers: JobOffer[] = []
     const getJobOffers = async () => {
         try {
-            const response = await GET<any>("/jobOffer/approved")
-            jobOffers.set(response)
+            latestJobOffers = await GET<any>("/jobOffer/approved?getRecentOnly=true")
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -73,7 +73,7 @@
         </section>
     {:else}
         <section class="offres">
-            {#each ($jobOffers).slice(0, 5) as offer}
+            {#each latestJobOffers as offer}
                 <DetailOfferRow {offer} 
                 handleModalClick={(function() {})}/>
             {/each}
