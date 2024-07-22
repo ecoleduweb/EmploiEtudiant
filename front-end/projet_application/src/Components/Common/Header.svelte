@@ -5,10 +5,9 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
-    import { number } from "yup"
 
-    let firstName = "" // Déclarer une variable pour stocker l'email
-    let lastName = "" // Déclarer une variable pour stocker l'email
+    let firstName = ""
+    let lastName = ""
     let isModerator = false
 
     const isTokenExpired = (user: any) => {
