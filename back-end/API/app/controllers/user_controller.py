@@ -184,7 +184,7 @@ def requestResetPassword():
 
             passwordResetToken = encrypt(json.dumps(userData))
 
-            passwordResetLink = (b"http://localhost:5173/resetPassword?token=" + passwordResetToken).decode("utf-8")
+            passwordResetLink = ( str.encode(os.environ.get("CORS")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
             logger.info(passwordResetLink)
             sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
@@ -205,7 +205,7 @@ def resetPassword():
 
         if data['password'] == data['confirmPassword']:
             try:
-                if (data['resetDate'] + 900) > datetime.now().timestamp():
+                if (decryptedData['resetDate'] + 900) > datetime.now().timestamp():
                     auth_repo.updatePassword(decryptedData['email'], data['password'])
                     return jsonify({'message': 'Successfully resetted the password'})
                 else:
