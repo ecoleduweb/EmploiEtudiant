@@ -22,8 +22,8 @@
         email: "",
     }
 
-    let successPopupMessage = "La requête de changement de mot de passe à été envoyer."
-    let failedPopupMessage = "La requête de changement de mot de passe n'a pas pu être envoyer."
+    let successPopupMessage = "La requête de changement de mot de passe à été envoyée."
+    let failedPopupMessage = "La requête de changement de mot de passe n'a pas pu être envoyée."
 
     let popupMessage = ""
     let showPopup = false

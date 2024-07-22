@@ -11,7 +11,7 @@ from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
 from app.services.email_service import sendMail
 from datetime import datetime
-from app.middleware.Encryption import encrypt, decrypt
+from app.utils.Encryption import encrypt, decrypt
 from app.repositories.auth_repo import AuthRepo
 
 auth_repo = AuthRepo()
@@ -186,8 +186,8 @@ def requestResetPassword():
 
             passwordResetLink = (b"http://localhost:5173/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
-            logger.warn(passwordResetLink)
-            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demander un changement de mot de passe. Si vous n\'avez pas fait cette requête ignorer cette email.\n<a href="' + passwordResetLink + '" target="_blank">Appuyer ici pour changer votre mot de passe</a>')
+            logger.info(passwordResetLink)
+            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
             return jsonify({'message': 'Successfully sent a password request'})
         else:
             logger.warn("A user tried to reset but provided a bad email")
@@ -205,7 +205,7 @@ def resetPassword():
 
         if data['password'] == data['confirmPassword']:
             try:
-                if (data['resetDate'] + 3600) > datetime.now().timestamp():
+                if (data['resetDate'] + 900) > datetime.now().timestamp():
                     auth_repo.updatePassword(decryptedData['email'], data['password'])
                     return jsonify({'message': 'Successfully resetted the password'})
                 else:
@@ -217,11 +217,3 @@ def resetPassword():
     except Exception as e:
         logger.warn("A user tried to use reset password with an invalid token")
         return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403
-    
-
-#Todo:
-## Need to do a popup when reset request is sent (FRONT-END) (DONE)
-## Need to do a popup when password is resetted correctly (FRONT-END) (DONE)
-## Need to handle errors on the front end (FRONT-END) (DONE)
-## Have a way to check if token has expired and refuse it (BACK-END) (DONE)
-## Have a way to check if token has been used multiple times and refuse it (BACK-END)

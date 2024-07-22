@@ -8,8 +8,6 @@ key = str.encode(os.environ.get('ENCRYPTION_KEY'))
 def encrypt(b64data):
     data = str.encode(b64data)
     header = b"ResetPasswordRequest"
-    print(type(header))
-    print(type(data))
 
     cipher = AES.new(key, AES.MODE_EAX)
     cipher.update(header)
