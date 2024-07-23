@@ -6,11 +6,9 @@
     import { extractErrors } from "../../ts/utils"
     import * as yup from "yup"
     import { POST } from "../../ts/server"
-    import { goto } from "$app/navigation"
-    import { jwtDecode } from "jwt-decode"
     import { env } from "$env/dynamic/public"
     import { writable } from "svelte/store"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { logIn } from "../../lib/tokenLib"
 
     const schema = yup.object({
         user: yup.object({
@@ -113,16 +111,7 @@
                     role: "user",
                     captchaToken, // Use the retrieved token
                 })
-
-                if (response.token) {
-                    localStorage.setItem("token", response.token) // Store the token
-                    
-                    const decodedToken = jwtDecode(response.token)
-                    currentUser.set(decodedToken) //Sauvegarder l'utilisateur décodé
-
-                    goto("/dashboard") // Redirect to the dashboard
-                    isLoggedIn.set(true) //L'utilisateur est maintenant connecté
-                }
+                logIn(response.token)
             } else {
                 console.log("Captcha failed")
             }

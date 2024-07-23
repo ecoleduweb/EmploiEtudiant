@@ -5,52 +5,7 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
-
-    let firstName = ""
-    let lastName = ""
-    let isModerator = false
-
-    const isTokenExpired = (user: any) => {
-        try {
-            const currentTime = Math.floor(Date.now() / 1000);
-            return [user.exp < currentTime, user.exp - currentTime];
-        } catch (error) {
-            return [true, 0];
-        }
-    }
-
-    const waitTilTokenExpires = (user: any) => 
-    {
-        if (user != undefined) 
-        {
-            let [expired, timeTilReset] = isTokenExpired(user);
-            
-            if (!expired && typeof(timeTilReset) === "number") 
-            {
-                setTimeout(handleLogout, timeTilReset * 1000)
-            }
-            else 
-            {
-                handleLogout()
-            }
-        }
-    }
-
-    $: waitTilTokenExpires($currentUser)
-
-    const verifyModerator = (user: any) => 
-    {
-        if (user != undefined) 
-        {
-            if (user.isModerator && !isModerator) isModerator = user.isModerator
-        }
-        else 
-        {
-            isModerator = false
-        }
-    }
-
-    $: verifyModerator($currentUser)
+    import { decodeToken, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
 
     const fetchStudyPrograms = async () => 
     {
@@ -68,18 +23,13 @@
     }
 
     onMount(async () => {
-        const token = localStorage.getItem("token")
-        isLoggedIn.set(!!token)
-        if (token) {
-            var decoded = jwtDecode<Token>(token)
-            
-            currentUser.set(decoded)
-
-            firstName = decoded.firstName
-            lastName = decoded.lastName
-            isModerator = decoded.isModerator
-        }
-
+        
+        isLoggedIn.set(isTokenExpired())
+        if ($isLoggedIn)
+        {
+            const decoded = decodeToken()
+            setInfoFromDecoded(decoded)
+        }   
         studyPrograms.set(await fetchStudyPrograms())
     })
     
@@ -117,7 +67,7 @@
     </div>
     <div class="ul-group">
         <ul class="ul-menu">
-            {#if isModerator}
+            {#if $currentUser?.isModerator}
                 <style scoped>
                     .logo-img {
                         width: 40% !important;
@@ -171,7 +121,7 @@
 
             {#if $isLoggedIn}
 
-                {#if !isModerator}
+                {#if $currentUser?.isModerator}
                     <style scoped>
                         .logo-img {
                             width: 45% !important;
@@ -215,7 +165,7 @@
                         <p class="email">
                             Connecté en 
                             tant que 
-                            {firstName} {lastName}
+                            {$currentUser?.firstName} {$currentUser?.lastName}
                         </p>
                     </button>
                 </div>
