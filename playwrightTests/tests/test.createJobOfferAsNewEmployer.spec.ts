@@ -82,7 +82,7 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('J\'acceptes les condtions').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
-    await page.waitForLoadState('networkidle');
+    //await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'modifier' }).click();
     await page.locator('#titre').nth(1).click();
@@ -93,7 +93,7 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('J\'acceptes les condtions').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
-    await page.waitForLoadState('networkidle');
+    //await page.waitForLoadState('networkidle');
   });
 
   test('Offre Invalide', async ({ page }) => {

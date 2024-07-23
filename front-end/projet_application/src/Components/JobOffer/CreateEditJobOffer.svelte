@@ -11,6 +11,8 @@
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
+    import { Exception } from "sass"
+    export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -191,6 +193,7 @@
     //--------------------------------------------------
 
     let errorsProgramme: string = "" // Define a variable to hold the error message for selected program
+    let errorsSchedule: string = "" // Define a variable to hold the error message for schedules
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
@@ -217,6 +220,7 @@
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
             await ValidationSchema.validate(jobOffer, { abortEarly: false })
+        
             return {
                     enterprise: {
                         ...enterprise,
@@ -240,18 +244,25 @@
             const requestData = await prepareAndJobOfferIsValid()
             const response = await POST<any, any>(
                 "/jobOffer/new",
-                requestData,
-            )
+                requestData, false)
             if (response) {
-                // TODO ajouter l'offre à la page sans recharger.
-                window.location.reload()
+                onFinished()
             }
         } catch (err) {
             // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length === 0) {
+            if (selectedPrograms.length < 1) {
                 errorsProgramme = "Le programme visé est requis"
-            } else {
+            }
+            else {
                 errorsProgramme = ""
+            }
+
+            if (scheduleSelected.length < 1) 
+            {
+                errorsSchedule = "Le type d'emplois est requis"
+            }
+            else {
+                errorsSchedule = ""
             }
         }
     }
@@ -261,19 +272,27 @@
             const requestData = await prepareAndJobOfferIsValid()
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
-                requestData,
-            )
+                requestData, false)
             if (response) {
-                // TODO metter à jour les offres sans recharger la page.
-                window.location.reload()
+                onFinished()
             }
         } catch (err) {
             // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length === 0) {
+            if (selectedPrograms.length < 1) {
                 errorsProgramme = "Le programme visé est requis"
-            } else {
+            }
+            else {
                 errorsProgramme = ""
             }
+
+            if (scheduleSelected.length < 1) 
+            {
+                errorsSchedule = "Le type d'emplois est requis"
+            }
+            else {
+                errorsSchedule = ""
+            }
+            
         }
     }
 
@@ -496,7 +515,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.scheduleId}{errors.scheduleId}{/if}
+            {#if errorsSchedule}{errorsSchedule}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="lieu">Adresse du lieu de travail*</label>
