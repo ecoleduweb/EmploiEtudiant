@@ -13,7 +13,6 @@
     import fetchCity from "../../Service/CityService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
-    import { error } from "@sveltejs/kit"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
