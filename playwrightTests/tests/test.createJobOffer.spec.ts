@@ -13,9 +13,9 @@ test.describe('createNewJobOffer', () => {
 
   test('Ajouter un Offre', async ({ page }) => {
 
-    await page.goto('http://localhost:5173');
-    await 1000;
-    await page.waitForLoadState('networkidle');
+    await page.goto('http://localhost:5002');
+
+    //await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'Offrir un emploi test' }).click();
     await page.getByRole('link', { name: 'Connexion entreprise' }).click();
@@ -144,6 +144,8 @@ test.describe('createNewJobOffer', () => {
     await page.waitForLoadState('networkidle');
 
     await page.reload()
+
+    await expect(page.getByRole('button', { name: 'Déconnexion Logout icon' })).toBeHidden()
   })
 
 })
