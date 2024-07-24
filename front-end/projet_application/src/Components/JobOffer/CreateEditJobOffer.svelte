@@ -12,7 +12,7 @@
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
-    import ModificationEntrepriseFormulaire from "./ModificationEntrepriseFormulaire.svelte"
+    import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -334,7 +334,7 @@
                     <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <ModificationEntrepriseFormulaire {enterprise} {errorsEnterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></ModificationEntrepriseFormulaire>
+                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></CreateEditEnterprise>
                 {/if}
             {/if}
 
