@@ -5,11 +5,7 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
-
-    let firstName = "" // Déclarer une variable pour stocker l'email
-    let lastName = "" // Déclarer une variable pour stocker l'email
-    let isModerator = false
-
+    import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
 
     const fetchStudyPrograms = async () => 
     {
@@ -27,19 +23,26 @@
     }
 
     onMount(async () => {
-        const token = localStorage.getItem("token")
-        isLoggedIn.set(!!token)
-        if (token) {
-            var decoded = jwtDecode<Token>(token)
-            
-            currentUser.set(decoded)
+        try 
+        {
+            isLoggedIn.set(!isTokenExpired())
 
-            firstName = decoded.firstName
-            lastName = decoded.lastName
-            isModerator = decoded.isModerator
+            if ($isLoggedIn)
+            {
+                const decoded = decodeToken()
+                setInfoFromDecoded(decoded)
+            }
+            else
+            {
+                disconnectUser()
+            }
         }
-
-        studyPrograms.set(await fetchStudyPrograms())
+        catch (err) 
+        {}
+        finally 
+        {
+            studyPrograms.set(await fetchStudyPrograms())
+        }
     })
     
     const handleEmploi = () => {
@@ -64,6 +67,7 @@
 
     const handleLogout = () => {
         isLoggedIn.set(false)
+        currentUser.set(undefined)
         goto("/")
         localStorage.removeItem("token")
     }
@@ -75,7 +79,7 @@
     </div>
     <div class="ul-group">
         <ul class="ul-menu">
-            {#if isModerator}
+            {#if $currentUser?.isModerator}
                 <style scoped>
                     .logo-img {
                         width: 40% !important;
@@ -129,7 +133,7 @@
 
             {#if $isLoggedIn}
 
-                {#if !isModerator}
+                {#if $currentUser?.isModerator}
                     <style scoped>
                         .logo-img {
                             width: 45% !important;
@@ -173,7 +177,7 @@
                         <p class="email">
                             Connecté en 
                             tant que 
-                            {firstName} {lastName}
+                            {$currentUser?.firstName} {$currentUser?.lastName}
                         </p>
                     </button>
                 </div>

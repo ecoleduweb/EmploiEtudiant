@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidateAll } from "$app/navigation"
+    import { goto } from "$app/navigation"
     import { currentUser, isLoggedIn } from "$lib"
     import Button from "../../Components/Inputs/Button.svelte";
     import type { User } from "../../Models/User"
@@ -22,11 +22,17 @@
 
     const ChangeUser = (lastName: string, firstName: string) => 
     {
-        PUT<any, any>("/user/user", {
-            lastname: lastName,
-            firstname: firstName,
-            email: ($currentUser as User).email
-        })
+        try {
+            PUT<any, any>("/user/user", {
+                lastname: lastName,
+                firstname: firstName,
+                email: ($currentUser as User).email
+            })
+            currentUser.set({...$currentUser!, firstName: firstName, lastName: lastName});
+        }
+        catch {
+            //TODO message d'erreur
+        }
     }
 
 </script>
