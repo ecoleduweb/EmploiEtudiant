@@ -9,6 +9,7 @@
     import { env } from "$env/dynamic/public"
     import { writable } from "svelte/store"
     import { logIn } from "../../lib/tokenLib"
+    import Popup from "../../Components/Common/Popup.svelte"
 
     const schema = yup.object({
         user: yup.object({
@@ -67,6 +68,13 @@
         length: false,
     })
 
+    let popupEnabled = false
+
+    const closePopup = () => 
+    {
+        popupEnabled = false
+    }
+
     const handleSubmit = async () => {
         try {
             const lowercaseRegex = /^(?=.*[a-z])/
@@ -113,7 +121,7 @@
                 })
                 logIn(response.token)
             } else {
-                console.log("Captcha failed")
+                popupEnabled = true
             }
         } catch (error) {
             // Handle error
@@ -291,6 +299,9 @@
             </div>
         </div>
     </form>
+    {#if popupEnabled}
+        <Popup approbationMessage="Le captcha à échoué." handleApproveClick={closePopup}></Popup>
+    {/if}
 </div>
 
 <style scoped>

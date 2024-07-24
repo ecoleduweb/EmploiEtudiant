@@ -2,12 +2,19 @@ from flask import jsonify, request, Blueprint
 import os
 from logging import getLogger
 from jwt import decode
+import json
 from app.services.user_service import UserService
 from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
+from app.services.email_service import sendMail
+from datetime import datetime
+from app.utils.Encryption import encrypt, decrypt
+from app.repositories.auth_repo import AuthRepo
+
+auth_repo = AuthRepo()
 
 user_service = UserService()
 employer_service = EmployerService()
@@ -163,3 +170,50 @@ def desactivateUser(current_user):
     except Exception as e:
         logger.error('Couldn\'t desactivate user (' + data['email'] + ')')
         return jsonify({'message': 'Couldn\'t desactivate user (' + data['email'] + ')'}), 500
+    
+@user_blueprint.route('/requestResetPassword', methods=['POST'])
+def requestResetPassword():
+    try:
+        data = request.get_json()
+
+        if user_service.getUser(data['email']):
+            userData = {
+                "email": data['email'],
+                "resetDate": datetime.now().timestamp()
+            }
+
+            passwordResetToken = encrypt(json.dumps(userData))
+
+            passwordResetLink = ( str.encode(os.environ.get("CORS")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
+
+            logger.info(passwordResetLink)
+            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
+            return jsonify({'message': 'Successfully sent a password request'})
+        else:
+            logger.warn("A user tried to reset but provided a bad email")
+            return jsonify({'message': 'The email provided is invalid (No user found/invalid)'}), 401
+    except Exception as e:
+        logger.warn("A user tried to send a reset password request but it failed")
+        return jsonify({'Error while sending password request'}), 500
+    
+
+@user_blueprint.route('/resetPassword', methods=['POST'])
+def resetPassword():
+    try:
+        data = request.get_json()
+        decryptedData = json.loads(decrypt(data['token']))
+
+        if data['password'] == data['confirmPassword']:
+            try:
+                if (decryptedData['resetDate'] + 900) > datetime.now().timestamp():
+                    auth_repo.updatePassword(decryptedData['email'], data['password'])
+                    return jsonify({'message': 'Successfully resetted the password'})
+                else:
+                    logger.warn("A user tried to reset the password via a expired link")
+                    return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
+            except Exception as e:
+                logger.warn("A user tried to reset the password but it failed")
+                return jsonify({'message': 'Error while trying to reset the password'}), 401
+    except Exception as e:
+        logger.warn("A user tried to use reset password with an invalid token")
+        return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403

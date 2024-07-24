@@ -5,6 +5,9 @@
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { POST } from "../../ts/server"
+    import { page } from '$app/stores'
+    import { goto } from "$app/navigation"
+    import Popup from "../../Components/Common/Popup.svelte"
 
     const schema = yup.object({
         password: yup
@@ -24,13 +27,27 @@
     })
 
     let errors: ResetPassword = {
+        token: "",
         password: "",
         confirmPassword: "",
     }
 
     let resetPassword: ResetPassword = {
+        token: $page.url.searchParams.get('token'),
         password: "",
         confirmPassword: "",
+    }
+
+    let successPopupMessage = "Le mot de passe a été défini avec succès."
+    let failedPopupMessage = "Impossible de changer le mot de passe, lien invalide ou expiré?"
+
+    let popupMessage = ""
+    let showPopup = false
+
+    const handlePopupClose = async () => 
+    {
+        showPopup = false
+        goto("/login")
     }
 
     const handleSubmit = async () => {
@@ -38,11 +55,32 @@
             // `abortEarly: false` to get all the errors
             await schema.validate(resetPassword, { abortEarly: false })
             errors = {
+                token: "",
                 password: "",
                 confirmPassword: "",
             }
 
-            const response = POST("/auth/resetPassword", resetPassword)
+            if (resetPassword.token == null || resetPassword.token == "") 
+            {
+                errors = {
+                    token: "",
+                    password: "",
+                    confirmPassword: "Lien invalide"
+                }
+            }
+
+            try 
+            {
+                await POST<any,any>("/user/resetPassword", resetPassword)
+                popupMessage = successPopupMessage
+                
+            }
+            catch (err) 
+            {
+                popupMessage = failedPopupMessage
+            }
+
+            showPopup = true
         } catch (err) {
             errors = extractErrors(err)
         }
@@ -94,6 +132,9 @@
             </div>
         </form>
     </div>
+    {#if showPopup}
+        <Popup handleApproveClick={handlePopupClose} approbationMessage={popupMessage}></Popup>
+    {/if}
 </section>
 
 <style scoped>
