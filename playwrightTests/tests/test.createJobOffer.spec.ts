@@ -138,7 +138,7 @@ test.describe('createNewJobOffer', () => {
 
     await page.goto("http://localhost:5002/dashboard")
     await page.evaluate(() => {
-      localStorage.setItem("Token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNzIxNzQxODIwLCJhY3RpdmUiOnRydWUsImlzTW9kZXJhdG9yIjpmYWxzZSwiZmlyc3ROYW1lIjoidGVzdCIsImxhc3ROYW1lIjoidGVzdCJ9.1IgsTs64LM_h_zhuofLuCKnFsTUcRjvTVZgUBi7WKyo")
+      localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNzIxNzQxODIwLCJhY3RpdmUiOnRydWUsImlzTW9kZXJhdG9yIjpmYWxzZSwiZmlyc3ROYW1lIjoidGVzdCIsImxhc3ROYW1lIjoidGVzdCJ9.1IgsTs64LM_h_zhuofLuCKnFsTUcRjvTVZgUBi7WKyo")
     })
 
     await page.waitForLoadState('networkidle');

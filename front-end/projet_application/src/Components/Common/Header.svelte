@@ -5,7 +5,7 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
-    import { decodeToken, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
+    import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
 
     const fetchStudyPrograms = async () => 
     {
@@ -23,14 +23,26 @@
     }
 
     onMount(async () => {
-        
-        isLoggedIn.set(isTokenExpired())
-        if ($isLoggedIn)
+        try 
         {
-            const decoded = decodeToken()
-            setInfoFromDecoded(decoded)
-        }   
-        studyPrograms.set(await fetchStudyPrograms())
+            isLoggedIn.set(!isTokenExpired())
+
+            if ($isLoggedIn)
+            {
+                const decoded = decodeToken()
+                setInfoFromDecoded(decoded)
+            }
+            else
+            {
+                disconnectUser()
+            }
+        }
+        catch (err) 
+        {}
+        finally 
+        {
+            studyPrograms.set(await fetchStudyPrograms())
+        }
     })
     
     const handleEmploi = () => {
