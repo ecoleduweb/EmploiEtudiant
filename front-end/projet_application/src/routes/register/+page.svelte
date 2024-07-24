@@ -11,6 +11,7 @@
     import { env } from "$env/dynamic/public"
     import { writable } from "svelte/store"
     import { currentUser, isLoggedIn } from "$lib"
+    import Popup from "../../Components/Common/Popup.svelte"
 
     const schema = yup.object({
         user: yup.object({
@@ -69,6 +70,13 @@
         length: false,
     })
 
+    let popupEnabled = false
+
+    const closePopup = () => 
+    {
+        popupEnabled = false
+    }
+
     const handleSubmit = async () => {
         try {
             const lowercaseRegex = /^(?=.*[a-z])/
@@ -124,7 +132,7 @@
                     isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }
             } else {
-                console.log("Captcha failed")
+                popupEnabled = true
             }
         } catch (error) {
             // Handle error
@@ -302,6 +310,9 @@
             </div>
         </div>
     </form>
+    {#if popupEnabled}
+        <Popup approbationMessage="Le captcha à échoué." handleApproveClick={closePopup}></Popup>
+    {/if}
 </div>
 
 <style scoped>
