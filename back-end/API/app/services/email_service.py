@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, request
 import os
 
 # ACM Mettre ça dans un service.
@@ -14,7 +14,7 @@ password = os.environ.get('MAIL_SERVER_PASSWORD')
 
 # ACM : Quand on va envoyer un mail, ajouter un check pour s'assurer qu'on n'est pas en test pour éviter l'envoi.
 def sendMail(receiver_email, subject, content):
-    if not current_app.config.get('TESTING'):
+    if (not request.url_root.find("http://localhost") == 0):
         subject = "Site de recrutement - " + subject
         html = """\
         <html>

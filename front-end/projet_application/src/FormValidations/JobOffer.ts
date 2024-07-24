@@ -70,4 +70,8 @@ const schema = yup.object().shape({
         .oneOf([true], "Vous devez accepter les conditions"),
 })
 
+export const scheduleSchema = yup.array().min(1, "Le type d'emplois est requis")
+export const programSchema = yup.array().min(1, "Le programme visé est requis")
+
+
 export default schema

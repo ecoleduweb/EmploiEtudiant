@@ -61,10 +61,10 @@ def createJobOffer(current_user):
         
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         
-        
+        logger.warn("aa")
         sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créée. \nVotre offre sera public lorsqu'il sera vérifier.")
         sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
-
+        logger.warn("bb")
         return jobOffer.to_json_string(), 201
     except Exception as e:
         logger.warn(e)
@@ -132,8 +132,9 @@ def updateJobOffer(current_user, id):
         logger.warn('Job offer not found with data : ' + str(data))
         return jsonify({'message': 'Job offer not found'}), 404
     except Exception as e:
+        logger.warn(e)
         logger.warn('Could not update job offer, invalid data')
-        return jsonify({'message': 'Invalid data'}), 401
+        return jsonify({'message': 'Invalid data'}), 400
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():

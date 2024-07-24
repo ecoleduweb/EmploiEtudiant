@@ -2,7 +2,7 @@
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
-    import ValidationSchema from "../../FormValidations/JobOffer"
+    import ValidationSchema, { programSchema, scheduleSchema } from "../../FormValidations/JobOffer"
     import {ValidationError} from "yup"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
@@ -11,7 +11,7 @@
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
-    import { Exception } from "sass"
+    import { error } from "@sveltejs/kit"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -217,10 +217,14 @@
         }
 
         try {
+            await scheduleSchema.validate(scheduleSelected, { abortEarly: false })
+            await programSchema.validate(selectedPrograms, { abortEarly: false })
+
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
+
             await ValidationSchema.validate(jobOffer, { abortEarly: false })
-        
+
             return {
                     enterprise: {
                         ...enterprise,
@@ -234,7 +238,24 @@
         }
         catch(err) {
             if (err instanceof ValidationError) {
-                errors = extractErrors(err)
+                let validError = extractErrors(err)
+
+                if (validError[""] === undefined) {
+                    errors = extractErrors(err)
+                }
+                else {
+                    if (validError[""] === "Le programme visé est requis") {
+                        errors = {
+                            program: "Le programme visé est requis"
+                        }
+                    }
+                    else 
+                    {
+                        errors = {
+                            schedule: "Le type d'emplois est requis"
+                        }
+                    }
+                }
             }
         }
     }
@@ -249,21 +270,7 @@
                 onFinished()
             }
         } catch (err) {
-            // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length < 1) {
-                errorsProgramme = "Le programme visé est requis"
-            }
-            else {
-                errorsProgramme = ""
-            }
 
-            if (scheduleSelected.length < 1) 
-            {
-                errorsSchedule = "Le type d'emplois est requis"
-            }
-            else {
-                errorsSchedule = ""
-            }
         }
     }
 
@@ -277,21 +284,7 @@
                 onFinished()
             }
         } catch (err) {
-            // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length < 1) {
-                errorsProgramme = "Le programme visé est requis"
-            }
-            else {
-                errorsProgramme = ""
-            }
 
-            if (scheduleSelected.length < 1) 
-            {
-                errorsSchedule = "Le type d'emplois est requis"
-            }
-            else {
-                errorsSchedule = ""
-            }
             
         }
     }
@@ -515,7 +508,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errorsSchedule}{errorsSchedule}{/if}
+            {#if errors.schedule}{errors.schedule}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="lieu">Adresse du lieu de travail*</label>
@@ -588,7 +581,7 @@
             ></MultiSelect>
         </div>
         <p class="errors-input">
-            {#if errorsProgramme}{errorsProgramme}{/if}
+            {#if errors.program}{errors.program}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="salary">Salaire/H</label>
