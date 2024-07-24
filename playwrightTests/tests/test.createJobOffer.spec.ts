@@ -13,9 +13,9 @@ test.describe('createNewJobOffer', () => {
 
   test('Ajouter un Offre', async ({ page }) => {
 
-    await page.goto('http://localhost:5173');
-    await 1000;
-    await page.waitForLoadState('networkidle');
+    await page.goto('http://localhost:5002');
+
+    //await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'Offrir un emploi test' }).click();
     await page.getByRole('link', { name: 'Connexion entreprise' }).click();
@@ -133,4 +133,19 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Description du poste*').fill('Test');
     await page.getByRole('button', { name: 'Enregistrer' }).click();
   });
+
+  test('Compte token invalide', async ({ page }) => {
+
+    await page.goto("http://localhost:5002/dashboard")
+    await page.evaluate(() => {
+      localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNzIxNzQxODIwLCJhY3RpdmUiOnRydWUsImlzTW9kZXJhdG9yIjpmYWxzZSwiZmlyc3ROYW1lIjoidGVzdCIsImxhc3ROYW1lIjoidGVzdCJ9.1IgsTs64LM_h_zhuofLuCKnFsTUcRjvTVZgUBi7WKyo")
+    })
+
+    await page.waitForLoadState('networkidle');
+
+    await page.reload()
+
+    await expect(page.getByRole('button', { name: 'Déconnexion Logout icon' })).toBeHidden()
+  })
+
 })
