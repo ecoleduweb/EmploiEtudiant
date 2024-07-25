@@ -102,6 +102,7 @@ test.describe('createNewJobOffer', () => {
     // valide que les messages d'erreurs existe dans le formulaire...
     // en cliquant sur le message d'erreurs et recupere le message d'erreurs
     await page.goto('http://localhost:5002/dashboard');
+    await page.waitForLoadState('networkidle');
 
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
     await page.getByRole('button', { name: 'Envoyer' }).click();
@@ -191,5 +192,11 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
     await expect(await page.getByText('Test poste')).toBeVisible()
+
+    await page.getByRole('button', { name: 'modifier' }).click();
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByText('Nom* Test entreprise')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Mon entreprise' })).toBeVisible();
   });
 })
