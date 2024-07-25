@@ -62,7 +62,6 @@ class UserService:
             auth_repo.updatePassword(email, data["password"])
         except Exception as e:
             raise Exception("Failed to update password")
-    
     def updateUser(self, current_user, data):
         email = ""
 

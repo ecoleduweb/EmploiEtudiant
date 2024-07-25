@@ -158,12 +158,21 @@
                 <div class="option">
                     <button
                         class="button logout-button"
-                        on:click={handleLogout}
+                        on:click={handleUtilisateur}
                     >
-                        <p class="textLogout">Déconnexion</p>
+                        <p class="textLogout">Utilisateurs</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleProgrammes}
+                    >
+                        <p class="textLogout">Modifier les programmes</p>
                         <img
                             class="iconeLogout"
-                            src="logout.svg"
+                            src="edit.svg"
                             alt="Logout icon"
                         />
                     </button>
@@ -181,7 +190,6 @@
                         </p>
                     </button>
                 </div>
-
             {:else}
 
                 <div class="option dropdown">
@@ -272,6 +280,7 @@
         margin-left: 8px;
         margin-right: 8px;
         text-align: center;
+
     }
 
     button:hover {
@@ -417,6 +426,7 @@
             padding-right: 5%;
             margin-left: 1.4vw;
             margin-right: 1vw;
+
             text-align: center;
         }
 
@@ -447,7 +457,6 @@
         display: flex;
         align-items: center;
     }
-
 
     .textLogout {
         margin-right: 8px;
