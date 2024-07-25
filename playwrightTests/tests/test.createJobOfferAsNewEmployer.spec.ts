@@ -30,11 +30,8 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('button', { name: 'Créer', exact: true }).click();
 
     await page.getByRole('button', { name: 'Déconnexion Logout icon' }).click();
-  });
 
-  test.only('nouvelle offre', async ({ page }) => {
     await page.goto('http://localhost:5002');
-    await 1000;
     await page.waitForLoadState('networkidle');
     await page.locator('#loginDropDown').hover();
 
@@ -51,6 +48,11 @@ test.describe('createNewJobOffer', () => {
     await page.locator('div').filter({ hasText: 'Valider Mot de passe' }).nth(4).click();
     await page.locator('#confirm_password').fill('AAAaaa111!!!');
     await page.getByRole('button', { name: 'Créer' }).click();
+  });
+
+  test.only('nouvelle offre', async ({ page }) => {
+    await page.goto('http://localhost:5002');
+
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
     await page.locator('#titre').first().click();
     await page.locator('#titre').first().fill('Offre 1');
@@ -99,75 +101,95 @@ test.describe('createNewJobOffer', () => {
   test('Offre Invalide', async ({ page }) => {
     // valide que les messages d'erreurs existe dans le formulaire...
     // en cliquant sur le message d'erreurs et recupere le message d'erreurs
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByText('Le titre du poste est requis').click();
-    await page.locator('#titre').click();
-    await page.locator('#titre').fill('Titre');
+    await page.goto('http://localhost:5002/dashboard');
 
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
+    await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+
+    await expect(page.getByText('Vous devez nommer votre')).toBeVisible();
+    await expect(page.getByText('Vous devez ajouter une')).toBeVisible();
+    await expect(page.getByText('Vous devez mettre un email à')).toBeVisible();
+    await expect(page.getByText('Vous devez mettre un numéro')).toBeVisible();
+    await expect(page.getByText('Vous devez mettre une ville')).toBeVisible();
+
+    await page.locator('#titre').first().click();
+    await page.locator('#titre').first().fill('Test entreprise');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Vous devez nommer votre')).toBeHidden();
+
+    await page.locator('#address').first().click();
+    await page.locator('#address').first().fill('123');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Vous devez ajouter une')).toBeHidden();
+
+    await page.locator('#email').first().click();
+    await page.locator('#email').first().fill('test@gmail.com');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Vous devez mettre un email à')).toBeHidden();
+
+    await page.locator('#phone').click();
+    await page.locator('#phone').fill('123333');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Vous devez mettre un numéro')).toBeHidden();
+
+    await page.getByPlaceholder('Choisir ville...').click();
+    await page.getByRole('option', { name: 'ville' }).click();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Vous devez mettre une ville')).toBeHidden();
+
+    await expect(page.getByText('Le titre du poste est requis')).toBeVisible()
+    await expect(page.getByText('Le type d\'emplois est requis')).toBeVisible()
+    await expect(page.getByText('L\'adresse du lieu de travail')).toBeVisible()
+    await expect(page.getByText('Le programme visé est requis')).toBeVisible()
+    await expect(page.getByText('Le salaire est requis')).toBeVisible()
+    await expect(page.getByText('Veuillez entrer un nombre d\'')).toBeVisible()
+    await expect(page.getByText('Le courriel est requis')).toBeVisible()
+    await expect(page.getByText('La description de l\'offre est')).toBeVisible()
+    await expect(page.getByText('Vous devez accepter les')).toBeVisible()
+
+    await page.locator('#titre').nth(1).click();
+    await page.locator('#titre').nth(1).fill('Test poste');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Le titre du poste est requis')).toBeHidden()
+
     await page.getByPlaceholder('Choisir période(s)').click();
-    await page.getByRole('option', { name: 'Emploi d\'été' }).click();
-    await page.getByText('Le type d\'emploi est requis').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.locator('#address').click();
-    await page.locator('#address').fill('Adresse Test');
-    await page.getByText('L\'adresse du lieu de travail').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Date d\'entrée en fonction*').fill('2024-03-20');
-    await page.getByText('Veuillez choisir une date').first().click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Date limite pour postuler*').fill('2024-03-22');
-    await page.getByText('Veuillez choisir une date').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
+    await page.getByRole('option', { name: 'temps plein' }).click();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Le type d\'emplois est requis')).toBeHidden()
+
+    await page.locator('#address').nth(1).click();
+    await page.locator('#address').nth(1).fill('Addresse 123');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('L\'adresse du lieu de travail')).toBeHidden()
 
     await page.getByPlaceholder('Choisir programme(s)').click();
-    await page.getByRole('option', { name: 'Informatique' }).click();
-    await page.locator('#programme').press('Tab');
-    await page.getByText('Veuillez entrer un salaire').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Salaire/H (0.00)*').click();
-    await page.getByLabel('Salaire/H (0.00)*').fill('asdd');
-    await page.getByText('Veuillez entrer un salaire').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Salaire/H (0.00)*').click();
-    await page.getByLabel('Salaire/H (0.00)*').fill('1.23');
-    await page.getByText('Veuillez entrer un salaire').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Heure/Semaine*').click();
-    await page.getByLabel('Heure/Semaine*').fill('asd');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByLabel('Heure/Semaine*').click();
-    await page.getByLabel('Heure/Semaine*').fill('23');
-    await page.getByText('Veuillez entrer un nombre d\'').click();
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.locator('#compliantEmployer').check();
-    await page.getByLabel('Urgente').check();
-    await page.getByLabel('Lien*').click();
-    await page.getByLabel('Lien*').fill('asd');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByText('Le lien doit être de format').click();
-    await page.getByLabel('Lien*').click();
-    await page.getByLabel('Lien*').fill('https://test.ca');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.locator('#email').click();
+    await page.getByRole('option', { name: 'Programme 1' }).click();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Le programme visé est requis')).toBeHidden()
 
-    await page.getByText('Le courriel est requis').click();
-    await page.locator('#email').click();
-    await page.locator('#email').fill('test');
-    await page.locator('#email').press('Alt+Control+@');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByText('Le courriel n\'est pas valide').click();
-    await page.locator('#email').click();
-    await page.locator('#email').press('Alt+Control+@');
-    await page.locator('#email').fill('test@asdsa');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByText('Le courriel doit être de').click();
-    await page.locator('#email').click();
-    await page.locator('#email').fill('test@asdsa.ca');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.getByText('La description de l\'offre est').click();
+    await page.getByLabel('Salaire/H').click();
+    await page.getByLabel('Salaire/H').fill('32');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Le salaire est requis')).toBeHidden()
+
+    await page.getByLabel('Heure/Semaine*').click();
+    await page.getByLabel('Heure/Semaine*').fill('40');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Veuillez entrer un nombre d\'')).toBeHidden()
+
+    await page.locator('#email').nth(1).click();
+    await page.locator('#email').nth(1).fill('test@gmail.com');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('Le courriel est requis')).toBeHidden()
+
     await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('Test');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
+    await page.getByLabel('Description du poste*').fill('Test description');
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+    await expect(page.getByText('La description de l\'offre est')).toBeHidden()
+
+    await page.getByLabel('J\'acceptes les condtions').check();
+    await page.getByRole('button', { name: 'Envoyer' }).click();
+
+    await expect(await page.getByText('Test poste')).toBeVisible()
   });
 })

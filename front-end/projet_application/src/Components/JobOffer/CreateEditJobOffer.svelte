@@ -2,7 +2,7 @@
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
-    import ValidationSchema, { programSchema, scheduleSchema } from "../../FormValidations/JobOffer"
+    import ValidationSchema, { entrepriseSchema } from "../../FormValidations/JobOffer"
     import {ValidationError} from "yup"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
@@ -13,6 +13,7 @@
     import fetchCity from "../../Service/CityService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
+    import { writable } from "svelte/store"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -58,8 +59,9 @@
     let cityFromEnterprise: [] = []
     let cityOptions: { label: string; value: number }[] = []
     let scheduleIds: number[] = []
+    let selectedCityWritable = writable<any>()
 
-    
+    $: selectedCity = $selectedCityWritable
 
     const fetchEnterprise = async () => {
         let response = undefined
@@ -211,20 +213,26 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
-        
+        let validatingjobOffer = false
         if (jobOffer?.approbationMessage === null) 
         {
             jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
         }
 
         try {
-            await scheduleSchema.validate(scheduleSelected, { abortEarly: false })
-            await programSchema.validate(selectedPrograms, { abortEarly: false })
+            scheduleIds = Array.isArray(scheduleSelected) && scheduleSelected.length !== 0 ? scheduleSelected.map(schedule => schedule.value) : [];
 
-            scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
-            enterprise.cityId = selectedCity[0].value
+            const jobOfferToValidate = {
+                ...jobOffer,  
+                studyPrograms: selectedPrograms, 
+                scheduleIds
+            }
 
-            await ValidationSchema.validate(jobOffer, { abortEarly: false })
+            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
+            await entrepriseSchema.validate(enterprise, {abortEarly: false})
+
+            validatingjobOffer = true
+            await ValidationSchema.validate(jobOfferToValidate, { abortEarly: false })
 
             return {
                     enterprise: {
@@ -238,25 +246,15 @@
                 }
         }
         catch(err) {
-            if (err instanceof ValidationError) {
-                let validError = extractErrors(err)
-
-                if (validError[""] === undefined) {
-                    errors = extractErrors(err)
-                }
-                else {
-                    if (validError[""] === "Le programme visé est requis") {
-                        errors = {
-                            program: "Le programme visé est requis"
-                        }
-                    }
-                    else 
-                    {
-                        errors = {
-                            schedule: "Le type d'emplois est requis"
-                        }
-                    }
-                }
+            console.log(err)
+            if (err instanceof ValidationError && validatingjobOffer === true) {
+                errors = extractErrors(err)
+                errorsEnterprise = {}
+                console.log(enterprise)
+            }
+            else if (err instanceof ValidationError && validatingjobOffer === false) 
+            {
+                errorsEnterprise = extractErrors(err)
             }
         }
     }
@@ -264,6 +262,7 @@
     async function createJobOffer() {
         try {
             const requestData = await prepareAndJobOfferIsValid()
+            console.log(requestData)
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
@@ -330,8 +329,7 @@
                         placeholder="Choisir une enterprise..."
                         bind:value={enterpriseSelected}
                         bind:selected={enterpriseFromSelectedEnterprise}
-                        on:add={(event) =>
-                            setEnterpriseIfSelected(event.detail.option.value)}
+                        on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
                     />
                     <Button
                         submit={false}
@@ -339,20 +337,23 @@
                         onClick={() => handleEnterprise()}
                     />
                 </div>
+                {#if enterprise.id !== 0 && selectedCity.length !== 0}
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
+                {/if}
             {:else}
                 {#if isEnterpriseSelected}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></CreateEditEnterprise>
+                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
                 {/if}
             {/if}
 
             <h1>Création d'une nouvelle offre d'emploi</h1>
         {:else}
             <h1>Mon entreprise</h1>
-            <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+            <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
 
             <h1>Modification d'une offre d'emploi</h1>
         {/if}
@@ -381,7 +382,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.schedule}{errors.schedule}{/if}
+            {#if errors.scheduleIds}{errors.scheduleIds}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="lieu">Adresse du lieu de travail*</label>
@@ -454,7 +455,7 @@
             ></MultiSelect>
         </div>
         <p class="errors-input">
-            {#if errors.program}{errors.program}{/if}
+            {#if errors.studyPrograms}{errors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="salary">Salaire/H</label>
