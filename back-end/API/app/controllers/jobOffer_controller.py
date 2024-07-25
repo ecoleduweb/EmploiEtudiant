@@ -154,7 +154,6 @@ def approveJobOffer(current_user, id):
     if jobOfferToUpdate:
         data = request.get_json()
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
-        # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
 
         if data['isApproved'] == True:
             sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
