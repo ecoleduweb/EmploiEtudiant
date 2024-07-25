@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, current_app
 from datetime import datetime
 import os
 from app.models.user_model import User
@@ -21,7 +21,7 @@ employment_schedule_service = EmploymentScheduleService()
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
-from app.controllers.email_controller import sendMail
+from app.services.email_service import sendMail
 from app.customexception.CustomException import NotFoundException
 import os
 
@@ -31,31 +31,39 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 @job_offer_blueprint.route('/new', methods=['POST'])
 @token_required
 def createJobOffer(current_user):
-    data = request.get_json()
-    if current_user.isModerator:
-        isApproved = True
+    try:
+        data = request.get_json()
+        if current_user.isModerator:
+            isApproved = True
 
-        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
-            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+            if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+                employer = employer_service.createEmployer(data["enterprise"]["id"], None)
+            else:
+                return jsonify({'message', 'No enterprise selected.'}), 400
         else:
-            return jsonify({'message', 'No enterprise selected.'}), 400
-    else:
-        # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
-        isApproved = None
-        employer = Employers.query.filter_by(userId=current_user.id).first()
-        # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
-        if employer is None:
-            enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
-            enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
-            employer = employer_service.createEmployer(enterpriseId, current_user.id)
+            # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
+            isApproved = None
+            employer = Employers.query.filter_by(userId=current_user.id).first()
+            # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
+            if employer is None:
+                enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
+                enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
+                employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
-    jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
-    for studyProgramId in data["studyPrograms"]:
-        offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-    employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-    # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
+        for studyProgramId in data["studyPrograms"]:
+            offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
+        
+        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
+        
+        
+        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créée. \nVotre offre sera public lorsqu'il sera vérifier.")
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
 
-    return jobOffer.to_json_string(), 201
+        return jobOffer.to_json_string(), 201
+    except Exception as e:
+        logger.warn("Could not create jobOffer, invalid data")
+        return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
@@ -107,7 +115,7 @@ def updateJobOffer(current_user, id):
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
-            # sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifié.")
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée.")
             
             return jsonify(jobOffer.to_json_string()), 200
     logger.warn('Job offer not found with data : ' + str(data))
@@ -115,8 +123,14 @@ def updateJobOffer(current_user, id):
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
-    jobOffers = jobOffer_service.offresEmploiApproved()
-    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    getRecentOnly = request.args.get("getRecentOnly") == "true"
+
+    if getRecentOnly:
+        jobOffers = jobOffer_service.getRecentOffers()
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    else:
+        jobOffers = jobOffer_service.getOffers()
+        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required
@@ -126,7 +140,11 @@ def approveJobOffer(current_user, id):
         data = request.get_json()
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
         # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
-        # sendMail(email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + title + " a été approuvée!")
+
+        if data['isApproved'] == True:
+            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
+        else:
+            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
         return ('', 204)
     logger.warn('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404

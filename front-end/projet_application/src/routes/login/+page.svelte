@@ -6,10 +6,9 @@
     import { GET, POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
-    import { goto } from "$app/navigation"
-    import { jwtDecode } from "jwt-decode"
-    import { currentUser, isLoggedIn } from "$lib"
+    import { isLoggedIn } from "$lib"
     import { onMount } from "svelte"
+    import { disconnectUser, isTokenExpired, logIn } from "../../lib/tokenLib"
 
 
     const schema = yup.object().shape({
@@ -39,15 +38,24 @@
                 password: "",
             }
             try {
-                const response = await POST<Login, any>("/user/login", form, false)
-                if (response.token != "") {
-                    localStorage.setItem("token", response.token)
-                    
-                    const decodedUser = jwtDecode(response.token)
-                    currentUser.set(decodedUser) //Sauvegarder l'utilisateur décodé
+                try {
+                    const response = await POST<Login, any>("/user/login", form, false)
+                    logIn(response.token)
+                }
+                catch (err) 
+                {
+                    if (err.name == 403) 
+                    {
+                        errors = {
+                            email: "",
+                            password: "Compte désactivé",
+                        }
+                    }
+                    else 
+                    {
+                        throw err
+                    }
 
-                    goto("/dashboard")
-                    isLoggedIn.set(true) //L'utilisateur est maintenant connecté
                 }
             } catch (error) {
                 errors = {
@@ -60,22 +68,11 @@
         }
     }
 
-    const isTokenExpired = (user: any) => {
-        try {
-            const currentTime = Math.floor(Date.now() / 1000);
-            return user.exp < currentTime
-        } catch (error) {
-            return true;
-        }
-    }
-
     onMount(async () => 
     {
-        if ($isLoggedIn && isTokenExpired(currentUser))
+        if ($isLoggedIn && isTokenExpired())
         {
-            localStorage.token = undefined
-            currentUser.set(undefined)
-            isLoggedIn.set(false)
+            disconnectUser()
         }
     })
 </script>

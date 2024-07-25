@@ -5,11 +5,7 @@
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET } from "../../ts/server"
-
-    let firstName = "" // Déclarer une variable pour stocker l'email
-    let lastName = "" // Déclarer une variable pour stocker l'email
-    let isModerator = false
-
+    import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
 
     const fetchStudyPrograms = async () => 
     {
@@ -27,19 +23,26 @@
     }
 
     onMount(async () => {
-        const token = localStorage.getItem("token")
-        isLoggedIn.set(!!token)
-        if (token) {
-            var decoded = jwtDecode<Token>(token)
-            
-            currentUser.set(decoded)
+        try 
+        {
+            isLoggedIn.set(!isTokenExpired())
 
-            firstName = decoded.firstName
-            lastName = decoded.lastName
-            isModerator = decoded.isModerator
+            if ($isLoggedIn)
+            {
+                const decoded = decodeToken()
+                setInfoFromDecoded(decoded)
+            }
+            else
+            {
+                disconnectUser()
+            }
         }
-
-        studyPrograms.set(await fetchStudyPrograms())
+        catch (err) 
+        {}
+        finally 
+        {
+            studyPrograms.set(await fetchStudyPrograms())
+        }
     })
     
     const handleEmploi = () => {
@@ -57,9 +60,14 @@
     const handleProgrammes = () => {
         goto("/programmes")
     }
+    const handleProfile = () => 
+    {
+        goto("/profile")
+    }
 
     const handleLogout = () => {
         isLoggedIn.set(false)
+        currentUser.set(undefined)
         goto("/")
         localStorage.removeItem("token")
     }
@@ -71,7 +79,7 @@
     </div>
     <div class="ul-group">
         <ul class="ul-menu">
-            {#if isModerator}
+            {#if $currentUser?.isModerator}
                 <style scoped>
                     .logo-img {
                         width: 40% !important;
@@ -125,7 +133,7 @@
 
             {#if $isLoggedIn}
 
-                {#if !isModerator}
+                {#if $currentUser?.isModerator}
                     <style scoped>
                         .logo-img {
                             width: 45% !important;
@@ -150,28 +158,42 @@
                 <div class="option">
                     <button
                         class="button logout-button"
-                        on:click={handleLogout}
+                        on:click={handleUtilisateur}
                     >
-                        <p class="textLogout">Déconnexion</p>
+                        <p class="textLogout">Utilisateurs</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleProgrammes}
+                    >
+                        <p class="textLogout">Modifier les programmes</p>
                         <img
                             class="iconeLogout"
-                            src="logout.svg"
+                            src="edit.svg"
                             alt="Logout icon"
                         />
                     </button>
                 </div>
 
                 <div class="option">
-                    <p class="email">
-                        <br />Connecté en tant que <br />{firstName}
-                        {lastName}
-                    </p>
+                    <button
+                        class="button"
+                        on:click={handleProfile}
+                    >
+                        <p class="email">
+                            Connecté en 
+                            tant que 
+                            {$currentUser?.firstName} {$currentUser?.lastName}
+                        </p>
+                    </button>
                 </div>
-
             {:else}
 
                 <div class="option dropdown">
-                    <button class="button dropbtn">
+                    <button class="button dropbtn" id="loginDropDown">
                         <p class="textBusiness">Offrir un emploi</p>
                         <img
                             class="iconeBusiness"
@@ -255,7 +277,10 @@
 
     .email 
     {
-        margin-left: 35px;
+        margin-left: 8px;
+        margin-right: 8px;
+        text-align: center;
+
     }
 
     button:hover {
@@ -397,10 +422,10 @@
         button.button 
         {
             padding: 0;
-            padding-left: 5%;
-            padding-right: 0;
-            margin-left: 1.6vw;
-            margin-right: 1.6vw;
+            padding-left: 0;
+            padding-right: 5%;
+            margin-left: 1.4vw;
+            margin-right: 1vw;
 
             text-align: center;
         }
@@ -433,9 +458,7 @@
         align-items: center;
     }
 
-
-    .textLogout,
-    .email {
+    .textLogout {
         margin-right: 8px;
     }
 

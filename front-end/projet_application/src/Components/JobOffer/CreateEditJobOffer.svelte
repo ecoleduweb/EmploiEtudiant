@@ -11,6 +11,8 @@
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
+    import EntrepriseDetails from "./EntrepriseDetails.svelte"
+    import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -66,7 +68,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
-            jobOffer.employerId = employer.id
+            jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
                     `/enterprise/employer/${employer.id}`
@@ -207,6 +209,12 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
+        
+        if (jobOffer?.approbationMessage === null) 
+        {
+            jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
+        }
+
         try {
             scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
             enterprise.cityId = selectedCity[0].value
@@ -282,16 +290,17 @@
 
     let todayMin = new Date()
     let minDateString = todayMin.toISOString().split("T")[0] // format as yyyy-mm-dd
+
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
     <div class="content-form">
-        {#if jobOffer.approbationMessage !== undefined}
-            {#if jobOffer.isApproved == true}
+        {#if jobOffer.id !== 0}
+            {#if jobOffer.isApproved === true}
                 <h3 style="color: green;">
-                    Raison d'acceptation: {jobOffer.approbationMessage}
+                Raison d'acceptation: {jobOffer.approbationMessage}
                 </h3>
-            {:else if jobOffer.isApproved == false}
+            {:else if jobOffer.isApproved === false}
                 <h3 style="color: red;">
                     Raison du refus: {jobOffer.approbationMessage}
                 </h3>
@@ -320,148 +329,19 @@
                     />
                 </div>
             {:else}
-            <h1>Création d'une nouvelle entreprise</h1>
-            <div class="form-group-vertical">
-                <label for="title">Nom*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.name}
-                    class="form-control"
-                    id="titre"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="schedule">Adresse*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.address}
-                    class="form-control"
-                    id="address"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="lieu">Courriel*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.email}
-                    class="form-control"
-                    id="email"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="lieu">Téléphone*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.phone}
-                    class="form-control"
-                    id="phone"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="lieu">Ville*</label>
-                {#if cityOptions.length === 0}
-                    <p>Chargement des villes...</p>
+                {#if isEnterpriseSelected}
+                    <h1>Création d'une nouvelle entreprise</h1>
+                    <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
                 {:else}
-                    <MultiSelect
-                        id="ville"
-                        options={cityOptions}
-                        closeDropdownOnSelect={true}
-                        placeholder="Choisir ville..."
-                        bind:value={selectedCity}
-                        bind:selected={cityFromEnterprise}
-                        disabled={!isJobOfferEdit && isEnterpriseSelected}
-                    />
+                    <h1>Création d'une nouvelle entreprise</h1>
+                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></CreateEditEnterprise>
                 {/if}
-            </div>
             {/if}
 
             <h1>Création d'une nouvelle offre d'emploi</h1>
         {:else}
-            <h1>Modification d'une entreprise</h1>
-            <div class="form-group-vertical">
-                <label for="title">Nom*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.name}
-                    class="form-control"
-                    id="titre"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="schedule">Adresse*</label>
-                <input
-                    type="text"
-                    bind:value={enterprise.address}
-                    class="form-control"
-                    id="address"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-                </div>
-                <p class="errors-input">
-                    {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
-                </p>
-                <div class="form-group-vertical">
-                    <label for="lieu">Courriel*</label>
-                    <input
-                        type="text"
-                        bind:value={enterprise.email}
-                        class="form-control"
-                        id="email"
-                        readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="lieu">Téléphone*</label>
-                 <input
-                    type="text"
-                    bind:value={enterprise.phone}
-                    class="form-control"
-                    id="phone"
-                    readonly={!isJobOfferEdit && isEnterpriseSelected}
-                />
-            </div>
-            <p class="errors-input">
-                {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
-            </p>
-            <div class="form-group-vertical">
-                <label for="lieu">Ville*</label>
-                {#if cityOptions.length === 0}
-                    <p>Chargement des villes...</p>
-                {:else}
-                    <MultiSelect
-                        id="ville"
-                        options={cityOptions}
-                        closeDropdownOnSelect={true}
-                        placeholder="Choisir ville..."
-                        bind:value={selectedCity}
-                        bind:selected={cityFromEnterprise}
-                        disabled={!isJobOfferEdit && isEnterpriseSelected}
-                    />
-               {/if}
-            </div>
+            <h1>Mon entreprise</h1>
+            <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
 
             <h1>Modification d'une offre d'emploi</h1>
         {/if}
@@ -566,12 +446,12 @@
             {#if errorsProgramme}{errorsProgramme}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salaire">Salaire/H</label>
+            <label for="salary">Salaire/H</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
                 class="form-control"
-                id="salaire"
+                id="salary"
             />
         </div>
         <p class="errors-input">

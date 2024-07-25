@@ -106,6 +106,7 @@ def create_app():
             from app.models.user_model import User 
             from app.models.city_model import City
             from app.models.region_model import Region
+            from app.models.employmentSchedule_model import EmploymentSchedule
             print("Refreshing the database")
             db.drop_all()
             db.create_all()
@@ -114,6 +115,7 @@ def create_app():
             db.session.add(User(firstName="user", lastName="user", email="user@gmail.com", password=hashed_password, active=True, isModerator=False))
             db.session.add(Region(region="region"))
             db.session.add(City(city="ville", idRegion="1"))
+            db.session.add(EmploymentSchedule(description="temps plein"))
             db.session.commit()
             print("database refreshed")
 
