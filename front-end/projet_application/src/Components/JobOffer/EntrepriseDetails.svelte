@@ -1,5 +1,6 @@
 <script lang="ts">
     import MultiSelect from "svelte-multiselect"
+    import type { Writable } from "svelte/store"
     export let enterprise: any
     export let selectedCity: any
 </script>
