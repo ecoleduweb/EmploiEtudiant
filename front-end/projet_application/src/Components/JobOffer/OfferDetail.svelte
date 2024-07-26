@@ -5,9 +5,13 @@
     import { onMount } from "svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     import { studyPrograms } from "$lib"
+    import fetchCity from "../../Service/CityService"
     export let offer: JobOffer
 
     let hideURL = false;
+
+    let cityOptions: any;
+    let selectedCity: any;
 
     let enterprise: Enterprise 
     const getEnterprises = async (employerId: number) => {
@@ -25,6 +29,7 @@
 
     onMount(async () => {
         await getEnterprises(offer.employerId)
+        cityOptions = await fetchCity()
         const response = await GET<any>(
             `/offerProgram/${offer.id}`,
         )
@@ -71,6 +76,16 @@
             value: schedule.id,
         }))
     }
+
+    $: if (cityOptions) {
+        const city = cityOptions.find(
+            (ville: any) => ville.value === enterprise.cityId,
+        )
+
+        if (city) {
+            selectedCity = [city]
+        }
+    }
 </script>
 
 
@@ -88,7 +103,35 @@
             {/if}
         </div>
 
+        {#if enterprise && !enterprise?.isTemporary}
+            <div class="info">
+                <h2 class="infoTitle separator">Entreprise:</h2>
+                <div class="form-group-vertical">
+                    <label class="infoTitle" for="title">Nom*</label>
+                    <p>{enterprise.name}</p>
+                </div>
+                <div class="form-group-vertical">
+                    <label class="infoTitle" for="schedule">Adresse*</label>
+                    <p>{enterprise.address}</p>
+                </div>
+                <div class="form-group-vertical">
+                    <label class="infoTitle" for="lieu">Courriel*</label>
+                    <p>{enterprise.email}</p>
+                </div>
+                <div class="form-group-vertical">
+                    <label class="infoTitle" for="lieu">Téléphone*</label>
+                    <p>{enterprise.phone}</p>
+                </div>
+                <div class="form-group-vertical">
+                    <label class="infoTitle" for="lieu">Ville*</label>
+                    <p>{selectedCity[0].label}</p>
+                </div>
+            </div>
+            <br>
+            {/if}
+            
         <div class="info">
+            <h2 class="infoTitle separator">Offre:</h2>
             <h5 class="infoTitle">Nom du poste</h5>
             <p class="text">{offer.title}</p>
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
@@ -173,5 +216,9 @@
         transition: background-color 0.3s ease;
         max-height: 60vh;
         overflow-y: auto;
+    }
+
+    .separator {
+        color: #00ad9a;
     }
 </style>

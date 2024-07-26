@@ -93,10 +93,8 @@
             )
             handleEnterpriseClick()
         } catch (err) {
-            console.log(err)
             if (err instanceof yup.ValidationError) {
                 errors = extractErrors(err)
-                console.log(errors)
             }
         }
     }
