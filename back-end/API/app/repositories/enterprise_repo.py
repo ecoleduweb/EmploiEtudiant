@@ -24,6 +24,13 @@ class EnterpriseRepo:
             enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
             return enterprise
 
+    def getEmployerFromEntreprise(self, id):
+        employer = Employers.query.filter_by(entrepriseId=id).first()
+        if(employer == None):
+            return None
+        else:
+            return employer
+
     def getEnterprise(self, id):
         try:
             enterprise = Enterprise.query.filter_by(id=id).first()

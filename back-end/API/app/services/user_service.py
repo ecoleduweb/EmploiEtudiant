@@ -10,9 +10,11 @@ from app.repositories.auth_repo import AuthRepo
 from app.repositories.employer_repo import EmployerRepo
 from app.services.captcha_service import CaptchaService
 from app.customexception.CustomException import LoginException
+from app.repositories.enterprise_repo import EnterpriseRepo
 auth_repo = AuthRepo()
 captcha_service = CaptchaService()
 employer_repo = EmployerRepo()
+enterprise_repo = EnterpriseRepo()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
@@ -49,6 +51,9 @@ class UserService:
 
     def getUser(self, email):
         return auth_repo.getUser(email)
+    
+    def getUserById(self, id):
+        return auth_repo.getUserById(id)
 
     def updatePassword(self, current_user, data):
         email = ""
@@ -96,3 +101,14 @@ class UserService:
             auth_repo.updateActive(user, not user.active)
         else:
             logger.warn("Admin (" + current_user.email + ") tried to desactivate itself")
+
+    
+    def linkToExisting(offer, employer, user, enterprise, selectedEnterprise):
+        if (offer != None and employer != None and user != None and enterprise != None and selectedEnterprise != None):
+            if (enterprise.isTemporary and not selectedEnterprise.isTemporary):
+                employer_repo.linkEmployerEnterprise(user.id, enterprise.id)
+                enterprise_repo.deleteEnterprise(enterprise.id)
+            else:
+                raise Exception("Invalid")
+        else:
+            raise Exception("Invalid")

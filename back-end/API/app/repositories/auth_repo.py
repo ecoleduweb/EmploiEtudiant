@@ -59,6 +59,16 @@ class AuthRepo:
         User.query.filter_by(email=userEmail).delete()
         db.session.commit()
 
+    def getUserById(self, id):
+        try:
+            user = User.query.filter_by(id=id).first()
+            if user:
+                return user
+            else:
+                return None
+        except Exception as e:
+            logger.error("Error : could not get user" + str(e))
+
     def getUser(self, email):
         try:
             user = User.query.filter_by(email=email).first()

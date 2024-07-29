@@ -6,6 +6,7 @@ import json
 from app.services.user_service import UserService
 from app.services.employer_service import EmployerService
 from app.services.enterprise_service import EnterpriseService
+from app.services.jobOffer_service import JobOfferService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from app.customexception.CustomException import LoginException
@@ -16,6 +17,7 @@ from app.repositories.auth_repo import AuthRepo
 
 auth_repo = AuthRepo()
 
+joboffer_service = JobOfferService()
 user_service = UserService()
 employer_service = EmployerService()
 enterprise_service = EnterpriseService()
@@ -217,3 +219,24 @@ def resetPassword():
     except Exception as e:
         logger.warn("A user tried to use reset password with an invalid token")
         return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403
+
+
+@user_blueprint.route('/linkToExisting', methods=['PUT'])
+@token_admin_required
+def linkToExisting(current_user):
+    try:
+        data = request.get_json()
+
+        joboffer = joboffer_service.findById(data['offerId'])
+        employer = employer_service.getEmployer(joboffer.employerId)
+        user = user_service.getUserById(employer.userId)
+        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+
+        selectedEnterprise = enterprise_service.getEnterprise(data['selectedEnterpriseId'])
+        
+        user_service.linkToExisting(joboffer, employer, user, enterprise, selectedEnterprise)
+
+        return jsonify({'message': 'Successfully linked the user to the provided enterprise'}), 200
+    except Exception as e:
+        logger.warn("User encountered an error while trying to link an user to an enterprise")
+        return jsonify({'message': 'Couldn\'t link the user to the provided enterprise'}), 403

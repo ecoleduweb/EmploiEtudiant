@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask import Flask, jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
 from app.services.employer_service import EmployerService
+from app.services.user_service import UserService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from logging import getLogger
@@ -54,3 +55,4 @@ def getEnterprise(current_user, id):
     else:
         logger.warn(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
+    

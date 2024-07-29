@@ -47,7 +47,7 @@
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            if (checked) {
+            if (!checked) {
                 const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}`, 
                 {
                     id: offer.id,
@@ -57,7 +57,8 @@
             } else {
                 const response = await PUT<any, any>('/user/linkToExisting',
                 {
-                    //Trouver quoi mettre comme paramètre
+                    offerId: offer.id,
+                    selectedEnterpriseId: selectedEnterprise
                 })
             }
 
@@ -67,7 +68,7 @@
         }
         handleApproveClick()
     }
-
+    
     onMount(async () => 
     {
         await getEnterprise(offer.employerId)
