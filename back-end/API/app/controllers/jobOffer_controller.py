@@ -135,19 +135,41 @@ def offresEmploiApproved():
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required
 def approveJobOffer(current_user, id):
-    jobOfferToUpdate = jobOffer_service.findById(id)
-    if jobOfferToUpdate:
-        data = request.get_json()
-        jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
-        # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
+    linking = request.args.get("linking") == "true"
 
-        if data['isApproved'] == True:
-            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
-        else:
-            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
-        return ('', 204)
-    logger.warn('Job offer not found with data : ' + str(data))
-    return jsonify({'message': 'Job offer not found'}), 404
+    if (not linking):
+        jobOfferToUpdate = jobOffer_service.findById(id)
+        if jobOfferToUpdate:
+            data = request.get_json()
+            jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
+            # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
+
+            if data['isApproved'] == True:
+                sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
+            else:
+                sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
+            return ('', 204)
+        logger.warn('Job offer not found with data : ' + str(data))
+        return jsonify({'message': 'Job offer not found'}), 404
+    else:
+        try:
+            data = request.get_json()
+
+            joboffer = jobOffer_service.findById(id)
+            employer = employer_service.getEmployer(joboffer.employerId)
+            user = user_service.getUserById(employer.userId)
+            enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+
+            selectedEnterprise = enterprise_service.getEnterprise(data['selectedEnterpriseId'])
+        
+            user_service.linkToExisting(joboffer, employer, user, enterprise, selectedEnterprise)
+
+            jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
+
+            return jsonify({'message': 'Successfully linked the user to the provided enterprise'}), 200
+        except Exception as e:
+            logger.warn("User encountered an error while trying to link an user to an enterprise")
+            return jsonify({'message': 'Couldn\'t link the user to the provided enterprise'}), 403
 
 @job_offer_blueprint.route('/archive/<int:id>', methods=['POST'])
 @token_required

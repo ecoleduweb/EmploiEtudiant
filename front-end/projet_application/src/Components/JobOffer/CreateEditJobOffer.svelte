@@ -231,6 +231,7 @@
                 }
         }
         catch(err) {
+            console.log(err)
             if (err instanceof ValidationError) {
                 errors = extractErrors(err)
             }
@@ -240,6 +241,7 @@
     async function createJobOffer() {
         try {
             const requestData = await prepareAndJobOfferIsValid()
+            console.log(requestData)
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData,

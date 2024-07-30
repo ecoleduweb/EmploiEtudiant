@@ -1,15 +1,12 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
-    import { GET, POST, PUT } from "../../ts/server"
+    import { PUT } from "../../ts/server"
     export let offer: JobOffer
     import OfferDetail from "./OfferDetail.svelte"
-    import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import { onMount } from "svelte"
-    import fetchCity from "../../Service/CityService"
-    import { MultiSelect } from "svelte-multiselect"
+    import fetchAllEnterprises, { fetchEnterpriseWithId } from "../../Service/EnterpriseService"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
@@ -20,28 +17,17 @@
     let checked: boolean = false
     let selectedEnterprise: number | undefined;
 
-    const handleClick = async () => 
-    {
-        checked = !checked
-    }
-    
     const getEnterprises = async () => {
         try {
-            const response = await GET<any>("/enterprise/all")
-            enterprises = response.map((x: any) => ({"label": x.name, "value": x.id}))
+            enterprises = await fetchAllEnterprises()
         } catch (error) {
-            console.error("Error fetching job offers:", error)
         }
     }
 
     const getEnterprise = async (employerId: number) => {
         try {
-            const response = await GET<any>(
-                `/enterprise/employer/${employerId}`
-            )
-            enterprise = response
+            enterprise = await fetchEnterpriseWithId(employerId)
         } catch (error) {
-            console.error("Error fetching enterprise:", error)
         }
     }
 
@@ -55,16 +41,16 @@
                     isApproved: isApproved,
                 })
             } else {
-                const response = await PUT<any, any>('/user/linkToExisting',
+                const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}?linking=true`,
                 {
-                    offerId: offer.id,
-                    selectedEnterpriseId: selectedEnterprise
+                    selectedEnterpriseId: selectedEnterprise,
+                    approbationMessage: approbationMessage,
+                    isApproved: isApproved,
                 })
             }
 
             window.location.reload()
         } catch (error) {
-            console.error("Error approving job offer:", error)
         }
         handleApproveClick()
     }
@@ -76,13 +62,6 @@
 
         selectedEnterprise = enterprises.find((o) => o.label === enterprise.name)?.value;
     })
-
-    //À faire:
-    //Faire le back-end
-    //Faire communiquer le front-end avec le back-end
-
-    //Problème:
-    //Trouver comment avoir l'utilisateur avec l'offre/emplois
 </script>
 
 <div class="main-div">
@@ -98,7 +77,7 @@
         </div>
         {#if enterprise && enterprise.isTemporary}
             <div>
-                <input id="LierEmployer" type="checkbox" on:click={handleClick}/>
+                <input id="LierEmployer" type="checkbox" bind:checked={checked}/>
                 <label class="infoChbk" for="LierEmployer">Lier l'employer à une entreprise existante</label>
                 <br>
                 <br>
