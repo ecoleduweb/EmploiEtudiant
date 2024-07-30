@@ -110,8 +110,6 @@ def updateJobOffer(current_user, id):
             if not current_user.isModerator:
                 data["jobOffer"]["isApproved"] = None
                 data["jobOffer"]["approbationMessage"] = None
-                # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
-                # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
 
                 sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi (Name:" + jobOffer.title + " Id:" + str(jobOffer.id) + ") à été modifié, veuillez le re-vérifié.")
 
