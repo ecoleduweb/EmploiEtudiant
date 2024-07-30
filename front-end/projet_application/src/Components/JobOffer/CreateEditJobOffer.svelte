@@ -221,6 +221,7 @@
 
         try {
             scheduleIds = Array.isArray(scheduleSelected) && scheduleSelected.length !== 0 ? scheduleSelected.map(schedule => schedule.value) : [];
+            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
 
             const jobOfferToValidate = {
                 ...jobOffer,  
@@ -228,7 +229,6 @@
                 scheduleIds
             }
 
-            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
             await entrepriseSchema.validate(enterprise, {abortEarly: false})
 
             validatingjobOffer = true
@@ -246,11 +246,9 @@
                 }
         }
         catch(err) {
-            console.log(err)
             if (err instanceof ValidationError && validatingjobOffer === true) {
                 errors = extractErrors(err)
                 errorsEnterprise = {}
-                console.log(enterprise)
             }
             else if (err instanceof ValidationError && validatingjobOffer === false) 
             {
@@ -262,7 +260,6 @@
     async function createJobOffer() {
         try {
             const requestData = await prepareAndJobOfferIsValid()
-            console.log(requestData)
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)

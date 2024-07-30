@@ -61,10 +61,9 @@ def createJobOffer(current_user):
         
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         
-        logger.warn("aa")
         sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créée. \nVotre offre sera public lorsqu'il sera vérifier.")
         sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
-        logger.warn("bb")
+
         return jobOffer.to_json_string(), 201
     except Exception as e:
         logger.warn(e)
@@ -113,6 +112,9 @@ def updateJobOffer(current_user, id):
                 data["jobOffer"]["approbationMessage"] = None
                 # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
                 # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
+
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi (Name:" + jobOffer.title + " Id:" + str(jobOffer.id) + ") à été modifié, veuillez le re-vérifié.")
+
                 if data["jobOffer"]["isApproved"] == True:
                     data["jobOffer"]["approvedDate"] = datetime.now()
 
