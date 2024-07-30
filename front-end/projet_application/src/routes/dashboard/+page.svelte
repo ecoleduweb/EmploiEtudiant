@@ -133,6 +133,15 @@
                     text="Créer une nouvelle offre"
                 />
             </div>
+
+            {#if $jobOffers.length > 0}
+                <div class="divFlex">
+                    <Button
+                        onClick={handleCreateOffer}
+                        text="Modifier ton entreprise"
+                    />
+                </div>
+            {/if}
         </div>
     </section>
 
@@ -264,11 +273,13 @@
     .haut {
         width: 100%;
         margin-bottom: 2vh;
+
     }
     .haut-gauche {
         width: 30%;
         display: flex;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: space-around;
         align-items: center;
     }
     .divFlex {
