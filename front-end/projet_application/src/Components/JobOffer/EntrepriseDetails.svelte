@@ -1,9 +1,9 @@
 <script lang="ts">
     import MultiSelect from "svelte-multiselect"
     export let enterprise: any
-    export let cityOptions: any
     export let selectedCity: any
-    export let cityFromEnterprise: any
+
+    console.log(selectedCity)
 </script>
 
 <div class="form-group-vertical">

@@ -34,16 +34,32 @@ def getEnterpriseByEmployer(id):
         return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/<int:id>', methods=['PUT'])
-@token_admin_required
+@token_required
 def updateEnterprise(current_user, id):
-    enterprise = enterprise_service.getEnterprise(id)
-    if enterprise:
-        data = request.get_json()
-        enterprise_service.updateEnterprise(data)
-        return jsonify({'message': 'enterprise updated'})
-    else:
+    try:
+        employer = employer_service.getEmployer(current_user.id)
+        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+
+        if current_user.isModerator and data["id"] != None:
+            enterprise = enterprise_service.getEnterprise(data["id"])
+            if enterprise:
+                data = request.get_json()
+                enterprise_service.updateEnterprise(data)
+                return jsonify({'message': 'enterprise updated'})
+        else:
+            data = request.get_json()
+            data["id"] = enterprise.id
+            if enterprise and enterprise.id == data["id"]:
+                enterprise_service.updateEnterprise(data)
+                return jsonify({'message': 'enterprise updated'})
+
+        
         logger.warn(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'})
+    except Exception as e:
+        logger.warn(f'There was an error updating the enterprise')
+        return jsonify({'message': 'There was an error updating the enterprise'}), 400
+
 
 @enterprise_blueprint.route('/<int:id>', methods=['GET'])
 @token_required
@@ -54,3 +70,19 @@ def getEnterprise(current_user, id):
     else:
         logger.warn(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
+    
+@enterprise_blueprint.route('/getCurrentUserEnterprise', methods=['GET'])
+@token_required
+def getCurrentUserEnterprise(current_user):
+    try:
+        employer = employer_service.getEmployer(current_user.id)
+        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+        if enterprise:
+            return jsonify(enterprise.to_json_string()), 200
+        else:
+            logger.warn("No enterprise found the current user")
+            return jsonify({'message': 'No enterprise found on the current user'}), 404
+    except Exception as e:
+        print(e)
+        logger.warn("Couldn't get the current user to get the enterprise")
+        return jsonify({'message': 'Couldn\'t get the user'}), 400

@@ -13,18 +13,24 @@
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
+    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
+    let showEditEnterprise = false;
     let showArchiveModal = false;
     let jobOfferSelected: JobOffer = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
-
+    const handleEditEnterprise = () => {
+        showEditEnterprise = true
+    }
     const handleEditEmploiClick = (jobOffer: JobOffer) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
@@ -39,7 +45,9 @@
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
     }
-    
+    const closeEditEnterprise = () => {
+        showEditEnterprise = false
+    }
     const closeModalApprove = () => {
         showApproveModal = false        
     }
@@ -64,8 +72,17 @@
     }
     
     let loaded = false
+
+    let userHaveEnterprise = false
     
     onMount(async () => {
+        try {
+            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
+        }
+        catch (err) {
+            userHaveEnterprise = false
+        }
+        
         try 
         {
             if ($isLoggedIn) {
@@ -82,6 +99,7 @@
         {
             loaded = true
         }
+
     })
 
     const jobOffers = writable<JobOffer[]>([])
@@ -134,10 +152,10 @@
                 />
             </div>
 
-            {#if $jobOffers.length > 0}
+            {#if userHaveEnterprise}
                 <div class="divFlex">
                     <Button
-                        onClick={handleCreateOffer}
+                        onClick={handleEditEnterprise}
                         text="Modifier ton entreprise"
                     />
                 </div>
@@ -234,30 +252,33 @@
 
 
     {#if showApproveModal}    
-    <Modal handleCloseClick={closeModalApprove}>
-        <ApprouveOffre
-            offer={jobOfferSelected}
-            {enterprise}
-            handleApproveClick={closeModalApprove}
-        />
-    </Modal>
+        <Modal handleCloseClick={closeModalApprove}>
+            <ApprouveOffre
+                offer={jobOfferSelected}
+                {enterprise}
+                handleApproveClick={closeModalApprove}
+            />
+        </Modal>
+    {/if}
+    {#if showEditEnterprise}
+        <ModifyEnterprise handleCloseClick={closeEditEnterprise}></ModifyEnterprise>
     {/if}
     {#if showCreateEditOffer}    
-    <Modal handleCloseClick={closeModalCreateEdit}>
-        <CreateEditJobOffer
-            isJobOfferEdit={isJobOfferEdit}
-            jobOffer={jobOfferSelected}
-            {enterprise}
-        />
-    </Modal>
+        <Modal handleCloseClick={closeModalCreateEdit}>
+            <CreateEditJobOffer
+                isJobOfferEdit={isJobOfferEdit}
+                jobOffer={jobOfferSelected}
+                {enterprise}
+            />
+        </Modal>
     {/if}
     {#if showArchiveModal}
-    <Modal handleCloseClick={closeModalArchive}>
-        <ArchiveConfirm
-            offer={jobOfferSelected}
-            handleApproveClick={closeModalArchive}
-        />
-    </Modal>
+        <Modal handleCloseClick={closeModalArchive}>
+            <ArchiveConfirm
+                offer={jobOfferSelected}
+                handleApproveClick={closeModalArchive}
+            />
+        </Modal>
     {/if}
 </main>
 

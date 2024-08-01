@@ -70,4 +70,34 @@ const schema = yup.object().shape({
         .oneOf([true], "Vous devez accepter les conditions"),
 })
 
+export const entrepriseSchema = yup.object().shape({
+    address: yup
+        .string()
+        .required("Vous devez ajouter une adresse à votre entreprise")
+        .max(255, "L'adresse de l'entreprise doit être au maximum 255 caractères"),
+    cityId: yup
+        .number()
+        .required("Vous devez mettre une ville à votre entreprise")
+        .test(
+            "is-number",
+            "Vous devez mettre une ville à votre entreprise",
+            (value) => {
+                return value >= 1
+            }
+        ),
+    email: yup
+        .string()
+        .required("Vous devez mettre un email à votre entreprise")
+        .max(255, "L'email doit être 255 caractères maximum"),
+    name: yup
+        .string()
+        .required("Vous devez nommer votre entreprise")
+        .max(255, "Le nom de votre entreprise doit être maximum 255 caractères"),
+    phone: yup
+        .string()
+        .required("Vous devez mettre un numéro de téléphone à votre entreprise")
+        .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
+
+})
+
 export default schema

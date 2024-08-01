@@ -1,5 +1,6 @@
 <script lang="ts">
     export let handleCloseClick: () => void
+    export let widthFix: boolean | undefined = false
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault()
@@ -16,6 +17,38 @@
     </div>
 </div>
 
+
+{#if !widthFix}
+    <style>
+        .modal {
+            display: flex;
+            flex-direction: row;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    </style>
+{:else}
+    <style>
+        .modal {
+            display: flex;
+            flex-direction: row;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            max-height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    </style>
+{/if}
+
 <style scoped>
     .overlay {
         position: fixed;
@@ -28,19 +61,6 @@
         justify-content: center;
         align-items: center;
         z-index: 1000;
-    }
-
-    .modal {
-        display: flex;
-        flex-direction: row;
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        width: 80%;
-        max-width: 600px;
-        max-height: 100%;
-        box-sizing: border-box;
-        text-align: center;
     }
 
     .close {
