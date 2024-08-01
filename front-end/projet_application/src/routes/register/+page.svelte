@@ -302,6 +302,11 @@
     <br>
     <br>
     <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     {#if popupEnabled}
         <Popup approbationMessage="Le captcha à échoué." handleApproveClick={closePopup}></Popup>
     {/if}
