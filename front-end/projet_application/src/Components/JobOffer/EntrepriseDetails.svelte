@@ -1,9 +1,6 @@
 <script lang="ts">
-    import MultiSelect from "svelte-multiselect"
     export let enterprise: any
-    export let cityOptions: any
     export let selectedCity: any
-    export let cityFromEnterprise: any
 </script>
 
 <div class="form-group-vertical">
@@ -25,5 +22,4 @@
 <div class="form-group-vertical">
     <label for="lieu">Ville*</label>
     <p>{selectedCity[0].label}</p>
-
 </div>

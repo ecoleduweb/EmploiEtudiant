@@ -1,11 +1,15 @@
 <script lang="ts">
     import { MultiSelect } from "svelte-multiselect";
+    import type { Writable } from "svelte/store"
 
     export let enterprise: any
     export let errorsEnterprise: any
     export let cityOptions: any
-    export let selectedCity: any
+    export let selectedCity: Writable<any>
     export let cityFromEnterprise: any
+
+    let selectCity: any
+    $: selectedCity.set(selectCity)
 </script>
 
 <div class="form-group-vertical">
@@ -75,8 +79,11 @@
             options={cityOptions}
             closeDropdownOnSelect={true}
             placeholder="Choisir ville..."
-            bind:value={selectedCity}
+            bind:value={selectCity}
             bind:selected={cityFromEnterprise}
         />
     {/if}
 </div>
+<p class="errors-input">
+    {#if errorsEnterprise.cityId}{errorsEnterprise.cityId}{/if}
+</p>

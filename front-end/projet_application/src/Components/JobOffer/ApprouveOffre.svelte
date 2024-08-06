@@ -19,7 +19,6 @@
                 approbationMessage: approbationMessage,
                 isApproved: isApproved,
             })
-            window.location.reload()
         } catch (error) {
             console.error("Error approving job offer:", error)
         }
