@@ -37,17 +37,17 @@ def getEnterpriseByEmployer(id):
 @token_required
 def updateEnterprise(current_user, id):
     try:
-        employer = employer_service.getEmployer(current_user.id)
+        employer = employer_service.getEmployerByUserId(current_user.id)
         enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+
+        data = request.get_json()
 
         if current_user.isModerator and data["id"] != None:
             enterprise = enterprise_service.getEnterprise(data["id"])
             if enterprise:
-                data = request.get_json()
                 enterprise_service.updateEnterprise(data)
                 return jsonify({'message': 'enterprise updated'})
         else:
-            data = request.get_json()
             data["id"] = enterprise.id
             if enterprise and enterprise.id == data["id"]:
                 enterprise_service.updateEnterprise(data)

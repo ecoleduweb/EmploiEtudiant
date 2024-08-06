@@ -1,5 +1,6 @@
 import pytest
 from app import create_app, db
+from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
 from app.models.user_model import User
 from argon2 import PasswordHasher
@@ -46,6 +47,16 @@ def app():
         user = User(**data)
         db.session.add(user)
         db.session.commit()
+        
+        data = {
+            "id": 1,
+            "verified": True,
+            "userId": 1,
+            "enterpriseId": 3,
+        }
+        employers = Employers(**data)
+        db.session.add(employers)
+
         yield app
         db.session.remove()
         db.drop_all()
@@ -91,9 +102,20 @@ def test_createEnterprise(client):
         "cityId": 1,
     }
 
+def test_getEnterprise(client):
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.get('/enterprise/1', headers={"Authorization": token})
+    assert response.status_code == 200
+    assert len(response.json) == 7
+
 def test_updateEnterprise(client):
     data = {
-        "id": 1,
+        "id": 3,
         "name": "Développeur modifié",
         "email": "test@test.com",
         "phone": "123-123-1234",
@@ -106,19 +128,8 @@ def test_updateEnterprise(client):
     }
     responseLogin = client.post('/user/login', json=dataLogin)
     token = responseLogin.json['token']
-    response = client.put('/enterprise/1', json=data, headers={"Authorization": token})
+    response = client.put('/enterprise/3', json=data, headers={"Authorization": token})
     assert response.status_code == 200
     assert response.json == {
         "message": 'enterprise updated'
     }
-
-def test_getEnterprise(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/enterprise/1', headers={"Authorization": token})
-    assert response.status_code == 200
-    assert len(response.json) == 7
