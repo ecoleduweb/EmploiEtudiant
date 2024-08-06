@@ -1,6 +1,8 @@
 <script lang="ts">
     export let enterprise: any
     export let selectedCity: any
+
+    console.log(selectedCity)
 </script>
 
 <div class="form-group-vertical">

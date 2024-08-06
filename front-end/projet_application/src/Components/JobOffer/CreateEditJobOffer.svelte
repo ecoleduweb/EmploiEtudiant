@@ -61,8 +61,6 @@
     let scheduleIds: number[] = []
     let selectedCityWritable = writable<any>()
 
-    $: selectedCity = $selectedCityWritable
-
     const fetchEnterprise = async () => {
         let response = undefined
         if (isJobOfferEdit === true) {
@@ -71,6 +69,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
+
             jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
@@ -79,7 +78,7 @@
         }
         if (response !== undefined) {
             enterprise = response
-            selectedCity = cityOptions.filter((x) => x.value === enterprise.cityId)
+            selectedCityWritable.set(cityOptions.filter((x) => x.value === enterprise.cityId))
             isEnterpriseSelected = true
         } else {
             isEnterpriseSelected = false
@@ -96,6 +95,8 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
+
+        console.log(cityOptions)
 
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
@@ -146,7 +147,7 @@
             (ville) => ville.value === response.cityId,
         )
         if (city) {
-            selectedCity = [city]
+            selectedCityWritable.set([city])
         }
         if (enterprise === undefined) {
             isEnterpriseSelected = false
