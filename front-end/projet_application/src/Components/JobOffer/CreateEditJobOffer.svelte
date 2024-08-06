@@ -334,12 +334,12 @@
                     />
                 </div>
                 {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                    <EntrepriseDetails {enterprise} selectedCity={selectedCity} ></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {/if}
             {:else}
                 {#if isEnterpriseSelected}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} {selectedCity}></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
                     <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
@@ -349,7 +349,7 @@
             <h1>Création d'une nouvelle offre d'emploi</h1>
         {:else}
             <h1>Mon entreprise</h1>
-            <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+            <EntrepriseDetails {enterprise} {selectedCity}></EntrepriseDetails>
 
             <h1>Modification d'une offre d'emploi</h1>
         {/if}
