@@ -1,5 +1,6 @@
 from app import db
 from app.models.employers_model import Employers
+from app.models.user_model import User
 from flask import jsonify
 from logging import getLogger
 logger = getLogger(__name__)
@@ -13,14 +14,13 @@ class EmployerRepo:
         return employer
     
     def getEmployer(self, id):
-        employer = Employers.query.filter_by(userId=id).first()
+        employer = Employers.query.filter_by(id=id).first()
         return employer
     
-    def linkEmployerEnterprise(self, data):
-        employer = Employers.query.filter_by(userId=data['userId']).first()
-        employer.enterprise_id = data['enterpriseId']
+    def linkEmployerEnterprise(self, userId, enterpriseId):
+        employer = Employers.query.filter_by(userId=userId).first()
+        employer.enterprise_id = enterpriseId
         db.session.commit()
-        return jsonify({'message': 'employer linked to enterprise'})
 
     def updateEmployer(self, data, idEmployer):
         employer = Employers.query.filter_by(id=idEmployer).first()

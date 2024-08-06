@@ -14,6 +14,7 @@
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -71,6 +72,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
+
             jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
@@ -79,12 +81,7 @@
         }
         if (response !== undefined) {
             enterprise = response
-            const city = cityOptions.find(
-                (ville) => ville.value === enterprise.cityId,
-            )
-            if (city) {
-                selectedCity = [city]
-            }
+            selectedCityWritable.set(cityOptions.filter((x) => x.value === enterprise.cityId))
             isEnterpriseSelected = true
         } else {
             isEnterpriseSelected = false
@@ -101,7 +98,6 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
-
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
         }
@@ -151,7 +147,7 @@
             (ville) => ville.value === response.cityId,
         )
         if (city) {
-            selectedCity = [city]
+            selectedCityWritable.set([city])
         }
         if (enterprise === undefined) {
             isEnterpriseSelected = false
@@ -317,16 +313,20 @@
             {#if isModerator}
                 <h1>Sélectionner une entreprise existante</h1>
                 <div class="form-group-horizontal">
-                    <MultiSelect
-                        id="enterprise"
-                        options={enterpriseOption}
-                        closeDropdownOnSelect={true}
-                        maxSelect={1}
-                        placeholder="Choisir une enterprise..."
-                        bind:value={enterpriseSelected}
-                        bind:selected={enterpriseFromSelectedEnterprise}
-                        on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
-                    />
+                    {#if enterpriseOption.length}
+                        <MultiSelect
+                            id="enterprise"
+                            options={enterpriseOption}
+                            closeDropdownOnSelect={true}
+                            maxSelect={1}
+                            placeholder="Choisir une enterprise..."
+                            bind:value={enterpriseSelected}
+                            bind:selected={enterpriseFromSelectedEnterprise}
+                            on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
+                        />
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
                     <Button
                         submit={false}
                         text="Ajouter"
@@ -334,14 +334,12 @@
                     />
                 </div>
                 {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                    <EntrepriseDetails {enterprise} selectedCity={selectedCity} ></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {/if}
             {:else}
                 {#if isEnterpriseSelected}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                        <EntrepriseDetails {enterprise} selectedCity={selectedCity} ></EntrepriseDetails>
-                    {/if}
+                    <EntrepriseDetails {enterprise} {selectedCity}></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
                     <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
@@ -351,9 +349,7 @@
             <h1>Création d'une nouvelle offre d'emploi</h1>
         {:else}
             <h1>Mon entreprise</h1>
-            {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
-            {/if}
+            <EntrepriseDetails {enterprise} {selectedCity}></EntrepriseDetails>
 
             <h1>Modification d'une offre d'emploi</h1>
         {/if}
@@ -372,14 +368,18 @@
         </p>
         <div class="form-group-vertical">
             <label for="schedule">Type d'emplois*</label>
-            <MultiSelect
-                id="schedule"
-                options={scheduleOption}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir période(s)..."
-                bind:value={scheduleSelected}
-                bind:selected={scheduleFromExistingOffer}
-            />
+            {#if scheduleOption.length}
+                <MultiSelect
+                    id="schedule"
+                    options={scheduleOption}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir période(s)..."
+                    bind:value={scheduleSelected}
+                    bind:selected={scheduleFromExistingOffer}
+                />
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
             {#if errors.scheduleIds}{errors.scheduleIds}{/if}
@@ -445,14 +445,18 @@
         </div>
         <div class="form-group-vertical">
             <label for="duree">Programme visé*</label>
-            <MultiSelect
-                id="programme"
-                options={programOptions}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir programme(s)..."
-                bind:value={selectedPrograms}
-                bind:selected={programmeFromSelectedOffer}
-            ></MultiSelect>
+            {#if programOptions.length}
+                <MultiSelect
+                    id="programme"
+                    options={programOptions}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir programme(s)..."
+                    bind:value={selectedPrograms}
+                    bind:selected={programmeFromSelectedOffer}
+                ></MultiSelect>
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
             {#if errors.studyPrograms}{errors.studyPrograms}{/if}

@@ -237,7 +237,6 @@
     <Modal handleCloseClick={onFinishedCallBack}>
         <ApprouveOffre
             offer={jobOfferSelected}
-            {enterprise}
             handleApproveClick={onFinishedCallBack}
         />
     </Modal>

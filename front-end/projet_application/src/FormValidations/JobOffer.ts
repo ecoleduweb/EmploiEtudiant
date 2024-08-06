@@ -90,7 +90,6 @@ export const entrepriseSchema = yup.object().shape({
             "is-number",
             "Vous devez mettre une ville à votre entreprise",
             (value) => {
-                console.log("aaa")
                 return value >= 1
             }
         ),

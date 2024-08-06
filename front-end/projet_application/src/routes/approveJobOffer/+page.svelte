@@ -77,7 +77,6 @@
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
-        console.log(enterpriseOptions)
     }
     onMount(getEnterprises)
 </script>
