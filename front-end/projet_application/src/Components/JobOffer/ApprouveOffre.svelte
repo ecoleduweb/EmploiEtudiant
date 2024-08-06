@@ -3,16 +3,14 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
-    export let offer: JobOffer
     import OfferDetail from "./OfferDetail.svelte"
     import { onMount } from "svelte"
     import fetchAllEnterprises, { fetchEnterpriseWithId } from "../../Service/EnterpriseService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
-    import getCityData from "../../Service/CityService"
-    import type { City, Option } from "$lib/interfaces"
+    import type { Option } from "$lib/interfaces"
     import fetchCity from "../../Service/CityService"
     export let handleApproveClick: () => void
-
+    export let offer: JobOffer
     let approbationMessage: string = ""
 
     let enterprises: { label: string; value: number; }[]
