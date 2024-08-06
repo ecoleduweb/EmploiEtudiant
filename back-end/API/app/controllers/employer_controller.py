@@ -24,7 +24,7 @@ def getEmployer(current_user, id):
     if employer:
         return jsonify(employer.to_json_string())
     else:
-        logger.warn('Employer not found with id : ' + id)
+        logger.warning('Employer not found with id : ' + id)
         return jsonify({'message': 'employer not found'}), 404
 
 @employer_blueprint.route('/<int:id>', methods=['PUT'])
@@ -36,7 +36,7 @@ def updateEmployer(current_user, id):
         employer_service.updateEmployer(data, id)
         return jsonify({'message': 'employer updated'})
     else:
-        logger.warn('Employer not found with id : ' + id)
+        logger.warning('Employer not found with id : ' + id)
         return jsonify({'message': 'employer not found'}), 404
     
 @employer_blueprint.route('/currentEmployer', methods=['GET'])
@@ -46,7 +46,7 @@ def getEmployerByUserId(current_user):
     if employer:
         return jsonify(employer.to_json_string())
     else:
-        logger.warn(f'Current user with id {current_user.id} has no employer')
+        logger.warning(f'Current user with id {current_user.id} has no employer')
         return jsonify({'message': 'employer not found'}), 404
 
 @employer_blueprint.route('/getUserFromEmployer/<int:id>', methods=['GET'])
@@ -57,5 +57,5 @@ def getUserFromTemporaryEnterprise(id):
             return jsonify
     except Exception as e:
         print(e)
-        logger.warn("Employer not found")
+        logger.warning("Employer not found")
         return jsonify({'message': 'Employer not found'}), 400

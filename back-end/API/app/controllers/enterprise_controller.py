@@ -31,7 +31,7 @@ def getEnterpriseByEmployer(id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-        logger.warn('Enterprise not found with id : ' + str(id))
+        logger.warning('Enterprise not found with id : ' + str(id))
         return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/<int:id>', methods=['PUT'])
@@ -43,7 +43,7 @@ def updateEnterprise(current_user, id):
         enterprise_service.updateEnterprise(data)
         return jsonify({'message': 'enterprise updated'})
     else:
-        logger.warn(f'Enterprise not found with id : {id}')
+        logger.warning(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'})
 
 @enterprise_blueprint.route('/<int:id>', methods=['GET'])
@@ -53,6 +53,6 @@ def getEnterprise(current_user, id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-        logger.warn(f'Enterprise not found with id : {id}')
+        logger.warning(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
     

@@ -31,8 +31,8 @@ class EmployerService:
             if(user!=None):
                 return user.email
             else:
-                logger.warn('User not found with employer')
+                logger.warning('User not found with employer')
                 return None
         else:
-            logger.warn("Employer not found from enterprise")
+            logger.warning("Employer not found from enterprise")
             return None
