@@ -111,7 +111,7 @@ def updateJobOffer(current_user, id):
                 data["jobOffer"]["isApproved"] = None
                 data["jobOffer"]["approbationMessage"] = None
 
-                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi (Name:" + jobOffer.title + " Id:" + str(jobOffer.id) + ") à été modifié, veuillez le re-vérifié.")
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi (Name:" + jobOfferToUpdate.title + " Id:" + str(jobOfferToUpdate.id) + ") à été modifié, veuillez le re-vérifié.")
 
                 if data["jobOffer"]["isApproved"] == True:
                     data["jobOffer"]["approvedDate"] = datetime.now()
