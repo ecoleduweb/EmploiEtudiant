@@ -260,7 +260,6 @@
     async function createJobOffer() {
         try {
             const requestData = await prepareAndJobOfferIsValid()
-            console.log(requestData)
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
