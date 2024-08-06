@@ -61,6 +61,8 @@
     let scheduleIds: number[] = []
     let selectedCityWritable = writable<any>()
 
+    $: selectedCity = $selectedCityWritable
+
     const fetchEnterprise = async () => {
         let response = undefined
         if (isJobOfferEdit === true) {
