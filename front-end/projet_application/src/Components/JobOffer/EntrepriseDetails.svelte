@@ -21,7 +21,8 @@
 </div>
 <div class="form-group-vertical last">
     <label for="lieu">Ville : </label>
-    <p>{selectedCity[0].label}</p>
+    
+    <p>{selectedCity?.length ? selectedCity[0].label : 'En chargement'}</p>
 </div>
 
 <style scoped>
