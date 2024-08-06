@@ -214,7 +214,7 @@
         color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
-        max-height: 60vh;
+        max-height: 40vh;
         overflow-y: auto;
     }
 

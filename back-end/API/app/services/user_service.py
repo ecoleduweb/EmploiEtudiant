@@ -103,7 +103,7 @@ class UserService:
             logger.warning("Admin (" + current_user.email + ") tried to desactivate itself")
 
     
-    def linkToExisting(offer, selectedEnterpriseId):
+    def linkToExisting(self, offer, selectedEnterpriseId):
         employer = employer_repo.getEmployer(offer.employerId)
 
         if employer.enterpriseId == selectedEnterpriseId:

@@ -81,17 +81,19 @@
         {#if enterprise && enterprise.isTemporary && cities}
             <div>
                 <h3>Détails de l'entreprise de l'utilisateur</h3>
-                <EntrepriseDetails enterprise selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
+                <EntrepriseDetails {enterprise} selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
+                    <hr>
                 <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
-                <label class="infoChbk" for="LierEmployer">Assurez-vous que la liste ne contienne pas de doublon d'entreprise. Si c'est le cas, sélectionner l'entreprise qui devrait être lié à l'utilisateur</label>
+                <label class="infoChbk" for="LierEmployer">Confirmer l'entreprise </label>
                 <br>
                 {#if enterprises}
                     <select id="ville" bind:value={selectedEnterprise} class="form-control">
                         {#each enterprises as { label, value }}
                             <option value={value}>
                                 {#if value == enterprise.id}
-                                    <b>Entreprise créée par l'utlisteur</b>{label}
+                                    <b>*Ajouter*</b>
                                 {/if}
+                                {label}
                             </option>
                         {/each}
                     </select>
@@ -121,8 +123,11 @@
     }
 
     .infoTitle {
-        color: black;
         font-size: 1.6vw;
+    }
+
+    h3, .infoTitle {
+        color: black;
     }
 
     .infoChbk {
