@@ -10,6 +10,7 @@
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import getCityData from "../../Service/CityService"
     import type { City, Option } from "$lib/interfaces"
+    import fetchCity from "../../Service/CityService"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
@@ -60,8 +61,8 @@
     let cities: Option[] | null = null
     onMount(async () => 
     {
-        const cityData: City = await getCityData() 
-        cities = cityData.cities
+        cities = await fetchCity() 
+        console.log(cities)
         await getEnterprise(offer.employerId)
         await getEnterprises()
         selectedEnterprise = enterprises.find((o) => o.label === enterprise.name)?.value;
@@ -79,7 +80,7 @@
                 class="input"
             />
         </div>
-        {#if enterprise && !enterprise.isTemporary && cities}
+        {#if enterprise && enterprise.isTemporary && cities}
             <div>
                 <h3>Détails de l'entreprise de l'utilisateur</h3>
                 <EntrepriseDetails enterprise selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
