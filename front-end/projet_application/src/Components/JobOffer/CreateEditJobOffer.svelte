@@ -297,7 +297,6 @@
 
     let todayMin = new Date()
     let minDateString = todayMin.toISOString().split("T")[0] // format as yyyy-mm-dd
-
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
@@ -335,13 +334,13 @@
                     />
                 </div>
                 {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                    <EntrepriseDetails {enterprise} selectedCity={selectedCityWritable} ></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} selectedCity={selectedCity} ></EntrepriseDetails>
                 {/if}
             {:else}
                 {#if isEnterpriseSelected}
                     <h1>Création d'une nouvelle entreprise</h1>
                     {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                        <EntrepriseDetails {enterprise} selectedCity={selectedCityWritable} ></EntrepriseDetails>
+                        <EntrepriseDetails {enterprise} selectedCity={selectedCity} ></EntrepriseDetails>
                     {/if}
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
