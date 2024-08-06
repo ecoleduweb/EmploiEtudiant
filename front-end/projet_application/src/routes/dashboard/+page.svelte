@@ -274,6 +274,7 @@
     {#if showCreateEditOffer}    
     <Modal handleCloseClick={closeModalCreateEdit}>
         <CreateEditJobOffer
+            onFinished={onFinishedCallBack}
             isJobOfferEdit={isJobOfferEdit}
             jobOffer={jobOfferSelected}
             {enterprise}
