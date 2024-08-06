@@ -24,7 +24,7 @@ class UserService:
     def login(self, email, password):
         user = auth_repo.getUser(email)
         if user is None:
-            logger.warn("Login attempt failed on user: " + email + " user not found")
+            logger.warning("Login attempt failed on user: " + email + " user not found")
             raise LoginException()
         try:
             if user.active:
@@ -37,7 +37,7 @@ class UserService:
             if hasattr(e, 'errorCode') and e.errorCode == 403:
                 raise e
             else:
-                logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
+                logger.warning("Login attempt failed on user: " + email + " could not verify : ", e)
                 raise LoginException()
 
     def register(self, data):
@@ -92,7 +92,7 @@ class UserService:
             employer_repo.removeUserIdFromEmployer(user.id)
             auth_repo.removeUser(userEmail)
         else:
-            logger.warn("Admin (" + current_user.email + ") tried to remove itself")
+            logger.warning("Admin (" + current_user.email + ") tried to remove itself")
 
     def desactivateUser(self, current_user, userEmail):
         user = User.query.filter_by(email=userEmail).first()
@@ -100,7 +100,7 @@ class UserService:
         if user != current_user:
             auth_repo.updateActive(user, not user.active)
         else:
-            logger.warn("Admin (" + current_user.email + ") tried to desactivate itself")
+            logger.warning("Admin (" + current_user.email + ") tried to desactivate itself")
 
     
     def linkToExisting(offer, selectedEnterpriseId):

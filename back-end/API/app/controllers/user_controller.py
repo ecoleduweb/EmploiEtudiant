@@ -35,27 +35,27 @@ def login():
     except LoginException as e:
         if data["email"] != "" and data["email"] != None:
             if len(data["email"]) <= 255:
-                logger.warn("User (" + data["email"] + ") failed to login. Error message: " + e.message)
+                logger.warning("User (" + data["email"] + ") failed to login. Error message: " + e.message)
             else:
-                logger.warn("User (EMAIL TOO BIG TO DISPLAY) failed to login and provided a huge email. Error message: " + e.message)
+                logger.warning("User (EMAIL TOO BIG TO DISPLAY) failed to login and provided a huge email. Error message: " + e.message)
             return jsonify({'message': e.message}), e.errorCode
         else:
-            logger.warn("An unauthentificated user tried logging without an email.")
+            logger.warning("An unauthentificated user tried logging without an email.")
             return jsonify({'message': "Impossible de se connecter: aucun email à été fournis"}), 401
     
 @user_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
     if not all([data.get('email'), data.get('password'), data.get('firstName'), data.get('lastName'), data.get('captchaToken')]):
-        logger.warn('Missing required fields in /register : ' + str(data))
+        logger.warning('Missing required fields in /register : ' + str(data))
         return jsonify({'message': 'Missing required fields'}), 400
     
     if not isinstance(data, dict):
-        logger.warn('Invalid JSON data format in /register : ' + str(data))
+        logger.warning('Invalid JSON data format in /register : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
 
     if user_service.getUser(data['email']) == "<Response 29 bytes [200 OK]>" or user_service.getUser(data['email']) is not None:
-        logger.warn('User already exists')
+        logger.warning('User already exists')
         return jsonify({'message': 'User already exists'}), 400
 
     return user_service.register(data)
@@ -66,14 +66,14 @@ def updatePassword(current_user):
     data = request.get_json()
     
     if not isinstance(data, dict):
-        logger.warn('Invalid JSON data format in /updatePassword : ' + str(data))
+        logger.warning('Invalid JSON data format in /updatePassword : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
     
     email = data.get('email')
     password = data.get('password')
     
     if not all([email, password]):
-        logger.warn('Missing required fields in /updatePassword : \nEmail :' + email + ' \nPassword : ' + password)
+        logger.warning('Missing required fields in /updatePassword : \nEmail :' + email + ' \nPassword : ' + password)
         return jsonify({'message': 'Missing required fields'}), 400
     
     try:
@@ -87,7 +87,7 @@ def updatePassword(current_user):
         else:
             userEmail = current_user.email
 
-        logger.warn("Failed to update password for email: " + userEmail, e)
+        logger.warning("Failed to update password for email: " + userEmail, e)
         return jsonify({'message': "could not change password"}), 500
 
 @user_blueprint.route('/user', methods=['PUT'])
@@ -96,7 +96,7 @@ def updateUser(current_user):
     data = request.get_json()
 
     if not isinstance(data, dict):
-        logger.warn('Invalid JSON data format in /user : ' + str(data))
+        logger.warning('Invalid JSON data format in /user : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
     
     lastname = data.get('lastname')
@@ -104,7 +104,7 @@ def updateUser(current_user):
     email = data.get('email')
     
     if not all([lastname, firstname, email]):
-        logger.warn('Missing required fields in /user : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
+        logger.warning('Missing required fields in /user : \nname : ' + str(lastname) + ' \nfirstname: ' + str(firstname) + ' \nemail: ' + str(email))
         return jsonify({'message': 'Missing required fields'}), 400
     
     try:
@@ -118,7 +118,7 @@ def updateUser(current_user):
         else:
             userEmail = current_user.email
 
-        logger.warn("Failed to update user with email: " + userEmail, e)
+        logger.warning("Failed to update user with email: " + userEmail, e)
         return jsonify({'message': 'could not update user'}), 500
 
 @user_blueprint.route('/all', methods=['GET'])
@@ -135,7 +135,7 @@ def getUser(current_user):
     data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
     email = data['email']
     if not token:
-        logger.warn('Token not provided to get user')
+        logger.warning('Token not provided to get user')
         return jsonify({'message': 'Token not provided'}), 400
     user = user_service.getUser(email)
     return jsonify(user.to_json_string())
@@ -192,10 +192,10 @@ def requestResetPassword():
             sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
             return jsonify({'message': 'Successfully sent a password request'})
         else:
-            logger.warn("A user tried to reset but provided a bad email")
+            logger.warning("A user tried to reset but provided a bad email")
             return jsonify({'message': 'The email provided is invalid (No user found/invalid)'}), 401
     except Exception as e:
-        logger.warn("A user tried to send a reset password request but it failed")
+        logger.warning("A user tried to send a reset password request but it failed")
         return jsonify({'Error while sending password request'}), 500
     
 
@@ -211,11 +211,11 @@ def resetPassword():
                     auth_repo.updatePassword(decryptedData['email'], data['password'])
                     return jsonify({'message': 'Successfully resetted the password'})
                 else:
-                    logger.warn("A user tried to reset the password via a expired link")
+                    logger.warning("A user tried to reset the password via a expired link")
                     return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
             except Exception as e:
-                logger.warn("A user tried to reset the password but it failed")
+                logger.warning("A user tried to reset the password but it failed")
                 return jsonify({'message': 'Error while trying to reset the password'}), 401
     except Exception as e:
-        logger.warn("A user tried to use reset password with an invalid token")
+        logger.warning("A user tried to use reset password with an invalid token")
         return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403

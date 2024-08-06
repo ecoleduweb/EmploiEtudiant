@@ -14,8 +14,8 @@ class CaptchaService:
         response = requests.post(url, data=params)
         result = response.json()
         if result['success'] and result['score'] >= 0.5:
-            logger.warn("Captcha verification successful")
+            logger.warning("Captcha verification successful")
             return True
         else:
-            logger.warn("Captcha verification failed")
+            logger.warning("Captcha verification failed")
             return False

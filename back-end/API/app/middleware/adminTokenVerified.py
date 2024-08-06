@@ -14,7 +14,7 @@ def token_admin_required(f):
             if 'Authorization' in request.headers:
                 token = request.headers['Authorization']
             if not token:
-                logger.warn('a valid token is missing')
+                logger.warning('a valid token is missing')
                 return jsonify({'message': 'a valid token is missing'}), 401
 
             try:
@@ -22,11 +22,11 @@ def token_admin_required(f):
                 current_user = User.query.filter_by(email = data['email']).first()
 
             except Exception as e:
-                logger.warn('Could not decode token : ' + str(e))
+                logger.warning('Could not decode token : ' + str(e))
                 return jsonify({'message': 'token is invalid'}), 401
             if current_user.isModerator:
                 return f(current_user, *args, **kwargs)
             else:
-                logger.warn('user is not admin')
+                logger.warning('user is not admin')
                 return jsonify({'message': 'user is not admin'}), 401
         return decorated

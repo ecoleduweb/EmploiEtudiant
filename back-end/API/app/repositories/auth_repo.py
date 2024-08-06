@@ -21,13 +21,13 @@ class AuthRepo:
             token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
             return jsonify({'token' : token})
         except Exception as e:
-            logger.warn("Register failed on email: " + data['email'] + " could not verify : " + str(e))
+            logger.warning("Register failed on email: " + data['email'] + " could not verify : " + str(e))
             return jsonify({'message': "could not verify"}), 401
 
     def updatePassword(self, email, password):
         user = User.query.filter_by(email=email).first()
         if not user:
-            logger.warn("Couldn't update password for user with email: " + email + " user not found")
+            logger.warning("Couldn't update password for user with email: " + email + " user not found")
             raise Exception("user not found")
         
         user.password = hasher.hash(password)
@@ -36,7 +36,7 @@ class AuthRepo:
     def updateUser(self, email, data):
         user = User.query.filter_by(email=email).first()
         if not user:
-            logger.warn("Couldn't update user with email: " + email + ", user not found")
+            logger.warning("Couldn't update user with email: " + email + ", user not found")
             raise Exception("user not found")
             
         if type(data["lastname"]) == str and data["lastname"] != " ":
@@ -75,7 +75,7 @@ class AuthRepo:
             if user:
                 return user
             else:
-                logger.warn("Couldn't get user with email: " + email + " user not found")
+                logger.warning("Couldn't get user with email: " + email + " user not found")
                 return None
         except:
             return jsonify({'message': 'error occurred'})

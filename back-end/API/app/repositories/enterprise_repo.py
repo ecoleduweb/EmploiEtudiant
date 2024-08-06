@@ -58,7 +58,7 @@ class EnterpriseRepo:
         enterprise.address = data['address']
         enterprise.cityId = data['cityId']
         db.session.commit()
-        logger.warn('enterprise updated')
+        logger.warning('enterprise updated')
         return enterprise
     
     def deleteEnterprise(self, id):

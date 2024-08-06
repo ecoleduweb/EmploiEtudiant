@@ -12,11 +12,11 @@ city_service = CityService()
 @token_required
 def oneCity(current_user, id):
     if not id:
-        logger.warn('no city_id provided')
+        logger.warning('no city_id provided')
         return jsonify({'message': 'no id provided'}), 400
     city = city_service.oneCity(id)
     if not city:
-        logger.warn('no city found for id : ' + id + ' in the database')
+        logger.warning('no city found for id : ' + id + ' in the database')
         return jsonify({'message': 'no city found'}), 404
     region = Region.query.filter_by(id=city.idRegion).first()
     return jsonify({'id': city.id, 'city': city.city, 'region': region.region})
@@ -26,7 +26,7 @@ def oneCity(current_user, id):
 def allCities(current_user):
     cities = city_service.allCities()
     if not cities:
-        logger.warn('no cities found in the database')
+        logger.warning('no cities found in the database')
         return jsonify({'message': 'no cities found'}), 404
     cities_list = []
     
