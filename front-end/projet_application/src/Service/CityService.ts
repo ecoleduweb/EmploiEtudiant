@@ -40,8 +40,6 @@ const cacheCity = async () => {
 }
 
 const fetchCity = async () => {
-  console.log("Fetching cities...")
-
   return cacheCity()
 }
 

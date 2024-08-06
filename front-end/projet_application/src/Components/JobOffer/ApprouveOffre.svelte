@@ -60,7 +60,6 @@
     onMount(async () => 
     {
         cities = await fetchCity() 
-        console.log(cities)
         await getEnterprise(offer.employerId)
         await getEnterprises()
         selectedEnterprise = enterprises.find((o) => o.label === enterprise.name)?.value;
