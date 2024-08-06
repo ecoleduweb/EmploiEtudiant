@@ -2,6 +2,7 @@ from app import db
 
 class Employers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    #Enventuellement, un employeur vérifié pourrait publier des offres d'emplois sans passer par le processus d'approbation.
     verified = db.Column(db.Boolean, nullable=False)
     userId = db.Column(db.Integer, nullable=True)
     enterpriseId = db.Column(db.Integer, nullable=False)

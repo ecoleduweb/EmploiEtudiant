@@ -1,11 +1,20 @@
 from app import db
 from app.models.enterprise_model import Enterprise
 from app.models.employers_model import Employers
-from flask import Flask, jsonify, request
+from app.customexception.CustomException import NotFoundException
 from logging import getLogger
 logger = getLogger(__name__)
 
 class EnterpriseRepo:
+    def endEnterpriseTemporary(self, enterprise):
+        try:
+            enterprise = Enterprise.query.filter_by(id=enterprise.id).first()4
+            enterprise.isTemporary = False
+            db.session.commit()
+        except Exception as e:
+            logger.warning("Error : could not get enterprise" + str(e))
+            raise NotFoundException("Enterprise not found")
+            
     def getEnterprises(self):
         enterprises = Enterprise.query.all()
         return enterprises

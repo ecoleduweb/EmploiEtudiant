@@ -3,7 +3,7 @@ import { GET } from "../ts/server";
 
 let city: City;
 
-const getCityData = async () => {
+const getCityData = async (): Promise<City> => {
   const response = await GET<any>("/city/all")
 
   let cities = response.map((c: any) => {

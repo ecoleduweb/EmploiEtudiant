@@ -7,6 +7,9 @@
     import OfferDetail from "./OfferDetail.svelte"
     import { onMount } from "svelte"
     import fetchAllEnterprises, { fetchEnterpriseWithId } from "../../Service/EnterpriseService"
+    import EntrepriseDetails from "./EntrepriseDetails.svelte"
+    import getCityData from "../../Service/CityService"
+    import type { City, Option } from "$lib/interfaces"
     export let handleApproveClick: () => void
 
     let approbationMessage: string = ""
@@ -14,7 +17,7 @@
     let enterprises: { label: string; value: number; }[]
     let enterprise: Enterprise 
 
-    let checked: boolean = false
+    let linkingEnterprise: boolean = false
     let selectedEnterprise: number | undefined;
 
     const getEnterprises = async () => {
@@ -33,7 +36,7 @@
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            if (!checked) {
+            if (!linkingEnterprise) {
                 const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}`, 
                 {
                     id: offer.id,
@@ -54,12 +57,13 @@
         }
         handleApproveClick()
     }
-    
+    let cities: Option[] | null = null
     onMount(async () => 
     {
+        const cityData: City = await getCityData() 
+        cities = cityData.cities
         await getEnterprise(offer.employerId)
         await getEnterprises()
-
         selectedEnterprise = enterprises.find((o) => o.label === enterprise.name)?.value;
     })
 </script>
@@ -75,16 +79,21 @@
                 class="input"
             />
         </div>
-        {#if enterprise && enterprise.isTemporary}
+        {#if enterprise && !enterprise.isTemporary && cities}
             <div>
-                <input id="LierEmployer" type="checkbox" bind:checked={checked}/>
-                <label class="infoChbk" for="LierEmployer">Lier l'employer à une entreprise existante</label>
-                <br>
+                <h3>Détails de l'entreprise de l'utilisateur</h3>
+                <EntrepriseDetails enterprise selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
+                <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
+                <label class="infoChbk" for="LierEmployer">Assurez-vous que la liste ne contienne pas de doublon d'entreprise. Si c'est le cas, sélectionner l'entreprise qui devrait être lié à l'utilisateur</label>
                 <br>
                 {#if enterprises}
                     <select id="ville" bind:value={selectedEnterprise} class="form-control">
                         {#each enterprises as { label, value }}
-                            <option value={value}>{label}</option>
+                            <option value={value}>
+                                {#if value == enterprise.id}
+                                    <b>Entreprise créée par l'utlisteur</b>{label}
+                                {/if}
+                            </option>
                         {/each}
                     </select>
                     <br>
