@@ -49,17 +49,26 @@
         showEditEnterprise = false
     }
     const closeModalApprove = () => {
-        showApproveModal = false        
+        showApproveModal = false 
     }
     const closeModalCreateEdit = () => 
     {
         showCreateEditOffer = false
+        isJobOfferEdit = false
     }
     const closeModalArchive = () => 
     {
         showArchiveModal = false
     }
 
+    const onFinishedCallBack = async () => 
+    {
+        await getJobOffersEmployeur()
+
+        closeModalApprove()
+        closeModalArchive()
+        closeModalCreateEdit()
+    }
 
     let enterprise: Enterprise = {
         id: 0,
@@ -252,33 +261,32 @@
 
 
     {#if showApproveModal}    
-        <Modal handleCloseClick={closeModalApprove}>
-            <ApprouveOffre
-                offer={jobOfferSelected}
-                {enterprise}
-                handleApproveClick={closeModalApprove}
-            />
-        </Modal>
+    <Modal handleCloseClick={onFinishedCallBack}>
+        <ApprouveOffre
+            offer={jobOfferSelected}
+            handleApproveClick={onFinishedCallBack}
+        />
+    </Modal>
     {/if}
     {#if showEditEnterprise}
         <ModifyEnterprise handleCloseClick={closeEditEnterprise}></ModifyEnterprise>
     {/if}
     {#if showCreateEditOffer}    
-        <Modal handleCloseClick={closeModalCreateEdit}>
-            <CreateEditJobOffer
-                isJobOfferEdit={isJobOfferEdit}
-                jobOffer={jobOfferSelected}
-                {enterprise}
-            />
-        </Modal>
+    <Modal handleCloseClick={closeModalCreateEdit}>
+        <CreateEditJobOffer
+            isJobOfferEdit={isJobOfferEdit}
+            jobOffer={jobOfferSelected}
+            {enterprise}
+        />
+    </Modal>
     {/if}
     {#if showArchiveModal}
-        <Modal handleCloseClick={closeModalArchive}>
-            <ArchiveConfirm
-                offer={jobOfferSelected}
-                handleApproveClick={closeModalArchive}
-            />
-        </Modal>
+    <Modal handleCloseClick={closeModalArchive}>
+        <ArchiveConfirm
+            offer={jobOfferSelected}
+            handleApproveClick={closeModalArchive}
+        />
+    </Modal>
     {/if}
 </main>
 

@@ -270,7 +270,7 @@
     .email 
     {
         margin-left: 8px;
-        margin-right: 8px;
+        margin-right: 3vw;
         text-align: center;
     }
 

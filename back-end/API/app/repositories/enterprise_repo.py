@@ -1,11 +1,20 @@
 from app import db
 from app.models.enterprise_model import Enterprise
 from app.models.employers_model import Employers
-from flask import Flask, jsonify, request
+from app.customexception.CustomException import NotFoundException
 from logging import getLogger
 logger = getLogger(__name__)
 
 class EnterpriseRepo:
+    def endEnterpriseTemporary(self, enterprise):
+        try:
+            enterprise = Enterprise.query.filter_by(id=enterprise.id).first()
+            enterprise.isTemporary = False
+            db.session.commit()
+        except Exception as e:
+            logger.warning("Error : could not get enterprise" + str(e))
+            raise NotFoundException("Enterprise not found")
+            
     def getEnterprises(self):
         enterprises = Enterprise.query.all()
         return enterprises
@@ -23,6 +32,13 @@ class EnterpriseRepo:
         else: 
             enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
             return enterprise
+
+    def getEmployerFromEntreprise(self, id):
+        employer = Employers.query.filter_by(entrepriseId=id).first()
+        if(employer == None):
+            return None
+        else:
+            return employer
 
     def getEnterprise(self, id):
         try:
@@ -42,7 +58,7 @@ class EnterpriseRepo:
         enterprise.address = data['address']
         enterprise.cityId = data['cityId']
         db.session.commit()
-        logger.warn('enterprise updated')
+        logger.warning('enterprise updated')
         return enterprise
     
     def deleteEnterprise(self, id):

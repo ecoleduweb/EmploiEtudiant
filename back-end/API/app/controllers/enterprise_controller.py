@@ -2,6 +2,7 @@ from flask import jsonify, request, Blueprint
 from flask import Flask, jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
 from app.services.employer_service import EmployerService
+from app.services.user_service import UserService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from logging import getLogger
@@ -30,7 +31,7 @@ def getEnterpriseByEmployer(id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-        logger.warn('Enterprise not found with id : ' + str(id))
+        logger.warning('Enterprise not found with id : ' + str(id))
         return jsonify({'message': 'enterprise not found'}), 404
 
 @enterprise_blueprint.route('/<int:id>', methods=['PUT'])
@@ -71,6 +72,7 @@ def getEnterprise(current_user, id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
+<<<<<<< HEAD
         logger.warn(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
     

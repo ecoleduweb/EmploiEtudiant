@@ -299,6 +299,12 @@
             </div>
         </div>
     </form>
+
+    <style scoped>
+        .container {
+            padding-bottom: 10%;
+        }
+    </style>
     {#if popupEnabled}
         <Popup approbationMessage="Le captcha à échoué." handleApproveClick={closePopup}></Popup>
     {/if}

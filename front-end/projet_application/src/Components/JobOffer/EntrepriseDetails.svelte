@@ -1,27 +1,37 @@
 <script lang="ts">
-    import MultiSelect from "svelte-multiselect"
     export let enterprise: any
     export let selectedCity: any
 </script>
 
 <div class="form-group-vertical">
-    <label for="title">Nom*</label>
+    <label for="title">Nom : </label>
     <p>{enterprise.name}</p>
 </div>
 <div class="form-group-vertical">
-    <label for="schedule">Adresse*</label>
+    <label for="schedule">Adresse : </label>
     <p>{enterprise.address}</p>
 </div>
 <div class="form-group-vertical">
-    <label for="lieu">Courriel*</label>
+    <label for="lieu">Courriel : </label>
     <p>{enterprise.email}</p>
 </div>
 <div class="form-group-vertical">
-    <label for="lieu">Téléphone*</label>
+    <label for="lieu">Téléphone : </label>
     <p>{enterprise.phone}</p>
 </div>
-<div class="form-group-vertical">
-    <label for="lieu">Ville*</label>
-    <p>{selectedCity[0].label}</p>
-
+<div class="form-group-vertical last">
+    <label for="lieu">Ville : </label>
+    
+    <p>{selectedCity?.length ? selectedCity[0].label : 'En chargement'}</p>
 </div>
+
+<style scoped>
+    label, p {
+        color: black;
+        display: inline;
+    }
+
+    .last {
+        padding-bottom: 1%;
+    }
+</style>
