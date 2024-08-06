@@ -9,7 +9,7 @@
 </script>
 
 <div class="overlay">
-    <div class="modal">
+    <div class={widthFix ? "modal removeWidth" : "modal"}>
         <slot />
         <button class="close" on:click={handleButtonClick}>
             <img src="cancel.svg" class="image" alt="close" />
@@ -18,38 +18,22 @@
 </div>
 
 
-{#if !widthFix}
-    <style>
-        .modal {
-            display: flex;
-            flex-direction: row;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            width: 80%;
-            max-width: 600px;
-            max-height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-        }
-    </style>
-{:else}
-    <style>
-        .modal {
-            display: flex;
-            flex-direction: row;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 600px;
-            max-height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-        }
-    </style>
-{/if}
-
 <style scoped>
+    .modal {
+        display: flex;
+        flex-direction: row;
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        width: 80%;
+        max-width: 600px;
+        max-height: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .removeWidth {
+        width: unset !important;
+    }
     .overlay {
         position: fixed;
         top: 0;

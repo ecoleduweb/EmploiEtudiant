@@ -12,13 +12,6 @@
     import { PUT } from "../../ts/server"
     import fetchCity from "../../Service/CityService"
 
-    //À faire:
-    //Trouver l'entreprise de l'utilisateur actuelle (Fait)
-    //Avoir les villes et les montrées
-    //Vérifier les entrées et montrer une erreur s'il y à une entrée incorrecte (Fait)
-    //Envoyer une requête au serveur (Fait)
-    //Faire le code au serveur (S'il n'existe pas déjà, je ne sais pas s'il y existe déjà quelque chose au serveur pour modifier les entreprises) (Fait)
-
     let enterprise: Enterprise
     let errorsEnterprise: any = [];
     let cityOptions: { label: string; value: number }[] = [];
@@ -43,26 +36,15 @@
 
     let handleSubmit = async () => 
     {
-        try {
-            const validatedData = await prepareAndVerifyIfValid()
-            if (validatedData != undefined) {
-                const response = await PUT<any, any>(`/enterprise/${validatedData?.id}`, {
-                    name: enterprise.name,
-                    email: enterprise.email,
-                    phone: enterprise.phone,
-                    address: enterprise.address,
-                    cityId: selectedCity.value
-                })
+        const validatedData = await prepareAndVerifyIfValid()
+        if (validatedData != undefined) {
+            const response = await PUT<any, any>(`/enterprise/${validatedData?.id}`, {...enterprise, cityId: selectedCity.value})
 
-                if (response) {
-                    enterprise.cityId = selectedCity.value
-                    handleCloseClick()
-                } 
-            }
+            if (response) {
+                enterprise.cityId = selectedCity.value
+                handleCloseClick()
+            } 
         }
-        catch (err) {
-        }
-
     }
 
     const setOwnEnterprise = async () => {
