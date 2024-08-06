@@ -14,6 +14,7 @@
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -96,7 +97,6 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
-
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
         }
@@ -312,16 +312,20 @@
             {#if isModerator}
                 <h1>Sélectionner une entreprise existante</h1>
                 <div class="form-group-horizontal">
-                    <MultiSelect
-                        id="enterprise"
-                        options={enterpriseOption}
-                        closeDropdownOnSelect={true}
-                        maxSelect={1}
-                        placeholder="Choisir une enterprise..."
-                        bind:value={enterpriseSelected}
-                        bind:selected={enterpriseFromSelectedEnterprise}
-                        on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
-                    />
+                    {#if enterpriseOption.length}
+                        <MultiSelect
+                            id="enterprise"
+                            options={enterpriseOption}
+                            closeDropdownOnSelect={true}
+                            maxSelect={1}
+                            placeholder="Choisir une enterprise..."
+                            bind:value={enterpriseSelected}
+                            bind:selected={enterpriseFromSelectedEnterprise}
+                            on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
+                        />
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
                     <Button
                         submit={false}
                         text="Ajouter"
@@ -363,14 +367,18 @@
         </p>
         <div class="form-group-vertical">
             <label for="schedule">Type d'emplois*</label>
-            <MultiSelect
-                id="schedule"
-                options={scheduleOption}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir période(s)..."
-                bind:value={scheduleSelected}
-                bind:selected={scheduleFromExistingOffer}
-            />
+            {#if scheduleOption.length}
+                <MultiSelect
+                    id="schedule"
+                    options={scheduleOption}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir période(s)..."
+                    bind:value={scheduleSelected}
+                    bind:selected={scheduleFromExistingOffer}
+                />
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
             {#if errors.scheduleIds}{errors.scheduleIds}{/if}
@@ -436,14 +444,18 @@
         </div>
         <div class="form-group-vertical">
             <label for="duree">Programme visé*</label>
-            <MultiSelect
-                id="programme"
-                options={programOptions}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir programme(s)..."
-                bind:value={selectedPrograms}
-                bind:selected={programmeFromSelectedOffer}
-            ></MultiSelect>
+            {#if programOptions.length}
+                <MultiSelect
+                    id="programme"
+                    options={programOptions}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir programme(s)..."
+                    bind:value={selectedPrograms}
+                    bind:selected={programmeFromSelectedOffer}
+                ></MultiSelect>
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
             {#if errors.studyPrograms}{errors.studyPrograms}{/if}
