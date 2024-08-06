@@ -8,7 +8,7 @@ logger = getLogger(__name__)
 class EnterpriseRepo:
     def endEnterpriseTemporary(self, enterprise):
         try:
-            enterprise = Enterprise.query.filter_by(id=enterprise.id).first()4
+            enterprise = Enterprise.query.filter_by(id=enterprise.id).first()
             enterprise.isTemporary = False
             db.session.commit()
         except Exception as e:
