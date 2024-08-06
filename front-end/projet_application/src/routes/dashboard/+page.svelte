@@ -41,17 +41,26 @@
     }
     
     const closeModalApprove = () => {
-        showApproveModal = false        
+        showApproveModal = false 
     }
     const closeModalCreateEdit = () => 
     {
         showCreateEditOffer = false
+        isJobOfferEdit = false
     }
     const closeModalArchive = () => 
     {
         showArchiveModal = false
     }
 
+    const onFinishedCallBack = async () => 
+    {
+        await getJobOffersEmployeur()
+
+        closeModalApprove()
+        closeModalArchive()
+        closeModalCreateEdit()
+    }
 
     let enterprise: Enterprise = {
         id: 0,
@@ -225,17 +234,18 @@
 
 
     {#if showApproveModal}    
-    <Modal handleCloseClick={closeModalApprove}>
+    <Modal handleCloseClick={onFinishedCallBack}>
         <ApprouveOffre
             offer={jobOfferSelected}
             {enterprise}
-            handleApproveClick={closeModalApprove}
+            handleApproveClick={onFinishedCallBack}
         />
     </Modal>
     {/if}
     {#if showCreateEditOffer}    
-    <Modal handleCloseClick={closeModalCreateEdit}>
+    <Modal handleCloseClick={onFinishedCallBack}>
         <CreateEditJobOffer
+            onFinished={onFinishedCallBack}
             isJobOfferEdit={isJobOfferEdit}
             jobOffer={jobOfferSelected}
             {enterprise}
@@ -243,10 +253,10 @@
     </Modal>
     {/if}
     {#if showArchiveModal}
-    <Modal handleCloseClick={closeModalArchive}>
+    <Modal handleCloseClick={onFinishedCallBack}>
         <ArchiveConfirm
             offer={jobOfferSelected}
-            handleApproveClick={closeModalArchive}
+            handleApproveClick={onFinishedCallBack}
         />
     </Modal>
     {/if}
