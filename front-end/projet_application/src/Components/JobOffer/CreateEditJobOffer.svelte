@@ -79,12 +79,7 @@
         }
         if (response !== undefined) {
             enterprise = response
-            const city = cityOptions.find(
-                (ville) => ville.value === enterprise.cityId,
-            )
-            if (city) {
-                selectedCity = [city]
-            }
+            selectedCity = cityOptions.filter((x) => x.value === enterprise.cityId)
             isEnterpriseSelected = true
         } else {
             isEnterpriseSelected = false
