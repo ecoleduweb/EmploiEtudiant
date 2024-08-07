@@ -10,26 +10,28 @@
     let hideURL = false;
 
     let enterprise: Enterprise 
-    const getEnterprises = async (employerId: number) => {
-        try {
-            const response = await GET<any>(
-                `/enterprise/employer/${employerId}`
-            )
-            enterprise = response
-        } catch (error) {
-            console.error("Error fetching enterprise:", error)
-        }
-    }
+    // const getEnterprises = async (employerId: number) => {
+    //     try {
+    //         const response = await GET<any>(
+    //             `/enterprise/employer/${employerId}`
+    //         )
+    //         enterprise = response
+    //     } catch (error) {
+    //         console.error("Error fetching enterprise:", error)
+    //     }
+    // }
 
     let loaded = false;
+    let tempOffer: any;
+    const getOfferInfo = async () => {
+            const response = await GET<any>(`/jobOffer/${offer.id}?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true`);
+            console.log(response);
+            tempOffer = response;
+            console.log(tempOffer);
 
-    onMount(async () => {
-        await getEnterprises(offer.employerId)
-        const response = await GET<any>(
-            `/offerProgram/${offer.id}`,
-        )
-        try {
-            programmeSelected = response
+            try {
+                
+            programmeSelected = response.studyPrograms
                 .map((programId: number) => {
                     let program = programmesOption.find(
                         (p) => p.value === programId,
@@ -44,13 +46,45 @@
                 {
                     hideURL = true;
                 }
+            scheduleSelected = response.employmentSchedules.map((schedule: { id: number; description: string }) => ({
+            label: schedule.description,
+            value: schedule.id,
+        }))
+                
 
         } catch (error) {
             console.error("Error fetching program:", error)
         }
+    }
 
-        await getScheduleByOfferId()
-        
+    onMount(async () => {
+        // await getEnterprises(offer.employerId)
+        // const response = await GET<any>(
+        //     `/offerProgram/${offer.id}`,
+        // )
+        // try {
+        //     programmeSelected = response
+        //         .map((programId: number) => {
+        //             let program = programmesOption.find(
+        //                 (p) => p.value === programId,
+        //             )
+        //             return program
+        //                 ? { label: program.label, value: program.value }
+        //                 : null
+        //         })
+        //         .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
+
+        //         if (offer.offerLink == "https://" || offer.offerLink == "http://") 
+        //         {
+        //             hideURL = true;
+        //         }
+
+        // } catch (error) {
+        //     console.error("Error fetching program:", error)
+        // }
+
+        // await getScheduleByOfferId()
+        await getOfferInfo()
         loaded = true;
         
     })
@@ -62,15 +96,15 @@
         value: 0,
     }]
 
-    const getScheduleByOfferId = async () => {
-        const response = await GET<any>(
-            `/employmentSchedule/getByOfferId/${offer.id}`,
-        )
-        scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
-            label: schedule.description,
-            value: schedule.id,
-        }))
-    }
+    // const getScheduleByOfferId = async () => {
+    //     const response = await GET<any>(
+    //         `/employmentSchedule/getByOfferId/${offer.id}`,
+    //     )
+    //     scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
+    //         label: schedule.description,
+    //         value: schedule.id,
+    //     }))
+    // }
 </script>
 
 
