@@ -48,11 +48,11 @@ class JobOfferService:
     def findById(self, id):
         return jobOffer_repo.offreEmploi(id)
 
-    def getOffers(self):
-        return jobOffer_repo.getOffers()
+    def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
+        return jobOffer_repo.getOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def getRecentOffers(self):
-        return jobOffer_repo.getRecentOffers()
+    def getRecentOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
+        return jobOffer_repo.getRecentOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
     def linkJobOfferEmployer(self, data):
         return jobOffer_repo.linkJobOfferEmployer(data)

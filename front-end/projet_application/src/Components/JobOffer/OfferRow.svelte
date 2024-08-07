@@ -49,7 +49,7 @@
         width: 90%;
         font-size: 1.15rem;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: left;
     }
     .text {
         width: 20%;

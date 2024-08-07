@@ -10,6 +10,7 @@
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import { pushState } from "$app/navigation"
     import { page } from '$app/stores'
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
 
     let showModal = false
     let loaded = false
@@ -27,10 +28,10 @@
         pushState("/emplois", {})
     }
 
-    const jobOffers = writable<JobOffer[]>([])
+    const jobOffers = writable<JobOfferDetails[]>([])
     onMount(async () => {
         try {
-            const response = await GET<any>("/jobOffer/approved")
+            const response = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
             jobOffers.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
@@ -71,9 +72,9 @@
         {#if loaded}
             <div class="rowTitles">
                 <h2 class="rowTitle">Titre</h2>
+                <h2 class="rowTitle">Programmes</h2>
                 <h2 class="rowTitle">Employeur</h2>
                 <h2 class="rowTitle">Date d'entrée en vigueur</h2>
-                <h2 class="rowTitle">Programme</h2>
             </div>
             {#each $jobOffers as offer}
                 <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
@@ -112,6 +113,7 @@
     .rowTitles {
         display: flex;
         margin-left: 5%;
+        justify-content: left;
     }
 
     .rowTitle {

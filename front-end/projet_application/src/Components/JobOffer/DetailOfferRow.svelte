@@ -1,11 +1,12 @@
 <script lang="ts">
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
 
-    export let offer: JobOffer
-    export let handleModalClick: (offer: JobOffer) => void
+    export let offer: JobOfferDetails
+    export let handleModalClick: (offer: JobOfferDetails) => void
 
     const enterprise = writable<string>()
     const getEnterprises = async () => {
@@ -18,6 +19,7 @@
             console.error("Error fetching enterprise:", error)
         }
     }
+
     onMount(async () => {
         if (offer) 
         {
@@ -32,7 +34,7 @@
             <p class="text">{offer.title}</p>
             <p class="text">{$enterprise}</p>
             <p class="text">{offer.deadlineApply}</p>
-            <p class="description">{offer.description}</p>
+            <p class="text">{offer.studyPrograms?.map(x => x.name).join(', ')}</p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>

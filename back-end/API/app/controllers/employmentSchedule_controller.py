@@ -18,7 +18,6 @@ def employmentSchedules(current_user):
     return [employmentSchedule.to_json_string() for employmentSchedule in employmentSchedules]
 
 @employment_schedule_blueprint.route('/getByOfferId/<int:jobOfferId>', methods=['GET'])
-@token_required
-def getScheduleFromJobOffer(current_user, jobOfferId):
+def getScheduleFromJobOffer(jobOfferId):
     schedules = employment_schedule_service.getScheduleFromJobOffer(jobOfferId)
     return [schedule.to_json_string() for schedule in schedules]
