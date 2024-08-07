@@ -11,7 +11,8 @@
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
     import fetchCity from "../../Service/CityService"
-
+    
+    export let handleCloseClick: () => void
     let enterprise: Enterprise
     let errorsEnterprise: any = [];
     let cityOptions: { label: string; value: number }[] = [];
@@ -53,7 +54,6 @@
         )
     }
             
-    export let handleCloseClick: () => void
      
     onMount(async () => 
     {

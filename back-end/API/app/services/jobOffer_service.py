@@ -11,8 +11,8 @@ enterprise_repo = EnterpriseRepo()
 studyProgram_repo = StudyProgramRepo()
 class JobOfferService:
 
-    def offresEmploi(self):
-        return jobOffer_repo.offresEmploi()
+    def offresEmploi(self, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
+        return jobOffer_repo.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     
     def createJobOffer(self, data, employerId, isApproved):
 
@@ -39,8 +39,8 @@ class JobOfferService:
 
         return jobOffer_repo.createJobOffer(new_job_offer)
     
-    def offresEmploiEmployeur(self, employerId):
-        return jobOffer_repo.offresEmploiEmployeur(employerId)
+    def offresEmploiEmployeur(self, employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
+        return jobOffer_repo.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     
     def updateJobOffer(self, data):
         return jobOffer_repo.updateJobOffer(data)

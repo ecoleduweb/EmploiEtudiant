@@ -2,7 +2,6 @@
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import { writable } from "svelte/store"
-    import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
@@ -13,6 +12,7 @@
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
 
@@ -20,7 +20,7 @@
     let showCreateEditOffer = false;
     let showEditEnterprise = false;
     let showArchiveModal = false;
-    let jobOfferSelected: JobOffer = {} as any
+    let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
 
@@ -28,19 +28,20 @@
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
+    
     const handleEditEnterprise = () => {
         showEditEnterprise = true
     }
-    const handleEditEmploiClick = (jobOffer: JobOffer) => {
+        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
     }
-    const handleApproveClick = (jobOffer: JobOffer) => {
+    const handleApproveClick = (jobOffer: JobOfferDetails) => {
         jobOfferSelected = jobOffer;
         showApproveModal = true;
     }
-    const handleArchiveClick = (jobOffer: JobOffer) => 
+    const handleArchiveClick = (jobOffer: JobOfferDetails) => 
     {
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
@@ -111,15 +112,15 @@
 
     })
 
-    const jobOffers = writable<JobOffer[]>([])
+    const jobOffers = writable<JobOfferDetails[]>([])
 
 
 
     const getJobOffersEmployeur = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
-            const response = await GET<any>(
-                "/jobOffer/employer/all",
+            const response = await GET<JobOfferDetails[]>(
+                "/jobOffer/employer/all?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
             )
             if (response) 
             {
