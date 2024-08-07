@@ -98,7 +98,7 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
 
 async function handleResponse<T>(response: Response, redirectToLoginOn401: boolean = true): Promise<T | undefined> {
     if (!response.ok) {
-        if (response.status === 500) {
+        if (response.status === 500 && redirectToLoginOn401) {
             window.location.href = "/500"
         } else if (response.status === 404) {
             return undefined as T

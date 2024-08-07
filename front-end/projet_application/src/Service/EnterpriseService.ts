@@ -9,7 +9,7 @@ const fetchAllEnterprises = async () => {
 }
 
 export const getCurrentUserEnterprise = async () => {
-  const response: Enterprise = await GET<any>("/enterprise/currentEnterprise")
+  const response: Enterprise = await GET<any>("/enterprise/currentEnterprise", false)
   return response
 }
 
