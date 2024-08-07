@@ -150,6 +150,8 @@
         let dateFin = new Date(x.deadlineApply).toISOString().split("T")[0]
         return dateFin < dateNow
     })
+
+    $: console.log(userHaveEnterprise)
 </script>
 
 <main>

@@ -79,7 +79,7 @@ def getEnterprise(current_user, id):
 @token_required
 def getCurrentUserEnterprise(current_user):
     try:
-        employer = employer_service.getEmployer(current_user.id)
+        employer = employer_service.getEmployerByUserId(current_user.id)
         enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
         if enterprise:
             return jsonify(enterprise.to_json_string()), 200
