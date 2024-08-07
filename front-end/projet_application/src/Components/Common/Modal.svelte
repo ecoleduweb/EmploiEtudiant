@@ -1,5 +1,6 @@
 <script lang="ts">
     export let handleCloseClick: () => void
+    export let widthFix: boolean | undefined = false
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault()
@@ -8,7 +9,7 @@
 </script>
 
 <div class="overlay">
-    <div class="modal">
+    <div class={widthFix ? "modal removeWidth" : "modal"}>
         <slot />
         <button class="close" on:click={handleButtonClick}>
             <img src="cancel.svg" class="image" alt="close" />
@@ -16,20 +17,8 @@
     </div>
 </div>
 
-<style scoped>
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
 
+<style scoped>
     .modal {
         display: flex;
         flex-direction: row;
@@ -41,6 +30,21 @@
         max-height: 100%;
         box-sizing: border-box;
         text-align: center;
+    }
+    .removeWidth {
+        width: unset !important;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
     }
 
     .close {

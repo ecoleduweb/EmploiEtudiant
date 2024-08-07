@@ -1,13 +1,25 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { currentUser, isLoggedIn } from "$lib"
+    import { onMount } from "svelte"
+    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte";
     import type { User } from "../../Models/User"
     import { PUT } from "../../ts/server"
+    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
 
     let lastname: string
     let firstname: string
     let password: string
+    let showEnterpriseEditModal = false
+
+    const handleShow = () => {
+        showEnterpriseEditModal = true
+    }
+
+    const closeModal = () => {
+        showEnterpriseEditModal = false
+    }
 
     const ChangePassword = () => {
         PUT<any, any>("/user/updatePassword", {
@@ -34,6 +46,17 @@
             //TODO message d'erreur
         }
     }
+
+    let userHaveEnterprise = false
+
+    onMount(async () => {
+        try {
+            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
+        }
+        catch (err) {
+            userHaveEnterprise = false
+        }
+    })
 
 </script>
 
@@ -92,6 +115,20 @@
     <div>
         <h5>Veuillez notez que le nom et prénom se met à jours seulement après reconnexion.</h5>
     </div>
+    <div class="Modal">
+        {#if userHaveEnterprise}
+            <div class="divFlex">
+                <Button
+                    onClick={handleShow}
+                    text="Modifier ton entreprise"
+                />
+            </div>
+        {/if}
+    </div>
+    {#if showEnterpriseEditModal}
+        <ModifyEnterprise handleCloseClick={closeModal}>
+        </ModifyEnterprise>
+    {/if}
 </div>
 {/if}
 
@@ -131,10 +168,13 @@
         flex-direction: column;
         text-align: left;
         justify-content: space-between;
-        color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
         margin-top: 2%;
         margin-left: 2%;
+    }
+
+    .editInfo > div, .title, .infoTitle, p, div > h5 {
+        color: white;
     }
 </style>
