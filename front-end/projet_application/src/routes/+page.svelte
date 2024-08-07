@@ -40,6 +40,10 @@
     const handleEmploi = () => {
         goto("/emplois")
     }
+
+    const handleEmploiWithId = (id: number) => {
+        goto(`/emplois?id=${id}`)
+    }
 </script>
 
 <main>
@@ -75,7 +79,7 @@
         <section class="offres">
             {#each latestJobOffers as offer}
                 <DetailOfferRow {offer} 
-                handleModalClick={(function() {})}/>
+                handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
             {/each}
         </section>
     {/if}
