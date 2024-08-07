@@ -4,33 +4,22 @@
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
     import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
-    import { writable } from "svelte/store"
-    import type { JobOffer } from "../Models/Offre"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
-    import { error } from "@sveltejs/kit"
+    import type { JobOfferDetails } from "../Models/JobOfferDetails"
 
     let loaded = false
-
-    let latestJobOffers: JobOffer[] = []
-    const getJobOffers = async () => {
-        try {
-            latestJobOffers = await GET<any>("/jobOffer/approved?getRecentOnly=true")
-        } catch (error) {
-            console.error("Error fetching job offers:", error)
-        }
-    }
+    let latestJobOffers: JobOfferDetails[] = []
+    
     onMount(async () => {
         try 
         {
-            await getJobOffers()
+            latestJobOffers = await GET<JobOfferDetails[]>("/jobOffer/approved?getRecentOnly=true&entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
         }
-
         catch (error) 
         {
             console.error("Error while loading the page", error)
         }
-
         finally
         {
             loaded = true

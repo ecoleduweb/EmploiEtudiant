@@ -17,9 +17,17 @@ class JobOfferDetails:
         self.isApproved = jobOffer.isApproved
         self.approvedDate = jobOffer.approvedDate
         self.enterprise = None
+        self.schedules = None
+        self.studyPrograms =  None
 
     def AddEnterprise(self, enterprise):
         self.enterprise = enterprise
+
+    def AddStudyPrograms(self, studyPrograms):
+        self.studyPrograms = studyPrograms
+
+    def AddSchedules(self, schedules):
+        self.schedules = schedules
 
     def to_json_string(self):
         json =  {
@@ -42,10 +50,11 @@ class JobOfferDetails:
         }
 
         if self.enterprise != None : 
-            json['enterprise'] = {
-                'name': self.enterprise.name
-            }
+            json['enterprise'] = self.enterprise.to_json_string()
 
-        # si jamais on a une liste, faire une boucle for pour ajouter les infos dans le json
-
+        if self.schedules != None : 
+            json['schedules'] = [schedule.to_json_string() for schedule in self.schedules]
+        
+        if self.studyPrograms != None : 
+            json['studyPrograms'] = [studyProgram.to_json_string() for studyProgram in self.studyPrograms]
         return json
