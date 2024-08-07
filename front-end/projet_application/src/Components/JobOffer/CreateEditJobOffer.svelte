@@ -7,7 +7,7 @@
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET, POST, PUT } from "../../ts/server"
-    import { extractErrors } from "../../ts/utils"
+    import { extractErrors, toFormattedDateString } from "../../ts/utils"
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
@@ -288,11 +288,9 @@
         let maxDate = new Date(
             offerDebut.setDate(offerDebut.getDate() + 15 * 7),
         )
-        maxDateString = maxDate.toISOString().split("T")[0] // format as yyyy-mm-dd
+        maxDateString = toFormattedDateString(maxDate)
     }
-
-    let todayMin = new Date()
-    let minDateString = todayMin.toISOString().split("T")[0] // format as yyyy-mm-dd
+    let minDateString = toFormattedDateString(new Date())
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
