@@ -13,19 +13,26 @@
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
+    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
+    let showEditEnterprise = false;
     let showArchiveModal = false;
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
-
-    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
+    
+    const handleEditEnterprise = () => {
+        showEditEnterprise = true
+    }
+        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
@@ -39,7 +46,9 @@
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
     }
-    
+    const closeEditEnterprise = () => {
+        showEditEnterprise = false
+    }
     const closeModalApprove = () => {
         showApproveModal = false 
     }
@@ -73,8 +82,17 @@
     }
     
     let loaded = false
+
+    let userHaveEnterprise = false
     
     onMount(async () => {
+        try {
+            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
+        }
+        catch (err) {
+            userHaveEnterprise = false
+        }
+        
         try 
         {
             if ($isLoggedIn) {
@@ -91,6 +109,7 @@
         {
             loaded = true
         }
+
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
@@ -142,6 +161,15 @@
                     text="Créer une nouvelle offre"
                 />
             </div>
+
+            {#if userHaveEnterprise}
+                <div class="divFlex">
+                    <Button
+                        onClick={handleEditEnterprise}
+                        text="Modifier ton entreprise"
+                    />
+                </div>
+            {/if}
         </div>
     </section>
 
@@ -241,8 +269,11 @@
         />
     </Modal>
     {/if}
+    {#if showEditEnterprise}
+        <ModifyEnterprise handleCloseClick={closeEditEnterprise}></ModifyEnterprise>
+    {/if}
     {#if showCreateEditOffer}    
-    <Modal handleCloseClick={onFinishedCallBack}>
+    <Modal handleCloseClick={closeModalCreateEdit}>
         <CreateEditJobOffer
             onFinished={onFinishedCallBack}
             isJobOfferEdit={isJobOfferEdit}
@@ -252,10 +283,10 @@
     </Modal>
     {/if}
     {#if showArchiveModal}
-    <Modal handleCloseClick={onFinishedCallBack}>
+    <Modal handleCloseClick={closeModalArchive}>
         <ArchiveConfirm
             offer={jobOfferSelected}
-            handleApproveClick={onFinishedCallBack}
+            handleApproveClick={closeModalArchive}
         />
     </Modal>
     {/if}
@@ -273,11 +304,13 @@
     .haut {
         width: 100%;
         margin-bottom: 2vh;
+
     }
     .haut-gauche {
         width: 30%;
         display: flex;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: space-around;
         align-items: center;
     }
     .divFlex {

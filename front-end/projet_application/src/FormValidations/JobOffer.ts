@@ -78,6 +78,8 @@ const schema = yup.object().shape({
         .required("Le type d'emplois est requis")
 })
 
+export default schema
+
 export const entrepriseSchema = yup.object().shape({
     address: yup
         .string()
@@ -107,5 +109,3 @@ export const entrepriseSchema = yup.object().shape({
         .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
 
 })
-
-export default schema

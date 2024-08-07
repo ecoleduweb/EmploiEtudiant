@@ -174,7 +174,7 @@
                         class="button"
                         on:click={handleProfile}
                     >
-                        <p class="email">
+                        <p class={$currentUser?.isModerator ? "email ModFix" : "email UserFix"}>
                             Connecté en 
                             tant que 
                             {$currentUser?.firstName} {$currentUser?.lastName}
@@ -270,8 +270,15 @@
     .email 
     {
         margin-left: 8px;
-        margin-right: 3vw;
         text-align: center;
+    }
+
+    .UserFix {
+        margin-right: 3vw;
+    }
+    
+    .ModFix {
+        margin-right: 10vh;
     }
 
     button:hover {
