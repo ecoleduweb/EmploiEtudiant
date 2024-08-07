@@ -70,7 +70,7 @@ def create_app():
         else:
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_DEV_URL')
     except Exception as e:
-        logger.warn("Error loading environment variables : " + str(e))
+        logger.warning("Error loading environment variables : " + str(e))
         return jsonify({'message': 'Error loading environment variables'}), 500
 
     db.init_app(app)

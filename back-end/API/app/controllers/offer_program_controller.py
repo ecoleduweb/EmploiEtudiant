@@ -13,6 +13,6 @@ def getProgramIdByOfferId(id):
     if programs:
         return jsonify(programs)
     else:
-        logger.warn('No program found for the given offerId : ' + id)
+        logger.warning('No program found for the given offerId : ' + id)
         return jsonify({"error": "No program found for the given offerId"}), 404
     

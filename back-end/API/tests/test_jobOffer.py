@@ -2,6 +2,8 @@ import pytest
 from app import create_app, db
 from app.models.jobOffer_model import JobOffer
 from app.models.user_model import User
+from app.models.enterprise_model import Enterprise
+from app.models.employers_model import Employers
 from app.models.study_program_model import StudyProgram
 from app.models.employmentSchedule_model import EmploymentSchedule
 from datetime import datetime
@@ -24,7 +26,7 @@ job_offer1_data = {
     "offerDebut": "2021-12-12",
     "active": True,
     "approbationMessage": "Super offre!",
-    "employerId": None,
+    "employerId": 1,
     "isApproved": True,
     "approvedDate": datetime.now()
 }
@@ -47,6 +49,25 @@ def app():
     app = create_app()
     with app.app_context():
         db.create_all()
+        enterprise_data = {
+            "id": 1,
+            "name": "Développeur",
+            "email": "test@test.com",
+            "phone": "123-123-1234",
+            "address": "123 rue de la",
+            "isTemporary": False,
+            "cityId": 1,
+        }
+        enterprise = Enterprise(**enterprise_data)
+        db.session.add(enterprise)
+        employer_data = {
+            "id": 1,
+            "verified": True,
+            "userId": None,
+            "enterpriseId": 1,
+        }
+        employers = Employers(**employer_data)
+        db.session.add(employers)
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
         job_offer2_data = {
@@ -111,6 +132,21 @@ def test_offresEmploiApprouvees(client):
     response = client.get('/jobOffer/approved', headers={'Authorization': token})
     assert response.status_code == 200
     assert len(response.json) == 1
+
+def test_offresEmploiApprouveesWithDetails(client):
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.get('/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true', headers={'Authorization': token})
+    assert response.status_code == 200
+    print(response.json[0])
+    assert len(response.json) == 1
+    assert response.json[0]['enterprise'] is not None
+    assert response.json[0]['schedules'] is not None
+    assert response.json[0]['studyPrograms'] is not None
 
 def test_userCreateOffresEmploi(client):
     data = {

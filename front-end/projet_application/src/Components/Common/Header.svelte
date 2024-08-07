@@ -158,6 +158,15 @@
                 <div class="option">
                     <button
                         class="button logout-button"
+                        on:click={handleEnterprise}
+                    >
+                        <p class="textLogout">Entreprises</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
                         on:click={handleUtilisateur}
                     >
                         <p class="textLogout">Utilisateurs</p>
@@ -183,13 +192,14 @@
                         class="button"
                         on:click={handleProfile}
                     >
-                        <p class="email">
+                        <p class={$currentUser?.isModerator ? "email ModFix" : "email UserFix"}>
                             Connecté en 
                             tant que 
                             {$currentUser?.firstName} {$currentUser?.lastName}
                         </p>
                     </button>
                 </div>
+
             {:else}
 
                 <div class="option dropdown">
@@ -278,9 +288,15 @@
     .email 
     {
         margin-left: 8px;
-        margin-right: 8px;
         text-align: center;
+    }
 
+    .UserFix {
+        margin-right: 3vw;
+    }
+    
+    .ModFix {
+        margin-right: 10vh;
     }
 
     button:hover {
@@ -359,7 +375,6 @@
     }
 
     .textSearch {
-        display: flex;
         align-items: center;
         width: 60%;
         height: 100%;
@@ -369,11 +384,6 @@
     .textBusiness {
         display: flex;
         align-items: center;
-        width: 55%;
-        height: 100%;
-    }
-
-    .iconeBusiness {
         display: flex;
         align-items: center;
         width: 15%;
@@ -426,7 +436,6 @@
             padding-right: 5%;
             margin-left: 1.4vw;
             margin-right: 1vw;
-
             text-align: center;
         }
 

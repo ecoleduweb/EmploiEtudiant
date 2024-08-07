@@ -10,9 +10,11 @@ from app.repositories.auth_repo import AuthRepo
 from app.repositories.employer_repo import EmployerRepo
 from app.services.captcha_service import CaptchaService
 from app.customexception.CustomException import LoginException
+from app.repositories.enterprise_repo import EnterpriseRepo
 auth_repo = AuthRepo()
 captcha_service = CaptchaService()
 employer_repo = EmployerRepo()
+enterprise_repo = EnterpriseRepo()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
@@ -22,7 +24,7 @@ class UserService:
     def login(self, email, password):
         user = auth_repo.getUser(email)
         if user is None:
-            logger.warn("Login attempt failed on user: " + email + " user not found")
+            logger.warning("Login attempt failed on user: " + email + " user not found")
             raise LoginException()
         try:
             if user.active:
@@ -35,7 +37,7 @@ class UserService:
             if hasattr(e, 'errorCode') and e.errorCode == 403:
                 raise e
             else:
-                logger.warn("Login attempt failed on user: " + email + " could not verify : ", e)
+                logger.warning("Login attempt failed on user: " + email + " could not verify : ", e)
                 raise LoginException()
 
     def register(self, data):
@@ -49,6 +51,9 @@ class UserService:
 
     def getUser(self, email):
         return auth_repo.getUser(email)
+    
+    def getUserById(self, id):
+        return auth_repo.getUserById(id)
 
     def updatePassword(self, current_user, data):
         email = ""
@@ -62,6 +67,7 @@ class UserService:
             auth_repo.updatePassword(email, data["password"])
         except Exception as e:
             raise Exception("Failed to update password")
+    
     def updateUser(self, current_user, data):
         email = ""
 
@@ -86,7 +92,7 @@ class UserService:
             employer_repo.removeUserIdFromEmployer(user.id)
             auth_repo.removeUser(userEmail)
         else:
-            logger.warn("Admin (" + current_user.email + ") tried to remove itself")
+            logger.warning("Admin (" + current_user.email + ") tried to remove itself")
 
     def desactivateUser(self, current_user, userEmail):
         user = User.query.filter_by(email=userEmail).first()
@@ -94,4 +100,22 @@ class UserService:
         if user != current_user:
             auth_repo.updateActive(user, not user.active)
         else:
-            logger.warn("Admin (" + current_user.email + ") tried to desactivate itself")
+            logger.warning("Admin (" + current_user.email + ") tried to desactivate itself")
+
+    
+    def linkToExisting(self, offer, selectedEnterpriseId):
+        employer = employer_repo.getEmployer(offer.employerId)
+
+        if employer.enterpriseId == selectedEnterpriseId:
+            # cas 1 : on utilise l'entreprise créée par l'utilisateur
+            enterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
+            enterprise_repo.endEnterpriseTemporary(enterprise)
+        else :
+            # cas 2 : l'utilisateur a créé un doublon, on va le relier à l'entreprise existante.
+            user = auth_repo.getUserById(employer.userId)
+            duplicatedEnterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
+            if (not duplicatedEnterprise.isTemporary):
+                enterprise_repo.deleteEnterprise(duplicatedEnterprise.id)
+                employer_repo.linkEmployerEnterprise(user.id, selectedEnterpriseId)
+            else:
+                raise Exception("trying to delete a non temporary enterprise.")

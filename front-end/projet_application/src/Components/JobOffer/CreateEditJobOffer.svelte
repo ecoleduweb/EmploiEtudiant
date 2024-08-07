@@ -2,17 +2,20 @@
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
-    import ValidationSchema from "../../FormValidations/JobOffer"
+    import ValidationSchema, { entrepriseSchema } from "../../FormValidations/JobOffer"
     import {ValidationError} from "yup"
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET, POST, PUT } from "../../ts/server"
-    import { extractErrors } from "../../ts/utils"
+    import { extractErrors, toFormattedDateString } from "../../ts/utils"
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
+    import { writable } from "svelte/store"
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
+    export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
@@ -57,8 +60,9 @@
     let cityFromEnterprise: [] = []
     let cityOptions: { label: string; value: number }[] = []
     let scheduleIds: number[] = []
+    let selectedCityWritable = writable<any>()
 
-    
+    $: selectedCity = $selectedCityWritable
 
     const fetchEnterprise = async () => {
         let response = undefined
@@ -76,12 +80,7 @@
         }
         if (response !== undefined) {
             enterprise = response
-            const city = cityOptions.find(
-                (ville) => ville.value === enterprise.cityId,
-            )
-            if (city) {
-                selectedCity = [city]
-            }
+            selectedCityWritable.set(cityOptions.filter((x) => x.value === enterprise.cityId))
             isEnterpriseSelected = true
         } else {
             isEnterpriseSelected = false
@@ -98,7 +97,6 @@
 
     onMount(async () => {
         cityOptions = await fetchCity()
-
         if ($isLoggedIn) {
             isModerator = ($currentUser as any).isModerator
         }
@@ -148,7 +146,7 @@
             (ville) => ville.value === response.cityId,
         )
         if (city) {
-            selectedCity = [city]
+            selectedCityWritable.set([city])
         }
         if (enterprise === undefined) {
             isEnterpriseSelected = false
@@ -193,6 +191,7 @@
     //--------------------------------------------------
 
     let errorsProgramme: string = "" // Define a variable to hold the error message for selected program
+    let errorsSchedule: string = "" // Define a variable to hold the error message for schedules
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
@@ -209,16 +208,27 @@
 
     
     const prepareAndJobOfferIsValid = async () => {
-        
+        let validatingjobOffer = false
         if (jobOffer?.approbationMessage === null) 
         {
             jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
         }
 
         try {
-            scheduleIds = Array.isArray(scheduleSelected) ? scheduleSelected.map(schedule => schedule.value) : [];
-            enterprise.cityId = selectedCity[0].value
-            await ValidationSchema.validate(jobOffer, { abortEarly: false })
+            scheduleIds = Array.isArray(scheduleSelected) && scheduleSelected.length !== 0 ? scheduleSelected.map(schedule => schedule.value) : [];
+            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
+
+            const jobOfferToValidate = {
+                ...jobOffer,  
+                studyPrograms: selectedPrograms, 
+                scheduleIds
+            }
+
+            await entrepriseSchema.validate(enterprise, {abortEarly: false})
+
+            validatingjobOffer = true
+            await ValidationSchema.validate(jobOfferToValidate, { abortEarly: false })
+
             return {
                     enterprise: {
                         ...enterprise,
@@ -231,8 +241,13 @@
                 }
         }
         catch(err) {
-            if (err instanceof ValidationError) {
+            if (err instanceof ValidationError && validatingjobOffer === true) {
                 errors = extractErrors(err)
+                errorsEnterprise = {}
+            }
+            else if (err instanceof ValidationError && validatingjobOffer === false) 
+            {
+                errorsEnterprise = extractErrors(err)
             }
         }
     }
@@ -242,19 +257,12 @@
             const requestData = await prepareAndJobOfferIsValid()
             const response = await POST<any, any>(
                 "/jobOffer/new",
-                requestData,
-            )
+                requestData, false)
             if (response) {
-                // TODO ajouter l'offre à la page sans recharger.
-                window.location.reload()
+                onFinished()
             }
         } catch (err) {
-            // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length === 0) {
-                errorsProgramme = "Le programme visé est requis"
-            } else {
-                errorsProgramme = ""
-            }
+
         }
     }
 
@@ -263,19 +271,13 @@
             const requestData = await prepareAndJobOfferIsValid()
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
-                requestData,
-            )
+                requestData, false)
             if (response) {
-                // TODO metter à jour les offres sans recharger la page.
-                window.location.reload()
+                onFinished()
             }
         } catch (err) {
-            // TODO Peut être géré dans la validation du schéma
-            if (selectedPrograms.length === 0) {
-                errorsProgramme = "Le programme visé est requis"
-            } else {
-                errorsProgramme = ""
-            }
+
+            
         }
     }
 
@@ -285,12 +287,9 @@
         let maxDate = new Date(
             offerDebut.setDate(offerDebut.getDate() + 15 * 7),
         )
-        maxDateString = maxDate.toISOString().split("T")[0] // format as yyyy-mm-dd
+        maxDateString = toFormattedDateString(maxDate)
     }
-
-    let todayMin = new Date()
-    let minDateString = todayMin.toISOString().split("T")[0] // format as yyyy-mm-dd
-
+    let minDateString = toFormattedDateString(new Date())
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="form-offre">
@@ -311,37 +310,43 @@
             {#if isModerator}
                 <h1>Sélectionner une entreprise existante</h1>
                 <div class="form-group-horizontal">
-                    <MultiSelect
-                        id="enterprise"
-                        options={enterpriseOption}
-                        closeDropdownOnSelect={true}
-                        maxSelect={1}
-                        placeholder="Choisir une enterprise..."
-                        bind:value={enterpriseSelected}
-                        bind:selected={enterpriseFromSelectedEnterprise}
-                        on:add={(event) =>
-                            setEnterpriseIfSelected(event.detail.option.value)}
-                    />
+                    {#if enterpriseOption.length}
+                        <MultiSelect
+                            id="enterprise"
+                            options={enterpriseOption}
+                            closeDropdownOnSelect={true}
+                            maxSelect={1}
+                            placeholder="Choisir une enterprise..."
+                            bind:value={enterpriseSelected}
+                            bind:selected={enterpriseFromSelectedEnterprise}
+                            on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
+                        />
+                    {:else}
+                        <LoadingSpinner />
+                    {/if}
                     <Button
                         submit={false}
                         text="Ajouter"
                         onClick={() => handleEnterprise()}
                     />
                 </div>
+                {#if enterprise.id !== 0 && selectedCity.length !== 0}
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
+                {/if}
             {:else}
                 {#if isEnterpriseSelected}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+                    <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></CreateEditEnterprise>
+                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
                 {/if}
             {/if}
 
             <h1>Création d'une nouvelle offre d'emploi</h1>
         {:else}
             <h1>Mon entreprise</h1>
-            <EntrepriseDetails {enterprise} {cityOptions} {selectedCity} {cityFromEnterprise}></EntrepriseDetails>
+            <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
 
             <h1>Modification d'une offre d'emploi</h1>
         {/if}
@@ -360,17 +365,21 @@
         </p>
         <div class="form-group-vertical">
             <label for="schedule">Type d'emplois*</label>
-            <MultiSelect
-                id="schedule"
-                options={scheduleOption}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir période(s)..."
-                bind:value={scheduleSelected}
-                bind:selected={scheduleFromExistingOffer}
-            />
+            {#if scheduleOption.length}
+                <MultiSelect
+                    id="schedule"
+                    options={scheduleOption}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir période(s)..."
+                    bind:value={scheduleSelected}
+                    bind:selected={scheduleFromExistingOffer}
+                />
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
-            {#if errors.scheduleId}{errors.scheduleId}{/if}
+            {#if errors.scheduleIds}{errors.scheduleIds}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="lieu">Adresse du lieu de travail*</label>
@@ -433,17 +442,21 @@
         </div>
         <div class="form-group-vertical">
             <label for="duree">Programme visé*</label>
-            <MultiSelect
-                id="programme"
-                options={programOptions}
-                closeDropdownOnSelect={true}
-                placeholder="Choisir programme(s)..."
-                bind:value={selectedPrograms}
-                bind:selected={programmeFromSelectedOffer}
-            ></MultiSelect>
+            {#if programOptions.length}
+                <MultiSelect
+                    id="programme"
+                    options={programOptions}
+                    closeDropdownOnSelect={true}
+                    placeholder="Choisir programme(s)..."
+                    bind:value={selectedPrograms}
+                    bind:selected={programmeFromSelectedOffer}
+                ></MultiSelect>
+            {:else}
+                <LoadingSpinner />
+            {/if}
         </div>
         <p class="errors-input">
-            {#if errorsProgramme}{errorsProgramme}{/if}
+            {#if errors.studyPrograms}{errors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="salary">Salaire/H</label>

@@ -2,7 +2,6 @@
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import { writable } from "svelte/store"
-    import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
@@ -13,45 +12,64 @@
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
+    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
+    let showEditEnterprise = false;
     let showArchiveModal = false;
-    let jobOfferSelected: JobOffer = {} as any
+    let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
-
-    const handleEditEmploiClick = (jobOffer: JobOffer) => {
+    
+    const handleEditEnterprise = () => {
+        showEditEnterprise = true
+    }
+        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
     }
-    const handleApproveClick = (jobOffer: JobOffer) => {
+    const handleApproveClick = (jobOffer: JobOfferDetails) => {
         jobOfferSelected = jobOffer;
         showApproveModal = true;
     }
-    const handleArchiveClick = (jobOffer: JobOffer) => 
+    const handleArchiveClick = (jobOffer: JobOfferDetails) => 
     {
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
     }
-    
+    const closeEditEnterprise = () => {
+        showEditEnterprise = false
+    }
     const closeModalApprove = () => {
-        showApproveModal = false        
+        showApproveModal = false 
     }
     const closeModalCreateEdit = () => 
     {
         showCreateEditOffer = false
+        isJobOfferEdit = false
     }
     const closeModalArchive = () => 
     {
         showArchiveModal = false
     }
 
+    const onFinishedCallBack = async () => 
+    {
+        await getJobOffersEmployeur()
+
+        closeModalApprove()
+        closeModalArchive()
+        closeModalCreateEdit()
+    }
 
     let enterprise: Enterprise = {
         id: 0,
@@ -64,8 +82,17 @@
     }
     
     let loaded = false
+
+    let userHaveEnterprise = false
     
     onMount(async () => {
+        try {
+            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
+        }
+        catch (err) {
+            userHaveEnterprise = false
+        }
+        
         try 
         {
             if ($isLoggedIn) {
@@ -82,17 +109,20 @@
         {
             loaded = true
         }
+
     })
 
-    const jobOffers = writable<JobOffer[]>([])
+    const jobOffers = writable<JobOfferDetails[]>([])
+
+
 
 
 
     const getJobOffersEmployeur = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
-            const response = await GET<any>(
-                "/jobOffer/employer/all",
+            const response = await GET<JobOfferDetails[]>(
+                "/jobOffer/employer/all?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
             )
             if (response) 
             {
@@ -133,6 +163,15 @@
                     text="Créer une nouvelle offre"
                 />
             </div>
+
+            {#if userHaveEnterprise}
+                <div class="divFlex">
+                    <Button
+                        onClick={handleEditEnterprise}
+                        text="Modifier ton entreprise"
+                    />
+                </div>
+            {/if}
         </div>
     </section>
 
@@ -225,17 +264,20 @@
 
 
     {#if showApproveModal}    
-    <Modal handleCloseClick={closeModalApprove}>
+    <Modal handleCloseClick={onFinishedCallBack}>
         <ApprouveOffre
             offer={jobOfferSelected}
-            {enterprise}
-            handleApproveClick={closeModalApprove}
+            handleApproveClick={onFinishedCallBack}
         />
     </Modal>
+    {/if}
+    {#if showEditEnterprise}
+        <ModifyEnterprise handleCloseClick={closeEditEnterprise}></ModifyEnterprise>
     {/if}
     {#if showCreateEditOffer}    
     <Modal handleCloseClick={closeModalCreateEdit}>
         <CreateEditJobOffer
+            onFinished={onFinishedCallBack}
             isJobOfferEdit={isJobOfferEdit}
             jobOffer={jobOfferSelected}
             {enterprise}
@@ -264,11 +306,13 @@
     .haut {
         width: 100%;
         margin-bottom: 2vh;
+
     }
     .haut-gauche {
         width: 30%;
         display: flex;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: space-around;
         align-items: center;
     }
     .divFlex {

@@ -2,6 +2,11 @@ from app import db
 from app.models.jobOffer_model import JobOffer
 from app.models.employers_model import Employers
 from app.models.enterprise_model import Enterprise
+from app.models.JobOffer_details import JobOfferDetails
+from app.models.employmentSchedule_JobOffer_link_model import EmploymentSchedule_JobOffer_link
+from app.models.employmentSchedule_model import EmploymentSchedule
+from app.models.study_program_model import StudyProgram
+from app.models.offer_programm_model import OfferProgram
 from app.models.user_model import User
 from datetime import date, timedelta, datetime
 from flask import Flask, jsonify
@@ -14,9 +19,9 @@ class JobOfferRepo:
         db.session.commit()
         return newJobOffer
     
-    def offresEmploiEmployeur(self, employerId):
+    def offresEmploiEmployeur(self, employerId, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
-        return jobOffers
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
     def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
@@ -45,20 +50,20 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         return jobOffer
 
-    def offresEmploi(self):
+    def offresEmploi(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.all()
-        return jobOffers
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def getOffers(self):
+    def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()
         jobOffers = JobOffer.query.filter(
             JobOffer.isApproved == True,
             JobOffer.offerDebut <= today,
             JobOffer.deadlineApply >= today
         ).order_by(JobOffer.approvedDate.desc()).all()
-        return jobOffers
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def getRecentOffers(self):
+    def getRecentOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()
         last_week = today - timedelta(days=7)
         jobOffers = JobOffer.query.filter(
@@ -66,17 +71,48 @@ class JobOfferRepo:
             JobOffer.offerDebut <= today,
             JobOffer.deadlineApply >= today,
             JobOffer.approvedDate > last_week
-        ).order_by(JobOffer.approvedDate.desc()).all()
+        ) \
+        .order_by(JobOffer.approvedDate.desc()).all()
 
+        # If no recents job offers are found, then we get the latest 5.
         if len(jobOffers) == 0:
             jobOffers = JobOffer.query.filter(
                 JobOffer.isApproved == True,
                 JobOffer.offerDebut <= today,
                 JobOffer.deadlineApply >= today
-            ).order_by(JobOffer.approvedDate.desc()).limit(5).all()
+            )\
+            .order_by(JobOffer.approvedDate.desc()) \
+            .limit(5) \
+            .all()
 
+        jobOffers = self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
         return jobOffers
     
+    def addDetailsToJobOffer(self, jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails): 
+        jobOffersDetails = []
+        for jobOffer in jobOffers:
+            jobOfferDetails = JobOfferDetails(jobOffer)
+            if getEntrepriseDetails:
+                enterprise = Enterprise.query \
+                    .join(Employers, Employers.enterpriseId == Enterprise.id) \
+                    .filter(Employers.id == jobOffer.employerId) \
+                    .first()
+                jobOfferDetails.AddEnterprise(enterprise)
+            if employmentScheduleDetails:
+                schedules = EmploymentSchedule.query \
+                    .join(EmploymentSchedule_JobOffer_link, EmploymentSchedule_JobOffer_link.employmentScheduleId == EmploymentSchedule.id) \
+                    .filter(EmploymentSchedule_JobOffer_link.jobOfferId == jobOffer.id) \
+                    .all()
+                jobOfferDetails.AddSchedules(schedules)
+            if studyProgramDetails:
+                studyPrograms = StudyProgram.query \
+                    .join(OfferProgram, OfferProgram.programId == StudyProgram.id) \
+                    .filter(OfferProgram.offerId == jobOffer.id) \
+                    .all()
+                jobOfferDetails.AddStudyPrograms(studyPrograms)
+            jobOffersDetails.append(jobOfferDetails)
+        return jobOffersDetails
+
     def linkJobOfferEmployer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOfferId']).first()
         jobOffer.employer_id = data['employerId']

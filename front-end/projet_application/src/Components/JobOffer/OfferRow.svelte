@@ -13,7 +13,7 @@
         <div class="info">
             <p class="text">{offer.title}</p>
             <p class="text">{offer.offerDebut}</p>
-            <p class="text">{offer.description}</p>
+            <p class="text">{ offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</p>
         </div>
         {#if isModerator === true}
             <button
@@ -49,7 +49,7 @@
         width: 90%;
         font-size: 1.15rem;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: left;
     }
     .text {
         width: 20%;

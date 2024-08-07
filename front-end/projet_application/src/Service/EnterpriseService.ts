@@ -8,4 +8,15 @@ const fetchAllEnterprises = async () => {
   })
 }
 
+export const getCurrentUserEnterprise = async () => {
+  const response: Enterprise = await GET<any>("/enterprise/currentEnterprise", false)
+  return response
+}
+
+export const fetchEnterpriseWithId = async (employerId: number) => {
+  return await GET<any>(
+    `/enterprise/employer/${employerId}`
+  )
+}
+
 export default fetchAllEnterprises
