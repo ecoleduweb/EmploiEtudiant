@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
@@ -8,9 +7,10 @@
     import fetchAllEnterprises, { fetchEnterpriseWithId } from "../../Service/EnterpriseService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import type { Option } from "$lib/interfaces"
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import fetchCity from "../../Service/CityService"
     export let handleApproveClick: () => void
-    export let offer: JobOffer
+    export let offer: JobOfferDetails
     let approbationMessage: string = ""
 
     let enterprises: { label: string; value: number; }[]
@@ -43,7 +43,7 @@
                     isApproved: isApproved,
                 })
             } else {
-                const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}?linking=true`,
+                await PUT<any, any>(`/jobOffer/approve/${offer.id}?linking=true`,
                 {
                     selectedEnterpriseId: selectedEnterprise,
                     approbationMessage: approbationMessage,

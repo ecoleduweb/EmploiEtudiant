@@ -32,9 +32,10 @@
     <div class="emploi">
         <div class="info">
             <p class="text">{offer.title}</p>
-            <p class="text">{$enterprise}</p>
+            <p class="text">{offer.schedules?.map(x => x.description).join(', ')}</p>
             <p class="text">{offer.deadlineApply}</p>
             <p class="text">{offer.studyPrograms?.map(x => x.name).join(', ')}</p>
+            <p class="text">{offer.enterprise?.name}</p>
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>
@@ -58,15 +59,8 @@
         flex-direction: row;
         justify-content: space-around;
     }
-    .description {
-        display: flex;
-        width: 50%;
-        font-size: 1rem;
-        flex-direction: row;
-        justify-content: space-around;
-    }
     .text {
-        width: 20%;
+        width: 22%;
     }
     .emploi {
         display: flex;

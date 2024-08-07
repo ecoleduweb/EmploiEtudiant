@@ -1,85 +1,25 @@
 <script lang="ts">
-    import type { JobOffer } from "../../Models/Offre"
-    import type { Enterprise } from "../../Models/Enterprise"
-    import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte";
-    import { studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
-    export let offer: JobOffer
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    
+    export let offer: JobOfferDetails
 
-    let hideURL = false;
-
+    let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://";
     let cityOptions: any;
     let selectedCity: any;
-
-    let enterprise: Enterprise 
-    const getEnterprises = async (employerId: number) => {
-        try {
-            const response = await GET<any>(
-                `/enterprise/employer/${employerId}`
-            )
-            enterprise = response
-        } catch (error) {
-            console.error("Error fetching enterprise:", error)
-        }
-    }
-
     let loaded = false;
 
     onMount(async () => {
-        await getEnterprises(offer.employerId)
         cityOptions = await fetchCity()
-        const response = await GET<any>(
-            `/offerProgram/${offer.id}`,
-        )
-        try {
-            programmeSelected = response
-                .map((programId: number) => {
-                    let program = programmesOption.find(
-                        (p) => p.value === programId,
-                    )
-                    return program
-                        ? { label: program.label, value: program.value }
-                        : null
-                })
-                .filter((p: number) => p !== null) // Filtrer les éventuels null si aucun programme n'est trouvé
-
-                if (offer.offerLink == "https://" || offer.offerLink == "http://") 
-                {
-                    hideURL = true;
-                }
-
-        } catch (error) {
-            console.error("Error fetching program:", error)
-        }
-
-        await getScheduleByOfferId()
-        
         loaded = true;
-        
     })
-    let programmeSelected = [] as any
-    let programmesOption: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
-    
-    let scheduleSelected: { label: string; value: number }[] = [{
-        label: "",
-        value: 0,
-    }]
 
-    const getScheduleByOfferId = async () => {
-        const response = await GET<any>(
-            `/employmentSchedule/getByOfferId/${offer.id}`,
-        )
-        scheduleSelected = response.map((schedule: { id: number; description: string }) => ({
-            label: schedule.description,
-            value: schedule.id,
-        }))
-    }
 
     $: if (cityOptions) {
         const city = cityOptions.find(
-            (ville: any) => ville.value === enterprise.cityId,
+            (ville: any) => ville.value === offer?.enterprise?.cityId,
         )
 
         if (city) {
@@ -98,29 +38,29 @@
     {:else}
         <div class="titleContainer">
             <h3 class="title">{offer.title}</h3>
-            {#if enterprise}
-                <h4 class="subtitle">Chez {enterprise.name}</h4>
+            {#if offer.enterprise}
+                <h4 class="subtitle">Chez {offer.enterprise.name}</h4>
             {/if}
         </div>
 
-        {#if enterprise && !enterprise?.isTemporary}
+        {#if offer.enterprise && offer.enterprise?.isTemporary}
             <div class="info">
                 <h2 class="infoTitle separator">Entreprise:</h2>
                 <div class="form-group-vertical">
                     <h5 class="infoTitle" >Nom*</h5>
-                    <p>{enterprise.name}</p>
+                    <p>{offer.enterprise.name}</p>
                 </div>
                 <div class="form-group-vertical">
                     <h5 class="infoTitle">Adresse*</h5>
-                    <p>{enterprise.address}</p>
+                    <p>{offer.enterprise.address}</p>
                 </div>
                 <div class="form-group-vertical">
                     <h5 class="infoTitle">Courriel*</h5>
-                    <p>{enterprise.email}</p>
+                    <p>{offer.enterprise.email}</p>
                 </div>
                 <div class="form-group-vertical">
                     <h5 class="infoTitle">Téléphone*</h5>
-                    <p>{enterprise.phone}</p>
+                    <p>{offer.enterprise.phone}</p>
                 </div>
                 <div class="form-group-vertical">
                     <h5 class="infoTitle">Ville*</h5>
@@ -147,9 +87,9 @@
             <h5 class="infoTitle">Heure par semaine</h5>
             <p class="text">{offer.hoursPerWeek}</p>
             <h5 class="infoTitle">Programme</h5>
-            <p class="text">{programmeSelected.map((p) => p.label).join(", ")}</p>
+            <p class="text">{offer.studyPrograms?.map((p) => p.name).join(", ")}</p>
             <h5 class="infoTitle">Type du poste</h5>
-            <p class="text">{scheduleSelected.map((s) => s.label).join(", ")}</p>
+            <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
@@ -157,24 +97,22 @@
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <p class="text">{offer.email}</p>
     
-            <style scoped>
-                .CanBeHidden 
-                {
-                    display: none;
-                }
-    
-                .container > .Loading2 
-                {
-                    display: flex !important;
-                    justify-content: center !important;
-                }
-            </style>
         </div>
     {/if}
 
 </div>
 
 <style scoped>
+    .CanBeHidden 
+    {
+        display: none;
+    }
+
+    .container > .Loading2 
+    {
+        display: flex !important;
+        justify-content: center !important;
+    }
     .titleContainer {
         display: flex;
         flex-direction: column;

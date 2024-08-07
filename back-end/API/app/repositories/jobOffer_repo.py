@@ -19,9 +19,9 @@ class JobOfferRepo:
         db.session.commit()
         return newJobOffer
     
-    def offresEmploiEmployeur(self, employerId):
+    def offresEmploiEmployeur(self, employerId, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
-        return jobOffers
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
     def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
@@ -50,9 +50,9 @@ class JobOfferRepo:
         jobOffer = JobOffer.query.filter_by(id=id).first()
         return jobOffer
 
-    def offresEmploi(self):
+    def offresEmploi(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.all()
-        return jobOffers
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
     def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()
@@ -61,9 +61,7 @@ class JobOfferRepo:
             JobOffer.offerDebut <= today,
             JobOffer.deadlineApply >= today
         ).order_by(JobOffer.approvedDate.desc()).all()
-        res =  self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-        print(res)
-        return res
+        return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
     def getRecentOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()

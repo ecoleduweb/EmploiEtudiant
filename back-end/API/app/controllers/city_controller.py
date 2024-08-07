@@ -9,7 +9,7 @@ city_blueprint = Blueprint('city', __name__)
 city_service = CityService()
 
 @city_blueprint.route('/<int:id>', methods=['GET'])
-def oneCity(current_user, id):
+def oneCity(id):
     if not id:
         logger.warning('no city_id provided')
         return jsonify({'message': 'no id provided'}), 400

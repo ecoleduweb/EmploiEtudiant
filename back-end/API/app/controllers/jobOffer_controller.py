@@ -82,8 +82,11 @@ def offreEmploi(id):
 @job_offer_blueprint.route('/employer/all', methods=['GET'])
 @token_required
 def offresEmploiEmployeur(current_user):
+    needsEntrepriseDetails = request.args.get("entrepriseDetails") == "true"
+    needsEmploymentScheduleDetails = request.args.get("employmentScheduleDetails") == "true"
+    needsStudyProgramDetails = request.args.get("studyProgramDetails") == "true"
     if current_user.isModerator:
-        jobOffers = jobOffer_service.offresEmploi()
+        jobOffers = jobOffer_service.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
         return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
     #Si il n'y a pas d'offre d'emploi pour l'employeur, on retourne un tableau vide
     try:
@@ -91,7 +94,7 @@ def offresEmploiEmployeur(current_user):
     except Exception as e:
         logger.warning('Employer not found : ' + str(e))
         return jsonify([]), 404
-    jobOffers = jobOffer_service.offresEmploiEmployeur(employerId)
+    jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
