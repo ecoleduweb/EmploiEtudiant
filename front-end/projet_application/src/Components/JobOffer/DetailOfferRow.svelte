@@ -19,7 +19,6 @@
             console.error("Error fetching enterprise:", error)
         }
     }
-
     onMount(async () => {
         if (offer) 
         {

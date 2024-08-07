@@ -158,12 +158,30 @@
                 <div class="option">
                     <button
                         class="button logout-button"
-                        on:click={handleLogout}
+                        on:click={handleEnterprise}
                     >
-                        <p class="textLogout">Déconnexion</p>
+                        <p class="textLogout">Entreprises</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleUtilisateur}
+                    >
+                        <p class="textLogout">Utilisateurs</p>
+                    </button>
+                </div>
+
+                <div class="option">
+                    <button
+                        class="button logout-button"
+                        on:click={handleProgrammes}
+                    >
+                        <p class="textLogout">Modifier les programmes</p>
                         <img
                             class="iconeLogout"
-                            src="logout.svg"
+                            src="edit.svg"
                             alt="Logout icon"
                         />
                     </button>
@@ -357,7 +375,6 @@
     }
 
     .textSearch {
-        display: flex;
         align-items: center;
         width: 60%;
         height: 100%;
@@ -367,11 +384,6 @@
     .textBusiness {
         display: flex;
         align-items: center;
-        width: 55%;
-        height: 100%;
-    }
-
-    .iconeBusiness {
         display: flex;
         align-items: center;
         width: 15%;
@@ -454,7 +466,6 @@
         display: flex;
         align-items: center;
     }
-
 
     .textLogout {
         margin-right: 8px;
