@@ -9,7 +9,6 @@ city_blueprint = Blueprint('city', __name__)
 city_service = CityService()
 
 @city_blueprint.route('/<int:id>', methods=['GET'])
-@token_required
 def oneCity(current_user, id):
     if not id:
         logger.warning('no city_id provided')
@@ -22,8 +21,7 @@ def oneCity(current_user, id):
     return jsonify({'id': city.id, 'city': city.city, 'region': region.region})
 
 @city_blueprint.route('/all', methods=['GET'])
-@token_required
-def allCities(current_user):
+def allCities():
     cities = city_service.allCities()
     if not cities:
         logger.warning('no cities found in the database')

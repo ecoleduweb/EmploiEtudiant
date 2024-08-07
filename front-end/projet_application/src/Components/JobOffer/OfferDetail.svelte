@@ -107,23 +107,23 @@
             <div class="info">
                 <h2 class="infoTitle separator">Entreprise:</h2>
                 <div class="form-group-vertical">
-                    <label class="infoTitle" for="title">Nom*</label>
+                    <h5 class="infoTitle" >Nom*</h5>
                     <p>{enterprise.name}</p>
                 </div>
                 <div class="form-group-vertical">
-                    <label class="infoTitle" for="schedule">Adresse*</label>
+                    <h5 class="infoTitle">Adresse*</h5>
                     <p>{enterprise.address}</p>
                 </div>
                 <div class="form-group-vertical">
-                    <label class="infoTitle" for="lieu">Courriel*</label>
+                    <h5 class="infoTitle">Courriel*</h5>
                     <p>{enterprise.email}</p>
                 </div>
                 <div class="form-group-vertical">
-                    <label class="infoTitle" for="lieu">Téléphone*</label>
+                    <h5 class="infoTitle">Téléphone*</h5>
                     <p>{enterprise.phone}</p>
                 </div>
                 <div class="form-group-vertical">
-                    <label class="infoTitle" for="lieu">Ville*</label>
+                    <h5 class="infoTitle">Ville*</h5>
                     <p>{selectedCity[0].label}</p>
                 </div>
             </div>
@@ -198,6 +198,7 @@
     }
     .info {
         color: black;
+        margin-bottom: 2vw;
     }
     .text {
         font-size: 1.1rem;
