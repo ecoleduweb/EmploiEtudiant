@@ -52,15 +52,6 @@
             (ville) => ville.value === enterprise.cityId,
         )
     }
-
-    const verifySelected = (selected: any) => {
-        if (selected === null) 
-        {
-            setTimeout(setOwnEnterprise, 100)
-        }
-    }
-
-    $: verifySelected(selectedCity)
             
     export let handleCloseClick: () => void
      
@@ -135,7 +126,7 @@
             <div class="form-group-vertical">
                 <label for="lieu">Ville*</label>
                 <br>
-                {#if cityOptions.length === 0}
+                {#if cityOptions.length === 0 && selectedCity}
                     <p>Chargement des villes...</p>
                 {:else}
                     <MultiSelect

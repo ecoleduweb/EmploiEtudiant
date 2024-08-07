@@ -72,7 +72,6 @@ def getEnterprise(current_user, id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-<<<<<<< HEAD
         logger.warn(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
     
