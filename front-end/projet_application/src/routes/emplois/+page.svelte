@@ -112,6 +112,7 @@
     .rowTitles {
         display: flex;
         margin-left: 5%;
+        justify-content: left;
     }
 
     .rowTitle {

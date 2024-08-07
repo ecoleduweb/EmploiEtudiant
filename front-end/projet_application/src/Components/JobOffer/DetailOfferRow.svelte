@@ -18,6 +18,16 @@
             console.error("Error fetching enterprise:", error)
         }
     }
+    const getStudyPrograms = async () => {
+        try {
+            const response = await GET<any>(
+              
+            )
+            studyProgram.set(response.name)
+        } catch (error) {
+            console.error("Error fetching study program:", error)
+        }
+    }
     onMount(async () => {
         if (offer) 
         {
@@ -32,7 +42,7 @@
             <p class="text">{offer.title}</p>
             <p class="text">{$enterprise}</p>
             <p class="text">{offer.deadlineApply}</p>
-            <p class="description">{offer.description}</p>
+            <p class="text"></p> <!-- study program = remplacer --> 
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>
