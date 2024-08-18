@@ -169,7 +169,7 @@ def test_resetPasswordNormal(client):
 
     token2 = response3.json['token']
 
-    #Modification du mot de passe avec email d'un autre utilisateur/invalide
+    #Modification du mot de passe avec courriel d'un autre utilisateur/invalide
     data4 = {
         "email": "test123@gmail.com",
         "password": "test12345"

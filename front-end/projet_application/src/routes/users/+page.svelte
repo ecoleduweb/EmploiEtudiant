@@ -45,7 +45,8 @@
         <section class="haut">
             <div class="haut-gauche">
                 <h1 class="title">
-                    <span class="text">Utilisateur</span>
+                    <span class="text">LISTE DES</span>
+                    <span class="text">UTILISATEURS</span>
                 </h1>
             </div>
         </section>
@@ -123,5 +124,11 @@
         margin-top: 15px;
         margin-bottom: 5;
         color: white;
+    }
+    .offres {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        margin-left: 5%;
     }
 </style>

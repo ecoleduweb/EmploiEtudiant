@@ -69,38 +69,40 @@
 <div class="main-div">
     <OfferDetail {offer} />
     <div class="container">
-        <div>
-            <h5 class="infoTitle">Message d'approbation</h5>
-            <textarea
-                bind:value={approbationMessage}
-                placeholder="Message d'approbation"
-                class="input"
-            />
-        </div>
-        {#if enterprise && enterprise.isTemporary && cities}
+        <div class="horitonzal">
             <div>
-                <h3>Détails de l'entreprise de l'utilisateur</h3>
-                <EntrepriseDetails {enterprise} selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
-                    <hr>
-                <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
-                <label class="infoChbk" for="LierEmployer">Confirmer l'entreprise </label>
-                <br>
-                {#if enterprises}
-                    <select id="ville" bind:value={selectedEnterprise} class="form-control">
-                        {#each enterprises as { label, value }}
-                            <option value={value}>
-                                {#if value == enterprise.id}
-                                    <b>*Ajouter*</b>
-                                {/if}
-                                {label}
-                            </option>
-                        {/each}
-                    </select>
-                    <br>
-                    <br>
-                {/if}
+                <h5 class="infoTitle">Message d'approbation</h5>
+                <textarea
+                    bind:value={approbationMessage}
+                    placeholder="Message d'approbation"
+                    class="input"
+                />
             </div>
-        {/if}
+            {#if enterprise && enterprise.isTemporary && cities}
+                <div class="detail-enterprise">
+                    <h3>Détails de l'entreprise de l'utilisateur</h3>
+                    <EntrepriseDetails {enterprise} selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
+                        <hr>
+                    <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
+                    <label class="infoChbk" for="LierEmployer">Confirmer l'entreprise </label>
+                    <br>
+                    {#if enterprises}
+                        <select id="ville" bind:value={selectedEnterprise} class="form-control">
+                            {#each enterprises as { label, value }}
+                                <option value={value}>
+                                    {#if value == enterprise.id}
+                                        <b>*Ajouter*</b>
+                                    {/if}
+                                    {label}
+                                </option>
+                            {/each}
+                        </select>
+                        <br>
+                        <br>
+                    {/if}
+                </div>
+            {/if}
+        </div>
         <div class="button">
             <Button text="Approuver" onClick={() => approveOffer(true)} />
 
@@ -119,6 +121,16 @@
         color: white;
         border-radius: 4px;
         transition: background-color 0.3s ease;
+    }
+
+    .horitonzal{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .detail-enterprise{
+        margin-top: 5vh;
     }
 
     .infoTitle {

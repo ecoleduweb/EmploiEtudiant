@@ -365,7 +365,7 @@
             {#if errors.title}{errors.title}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="schedule">Type d'emplois*</label>
+            <label for="schedule">Types d’emploi*</label>
             {#if scheduleOption.length}
                 <MultiSelect
                     id="schedule"
@@ -460,7 +460,7 @@
             {#if errors.studyPrograms}{errors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salary">Salaire/H</label>
+            <label for="salary">Salaire Horaire</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
@@ -472,7 +472,7 @@
             {#if errors.salary}{errors.salary}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="hoursPerWeek">Heure/Semaine*</label>
+            <label for="hoursPerWeek">Heures/semaine*</label>
             <input
                 type="text"
                 bind:value={jobOffer.hoursPerWeek}

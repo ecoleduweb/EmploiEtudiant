@@ -73,10 +73,10 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Date limite pour postuler*').fill('2024-08-04');
     await page.getByPlaceholder('Choisir programme(s)').click();
     await page.getByRole('option', { name: 'Programme 1' }).click();
-    await page.getByLabel('Salaire/H').click();
-    await page.getByLabel('Salaire/H').fill('44');
-    await page.getByLabel('Heure/Semaine*').click();
-    await page.getByLabel('Heure/Semaine*').fill('33');
+    await page.getByLabel('Salaires Horaire').click();
+    await page.getByLabel('Salaires Horaire').fill('44');
+    await page.getByLabel('Heures/semaine*').click();
+    await page.getByLabel('Heures/semaine*').fill('33');
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('email@email.com');
     await page.getByLabel('Description du poste*').click();
@@ -105,7 +105,7 @@ test.describe('createNewJobOffer', () => {
 
     await expect(page.getByText('Vous devez nommer votre')).toBeVisible();
     await expect(page.getByText('Vous devez ajouter une')).toBeVisible();
-    await expect(page.getByText('Vous devez mettre un email à')).toBeVisible();
+    await expect(page.getByText('Vous devez mettre un courriel à')).toBeVisible();
     await expect(page.getByText('Vous devez mettre un numéro')).toBeVisible();
     await expect(page.getByText('Vous devez mettre une ville')).toBeVisible();
 
@@ -122,7 +122,7 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#email').first().click();
     await page.locator('#email').first().fill('test@gmail.com');
     await page.getByRole('button', { name: 'Envoyer' }).click();
-    await expect(page.getByText('Vous devez mettre un email à')).toBeHidden();
+    await expect(page.getByText('Vous devez mettre un courriel à')).toBeHidden();
 
     await page.locator('#phone').click();
     await page.locator('#phone').fill('123333');
@@ -164,13 +164,13 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.getByText('Le programme visé est requis')).toBeHidden()
 
-    await page.getByLabel('Salaire/H').click();
-    await page.getByLabel('Salaire/H').fill('32');
+    await page.getByLabel('Salaires Horaire').click();
+    await page.getByLabel('Salaires Horaire').fill('32');
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.getByText('Le salaire est requis')).toBeHidden()
 
-    await page.getByLabel('Heure/Semaine*').click();
-    await page.getByLabel('Heure/Semaine*').fill('40');
+    await page.getByLabel('Heures/semaine*').click();
+    await page.getByLabel('Heures/semaine*').fill('40');
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.getByText('Veuillez entrer un nombre d\'')).toBeHidden()
 
