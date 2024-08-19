@@ -55,14 +55,15 @@ def createJobOffer(current_user):
             offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-    
         
+        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+    
         sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + " par " + current_user.firstName + " " + current_user.lastName + ", pour l'entreprise " + employer.enterprise.name + ".\n")
-
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + " par " + current_user.firstName + " " + current_user.lastName + ", pour l'entreprise " + enterprise.name + ".")
         return jobOffer.to_json_string(), 201
     except Exception as e:
-        logger.warning("Could not create jobOffer, invalid data")
+        print("10")
+        logger.warning("Could not create jobOffer, invalid data : " + str(e))
         return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
