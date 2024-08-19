@@ -158,12 +158,12 @@
                 <div class="option">
                     <button
                         class="button logout-button"
-                        on:click={handleLogout}
+                        on:click={handleProgrammes}
                     >
-                        <p class="textLogout">Déconnexion</p>
+                        <p class="textLogout">Modifier les programmes</p>
                         <img
                             class="iconeLogout"
-                            src="logout.svg"
+                            src="edit.svg"
                             alt="Logout icon"
                         />
                     </button>
@@ -454,7 +454,6 @@
         display: flex;
         align-items: center;
     }
-
 
     .textLogout {
         margin-right: 8px;

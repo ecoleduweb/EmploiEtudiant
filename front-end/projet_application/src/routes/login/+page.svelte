@@ -3,7 +3,7 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
     import type { Login } from "../../Models/Login"
-    import { POST } from "../../ts/server"
+    import { GET, POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { isLoggedIn } from "$lib"
@@ -67,7 +67,6 @@
             errors = extractErrors(err)
         }
     }
-
 
     onMount(async () => 
     {
