@@ -158,24 +158,6 @@
                 <div class="option">
                     <button
                         class="button logout-button"
-                        on:click={handleEnterprise}
-                    >
-                        <p class="textLogout">Entreprises</p>
-                    </button>
-                </div>
-
-                <div class="option">
-                    <button
-                        class="button logout-button"
-                        on:click={handleUtilisateur}
-                    >
-                        <p class="textLogout">Utilisateurs</p>
-                    </button>
-                </div>
-
-                <div class="option">
-                    <button
-                        class="button logout-button"
                         on:click={handleProgrammes}
                     >
                         <p class="textLogout">Modifier les programmes</p>
@@ -375,6 +357,7 @@
     }
 
     .textSearch {
+        display: flex;
         align-items: center;
         width: 60%;
         height: 100%;
@@ -384,6 +367,11 @@
     .textBusiness {
         display: flex;
         align-items: center;
+        width: 55%;
+        height: 100%;
+    }
+
+    .iconeBusiness {
         display: flex;
         align-items: center;
         width: 15%;
