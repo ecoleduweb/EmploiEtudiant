@@ -74,8 +74,8 @@ const schema = yup.object().shape({
         .required("Le programme visé est requis"),
     scheduleIds: yup
         .array()
-        .min(1, "Le types d'emploi est requis")
-        .required("Le types d'emploi est requis")
+        .min(1, "Le type d'emploi est requis")
+        .required("Le type d'emploi est requis")
 })
 
 export default schema
@@ -97,7 +97,7 @@ export const entrepriseSchema = yup.object().shape({
         ),
     email: yup
         .string()
-        .required("Vous devez mettre un courriel à votre entreprise")
+        .required("Votre entreprise doit avoir un courriel")
         .max(255, "Le courriel doit être 255 caractères maximum"),
     name: yup
         .string()

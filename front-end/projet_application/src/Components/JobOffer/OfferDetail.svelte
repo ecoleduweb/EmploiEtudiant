@@ -95,9 +95,9 @@
             <p class="text">{offer.description}</p>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
             {#if !hideURL}
-                <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
-                <br>
-                <br>
+                <div class="link_padding">
+                    <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+                </div>
             {:else}
                 <p class="text CanBeHidden">{offer.offerLink}</p>
             {/if}                     
@@ -182,5 +182,8 @@
         flex-direction: row;
         justify-content: space-between;
         width: 90%;
+    }
+    .link_padding {
+        padding-bottom: 3vh;
     }
 </style>

@@ -460,7 +460,7 @@
             {#if errors.studyPrograms}{errors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salary">Salaire Horaire</label>
+            <label for="salary">Salaire horaire</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
