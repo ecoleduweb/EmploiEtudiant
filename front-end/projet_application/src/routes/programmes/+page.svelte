@@ -194,6 +194,10 @@
         flex-direction: column;
         width: 100%;
     }
+    .divFlex {
+        display: flex;
+        margin-top: 20px;
+    }
 
     @media screen and (max-width: 900px) and (min-width: 300px) 
     {

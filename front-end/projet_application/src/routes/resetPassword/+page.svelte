@@ -106,13 +106,13 @@
                 {#if errors.password}{errors.password}{/if}
             </p>
             <p class="text-title">
-                Votre mot de passe doit contenir au minimum :
+                Votre mot de passe doit contenir au minimum : 
             </p>
             <ul class="list-requirements">
                 <li><p class="text-password">12 caractères minimum</p></li>
                 <li><p class="text-password">1 lettre majusucule</p></li>
                 <li><p class="text-password">1 chiffre</p></li>
-                <li><p class="text-password">1 caractère spéciaux</p></li>
+                <li><p class="text-password">1 caractère spécial.</p></li>
             </ul>
             <label for="email">Confirmer le mot de passe </label>
             <input

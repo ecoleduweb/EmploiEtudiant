@@ -16,8 +16,8 @@ export const entrepriseSchema = yup.object().shape({
         ),
     email: yup
         .string()
-        .min(4, "L'email doit être 4 caractères minimum")
-        .max(255, "L'email doit être 255 caractères maximum"),
+        .min(4, "Le courriel doit être 4 caractères minimum")
+        .max(255, "Le courriel doit être 255 caractères maximum"),
     name: yup
         .string()
         .max(255, "Le nom de votre entreprise doit être maximum 255 caractères"),
