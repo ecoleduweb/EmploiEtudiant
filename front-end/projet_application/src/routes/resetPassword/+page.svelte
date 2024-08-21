@@ -26,6 +26,32 @@
             ),
     })
 
+    const lowercaseRegex = /^(?=.*[a-z])/
+    const uppercaseRegex = /^(?=.*[A-Z])/
+    const digitRegex = /^(?=.*[0-9])/
+    const specialCharRegex = /^(?=.*[!@#$%^&*])/
+    const lengthRegex = /^(?=.{12,})/
+
+    const validations = writable({
+        lowercase: false,
+        uppercase: false,
+        digit: false,
+        specialChar: false,
+        length: false,
+    })
+    
+    function validatePassword()
+    {
+        validations.update((vals) => ({
+                ...vals,
+                lowercase: lowercaseRegex.test(register.user.password),
+                uppercase: uppercaseRegex.test(register.user.password),
+                digit: digitRegex.test(register.user.password),
+                specialChar: specialCharRegex.test(register.user.password),
+                length: lengthRegex.test(register.user.password),
+            }))
+    }
+
     let errors: ResetPassword = {
         token: "",
         password: "",
@@ -109,10 +135,60 @@
                 Votre mot de passe doit contenir au minimum :
             </p>
             <ul class="list-requirements">
-                <li><p class="text-password">12 caractères minimum</p></li>
-                <li><p class="text-password">1 lettre majusucule</p></li>
-                <li><p class="text-password">1 chiffre</p></li>
-                <li><p class="text-password">1 caractère spéciaux</p></li>
+                {#if $validations.lowercase}
+                <li>
+                    <span class="text-password-good">✔</span>
+                    <span class="text-password">Contient une lettre minuscule</span>
+                </li>
+            {:else}
+                <li>
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Ne contient pas de lettre minuscule</span>
+                </li>
+            {/if}
+        
+            {#if $validations.uppercase}
+                <li>
+                    <span class="text-password-good">✔</span>
+                    <span class="text-password">Contient une lettre majuscule</span>
+                </li>
+            {:else}
+                <li>
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Ne contient pas de lettre majuscule</span>
+                </li>
+            {/if}
+            {#if $validations.digit}
+                <li>
+                    <span class="text-password-good">✔</span>
+                    <span class="text-password">Contient un chiffre</span>
+                </li>
+            {:else}
+                <li>
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Ne contient pas de chiffre</span></li>
+            {/if}
+            {#if $validations.specialChar}
+                <li>
+                    <span class="text-password-good">✔</span>
+                    <span class="text-password">Contient un caractère spécial</span></li>
+            {:else}
+                <li>
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Ne contient pas de caractère spécial</span></li>
+            {/if}
+        
+            {#if $validations.length}
+                <li>
+                    <span class="text-password-good">✔</span> 
+                    <span class="text-password">Mot de passe long</span>
+                </li>
+            {:else}
+                <li> 
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Mot de passe trop court</span>
+                </li>
+            {/if}
             </ul>
             <label for="email">Confirmer le mot de passe </label>
             <input
