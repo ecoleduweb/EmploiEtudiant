@@ -8,6 +8,7 @@
     import { page } from '$app/stores'
     import { goto } from "$app/navigation"
     import Popup from "../../Components/Common/Popup.svelte"
+    import { writable } from "svelte/store"
 
     const schema = yup.object({
         password: yup
@@ -26,6 +27,19 @@
             ),
     })
 
+    let register = {
+        user: {
+            id: 0,
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            role: "",
+        },
+        validatePassword: "",
+        token: "",
+    }
+
     const lowercaseRegex = /^(?=.*[a-z])/
     const uppercaseRegex = /^(?=.*[A-Z])/
     const digitRegex = /^(?=.*[0-9])/
@@ -38,6 +52,7 @@
         digit: false,
         specialChar: false,
         length: false,
+        corresponds: false,
     })
     
     function validatePassword()
@@ -49,6 +64,7 @@
                 digit: digitRegex.test(register.user.password),
                 specialChar: specialCharRegex.test(register.user.password),
                 length: lengthRegex.test(register.user.password),
+                corresponds: register.user.password == register.validatePassword,
             }))
     }
 
@@ -189,6 +205,18 @@
                     <span class="text-password">Mot de passe trop court</span>
                 </li>
             {/if}
+
+            {#if $validations.corresponds && resetPassword.confirmPassword != ""}
+            <li>
+                <span class="text-password-good">✔</span> 
+                <span class="text-password">Mot de passe correspondent</span>
+            </li>
+        {:else}
+            <li> 
+                <span class="text-password-error">X</span> 
+                <span class="text-password">Mot de passe trop court</span>
+            </li>
+        {/if}
             </ul>
             <label for="email">Confirmer le mot de passe </label>
             <input

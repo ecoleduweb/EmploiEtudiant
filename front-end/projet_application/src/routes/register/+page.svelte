@@ -66,6 +66,7 @@
         digit: false,
         specialChar: false,
         length: false,
+        corresponds: false,
     })
 
     let popupEnabled = false
@@ -89,6 +90,7 @@
                 digit: digitRegex.test(register.user.password),
                 specialChar: specialCharRegex.test(register.user.password),
                 length: lengthRegex.test(register.user.password),
+                corresponds: register.user.password == register.validatePassword,
             }))
     }
 
@@ -210,7 +212,7 @@
                         type="password"
                         id="password"
                         bind:value={register.user.password}
-                        on:keydown={validatePassword}
+                        on:input={validatePassword}
                     />
                     <p class="errors-input">
                         {#if errors["user.password"]}
@@ -224,6 +226,7 @@
                         type="password"
                         id="confirm_password"
                         bind:value={register.validatePassword}
+                        on:input={validatePassword}
                     />
                     <p class="errors-input">
                         {#if errors.validatePassword}{errors.validatePassword}{/if}
@@ -284,6 +287,19 @@
                             <span class="text-password-error">X</span> 
                             <span class="text-password">Mot de passe trop court</span>
                         </li>
+                    {/if}
+                    {#if register.validatePassword != ""}
+                        {#if $validations.corresponds}
+                            <li>
+                            <span class="text-password-good">✔</span> 
+                            <span class="text-password">Mot de passe correspondent</span>
+                            </li>
+                        {:else}
+                            <li> 
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Mot de passe ne correspondent pas</span>
+                            </li>
+                        {/if}
                     {/if}
                     </ul>
                 </div>
