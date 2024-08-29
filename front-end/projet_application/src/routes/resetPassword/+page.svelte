@@ -211,12 +211,12 @@
                 <span class="text-password-good">✔</span> 
                 <span class="text-password">Mot de passe correspondent</span>
             </li>
-        {:else}
-            <li> 
-                <span class="text-password-error">X</span> 
-                <span class="text-password">Mot de passe trop court</span>
-            </li>
-        {/if}
+            {:else}
+                <li> 
+                    <span class="text-password-error">X</span> 
+                    <span class="text-password">Mot de passe ne correspondent pas</span>
+                </li>
+            {/if}
             </ul>
             <label for="email">Confirmer le mot de passe </label>
             <input

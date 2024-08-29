@@ -181,7 +181,7 @@ def requestResetPassword():
         if user_service.getUser(data['email']):
             userData = {
                 "email": data['email'],
-                "resetDate": datetime.now().timestamp()
+                "resetDate": str(datetime.now().timestamp())
             }
 
             passwordResetToken = encrypt(json.dumps(userData))
