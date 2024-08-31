@@ -317,7 +317,7 @@
                             options={enterpriseOption}
                             closeDropdownOnSelect={true}
                             maxSelect={1}
-                            placeholder="Choisir une enterprise..."
+                            placeholder="Choisir une entreprise..."
                             bind:value={enterpriseSelected}
                             bind:selected={enterpriseFromSelectedEnterprise}
                             on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
@@ -531,7 +531,7 @@
                     id="acceptCondition"
                 />
                 <label for="acceptCondition"
-                    >J'acceptes les condtions
+                    >J'accepte les conditions
                 </label>
             </div>
             <p class="errors-input">
