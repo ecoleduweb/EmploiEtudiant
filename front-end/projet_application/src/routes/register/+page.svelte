@@ -66,6 +66,7 @@
         digit: false,
         specialChar: false,
         length: false,
+        corresponds: false,
     })
 
     let popupEnabled = false
@@ -75,22 +76,28 @@
         popupEnabled = false
     }
 
-    const handleSubmit = async () => {
-        try {
-            const lowercaseRegex = /^(?=.*[a-z])/
-            const uppercaseRegex = /^(?=.*[A-Z])/
-            const digitRegex = /^(?=.*[0-9])/
-            const specialCharRegex = /^(?=.*[!@#$%^&*])/
-            const lengthRegex = /^(?=.{12,})/
-
-            validations.update((vals) => ({
+    const lowercaseRegex = /^(?=.*[a-z])/
+    const uppercaseRegex = /^(?=.*[A-Z])/
+    const digitRegex = /^(?=.*[0-9])/
+    const specialCharRegex = /^(?=.*[!@#$%^&*])/
+    const lengthRegex = /^(?=.{12,})/
+    function validatePassword()
+    {
+        validations.update((vals) => ({
                 ...vals,
                 lowercase: lowercaseRegex.test(register.user.password),
                 uppercase: uppercaseRegex.test(register.user.password),
                 digit: digitRegex.test(register.user.password),
                 specialChar: specialCharRegex.test(register.user.password),
                 length: lengthRegex.test(register.user.password),
+                corresponds: register.user.password == register.validatePassword,
             }))
+    }
+
+    const handleSubmit = async () => {
+        try {
+
+            validatePassword()
 
             await schema.validate(register, { abortEarly: false })
             errors = {
@@ -205,6 +212,7 @@
                         type="password"
                         id="password"
                         bind:value={register.user.password}
+                        on:input={validatePassword}
                     />
                     <p class="errors-input">
                         {#if errors["user.password"]}
@@ -218,69 +226,81 @@
                         type="password"
                         id="confirm_password"
                         bind:value={register.validatePassword}
+                        on:input={validatePassword}
                     />
                     <p class="errors-input">
                         {#if errors.validatePassword}{errors.validatePassword}{/if}
                     </p>
                 </div>
                 <div class="password-validation-showcase">
-                    <ul>
-                        {#if !$validations.lowercase}
+                    <ul class="list-requirements">
+                        {#if $validations.lowercase}
+                        <li>
+                            <span class="text-password-good">✔</span>
+                            <span class="text-password">Contient une lettre minuscule</span>
+                        </li>
+                    {:else}
+                        <li>
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Ne contient pas de lettre minuscule</span>
+                        </li>
+                    {/if}
+                
+                    {#if $validations.uppercase}
+                        <li>
+                            <span class="text-password-good">✔</span>
+                            <span class="text-password">Contient une lettre majuscule</span>
+                        </li>
+                    {:else}
+                        <li>
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Ne contient pas de lettre majuscule</span>
+                        </li>
+                    {/if}
+                    {#if $validations.digit}
+                        <li>
+                            <span class="text-password-good">✔</span>
+                            <span class="text-password">Contient un chiffre</span>
+                        </li>
+                    {:else}
+                        <li>
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Ne contient pas de chiffre</span></li>
+                    {/if}
+                    {#if $validations.specialChar}
+                        <li>
+                            <span class="text-password-good">✔</span>
+                            <span class="text-password">Contient un caractère spécial</span></li>
+                    {:else}
+                        <li>
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Ne contient pas de caractère spécial</span></li>
+                    {/if}
+                
+                    {#if $validations.length}
+                        <li>
+                            <span class="text-password-good">✔</span> 
+                            <span class="text-password">Mot de passe long</span>
+                        </li>
+                    {:else}
+                        <li> 
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Mot de passe trop court</span>
+                        </li>
+                    {/if}
+                    {#if register.validatePassword != ""}
+                        {#if $validations.corresponds}
                             <li>
-                                <div class="validation-criteria-item">
-                                    <div>Au moins une lettre minuscule</div>
-                                    <div>
-                                        {$validations.lowercase ? "✅" : "❌"}
-                                    </div>
-                                </div>
+                            <span class="text-password-good">✔</span> 
+                            <span class="text-password">Mot de passe correspondent</span>
+                            </li>
+                        {:else}
+                            <li> 
+                            <span class="text-password-error">X</span> 
+                            <span class="text-password">Mot de passe ne correspondent pas</span>
                             </li>
                         {/if}
-                        {#if !$validations.uppercase}
-                            <li>
-                                <div class="validation-criteria-item">
-                                    <div style="margin-right:14%">
-                                        Au moins une lettre majuscule
-                                    </div>
-                                    <div>
-                                        {$validations.uppercase ? "✅" : "❌"}
-                                    </div>
-                                </div>
-                            </li>
-                        {/if}
-                        {#if !$validations.digit}
-                            <li>
-                                <div class="validation-criteria-item">
-                                    <div style="margin-right:14%">
-                                        Au moins un chiffre
-                                    </div>
-                                    <div>
-                                        {$validations.digit ? "✅" : "❌"}
-                                    </div>
-                                </div>
-                            </li>
-                        {/if}
-                    </ul>
-                    <ul>
-                        {#if !$validations.specialChar}
-                            <li>
-                                <div class="validation-criteria-item">
-                                    <div>Au moins un caractère spécial</div>
-                                    <div>
-                                        {$validations.specialChar ? "✅" : "❌"}
-                                    </div>
-                                </div>
-                            </li>
-                        {/if}
-                        {#if !$validations.length}
-                            <li>
-                                <div class="validation-criteria-item">
-                                    <div>Au moins 12 caractères</div>
-                                    <div>
-                                        {$validations.length ? "✅" : "❌"}
-                                    </div>
-                                </div>
-                            </li>
-                        {/if}
+                    {/if}
                     </ul>
                 </div>
             </div>

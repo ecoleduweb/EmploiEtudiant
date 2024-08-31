@@ -68,6 +68,37 @@ label {
     width: 100%;
 }
 
+.text-password {
+    width: 100%;
+    text-align: left;
+    color: #878787;
+    font-size: 12px;
+    margin: 0px;
+}
+
+.text-password-error {
+    width: 100%;
+    text-align: left;
+    color: #ff0000;
+    font-size: 12px;
+    margin: 0px;
+}
+
+.text-password-good {
+    width: 100%;
+    text-align: left;
+    color: #31f500;
+    font-size: 12px;
+    margin: 0px;
+}
+
+.list-requirements {
+    width: 70%;
+    color: #878787;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
 .form-connexion {
     flex-direction: column;
     margin: 10px 10px;

@@ -181,12 +181,12 @@ def requestResetPassword():
         if user_service.getUser(data['email']):
             userData = {
                 "email": data['email'],
-                "resetDate": datetime.now().timestamp()
+                "resetDate": str(datetime.now().timestamp())
             }
 
             passwordResetToken = encrypt(json.dumps(userData))
 
-            passwordResetLink = ( str.encode(os.environ.get("CORS")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
+            passwordResetLink = ( str.encode(os.environ.get("URL")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
             logger.info(passwordResetLink)
             sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
