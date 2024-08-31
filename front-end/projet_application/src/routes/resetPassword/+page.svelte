@@ -50,6 +50,7 @@
             specialChar: specialCharRegex.test(resetPassword.password),
             length: lengthRegex.test(resetPassword.password),
             corresponds: resetPassword.password === resetPassword.confirmPassword,
+
         }));
     }
 
@@ -103,7 +104,6 @@
 
             showPopup = true;
         } catch (err) {
-            console.log(err);
             errors = extractErrors(err);
         }
     };
