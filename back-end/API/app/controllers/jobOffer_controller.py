@@ -121,9 +121,9 @@ def updateJobOffer(current_user, id):
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             if not current_user.isModerator:
-                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifié sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
+                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
             else:
-                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
             return jsonify(jobOffer.to_json_string()), 200
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
@@ -158,9 +158,9 @@ def approveJobOffer(current_user, id):
         print(current_user_job)
 
         if data['isApproved'] == True:
-            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOfferToUpdate.title + "</b> a été approuvée.")
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été approuvée.")
         else:
-            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOfferToUpdate.title + "</b> a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
         return ('', 204)
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
