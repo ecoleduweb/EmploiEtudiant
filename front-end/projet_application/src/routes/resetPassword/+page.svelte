@@ -148,7 +148,7 @@
                 {#if errors.password}{errors.password}{/if}
             </p>
             <p class="text-title">
-                Votre mot de passe doit contenir au minimum :
+                Votre mot de passe doit contenir au minimum : 
             </p>
             <ul class="list-requirements">
                 {#if $validations.lowercase}

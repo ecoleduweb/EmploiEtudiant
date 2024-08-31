@@ -180,10 +180,14 @@
     {:else}
         <section class="offres">
             {#if isModerator === true}
-                <p class="textOffre">Les offres d'emplois</p>
+            <h1 class="title">
+                <span class="text">LES OFFRES D'EMPLOIS </span>
+            </h1>
             {/if}
             {#if isModerator === false}
-                <p class="textOffre">Mes offres d'emplois</p>
+            <h1 class="title">
+                <span class="text">MES OFFRES D'EMPLOIS </span>
+            </h1>
             {/if}
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres refusées</h2>
@@ -307,16 +311,18 @@
 
     }
     .haut-gauche {
-        width: 30%;
+        width: 100%;
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
+        justify-content: left;
+        gap: 2vw;
+        margin-left: 5vw;
     }
     .divFlex {
         display: flex;
         margin-bottom: 2vh;
     }
+    
     .offres {
         width: 100%;
         display: flex;
@@ -333,5 +339,22 @@
         margin: 0;
         margin-top: 5vh;
         color: white;
+    }
+    .title {
+        left: 7.2%;
+        margin: 0;
+        margin-top: 30px;
+    }
+    .title span:first-child {
+        color: white;
+        margin: 0;
+    }
+    .title span:last-child {
+        color: #00ad9a;
+        margin: 0;
+    }
+    .text {
+        font-size: 2.5vw;
+        margin: 0;
     }
 </style>

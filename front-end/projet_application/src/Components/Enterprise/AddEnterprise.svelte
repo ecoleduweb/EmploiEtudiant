@@ -104,7 +104,7 @@
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
         <h1 class="title">Créer une nouvelle entreprise</h1>
         <div class="form-group-vertical">
-            <label for="title">Nom*</label>
+            <label for="title">Nom de l'entreprise*</label>
             <input
                 type="text"
                 bind:value={enterprise.name}
@@ -116,7 +116,7 @@
             </p>
         </div>
         <div class="form-group-vertical">
-            <label for="title">Email*</label>
+            <label for="title">Courriel*</label>
             <input
                 type="text"
                 bind:value={enterprise.email}

@@ -139,11 +139,11 @@
         <div class="info">
             <h5 class="infoTitle">Email</h5>
             <p class="text">{user.email}</p>
-            <h5 class="infoTitle">Prenom</h5>
+            <h5 class="infoTitle">Prénom</h5>
             <p class="text">{user.firstName}</p>
             <h5 class="infoTitle">Nom</h5>
             <p class="text">{user.lastName}</p>
-            <h5 class="infoTitle">Autre informations:</h5>
+            <h5 class="infoTitle">Autres informations:</h5>
         </div>
 
         <div class="editInfo">
@@ -183,7 +183,7 @@
             </div>
         </div>
         <div>
-            <h5 class="info">Veuillez notez que le nom et prénom se met à jours seulement après reconnexion de l'utilisateur.</h5>
+            <h5 class="info">Une reconnexion est nécessaire pour appliquer les modifications.</h5>
         </div>
         <div class="editInfo userActions">
             <div class="button">

@@ -3,6 +3,7 @@
     import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     import fetchCity from "../../Service/CityService"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import Button from "../Inputs/Button.svelte"
     
     export let offer: JobOfferDetails
 
@@ -93,13 +94,22 @@
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillé</h5>
-            <p class={hideURL ? "text CanBeHidden" : "text"}>{offer.offerLink}</p>
+            {#if !hideURL}
+                <div class="link_padding">
+                    <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+                </div>
+            {:else}
+                <p class="text CanBeHidden">{offer.offerLink}</p>
+            {/if}                     
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
-            <p class="text">{offer.email}</p>
-    
+            <div class="row">
+                <p class="text">{offer.email}</p> 
+                    <a href="mailto:{offer.email}">
+                        <Button text="Postuler par courriel" />
+                    </a>
+            </div>
         </div>
     {/if}
-
 </div>
 
 <style scoped>
@@ -144,6 +154,13 @@
         margin-bottom: 1.75vw;
         color: black;
     }
+    .text_link
+    {
+        font-size: 1.1rem;
+        bottom: 2vh;
+        color: #00ad9a;
+        margin-bottom: 1.75vw;
+    }
     .container {
         width: 95%;
         display: flex;
@@ -159,5 +176,14 @@
 
     .separator {
         color: #00ad9a;
+    }
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 90%;
+    }
+    .link_padding {
+        padding-bottom: 3vh;
     }
 </style>
