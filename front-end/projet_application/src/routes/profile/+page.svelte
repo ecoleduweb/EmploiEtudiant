@@ -32,20 +32,26 @@
         localStorage.removeItem("token")
     }
 
-    const ChangeUser = (lastName: string, firstName: string) => 
-    {
+    const ChangeUser = (lastName: string, firstName: string) => {
         try {
-            PUT<any, any>("/user/user", {
-                lastname: lastName,
-                firstname: firstName,
+            const updatedUser = {
+                lastname: lastName || $currentUser?.lastName,
+                firstname: firstName || $currentUser?.firstName,
                 email: ($currentUser as User).email
-            })
-            currentUser.set({...$currentUser!, firstName: firstName, lastName: lastName});
+            };
+
+            PUT<any, any>("/user/user", updatedUser);
+
+            if ($currentUser?.firstName !== firstName && firstName) {
+                currentUser.set({ ...$currentUser!, firstName: firstName });
+            }
+            if ($currentUser?.lastName !== lastName && lastName) {
+                currentUser.set({ ...$currentUser!, lastName: lastName });
+            }
+        } catch {
+            alert("Erreur lors de la modification de l'utilisateur");
         }
-        catch {
-            //TODO message d'erreur
-        }
-    }
+    };
 
     let userHaveEnterprise = false
 
@@ -78,7 +84,7 @@
     </div>
 
     <div class="more-information">
-        <h5 class="infoTitleBig">Autres informations:</h5>
+        <h5 class="infoTitleBig">Modifier mon profil:</h5>
         <div class="editInfo">
             <h5 class="infoTitle">Prénom:</h5>
             <input type="text_content"
@@ -88,7 +94,7 @@
             />
 
             <div class="button">
-                <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
+                <Button text="Changer" onClick={() => ChangeUser($currentUser.lastName, firstname)}/>
             </div>
         </div>
 
@@ -101,7 +107,7 @@
             />
 
             <div class="button">
-                <Button text="Changer" onClick={() => ChangeUser(lastname, " ")}/>
+                <Button text="Changer" onClick={() => ChangeUser(lastname, $currentUser.firstName)}/>
             </div>
         </div>
         <div class="editInfo">
