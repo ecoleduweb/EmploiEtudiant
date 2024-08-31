@@ -120,7 +120,7 @@ def updateJobOffer(current_user, id):
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
-            if current_user.isModerator:
+            if not current_user.isModerator:
                 sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée avec succès.")
             else:
                 sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée avec succès.")
