@@ -16,6 +16,7 @@ class JobOfferDetails:
         self.employerId = jobOffer.employerId
         self.isApproved = jobOffer.isApproved
         self.approvedDate = jobOffer.approvedDate
+        self.last_modified_by_id = jobOffer.last_modified_by_id
         self.enterprise = None
         self.schedules = None
         self.studyPrograms =  None
@@ -46,7 +47,8 @@ class JobOfferDetails:
             'approbationMessage': self.approbationMessage,
             'employerId': self.employerId,
             'isApproved': self.isApproved,
-            'approvedDate': self.approvedDate
+            'approvedDate': self.approvedDate,
+            'last_modified_by_id': self.last_modified_by_id
         }
 
         if self.enterprise != None : 

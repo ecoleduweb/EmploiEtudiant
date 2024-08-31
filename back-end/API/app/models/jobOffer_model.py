@@ -21,6 +21,7 @@ class JobOffer(db.Model):
     employerId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None)
+    last_modified_by_id = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
@@ -38,7 +39,8 @@ class JobOffer(db.Model):
         approbationMessage='{self.approbationMessage}',
         employerId='{self.employerId}',
         isApproved='{self.isApproved}',
-        approvedDate='{self.approvedDate}')'''
+        approvedDate='{self.approvedDate}',
+        last_modified_by_id='{self.last_modified_by_id}')'''
 
     def to_json_string(self):
         return {
@@ -57,7 +59,8 @@ class JobOffer(db.Model):
                 'approbationMessage': self.approbationMessage,
                 'employerId': self.employerId,
                 'isApproved': self.isApproved,
-                'approvedDate': self.approvedDate
+                'approvedDate': self.approvedDate,
+                'last_modified_by_id': self.last_modified_by_id
             }
         
     def to_json_string_without_approbation_message(self):
