@@ -19,6 +19,8 @@ def sendMail(receiver_email, subject, content):
     <html>
     <body>
     <p>""" + content + """</p>
+    <br>
+    <img src="https://www.cegeprdl.ca/images/logo-header.png" alt="Logo" width="200" height="200">
     </body>
     </html>
     """
