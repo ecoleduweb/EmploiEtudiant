@@ -121,7 +121,7 @@ def updateJobOffer(current_user, id):
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             if not current_user.isModerator:
-                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
+                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifié sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
             else:
                 sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
             return jsonify(jobOffer.to_json_string()), 200
