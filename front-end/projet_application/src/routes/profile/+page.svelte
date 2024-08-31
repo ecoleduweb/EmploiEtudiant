@@ -74,47 +74,51 @@
         <h5 class="infoTitle">Nom</h5>
         <p class="text_content">{$currentUser.lastName}</p>
         <br>
-        <h5 class="infoTitle">Autres informations:</h5>
+        
     </div>
 
-    <div class="editInfo">
-        <h5 class="infoTitle">Nom:</h5>
-        <input type="text_content"
-            bind:value={lastname}
-            placeholder="Nouveau nom:"
-            class="input"
-        />
+    <div class="more-information">
+        <h5 class="infoTitleBig">Autres informations:</h5>
+        <div class="editInfo">
+            <h5 class="infoTitle">Prénom:</h5>
+            <input type="text_content"
+                bind:value={firstname}
+                placeholder="Nouveau prénom:"
+                class="input"
+            />
 
-        <div class="button">
-            <Button text="Changer" onClick={() => ChangeUser(lastname, " ")}/>
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
+            </div>
         </div>
-    </div>
-    <div class="editInfo">
-        <h5 class="infoTitle">Prénom:</h5>
-        <input type="text_content"
-            bind:value={firstname}
-            placeholder="Nouveau prénom:"
-            class="input"
-        />
 
-        <div class="button">
-            <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
-        </div>
-    </div>
-    <div class="editInfo">
-        <h5 class="infoTitle">Mot de passe:</h5>
-        <input type="text_content"
-            bind:value={password}
-            placeholder="Nouveau mot de passe"
-            class="input"
-        />
+        <div class="editInfo">
+            <h5 class="infoTitle">Nom:</h5>
+            <input type="text_content"
+                bind:value={lastname}
+                placeholder="Nouveau nom:"
+                class="input"
+            />
 
-        <div class="button">
-            <Button text="Changer" onClick={() => ChangePassword()}/>
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangeUser(lastname, " ")}/>
+            </div>
         </div>
-    </div>
-    <div>
-        <h5>Une reconnexion est nécessaire pour appliquer les modifications.</h5>
+        <div class="editInfo">
+            <h5 class="infoTitle">Mot de passe:</h5>
+            <input type="text_content"
+                bind:value={password}
+                placeholder="Nouveau mot de passe"
+                class="input"
+            />
+
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangePassword()}/>
+            </div>
+        </div>
+        <div>
+            <h5>Une reconnexion est nécessaire pour appliquer les modifications.</h5>
+        </div>
     </div>
     <div class="Modal">
         {#if userHaveEnterprise}
@@ -159,14 +163,25 @@
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
+        width: 10vw;
     }
-    .input 
+    .infoTitleBig {
+        font-size: 2rem;
+        margin: 0px;
+        margin-bottom: 0.5vw;
+        margin-right: 1.5vw;
+        width: 20vw;
+    }
+    .input
     {
         margin-right: 1vw;
         margin-bottom: 0.5vw;
     }
     .editInfo {
         display: flex;
+        justify-content: space-between;
+        width: 30vw;
+        margin-bottom: 1vh;
     }
     .text_content {
         font-size: 1.1rem;
@@ -186,5 +201,13 @@
 
     .editInfo > div, .title, .infoTitle, p, div > h5 {
         color: white;
+    }
+
+    .more-information {
+        background-color: #00ad9a;
+        width: 33vw;
+        padding: 1vw;
+        border-radius: 5%;
+        border: 2px solid white;
     }
 </style>
