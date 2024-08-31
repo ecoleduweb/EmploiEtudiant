@@ -189,7 +189,7 @@ def requestResetPassword():
             passwordResetLink = ( str.encode(os.environ.get("URL")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
             logger.info(passwordResetLink)
-            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
+            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="https://' + passwordResetLink + '" target="_blank">Appuyez</a>')
             return jsonify({'message': 'Successfully sent a password request'})
         else:
             logger.warning("A user tried to reset but provided a bad email")
