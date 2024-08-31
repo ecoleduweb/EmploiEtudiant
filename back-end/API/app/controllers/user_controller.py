@@ -1,3 +1,4 @@
+import locale
 from flask import jsonify, request, Blueprint
 import os
 from logging import getLogger
@@ -25,6 +26,9 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
+
+locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8') # Set locale to french (Permet de trier correctement avec les accents...)
+
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -125,7 +129,9 @@ def updateUser(current_user):
 @token_admin_required
 def getAllUsers(current_user):
     response = user_service.getAllUsers()
-    return response
+    users = response.json['users']
+    sortedUsers = sorted(users, key=lambda user: locale.strxfrm(user['email']))
+    return jsonify({'users': sortedUsers})
 
 
 @user_blueprint.route('/getUser', methods=['GET'])
