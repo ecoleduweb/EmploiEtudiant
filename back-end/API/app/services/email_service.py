@@ -18,9 +18,16 @@ def sendMail(receiver_email, subject, content):
     html = """\
     <html>
     <body>
+    <p>Ce message est automatisé. Merci de ne pas y répondre, car aucune réponse ne sera traitée.</p>
+    <hr>
+    <p>Bonjour,</p>
     <p>""" + content + """</p>
     <br>
-    <img src="https://www.cegeprdl.ca/images/logo-header.png" alt="Logo" width="200" height="200">
+    <hr>
+    <img src="https://www.cegeprdl.ca/images/logo-header.png" alt="Logo" width="200" height="40">
+    <p>Cégep de Rivière-du-Loup</p>
+    <p>80, rue Frontenac, Rivière-du-Loup (Québec) G5R 1R1</p>
+    <a href=https://emploietudiant.cegeprdl.ca/>https://emploietudiant.cegeprdl.ca</a>
     </body>
     </html>
     """
