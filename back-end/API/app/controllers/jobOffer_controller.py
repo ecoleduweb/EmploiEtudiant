@@ -58,8 +58,8 @@ def createJobOffer(current_user):
         
         enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
     
-        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + " par " + current_user.firstName + " " + current_user.lastName + ", pour l'entreprise " + enterprise.name + ".")
+        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (<b>" + jobOffer.title + "</b>) a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de <b>" + jobOffer.title + "</b> par <b>" + current_user.firstName + "</b> <b>" + current_user.lastName + "</b>, pour l'entreprise " + enterprise.name + ".")
         return jobOffer.to_json_string(), 201
     except Exception as e:
         print("10")
@@ -121,9 +121,9 @@ def updateJobOffer(current_user, id):
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
             if not current_user.isModerator:
-                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée avec succès.")
+                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
             else:
-                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée avec succès.")
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
             return jsonify(jobOffer.to_json_string()), 200
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
@@ -158,9 +158,9 @@ def approveJobOffer(current_user, id):
         print(current_user_job)
 
         if data['isApproved'] == True:
-            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOfferToUpdate.title + "</b> a été approuvée.")
         else:
-            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom <b>" + jobOfferToUpdate.title + "</b> a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
         return ('', 204)
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
