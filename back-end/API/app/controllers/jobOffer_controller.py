@@ -112,7 +112,7 @@ def updateJobOffer(current_user, id):
             # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
             if data["jobOffer"]["isApproved"] == True:
                 data["jobOffer"]["approvedDate"] = datetime.now()
-            data["jobOffer"]["last_modified_by_id"] = current_user.id
+            jobOfferToUpdate.last_modified_by_id = current_user.id
         
         jobOffer = jobOffer_service.updateJobOffer(data)
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
@@ -153,6 +153,7 @@ def approveJobOffer(current_user, id):
             user_service.linkToExisting(jobOfferToUpdate, data['selectedEnterpriseId'])
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
         
+        print(jobOfferToUpdate)
         current_user_job = User.query.filter_by(id=jobOfferToUpdate.last_modified_by_id ).first()
         print(current_user_job)
 
