@@ -204,10 +204,10 @@ def resetPassword():
     try:
         data = request.get_json()
         decryptedData = json.loads(decrypt(data['token']))
-
         if data['password'] == data['confirmPassword']:
             try:
-                if (decryptedData['resetDate'] + 900) > datetime.now().timestamp():
+                reset_date = float(decryptedData['resetDate'])
+                if (reset_date + 900) > datetime.now().timestamp():
                     auth_repo.updatePassword(decryptedData['email'], data['password'])
                     return jsonify({'message': 'Successfully resetted the password'})
                 else:

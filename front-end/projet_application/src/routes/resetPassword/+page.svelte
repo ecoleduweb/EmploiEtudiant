@@ -15,27 +15,16 @@
         password: yup
             .string()
             .required("Mot de passe requis")
-            .matches(
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/,
-                "Ne correspond pas aux critères de sécurité",
-            ),
+            .matches(/[a-z]/, "Ne respecte pas les criteres")
+            .matches(/[A-Z]/, "Ne respecte pas les criteres")
+            .matches(/[0-9]/, "Ne respecte pas les criteres")
+            .matches(/[!@#$%^&*]/, "Ne respecte pas les criteres")
+            .min(12, "Ne respecte pas les criteres"),
         confirmPassword: yup
             .string()
             .required("Confirmer le mot de passe")
-            .oneOf(
-                [yup.ref("password"), null],
-                "Les mots de passes ne correspondent pas",
-            ),
+            .oneOf([yup.ref("password"), null], "Les mots de passe ne correspondent pas"),
     });
-
-    let register: Register = {
-        user: {
-            id: 0,
-            password: "",
-        },
-        validatePassword: "",
-        token: "",
-    };
 
     const lowercaseRegex = /[a-z]/;
     const uppercaseRegex = /[A-Z]/;
@@ -55,12 +44,12 @@
     function validatePassword() {
         validations.update((vals) => ({
             ...vals,
-            lowercase: lowercaseRegex.test(register.user.password),
-            uppercase: uppercaseRegex.test(register.user.password),
-            digit: digitRegex.test(register.user.password),
-            specialChar: specialCharRegex.test(register.user.password),
-            length: lengthRegex.test(register.user.password),
-            corresponds: register.user.password === register.validatePassword,
+            lowercase: lowercaseRegex.test(resetPassword.password),
+            uppercase: uppercaseRegex.test(resetPassword.password),
+            digit: digitRegex.test(resetPassword.password),
+            specialChar: specialCharRegex.test(resetPassword.password),
+            length: lengthRegex.test(resetPassword.password),
+            corresponds: resetPassword.password === resetPassword.confirmPassword,
         }));
     }
 
@@ -114,6 +103,7 @@
 
             showPopup = true;
         } catch (err) {
+            console.log(err);
             errors = extractErrors(err);
         }
     };
@@ -129,7 +119,7 @@
                 class="input-forgotPassword"
                 id="password"
                 name="password"
-                bind:value={register.user.password}
+                bind:value={resetPassword.password}
                 on:input={validatePassword}
             />
             <p class="errors-input">
@@ -141,7 +131,7 @@
                 class="input-forgotPassword"
                 id="confirmPassword"
                 name="confirmPassword"
-                bind:value={register.validatePassword}
+                bind:value={resetPassword.confirmPassword}
                 on:input={validatePassword}
             />
             <p class="errors-input">
@@ -208,7 +198,7 @@
                         <span class="text-password">Mot de passe trop court</span>
                     </li>
                 {/if}
-                {#if register.validatePassword != ""}
+                {#if resetPassword.confirmPassword != ""}
                     {#if $validations.corresponds}
                         <li>
                             <span class="text-password-good">✔</span> 
