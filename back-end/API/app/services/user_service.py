@@ -29,7 +29,7 @@ class UserService:
         try:
             if user.active:
                 if hasher.verify(user.password, password):
-                    token = encode({'email': user.email, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
+                    token = encode({'email': user.email, 'exp' : datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=30),'active': user.active,'isModerator': user.isModerator,'firstName': user.firstName,'lastName': user.lastName}, os.environ.get('SECRET_KEY'))  
                     return token
             else:
                 raise LoginException(True)
