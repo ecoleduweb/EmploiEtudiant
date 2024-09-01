@@ -1,4 +1,4 @@
-<footer>
+<!-- <footer>
     <svg
         class="svg-footer"
         xmlns="http://www.w3.org/2000/svg"
@@ -86,4 +86,4 @@
         padding: 0;
         margin: 0;
     }
-</style>
+</style> -->
