@@ -13,7 +13,7 @@ employer_service = EmployerService()
 logger = getLogger(__name__)
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8') # Set locale to french (Permet de trier correctement avec les accents...)
+locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 @enterprise_blueprint.route('/all', methods=['GET'])
 @token_admin_required
