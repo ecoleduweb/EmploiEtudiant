@@ -23,7 +23,7 @@
         confirmPassword: yup
             .string()
             .required("Confirmer le mot de passe")
-            .oneOf([yup.ref("password"), null], "Les mots de passe ne correspondent pas"),
+            .oneOf([yup.ref("password")], "Les mots de passe ne correspondent pas"),
     });
 
     const lowercaseRegex = /[a-z]/;
