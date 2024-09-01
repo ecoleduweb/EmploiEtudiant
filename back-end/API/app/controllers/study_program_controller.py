@@ -1,4 +1,3 @@
-import locale
 from flask import jsonify, request, Blueprint
 from app.services.study_program_service import StudyProgramService
 from app.middleware.adminTokenVerified import token_admin_required
@@ -10,13 +9,11 @@ study_program_service = StudyProgramService()
 
 study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 @study_program_blueprint.route('/studyPrograms', methods=['GET'])
 def studyPrograms():
     studyPrograms = study_program_service.studyPrograms()
-    sortedStudyPrograms = sorted(studyPrograms, key=lambda program: locale.strxfrm(program['name']))
-    return jsonify(sortedStudyPrograms)
+    return jsonify(studyPrograms)
 
 @study_program_blueprint.route('/studyProgram/<int:id>', methods=['PUT'])
 @token_admin_required

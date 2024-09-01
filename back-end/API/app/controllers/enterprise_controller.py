@@ -1,4 +1,3 @@
-import locale
 from flask import jsonify, request, Blueprint
 from flask import Flask, jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
@@ -13,14 +12,11 @@ employer_service = EmployerService()
 logger = getLogger(__name__)
 enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8') # Set locale to french (Permet de trier correctement avec les accents...)
-
 @enterprise_blueprint.route('/all', methods=['GET'])
 @token_admin_required
 def getEnterprises(current_user):
     enterprises = enterprise_service.getEnterprises()
-    sortedEnterprises = sorted(enterprises, key=lambda enterprise: locale.strxfrm(enterprise.name))
-    return jsonify([enterprise.to_json_string() for enterprise in sortedEnterprises])
+    return jsonify([enterprise.to_json_string() for enterprise in enterprises])
 
 @enterprise_blueprint.route('/new', methods=['POST'])
 @token_admin_required

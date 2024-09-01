@@ -1,3 +1,4 @@
+from app import locale
 from app import db
 from app.models.user_model import User
 from flask import Flask, jsonify, request
@@ -93,4 +94,5 @@ class AuthRepo:
             user_data['active'] = user.active
             user_data['isModerator'] = user.isModerator
             output.append(user_data)
-        return jsonify({'users': output})
+            user_sorted = sorted(output, key=lambda e: locale.strxfrm(e['firstName']))
+        return jsonify({'users': user_sorted})
