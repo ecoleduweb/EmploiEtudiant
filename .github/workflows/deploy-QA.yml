@@ -26,6 +26,9 @@ jobs:
             echo 'Deployment successful to QA server'
             echo 'Installing backend packages'
             sudo apt-get update -y
+            sudo apt-get install -y locales
+            sudo locale-gen fr_FR.UTF-8
+            sudo update-locale
             sudo apt-get install -y libmariadb-dev
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/qa_project/ProjetApplicationH2024/back-end/
