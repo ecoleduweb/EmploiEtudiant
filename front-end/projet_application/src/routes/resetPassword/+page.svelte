@@ -77,6 +77,18 @@
         goto("/login");
     };
 
+    let successPopupMessage = "Le mot de passe a été défini avec succès."
+    let failedPopupMessage = "Impossible de changer le mot de passe, lien invalide ou expiré?"
+
+    let popupMessage = ""
+    let showPopup = false
+
+    const handlePopupClose = async () => 
+    {
+        showPopup = false
+        goto("/login")
+    }
+
     const handleSubmit = async () => {
         try {
             // `abortEarly: false` to get all the errors
