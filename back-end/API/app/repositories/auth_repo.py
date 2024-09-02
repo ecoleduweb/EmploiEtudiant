@@ -1,3 +1,4 @@
+from app import locale
 from app import db
 from app.models.user_model import User
 from flask import Flask, jsonify, request
@@ -18,7 +19,7 @@ class AuthRepo:
         db.session.add(new_user)
         db.session.commit()
         try:
-            token = encode({'email': data['email'], 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
+            token = encode({'email': data['email'], 'exp' : datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
             return jsonify({'token' : token})
         except Exception as e:
             logger.warning("Register failed on email: " + data['email'] + " could not verify : " + str(e))
@@ -93,4 +94,5 @@ class AuthRepo:
             user_data['active'] = user.active
             user_data['isModerator'] = user.isModerator
             output.append(user_data)
-        return jsonify({'users': output})
+            user_sorted = sorted(output, key=lambda e: locale.strxfrm(e['firstName']))
+        return jsonify({'users': user_sorted})

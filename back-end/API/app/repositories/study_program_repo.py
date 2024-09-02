@@ -1,3 +1,4 @@
+from app import locale
 from app import db
 from app.models.study_program_model import StudyProgram
 
@@ -5,7 +6,8 @@ class StudyProgramRepo:
     def studyPrograms(self):
         studyPrograms = StudyProgram.query.all()
         studyProgramsJson = [studyProgram.to_json_string() for studyProgram in studyPrograms]
-        return studyProgramsJson
+        study_programs_sorted = sorted(studyProgramsJson, key=lambda e: locale.strxfrm(e['name']))
+        return study_programs_sorted
 
     def findById(self, id):
         return StudyProgram.query.filter_by(id=id).first()

@@ -27,6 +27,9 @@ jobs:
             echo 'Installing backend packages'
             sudo apt-get update -y
             sudo apt-get install -y libmariadb-dev
+            sudo apt-get install -y locales
+            sudo locale-gen fr_FR.UTF-8
+            sudo update-locale
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/
             pip install -r requirements.txt

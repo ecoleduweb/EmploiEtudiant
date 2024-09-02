@@ -26,6 +26,9 @@ from logging import getLogger
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
+
+
+
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     try:
@@ -125,7 +128,8 @@ def updateUser(current_user):
 @token_admin_required
 def getAllUsers(current_user):
     response = user_service.getAllUsers()
-    return response
+    users = response.json['users']
+    return jsonify({'users': users})
 
 
 @user_blueprint.route('/getUser', methods=['GET'])

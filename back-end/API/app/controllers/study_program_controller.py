@@ -9,7 +9,6 @@ study_program_service = StudyProgramService()
 
 study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
-#ACM il faudra utiliser ce controlleur lorsque la gestion des programmes sera mise en place. Il faudra aussi la tester adéquatement
 
 @study_program_blueprint.route('/studyPrograms', methods=['GET'])
 def studyPrograms():

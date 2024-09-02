@@ -28,7 +28,8 @@ job_offer1_data = {
     "approbationMessage": "Super offre!",
     "employerId": 1,
     "isApproved": True,
-    "approvedDate": datetime.now()
+    "approvedDate": datetime.now(),
+    "last_modified_by_id": 1
 }
 
 
