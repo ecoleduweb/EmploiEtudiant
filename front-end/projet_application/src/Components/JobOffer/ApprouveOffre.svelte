@@ -103,6 +103,30 @@
                 </div>
             {/if}
         </div>
+        {#if enterprise && enterprise.isTemporary && cities}
+            <div>
+                <h3>Détails de l'entreprise de l'utilisateur</h3>
+                <EntrepriseDetails {enterprise} selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
+                    <hr>
+                <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
+                <label class="infoChbk" for="LierEmployer">Confirmer l'entreprise </label>
+                <br>
+                {#if enterprises}
+                    <select id="ville" bind:value={selectedEnterprise} class="form-control">
+                        {#each enterprises as { label, value }}
+                            <option value={value}>
+                                {#if value == enterprise.id}
+                                    <b>*Ajouter*</b>
+                                {/if}
+                                {label}
+                            </option>
+                        {/each}
+                    </select>
+                    <br>
+                    <br>
+                {/if}
+            </div>
+        {/if}
         <div class="button">
             <Button text="Approuver" onClick={() => approveOffer(true)} />
 
