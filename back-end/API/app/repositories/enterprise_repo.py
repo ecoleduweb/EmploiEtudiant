@@ -1,3 +1,4 @@
+from app import locale
 from app import db
 from app.models.enterprise_model import Enterprise
 from app.models.employers_model import Employers
@@ -17,7 +18,8 @@ class EnterpriseRepo:
             
     def getEnterprises(self):
         enterprises = Enterprise.query.all()
-        return enterprises
+        enterprises_sorted = sorted(enterprises, key=lambda e: locale.strxfrm(e.name))
+        return enterprises_sorted
     
     def createEnterprise(self, data, isTemporary):
         enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)

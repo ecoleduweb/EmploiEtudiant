@@ -26,6 +26,9 @@ from logging import getLogger
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
+
+
+
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     try:
@@ -125,7 +128,8 @@ def updateUser(current_user):
 @token_admin_required
 def getAllUsers(current_user):
     response = user_service.getAllUsers()
-    return response
+    users = response.json['users']
+    return jsonify({'users': users})
 
 
 @user_blueprint.route('/getUser', methods=['GET'])
@@ -181,15 +185,15 @@ def requestResetPassword():
         if user_service.getUser(data['email']):
             userData = {
                 "email": data['email'],
-                "resetDate": datetime.now().timestamp()
+                "resetDate": str(datetime.now().timestamp())
             }
 
             passwordResetToken = encrypt(json.dumps(userData))
 
-            passwordResetLink = ( str.encode(os.environ.get("CORS")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
+            passwordResetLink = ( str.encode(os.environ.get("URL")) + b"/resetPassword?token=" + passwordResetToken).decode("utf-8")
 
             logger.info(passwordResetLink)
-            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe. Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.\n<a href="' + passwordResetLink + '" target="_blank">Appuyez</a>')
+            sendMail(data['email'], 'Demande de changement de mot de passe', 'Vous avez demandé un changement de mot de passe.<br> Si vous n\'avez pas fait cette requête, veuillez ignorer ce courriel.<br><b><a href="https://' + passwordResetLink + '" target="_blank">Réinitialiser votre mot de passe.</a></b>')
             return jsonify({'message': 'Successfully sent a password request'})
         else:
             logger.warning("A user tried to reset but provided a bad email")
@@ -204,10 +208,10 @@ def resetPassword():
     try:
         data = request.get_json()
         decryptedData = json.loads(decrypt(data['token']))
-
         if data['password'] == data['confirmPassword']:
             try:
-                if (decryptedData['resetDate'] + 900) > datetime.now().timestamp():
+                reset_date = float(decryptedData['resetDate'])
+                if (reset_date + 900) > datetime.now().timestamp():
                     auth_repo.updatePassword(decryptedData['email'], data['password'])
                     return jsonify({'message': 'Successfully resetted the password'})
                 else:

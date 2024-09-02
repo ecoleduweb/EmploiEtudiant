@@ -50,19 +50,20 @@ def createJobOffer(current_user):
                 enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
                 employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved)
+        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved, current_user.id)
         for studyProgramId in data["studyPrograms"]:
             offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
         
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         
-        
-        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (" + jobOffer.title + ") à bien été créée. \nVotre offre sera public lorsqu'il sera vérifier.")
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de " + jobOffer.title + ".")
-
+        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+    
+        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (<b>" + jobOffer.title + "</b>) a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
+        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de <b>" + jobOffer.title + "</b> par <b>" + current_user.firstName + "</b> <b>" + current_user.lastName + "</b>, pour l'entreprise " + enterprise.name + ".")
         return jobOffer.to_json_string(), 201
     except Exception as e:
-        logger.warning("Could not create jobOffer, invalid data")
+        print("10")
+        logger.warning("Could not create jobOffer, invalid data : " + str(e))
         return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
@@ -111,15 +112,18 @@ def updateJobOffer(current_user, id):
             # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
             if data["jobOffer"]["isApproved"] == True:
                 data["jobOffer"]["approvedDate"] = datetime.now()
-
+            jobOfferToUpdate.last_modified_by_id = current_user.id
+        
         jobOffer = jobOffer_service.updateJobOffer(data)
         employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
         if jobOffer:
-            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOffer.title + " a été modifiée.")
-            
+            if not current_user.isModerator:
+                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
+            else:
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
             return jsonify(jobOffer.to_json_string()), 200
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
@@ -148,12 +152,15 @@ def approveJobOffer(current_user, id):
         if linking:
             user_service.linkToExisting(jobOfferToUpdate, data['selectedEnterpriseId'])
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
-        # ACM un beau petit travail ici pour trouver le courriel du propriétaire du courriel et ensuite lui envoyer un courriel
+        
+        print(jobOfferToUpdate)
+        current_user_job = User.query.filter_by(id=jobOfferToUpdate.last_modified_by_id ).first()
+        print(current_user_job)
 
         if data['isApproved'] == True:
-            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été approuvée.")
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été approuvée.")
         else:
-            sendMail(current_user.email, "Approbation d'une offre d'emploi", "L'offre d'emploi avec le nom " + jobOfferToUpdate.title + " a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
+            sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
         return ('', 204)
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404

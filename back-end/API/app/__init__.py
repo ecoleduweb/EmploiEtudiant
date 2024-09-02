@@ -1,3 +1,4 @@
+import locale
 import sys
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -15,6 +16,7 @@ from argon2 import PasswordHasher
 
 hasher = PasswordHasher()
 
+locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
     "version": 1,

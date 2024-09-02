@@ -455,6 +455,7 @@
         align-items: center;
     }
 
+
     .textLogout {
         margin-right: 8px;
     }

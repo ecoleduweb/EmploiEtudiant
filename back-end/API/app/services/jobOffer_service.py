@@ -14,7 +14,7 @@ class JobOfferService:
     def offresEmploi(self, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     
-    def createJobOffer(self, data, employerId, isApproved):
+    def createJobOffer(self, data, employerId, isApproved, last_modified_by_id):
 
         verifyStringLen(data['title'], 255)
         verifyStringLen(data['address'], 255)
@@ -35,7 +35,8 @@ class JobOfferService:
          active=data['active'],
          employerId=employerId,
          isApproved=isApproved,
-         approvedDate=datetime.now() if isApproved else None)
+         approvedDate=datetime.now() if isApproved else None,
+         last_modified_by_id=last_modified_by_id)
 
         return jobOffer_repo.createJobOffer(new_job_offer)
     

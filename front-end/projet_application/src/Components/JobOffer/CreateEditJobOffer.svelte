@@ -72,6 +72,7 @@
             )
         } else if (!isModerator) {
             const employer = await GET<any>("/employer/currentEmployer")
+
             jobOffer.employerId = employer?.id
             if (employer)
                 response = await GET<any>(
@@ -159,7 +160,9 @@
 
     let selectedPrograms = [{ label: "", value: 0 }]
     let programmeFromSelectedOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let programOptions: { label: string; value: number; }[] = $studyPrograms.map((x: any) => ({"label": x.name, "value": x.id}))
+    let programOptions: { label: string; value: number; }[] = $studyPrograms
+    .map((x: any) => ({ "label": x.name, "value": x.id }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' }));
 
     const getSchedule = async () => {
         const response = await GET<any>(
@@ -316,7 +319,7 @@
                             options={enterpriseOption}
                             closeDropdownOnSelect={true}
                             maxSelect={1}
-                            placeholder="Choisir une enterprise..."
+                            placeholder="Choisir une entreprise..."
                             bind:value={enterpriseSelected}
                             bind:selected={enterpriseFromSelectedEnterprise}
                             on:add={(event) => setEnterpriseIfSelected(event.detail.option.value)}
@@ -364,7 +367,7 @@
             {#if errors.title}{errors.title}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="schedule">Type d'emplois*</label>
+            <label for="schedule">Types d’emploi*</label>
             {#if scheduleOption.length}
                 <MultiSelect
                     id="schedule"
@@ -459,7 +462,7 @@
             {#if errors.studyPrograms}{errors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="salary">Salaire/H</label>
+            <label for="salary">Salaire horaire</label>
             <input
                 type="text"
                 bind:value={jobOffer.salary}
@@ -471,7 +474,7 @@
             {#if errors.salary}{errors.salary}{/if}
         </p>
         <div class="form-group-vertical">
-            <label for="hoursPerWeek">Heure/Semaine*</label>
+            <label for="hoursPerWeek">Heures/semaine*</label>
             <input
                 type="text"
                 bind:value={jobOffer.hoursPerWeek}
@@ -530,7 +533,7 @@
                     id="acceptCondition"
                 />
                 <label for="acceptCondition"
-                    >J'acceptes les condtions
+                    >J'accepte les conditions
                 </label>
             </div>
             <p class="errors-input">

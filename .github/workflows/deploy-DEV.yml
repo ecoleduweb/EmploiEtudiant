@@ -27,6 +27,9 @@ jobs:
             echo 'Installing backend packages'
             sudo apt-get update -y
             sudo apt-get install -y libmariadb-dev
+            sudo apt-get install -y locales
+            sudo locale-gen fr_FR.UTF-8
+            sudo update-locale
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/
             pip install -r requirements.txt
@@ -44,6 +47,7 @@ jobs:
             echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
             echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
+            echo URL=${{ secrets.DEV_URL }} >> .env
             flask db upgrade
             echo 'Installing packages'
             sudo systemctl enable back-end
