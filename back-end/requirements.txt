@@ -3,7 +3,7 @@ cryptography==42.0.8
 Flask==3.0.3
 Flask-Argon2==0.3.0.0
 Flask-Bcrypt==1.0.1
-Flask-Cors==4.0.1
+Flask-Cors==5.0.0
 Flask-Migrate==4.0.7
 Flask-Script==2.0.6
 flask-swagger-ui==4.11.1
