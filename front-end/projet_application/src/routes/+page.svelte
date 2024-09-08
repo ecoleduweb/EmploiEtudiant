@@ -46,6 +46,28 @@
             <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
             <span class="radiant"></span>
         </div>
+
+        <!-- ------------SECTION MOBILE DEBUT ----------- -->
+        <div class="haut-mobile">
+            <h1 class="title">
+                <span class="text">PORTAIL D'</span><span class="text"
+                    >OFFRES D'EMPLOI</span
+                >
+            </h1>
+            <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
+            <span class="radiant"></span>
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="divButton" on:click={handleEmploi}>
+                    <Button
+                        
+                        text="Consulter toutes les offres"
+                        onClick={() => ""}
+                    />
+                </div>
+        </div>
+        <!-- ---------SECTION MOBILE FIN ------------ -->
+
         <div class="haut-droite">
             <div class="buttonDiv">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -129,6 +151,9 @@
         width: 50%;
         margin-left: 5.2%;
     }
+    .haut-mobile {
+        display: none;
+    }
     .haut-droite {
         width: 60%;
         display: flex;
@@ -150,25 +175,33 @@
     .divFlex {
         display: flex;
     }
-    @media screen and (max-width: 900px) and (min-width: 300px) {
-        .divFlex {
+    @media (max-width: 768px) {
+        .haut-gauche {
+            display: none;
+        }
+        .haut-droite {
+            display: none;
+        }
+        .haut-mobile {
             display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-left: 1vw;
+        }
+        .text {
+            font-size: 7vw;
+        }
+        .radiant {
+            width: 98vw;
+        }
+        .divButton {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+            width : 80vw;
+            height: 12vh;
         }
 
-        .buttonDiv 
-        {
-            height: unset;
-        }
 
-        .radiant 
-        {
-            width: 110%;
-            height: 22px;
-        }
-
-        .text 
-        {
-            font-size: 3.3vw;
-        }
     }
 </style>

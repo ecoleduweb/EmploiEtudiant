@@ -186,4 +186,15 @@
     .link_padding {
         padding-bottom: 3vh;
     }
+
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+            height: 9vh;
+        }
+        .container {
+            max-height: 60vh;
+        }
+
+    }
 </style>
