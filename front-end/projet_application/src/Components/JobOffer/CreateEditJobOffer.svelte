@@ -487,7 +487,7 @@
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
-                >Adresse URL vers l'offre d'emploi détaillé</label
+                >Adresse URL vers l'offre d'emploi détaillée</label
             >
             <input
                 type="text"
