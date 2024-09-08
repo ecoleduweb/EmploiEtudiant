@@ -96,6 +96,7 @@
     <div class="logo-img">
         <a href="/" class="image"><img src="logo.png" alt="Logo" /></a>
     </div>
+    <!--MENU MOBILE --------------------------- -->
     <div class="burger">
         <Hamburger bind:open --color="white"/>
         {#if open}
@@ -153,6 +154,7 @@
         </div>
         {/if}
     </div>
+    <!--MENU MOBILE FIN --------------------------- -->
     
     <div class="ul-group">
         <ul class="ul-menu">
@@ -515,7 +517,7 @@
             width: 50%;
         }
         .button {
-            width: 90vw;
+            width: 85vw;
         }
         .textSearch {
         display: flex;
