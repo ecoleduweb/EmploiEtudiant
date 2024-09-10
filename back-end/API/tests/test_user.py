@@ -38,9 +38,8 @@ def test_register(client):
         "email": "test@gmail.com",
         "password": "test123"
     }
-    reponseLogin = client.post('/user/login', json=dataLogin)
-    token = reponseLogin.json['token']
-    response = client.post('/user/register', json=data, headers={"Authorization": token})
+    response = client.post('/user/register', json=data)
+    print(response.json)
     assert response.status_code == 200
 
 def test_updateUserNormal(client):
