@@ -357,4 +357,10 @@
         font-size: 2.5vw;
         margin: 0;
     }
+
+    @media (max-width: 768px) {
+        .text {
+            font-size: 6vw;
+        }
+    }
 </style>

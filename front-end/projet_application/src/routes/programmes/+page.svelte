@@ -199,11 +199,19 @@
         margin-top: 20px;
     }
 
-    @media screen and (max-width: 900px) and (min-width: 300px) 
-    {
+    @media (max-width: 768px) {
         .text 
         {
-            font-size: 3.3vw;
+            font-size: 6vw;
+            margin-left: 2vw !important;
+        }
+        .title 
+        {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            width: 100%;
+            
         }
     }
 

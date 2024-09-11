@@ -38,6 +38,7 @@
         isApproved: false,
         approbationMessage: "",
         acceptCondition: false,
+        approvedDate: "",
     }
     export let enterprise: Enterprise = {
         id: 0,

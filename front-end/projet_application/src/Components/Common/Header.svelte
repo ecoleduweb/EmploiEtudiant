@@ -111,11 +111,18 @@
                 </button>
                 <button class="button" on:click={handleProgrammes}>
                     <p class="textSearch">Modifier les programmes</p>
-                    <img class="iconeBusiness" src="edit.svg" alt="Edit icon" />
+                    <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
+                </button>
+                <button class="button" on:click={handleEmploi}>
+                    <p class="textSearch">Trouver un emploi</p>
+                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
                 </button>
                 <button class="button" on:click={handleDashboard}>
                     <p class="textSearch">Tableau de bord</p>
-                    <img class="iconeSearch" src="searchBar.svg" alt="Search icon" />
+                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                </button>
+                <button class="button" on:click={handleProfile}>
+                    <p class="textSearch">Connecté en tant que : {$currentUser?.firstName} {$currentUser?.lastName} </p>
                 </button>
                 <button class="button" on:click={handleLogout}>
                     <p class="textSearch">Déconnexion</p>
@@ -139,15 +146,15 @@
             <div class="option">
                 <button class="button" on:click={handleEmploi}>
                     <p class="textSearch">Trouver un emploi</p>
-                    <img class="iconeBusiness" src="searchBar.svg" alt="Search icon" />
+                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
                 </button>
                 <button class="button" on:click={handleLogin}>
                     <p class="textSearch">Connexion entreprise</p>
-                    <img class="iconeBusiness" src="business.svg" alt="Business icon" />
+                    <img class="iconeLogout" src="business.svg" alt="Business icon" />
                 </button>
                 <button class="button" on:click={handleRegister}>
                     <p class="textSearch">Créer un compte entreprise</p>
-                    <img class="iconeBusiness" src="add.svg" alt="Add icon" />
+                    <img class="iconeLogout" src="add.svg" alt="Add icon" />
                 </button>
             </div>
             {/if}
@@ -316,13 +323,13 @@
 
     .ul-group {
         display: flex;
-        width: 50%;
+        width: 40vw;
     }
 
     .ul-menu {
-        width: 100%;
+        width: 40vw;
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
         list-style: none;
         padding: 0;
         margin: 0;
@@ -337,27 +344,27 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        width: 100%;
+        width: 7vw;
         height: 100%;
         padding: 10px 0px 10px 0px;
     }
 
     .option {
-        width: 33%;
+        width: 25%;
     }
 
     .email 
     {
-        margin-left: 8px;
+        margin-left: 0px;
         text-align: center;
     }
 
     .UserFix {
-        margin-right: 3vw;
+        margin-right: 0vw;
     }
     
     .ModFix {
-        margin-right: 10vh;
+        margin-right: 0vh;
     }
 
     button:hover {
@@ -518,17 +525,21 @@
         }
         .button {
             width: 85vw;
+            justify-content: space-between;
+            padding-right: 2vw;
         }
         .textSearch {
         display: flex;
         align-items: center;
-        width: 60%;
+        width: 100%;
         height: 100%;
         margin-right: 8px;
         font-size: 20px;
+        
     }
         .menu-dropdown {
             display: block;
+            margin-top: 1vh;
             background-color: rgba(39, 44, 54, 0.767);
         }
         .ul-group {
