@@ -66,4 +66,12 @@
         flex-direction: column;
         margin: auto;
     }
+
+    @media (max-width: 768px) {
+        .infoTitle {
+            font-size: 4vw;
+        }
+    }
+
+
 </style>

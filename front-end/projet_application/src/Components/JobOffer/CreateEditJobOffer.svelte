@@ -38,6 +38,7 @@
         isApproved: false,
         approbationMessage: "",
         acceptCondition: false,
+        approvedDate: "",
     }
     export let enterprise: Enterprise = {
         id: 0,
@@ -487,7 +488,7 @@
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
-                >Adresse URL vers l'offre d'emploi détaillé</label
+                >Adresse URL vers l'offre d'emploi détaillée</label
             >
             <input
                 type="text"

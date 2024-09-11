@@ -69,6 +69,10 @@
     
     <section>
         {#if loaded}
+            <div class="rowTitles-mobile">
+                <h2 class="rowTitles-mobile">Titre</h2>
+                <h2 class="rowTitles-mobile">Employeur</h2>
+            </div>
             <div class="rowTitles">
                 <h2 class="rowTitle">Titre</h2>
                 <h2 class="rowTitle">Horaire</h2>
@@ -156,24 +160,36 @@
         width: 50%;
         margin-left: 5.2%;
     }
-    .offres {
-        width: fit-content;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-    .offres {
-        width: fit-content;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
+    .rowTitles-mobile {
+        display: none;
     }
 
-    @media screen and (max-width: 900px) and (min-width: 300px) 
+    @media (max-width: 768px)
     {
-        .text 
+        .text{
+            font-size: 6vw;
+            width: 100%;
+        }
+        .title
         {
-            font-size: 3.3vw;
+            width: 100vw;
+        }
+        .rowTitles
+        {
+            display: none
+        }
+        .rowTitles-mobile
+        {
+            color: #00ad9a;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            width: 90vw;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1vh;
         }
     }
+
 </style>

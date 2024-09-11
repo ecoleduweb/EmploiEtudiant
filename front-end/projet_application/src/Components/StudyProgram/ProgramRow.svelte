@@ -37,7 +37,7 @@
     }
 
     .text {
-        width: 20%;
+        width: 100%;
     }
     .Program {
         display: flex;

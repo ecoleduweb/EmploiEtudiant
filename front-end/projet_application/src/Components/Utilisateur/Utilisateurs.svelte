@@ -147,10 +147,23 @@
         </div>
 
         <div class="editInfo">
-            <h5 class="infoTitle">Nom:</h5>
+            <h5 class="infoTitleModify">Prénom :</h5>
+            <input type="text"
+                bind:value={firstname}
+                placeholder="Nouveau prénom :"
+                class="input"
+            />
+
+            <div class="button">
+                <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
+            </div>
+        </div>
+
+        <div class="editInfo">
+            <h5 class="infoTitleModify">Nom :</h5>
             <input type="text"
                 bind:value={lastname}
-                placeholder="Nouveau nom:"
+                placeholder="Nouveau nom :"
                 class="input"
             />
 
@@ -159,22 +172,10 @@
             </div>
         </div>
         <div class="editInfo">
-            <h5 class="infoTitle">Prénom:</h5>
-            <input type="text"
-                bind:value={firstname}
-                placeholder="Nouveau prénom:"
-                class="input"
-            />
-
-            <div class="button">
-                <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
-            </div>
-        </div>
-        <div class="editInfo">
-            <h5 class="infoTitle">Mot de passe:</h5>
+            <h5 class="infoTitleModify">Mot de passe :</h5>
             <input type="text"
                 bind:value={password}
-                placeholder="Nouveau mot de passe"
+                placeholder="Nouveau mot de passe :"
                 class="input"
             />
 
@@ -243,6 +244,11 @@
 </Modal>
 
 <style scoped>
+
+    .container {
+        overflow-y: auto;
+        max-height: 80vh; 
+    }
     .titleContainer {
         display: flex;
         flex-direction: column;
@@ -264,6 +270,7 @@
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
+        width: 10vw;
     }
     .input 
     {
@@ -276,6 +283,7 @@
     .editInfo {
         display: flex;
         color: black;
+        margin-bottom: 1vh;
     }
     .text {
         font-size: 1.1rem;
@@ -297,5 +305,42 @@
     {
         flex-direction: row;
         justify-content: space-evenly;
+    }
+    .infoTitleModify {
+        font-size: 1.3rem;
+        margin: 0px;
+        margin-bottom: 0.5vw;
+        margin-right: 1.5vw;
+        width: 12vw;
+    }
+
+    @media (max-width: 768px) {
+        .infoTitle {
+            font-size: 3vw;
+            width: 100%;
+        }
+        .input {
+            font-size: 2vw;
+            height: 6vw;
+            margin-bottom: 2vh;
+            text-align: center;
+        }
+        .text {
+            font-size: 3vw;
+        }
+        .editInfo {
+            flex-direction: column;
+        }
+
+        .infoTitleModify {
+            font-size: 3vw;
+            width: 100%;
+            text-align: center;
+        }
+        .button {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1vh;
+        }
     }
 </style>

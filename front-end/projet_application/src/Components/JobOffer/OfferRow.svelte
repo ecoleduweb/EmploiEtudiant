@@ -15,6 +15,9 @@
             <p class="text">{offer.offerDebut}</p>
             <p class="text">{ offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</p>
         </div>
+        <div class="info-mobile">
+            <p class="text">{offer.title}</p>
+        </div>
         {#if isModerator === true}
             <button
                 class="button"
@@ -83,4 +86,25 @@
     .button:hover {
         background-color: #455b66;
     }
+    .info-mobile {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+         .info{
+            display: none;
+        }
+        .info-mobile {
+            display: flex;
+            width: 100%;
+            font-size: 1.15rem;
+            flex-direction: row;
+            justify-content: left;
+        }
+        .text {
+            width: 100%;
+        }
+    }
+    
+
 </style>
