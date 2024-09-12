@@ -328,11 +328,13 @@
                     {:else}
                         <LoadingSpinner />
                     {/if}
+                    <div class="button-add">
                     <Button
                         submit={false}
                         text="Ajouter"
                         onClick={() => handleEnterprise()}
                     />
+                    </div>
                 </div>
                 {#if enterprise.id !== 0 && selectedCity.length !== 0}
                     <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
@@ -625,5 +627,49 @@
     .form-control-acceptCondition {
         margin-right: 0.8vw;
         margin-bottom: 0.5vw;
+    }
+
+    @media (max-width: 768px) {
+        .form-offre {
+            max-height: 100%;
+        }
+        .form-group-horizontal {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .form-group-vertical {
+            width: 70%;
+        }
+        .form-group-horizontal-date {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .accept-Condition {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .accept-horiz {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .accept-horiz {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .form-control-acceptCondition {
+            margin-right: 0;
+            margin-bottom: 0.5vw;
+        }
+        .send {
+            margin-bottom: 10vw;
+        }
+        .button-add {
+            margin-top: 2vw;
+        }
     }
 </style>

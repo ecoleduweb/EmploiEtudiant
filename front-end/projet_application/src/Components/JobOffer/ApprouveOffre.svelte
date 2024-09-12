@@ -164,4 +164,10 @@
         flex-direction: column;
         margin: auto;
     }
+
+    @media (max-width: 768px) {
+       .button {
+        margin-bottom: 10vw;
+       }
+    }
 </style>

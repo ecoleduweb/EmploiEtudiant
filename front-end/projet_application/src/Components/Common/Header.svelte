@@ -207,7 +207,7 @@
             {/if}
 
             <div class="option">
-                <button class="button" on:click={handleEmploi}>
+                <button class={$isLoggedIn ? "button" : "button-disconnected"} on:click={handleEmploi}>
                     <p class="textSearch">Trouver un emploi</p>
                     <img
                         class="iconeSearch"
@@ -271,7 +271,7 @@
             {:else}
 
                 <div class="option dropdown">
-                    <button class="button dropbtn" id="loginDropDown">
+                    <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
                         <p class="textBusiness">Offrir un emploi</p>
                         <img
                             class="iconeBusiness"
@@ -305,31 +305,31 @@
         display: flex;
         justify-items: center;
         align-items: center;
-        width: 50%;
     }
 
     .image {
         position: relative;
-        left: 14.58%;
+        left: 5vw;
         /* left: 140px; */
-        width: 27%;
+        width: 13vw;
         height: fit-content;
     }
 
     .image img {
-        width: 100%;
+        width: 13vw;
         height: auto;
     }
 
     .ul-group {
         display: flex;
-        width: 40vw;
+        margin-left: 10vw;
+        justify-content: right;
     }
 
     .ul-menu {
-        width: 40vw;
+        width: 75vw;
         display: flex;
-        justify-content: space-around;
+        justify-content: right;
         list-style: none;
         padding: 0;
         margin: 0;
@@ -344,10 +344,25 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        width: 7vw;
+        width: 9vw;
         height: 100%;
         padding: 10px 0px 10px 0px;
     }
+
+    .button-disconnected {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 15px;
+        margin-left: 15px;
+        margin-right: 15px;
+        width: 15vw;
+    }	
+
+    .dropbtn-disconnected {
+        width: 15vw;
+    }
+
 
     .option {
         width: 25%;
@@ -519,9 +534,9 @@
         }
         .burger {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 50%;
+            justify-content: right;
+            align-items: right;
+            width: 40vw;
         }
         .button {
             width: 85vw;

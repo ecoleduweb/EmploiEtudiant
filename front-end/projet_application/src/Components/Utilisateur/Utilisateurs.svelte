@@ -342,5 +342,8 @@
             justify-content: center;
             margin-bottom: 1vh;
         }
+        .userActions {
+            margin-bottom: 10vw;
+        }
     }
 </style>
