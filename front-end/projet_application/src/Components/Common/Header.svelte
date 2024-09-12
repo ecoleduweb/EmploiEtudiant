@@ -534,9 +534,9 @@
         }
         .burger {
             display: flex;
-            justify-content: center;
+            justify-content: right;
             align-items: center;
-            width: 50%;
+            width: 70%;
         }
         .button {
             width: 85vw;
