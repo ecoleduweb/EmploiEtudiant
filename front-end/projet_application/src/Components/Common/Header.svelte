@@ -97,7 +97,7 @@
         <a href="/" class="image"><img src="logo.png" alt="Logo" /></a>
     </div>
     <!--MENU MOBILE --------------------------- -->
-    <div class="burger">
+    <div class={$isLoggedIn ? "burger" : "burger-disconnected"}>
         <Hamburger bind:open --color="white"/>
         {#if open}
         <div class="menu-dropdown">
@@ -457,6 +457,10 @@
         display: none;
     }
 
+    .burger-disconnected {
+        display: none;
+    }
+
     .menu-dropdown {
         display: none;
         position: absolute;
@@ -537,6 +541,13 @@
             justify-content: right;
             align-items: right;
             width: 40vw;
+        }
+        .burger-disconnected {
+            display: flex;
+            justify-content: right;
+            align-items: right;
+            width: 40vw;
+            margin-left: 32vw;
         }
         .button {
             width: 85vw;
