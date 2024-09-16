@@ -164,4 +164,23 @@
         display: flex;
         margin-top: 20px;
     }
+
+    @media (max-width: 768px) {
+        .text {
+            font-size: 6vw;
+            margin-right: 2vw !important;
+        }
+        .title {
+            display: flex;
+            justify-content: left;
+            flex-direction: row;
+        }
+        .haut-gauche {
+            width: 100%;
+            margin-left: 1vw;
+        }
+        .haut {
+            margin-left: 4vw;
+        }
+    }
 </style>

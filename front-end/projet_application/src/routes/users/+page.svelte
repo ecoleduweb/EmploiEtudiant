@@ -131,4 +131,13 @@
         width: 90%;
         margin-left: 5%;
     }
+
+    @media (max-width: 768px) {
+        .text {
+            font-size: 6vw;
+        }
+        .title {
+            width: 100vw;
+        }
+    }
 </style>

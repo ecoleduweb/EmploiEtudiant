@@ -11,6 +11,10 @@
             <p class="text">{user.firstName}</p>
             <p class="text">{user.lastName}</p>
         </div>
+        <div class="info-mobile">
+            <p class="text">{user.email}</p>
+            <p class="text">{user.firstName}</p>
+        </div>
         <button class="button" on:click={() => handleModalClick(user.id)}>
             <img class="image" src="check.svg" alt="approve" />
         </button>
@@ -63,5 +67,22 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
         border-radius: 4px;
+    }
+    .info-mobile {
+        display: none;
+    }
+
+    @media (max-width: 540px) {
+        .info {
+            display: none;
+        }
+        .info-mobile {
+            display: flex;
+            width: 90%;
+            font-size: 1rem;
+            flex-direction: row;
+            justify-content: space-around;
+            margin-left: 2vw;
+        }
     }
 </style>

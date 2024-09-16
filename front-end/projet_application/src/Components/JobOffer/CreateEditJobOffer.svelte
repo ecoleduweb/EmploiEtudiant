@@ -38,6 +38,7 @@
         isApproved: false,
         approbationMessage: "",
         acceptCondition: false,
+        approvedDate: "",
     }
     export let enterprise: Enterprise = {
         id: 0,
@@ -327,11 +328,13 @@
                     {:else}
                         <LoadingSpinner />
                     {/if}
+                    <div class="button-add">
                     <Button
                         submit={false}
                         text="Ajouter"
                         onClick={() => handleEnterprise()}
                     />
+                    </div>
                 </div>
                 {#if enterprise.id !== 0 && selectedCity.length !== 0}
                     <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
@@ -487,7 +490,7 @@
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
-                >Adresse URL vers l'offre d'emploi détaillé</label
+                >Adresse URL vers l'offre d'emploi détaillée</label
             >
             <input
                 type="text"
@@ -533,7 +536,7 @@
                     id="acceptCondition"
                 />
                 <label for="acceptCondition"
-                    >J'accepte les conditions
+                    >J'accepte les conditions*
                 </label>
             </div>
             <p class="errors-input">
@@ -547,6 +550,13 @@
                     onClick={() => ""}
                 />
             </div>
+        </div>
+        <div>
+            <p class="condition">
+                *Je consens à ce que les coordonnées inscrites dans le formulaire soient diffusées sur
+                le site d'offre d'emploi du Cégep de Rivière-du-Loup afin que des personnes intéressées par
+                mes offres d'emploi puissent me contacter.
+            </p>
         </div>
     </div>
 </form>
@@ -606,23 +616,68 @@
     }
     .accept-Condition {
         display: flex;
-        flex-direction: row;
-        justify-content: space-around;
+        flex-direction: column;
+        justify-content: center;
         width: 100%;
     }
     .accept-horiz {
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: center;
         width: 100%;
-    }
-    .accept-horiz {
-        display: flex;
-        flex-direction: row;
-        margin: 0.8vw;
     }
     .form-control-acceptCondition {
         margin-right: 0.8vw;
         margin-bottom: 0.5vw;
+    }
+    .condition {
+        font-size: 12px;
+        width: 20vw;
+    }
+
+
+
+    @media (max-width: 768px) {
+        .form-offre {
+            max-height: 100%;
+        }
+        .form-group-horizontal {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .form-group-vertical {
+            width: 70%;
+        }
+        .form-group-horizontal-date {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .accept-Condition {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .accept-horiz {
+            flex-direction: row;
+            align-items: center;
+            width: 30vw;
+        }
+        .form-control-acceptCondition {
+            margin-right: 0;
+            margin-bottom: 0.5vw;
+        }
+        .send {
+            margin-bottom: 0vw;
+        }
+        .button-add {
+            margin-top: 2vw;
+        }
+        .condition {
+            margin-top: 2vh;
+            font-size: 12px;
+            width: 60vw;
+        }
     }
 </style>

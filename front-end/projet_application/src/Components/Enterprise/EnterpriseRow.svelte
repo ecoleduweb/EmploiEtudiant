@@ -31,6 +31,10 @@
             <p class="text">{enterprise.address}</p>
             <p class="text">{nomVille}</p>
         </div>
+        <div class="info-mobile">
+            <p class="textTitre">{enterprise.name}</p>
+            <p class="text">{enterprise.email}</p>
+        </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>
 </button>
@@ -81,5 +85,26 @@
     .image {
         width: 30px;
         height: 30px;
+    }
+
+    .info-mobile {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .info {
+            display: none;
+        }
+        .info-mobile {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 60%;
+        }
+
+        .text {
+            font-size: 3.5vw;
+        }
     }
 </style>

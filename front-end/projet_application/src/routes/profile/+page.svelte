@@ -86,7 +86,7 @@
     <div class="more-information">
         <h5 class="infoTitleBig">Modifier mon profil:</h5>
         <div class="editInfo">
-            <h5 class="infoTitle">Prénom:</h5>
+            <h5 class="infoModify">Prénom:</h5>
             <input type="text_content"
                 bind:value={firstname}
                 placeholder="Nouveau prénom:"
@@ -99,7 +99,7 @@
         </div>
 
         <div class="editInfo">
-            <h5 class="infoTitle">Nom:</h5>
+            <h5 class="infoModify">Nom:</h5>
             <input type="text_content"
                 bind:value={lastname}
                 placeholder="Nouveau nom:"
@@ -111,7 +111,7 @@
             </div>
         </div>
         <div class="editInfo">
-            <h5 class="infoTitle">Mot de passe:</h5>
+            <h5 class="infoModify">Mot de passe:</h5>
             <input type="text_content"
                 bind:value={password}
                 placeholder="Nouveau mot de passe"
@@ -144,10 +144,6 @@
 {/if}
 
 <style scoped>
-    .titleContainer {
-        display: flex;
-        flex-direction: column;
-    }
     .title {
         margin-bottom: 1vh;
         margin-top: 3vh;
@@ -165,14 +161,14 @@
         margin: 0;
     }
     .infoTitle {
-        font-size: 1.3rem;
+        font-size: 1.2vw;
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
         width: 10vw;
     }
     .infoTitleBig {
-        font-size: 2rem;
+        font-size: 1.5vw;
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
@@ -180,8 +176,10 @@
     }
     .input
     {
+        width: 10vw;
         margin-right: 1vw;
         margin-bottom: 0.5vw;
+        font-size: 1vw;
     }
     .editInfo {
         display: flex;
@@ -209,11 +207,58 @@
         color: white;
     }
 
+    .infoModify {
+        font-size: 1.2vw;
+        margin-bottom: 0.5vw;
+        width: 8vw;
+    }
+
     .more-information {
         background-color: #00ad9a;
         width: 33vw;
         padding: 1vw;
         border-radius: 5%;
         border: 2px solid white;
+    }
+
+    @media (max-width: 768px) {
+        .text {
+            font-size: 6vw;
+        }
+        .infoTitleBig {
+            font-size: 5vw;
+            width: 100vw;
+        }
+        .infoTitle {
+            font-size: 4vw;
+            width: 100%;
+        }
+        .infoModify
+        {
+            font-size: 4vw;
+            margin-bottom: 1.5vw;
+            width: 30vw;
+            text-align: center;
+        }
+        .input {
+            font-size: 5vw;
+            width: 50vw;
+            margin-right: 1vw;
+        }
+        .editInfo {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; 
+            width: 80vw;
+        }
+        .text_content {
+            font-size: 3.5vw;
+            margin-bottom: 3.5vw;
+        }
+        .more-information {
+            width: 80vw;
+            padding: 2vw;
+        }
     }
 </style>

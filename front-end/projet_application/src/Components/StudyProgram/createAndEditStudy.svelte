@@ -63,4 +63,15 @@
     {
         color: black;
     }
+
+    @media (max-width: 768px) {
+        .infoTitle {
+            font-size: 4vw;
+        }
+        .input {
+            font-size: 4vw;
+            height: 8vw;
+            margin-bottom: 2vh;
+        }
+    }
 </style>
