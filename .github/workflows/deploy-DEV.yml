@@ -19,6 +19,9 @@ jobs:
           script: |
             sudo systemctl stop front-end
             sudo systemctl stop back-end
+            echo 'moving log file to logs folder'
+            DATE=$(date +'%Y-%m-%d')
+            cp /dev_project/ProjetApplicationH2024/back-end/API/logs.txt /root/logs/logs_$DATE.txt
             rm -r dev_project
             mkdir dev_project
             cd dev_project
