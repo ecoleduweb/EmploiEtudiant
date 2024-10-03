@@ -19,6 +19,18 @@
     let selectedCity: any
     let cityFromEnterprise: any = []
 
+    function formatPhoneNumber() {
+        let phone = enterprise.phone.replace(/\D/g, ''); // Supprime tous les caractères non numériques
+
+        if (phone.length === 10) {
+            // Format pour les numéros à 10 chiffres
+            enterprise.phone = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`;
+        } else if (phone.length === 7) {
+            // Format pour les numéros à 7 chiffres
+            enterprise.phone = `${phone.slice(0, 3)}-${phone.slice(3)}`;
+        }
+    }
+
     let prepareAndVerifyIfValid = async () => {
         if (enterprise !== null) {
             try {
@@ -115,6 +127,7 @@
                 <input
                     type="text"
                     bind:value={enterprise.phone}
+                    on:blur={formatPhoneNumber}
                     class="form-control"
                     id="phone"
                     readonly={false}
