@@ -104,8 +104,7 @@
                     <p class="text CanBeHidden">{offer.offerLink}</p>
                 {/if} 
                 <div use:copy={offer.offerLink}>
-                            <Button text="Copier dans le presse papier." />
-
+                    <img class="iconeCopy" src="copy.svg" alt="Edit icon" />
                 </div>
             </div>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
@@ -192,6 +191,15 @@
     }
     .link_padding {
         padding-bottom: 3vh;
+    }
+    .iconeCopy {
+        width: 1.5vw;
+        height: 1.5vw;
+        cursor: pointer;
+    }
+
+    .iconeCopy:hover {
+        filter: invert(0.05);
     }
 
     @media (max-width: 768px) {
