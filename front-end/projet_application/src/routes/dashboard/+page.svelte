@@ -179,16 +179,9 @@
         </section>
     {:else}
         <section class="offres">
-            {#if isModerator === true}
-            <h1 class="title">
-                <span class="text">LES OFFRES D'EMPLOIS </span>
-            </h1>
-            {/if}
-            {#if isModerator === false}
             <h1 class="title">
                 <span class="text">MES OFFRES D'EMPLOIS </span>
             </h1>
-            {/if}
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres refusées</h2>
                 {#each isRefusedOffer as offer}

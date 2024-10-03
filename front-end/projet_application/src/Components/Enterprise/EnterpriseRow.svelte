@@ -35,7 +35,7 @@
             <p class="textTitre">{enterprise.name}</p>
             <p class="text">{enterprise.email}</p>
         </div>
-        <img class="image" src="add.svg" alt="ajouter" />
+        <img class="image" src="searchBar.svg" alt="ajouter" />
     </div>
 </button>
 

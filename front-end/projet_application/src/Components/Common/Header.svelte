@@ -110,7 +110,7 @@
                     <p class="textSearch">Utilisateurs</p>
                 </button>
                 <button class="button" on:click={handleProgrammes}>
-                    <p class="textSearch">Modifier les programmes</p>
+                    <p class="textSearch">Programmes d'études</p>
                     <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
                 </button>
                 <button class="button" on:click={handleEmploi}>
@@ -195,7 +195,7 @@
                         class="button logout-button"
                         on:click={handleProgrammes}
                     >
-                        <p class="textLogout">Modifier les programmes</p>
+                        <p class="textLogout">Programmes d'études</p>
                         <img
                             class="iconeLogout"
                             src="edit.svg"

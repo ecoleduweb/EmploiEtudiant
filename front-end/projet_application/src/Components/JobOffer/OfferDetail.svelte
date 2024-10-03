@@ -93,7 +93,7 @@
             <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
-            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillée</h5>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
             {#if !hideURL}
                 <div class="link_padding">
                     <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>

@@ -83,6 +83,21 @@
         
     </div>
 
+    <div class="Modal">
+        {#if userHaveEnterprise}
+            <div class="divFlex">
+                <Button
+                    onClick={handleShow}
+                    text="Modifier ton entreprise"
+                />
+            </div>
+        {/if}
+    </div>
+    {#if showEnterpriseEditModal}
+        <ModifyEnterprise handleCloseClick={closeModal}>
+        </ModifyEnterprise>
+    {/if}
+
     <div class="more-information">
         <h5 class="infoTitleBig">Modifier mon profil:</h5>
         <div class="editInfo">
@@ -126,20 +141,6 @@
             <h5>Une reconnexion est nécessaire pour appliquer les modifications.</h5>
         </div>
     </div>
-    <div class="Modal">
-        {#if userHaveEnterprise}
-            <div class="divFlex">
-                <Button
-                    onClick={handleShow}
-                    text="Modifier ton entreprise"
-                />
-            </div>
-        {/if}
-    </div>
-    {#if showEnterpriseEditModal}
-        <ModifyEnterprise handleCloseClick={closeModal}>
-        </ModifyEnterprise>
-    {/if}
 </div>
 {/if}
 
@@ -190,7 +191,7 @@
     .text_content {
         font-size: 1.1rem;
         margin: 0px;
-        margin-bottom: 1.75vw;
+        margin-bottom: 1vw;
     }
     .container {
         width: 95%;
@@ -220,6 +221,11 @@
         border-radius: 5%;
         border: 2px solid white;
     }
+
+    .divFlex {
+        margin-bottom: 1vh;
+    }
+    
 
     @media (max-width: 768px) {
         .text {
