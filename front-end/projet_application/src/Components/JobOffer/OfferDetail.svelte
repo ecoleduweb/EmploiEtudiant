@@ -4,6 +4,7 @@
     import fetchCity from "../../Service/CityService"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
+    import { copy } from 'svelte-copy';
     
     export let offer: JobOfferDetails
 
@@ -94,13 +95,19 @@
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
-            {#if !hideURL}
-                <div class="link_padding">
-                    <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+            <div class="row">
+                {#if !hideURL}
+                    <div class="link_padding">
+                        <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+                    </div>
+                {:else}
+                    <p class="text CanBeHidden">{offer.offerLink}</p>
+                {/if} 
+                <div use:copy={offer.offerLink}>
+                            <Button text="Copier dans le presse papier." />
+
                 </div>
-            {:else}
-                <p class="text CanBeHidden">{offer.offerLink}</p>
-            {/if}                     
+            </div>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <div class="row">
                 <p class="text">{offer.email}</p> 
