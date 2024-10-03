@@ -95,7 +95,7 @@
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
-            <div class="row">
+            <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
                         <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
@@ -189,6 +189,12 @@
         justify-content: space-between;
         width: 90%;
     }
+    .row-copy {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 90%;
+    }
     .link_padding {
         padding-bottom: 3vh;
     }
@@ -210,6 +216,13 @@
         .container {
             max-height: 60vh;
         }
-
+        .iconeCopy {
+            width: 5vw;
+            height: 5vw;
+        }
+        .row-copy {
+            flex-direction: row;
+            height: 4vh;
+        }
     }
 </style>
