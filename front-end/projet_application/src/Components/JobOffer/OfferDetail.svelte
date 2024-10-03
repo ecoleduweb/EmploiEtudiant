@@ -78,6 +78,8 @@
             <p class="text">{offer.title}</p>
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
             <p class="text">{offer.address}</p>
+            <h5 class="infoTitle">Numéro de téléphone</h5>
+            <p class="text">{offer.enterprise?.phone}</p>
             <h5 class="infoTitle">Date de début</h5>
             <p class="text">{offer.offerDebut}</p>
             <h5 class="infoTitle">Date d'entrée en fonction</h5>
