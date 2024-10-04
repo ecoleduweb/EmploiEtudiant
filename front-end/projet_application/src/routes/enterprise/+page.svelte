@@ -80,8 +80,8 @@
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
-                <span class="text">ENTREPRISES </span>
-                <span class="text"> EXISTANTES</span>
+                <span class="text">MES </span>
+                <span class="text"> ENTREPRISES</span>
             </h1>
         </div>
     </section>
