@@ -19,6 +19,7 @@
     let selectedCity: any
     let cityFromEnterprise: any = []
 
+    
     let prepareAndVerifyIfValid = async () => {
         if (enterprise !== null) {
             try {
@@ -115,7 +116,6 @@
                 <input
                     type="text"
                     bind:value={enterprise.phone}
-                    on:blur={formatPhoneNumber}
                     class="form-control"
                     id="phone"
                     readonly={false}

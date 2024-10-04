@@ -132,7 +132,6 @@
             <input
                 type="text"
                 bind:value={enterprise.phone}
-                on:blur={formatPhoneNumber}
                 class="form-control"
                 id="phone"
             />

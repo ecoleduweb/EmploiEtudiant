@@ -12,11 +12,27 @@
     let cityOptions: any;
     let selectedCity: any;
     let loaded = false;
+    let formattedPhone: string;
 
     onMount(async () => {
         cityOptions = await fetchCity()
+        if (offer && offer.enterprise && offer.enterprise.phone) {
+            formattedPhone = formatPhoneNumber(offer.enterprise.phone);
+        }
         loaded = true;
+        
+
     })
+
+    const formatPhoneNumber = (phone: string): string => {
+        // Supprime tous les caractères non numériques
+        const cleaned = phone.replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phone;
+    };
 
 
     $: if (cityOptions) {
@@ -79,7 +95,7 @@
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
             <p class="text">{offer.address}</p>
             <h5 class="infoTitle">Numéro de téléphone</h5>
-            <p class="text">{offer.enterprise?.phone}</p>
+            <p class="text">{formattedPhone}</p>
             <h5 class="infoTitle">Date de début</h5>
             <p class="text">{offer.offerDebut}</p>
             <h5 class="infoTitle">Date d'entrée en fonction</h5>

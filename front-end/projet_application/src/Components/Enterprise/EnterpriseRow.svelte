@@ -7,6 +7,7 @@
     export let handleModalClick: (id: number) => void
     let ville: City
     let nomVille: string
+    let formattedPhone: string
 
     const getCity = async (id: number) => {
         try {
@@ -18,16 +19,33 @@
     }
 
     onMount(async () => {
-        await getCity(enterprise.cityId)
-    })
+        formattedPhone = formatPhoneNumber(enterprise.phone);
+        await getCity(enterprise.cityId);
+        
+    });
+    
+
+    const formatPhoneNumber = (phone: string): string => {
+        // Supprime tous les caractères non numériques
+        const cleaned = phone.replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phone;
+    };
+
+    
 </script>
+
+
 
 <button class="enterprise" on:click={() => handleModalClick(enterprise.id)}>
     <div class="emploi">
         <div class="info">
             <p class="textTitre">{enterprise.name}</p>
             <p class="text">{enterprise.email}</p>
-            <p class="text">{enterprise.phone}</p>
+            <p class="text">{formattedPhone}</p>
             <p class="text">{enterprise.address}</p>
             <p class="text">{nomVille}</p>
         </div>
