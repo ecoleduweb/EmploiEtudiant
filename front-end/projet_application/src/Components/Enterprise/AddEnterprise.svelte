@@ -10,21 +10,7 @@
     import { onMount } from "svelte"
     import fetchCity from "../../Service/CityService"
     export let handleEnterpriseClick: () => void
-
-
-
-    function formatPhoneNumber() {
-        let phone = enterprise.phone.replace(/\D/g, ''); // Supprime tous les caractères non numériques
-
-        if (phone.length === 10) {
-            // Format pour les numéros à 10 chiffres
-            enterprise.phone = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`;
-        } else if (phone.length === 7) {
-            // Format pour les numéros à 7 chiffres
-            enterprise.phone = `${phone.slice(0, 3)}-${phone.slice(3)}`;
-        }
-    }
-
+    
     const schema = yup.object().shape({
         name: yup.string().required("Le nome de l'entreprise est requis."),
         address: yup
