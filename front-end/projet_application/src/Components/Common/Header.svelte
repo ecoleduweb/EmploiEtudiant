@@ -241,31 +241,18 @@
                     </button>
                 </div>
 
-                <div class="option">
-                    <button
-                        class="button logout-button"
-                        on:click={handleLogout}
-                    >
-                        <p class="textLogout">Déconnexion</p>
+                <div class="option dropdown">
+                    <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
                         <img
-                            class="iconeLogout"
-                            src="logout.svg"
-                            alt="Logout icon"
+                            class="iconeProfile"
+                            src="profile.svg"
+                            alt="Business icon"
                         />
                     </button>
-                </div>
-
-                <div class="option">
-                    <button
-                        class="button"
-                        on:click={handleProfile}
-                    >
-                        <p class={$currentUser?.isModerator ? "email ModFix" : "email UserFix"}>
-                            Connecté en 
-                            tant que 
-                            {$currentUser?.firstName} {$currentUser?.lastName}
-                        </p>
-                    </button>
+                    <div class="dropdown-content-profile">
+                        <a href="/profile">Modifier mon profil </a>
+                        <a href="/" on:click={handleLogout}>Déconnexion</a>
+                    </div>
                 </div>
 
             {:else}
@@ -386,6 +373,10 @@
         background-color: #555b66;
     }
 
+    .iconeProfile {
+        width: 3vw;
+    }
+
     p,
     a {
         color: white;
@@ -414,6 +405,40 @@
         margin-left: 15px;
     }
 
+    .dropdown-content-profile {
+        display: none;
+        position: absolute;
+        background-color: #1e2634;
+        width: 16.5%;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        right : 1vw;
+    }
+
+    .dropdown-content-profile a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 5.25vw;
+        transition: 0.5s;
+        background: linear-gradient(
+                90deg,
+                var(--c1, #268794),
+                var(--c2, #2ebaa1) 55%,
+                var(--c3, #30a29e) 70%,
+                var(--c4, #318e9b) 90%
+            )
+            var(--x, 0) / 200%;
+    }
+
+        /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content-profile {
+        display: flex;
+        flex-direction: column;
+    }
+
     /* Links inside the dropdown */
     .dropdown-content a {
         color: white;
@@ -435,6 +460,11 @@
 
     /* Change color of dropdown links on hover */
     .dropdown-content a:hover {
+        --x: 100%;
+    }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content-profile a:hover {
         --x: 100%;
     }
 
