@@ -249,7 +249,7 @@
                             alt="Business icon"
                         />
                     </button>
-                    <div class="dropdown-content-profile">
+                    <div class="{$currentUser?.isModerator ? "dropdown-content-profile-admin" : "dropdown-content-profile"}">
                         <a href="/profile">Modifier mon profil </a>
                         <a href="/" on:click={handleLogout}>Déconnexion</a>
                     </div>
@@ -412,35 +412,31 @@
         width: 16.5%;
         box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
         z-index: 1;
-        right : 1vw;
+        right : 10vw;
     }
 
-    .dropdown-content-profile a {
-        color: white;
-        text-decoration: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 5.25vw;
-        transition: 0.5s;
-        background: linear-gradient(
-                90deg,
-                var(--c1, #268794),
-                var(--c2, #2ebaa1) 55%,
-                var(--c3, #30a29e) 70%,
-                var(--c4, #318e9b) 90%
-            )
-            var(--x, 0) / 200%;
+    .dropdown-content-profile-admin {
+        display: none;
+        position: absolute;
+        background-color: #1e2634;
+        width: 16.5%;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        right : 2vw;
     }
 
         /* Show the dropdown menu on hover */
-    .dropdown:hover .dropdown-content-profile {
+    .dropdown:hover .dropdown-content,
+    .dropdown:hover .dropdown-content-profile,
+    .dropdown:hover .dropdown-content-profile-admin {
         display: flex;
         flex-direction: column;
     }
 
     /* Links inside the dropdown */
-    .dropdown-content a {
+    .dropdown-content a,
+    .dropdown-content-profile a,
+    .dropdown-content-profile-admin a {
         color: white;
         text-decoration: none;
         display: flex;
@@ -459,19 +455,10 @@
     }
 
     /* Change color of dropdown links on hover */
-    .dropdown-content a:hover {
+    .dropdown-content a:hover,
+    .dropdown-content-profile a:hover,
+    .dropdown-content-profile-admin a:hover {
         --x: 100%;
-    }
-
-        /* Change color of dropdown links on hover */
-        .dropdown-content-profile a:hover {
-        --x: 100%;
-    }
-
-    /* Show the dropdown menu on hover */
-    .dropdown:hover .dropdown-content {
-        display: flex;
-        flex-direction: column;
     }
 
     .button {
