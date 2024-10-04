@@ -5,6 +5,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
     import { copy } from 'svelte-copy';
+    import { formatPhoneNumber } from "../../ts/utils"
     
     export let offer: JobOfferDetails
 
@@ -23,16 +24,6 @@
         
 
     })
-
-    const formatPhoneNumber = (phone: string): string => {
-        // Supprime tous les caractères non numériques
-        const cleaned = phone.replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return `(${match[1]}) ${match[2]}-${match[3]}`;
-        }
-        return phone;
-    };
 
 
     $: if (cityOptions) {

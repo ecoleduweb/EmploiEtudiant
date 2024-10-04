@@ -5,6 +5,7 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     export let handleModalClick: (id: number) => void
+    import { formatPhoneNumber } from "../../ts/utils"
     let ville: City
     let nomVille: string
     let formattedPhone: string
@@ -23,18 +24,6 @@
         await getCity(enterprise.cityId);
         
     });
-    
-
-    const formatPhoneNumber = (phone: string): string => {
-        // Supprime tous les caractères non numériques
-        const cleaned = phone.replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return `(${match[1]}) ${match[2]}-${match[3]}`;
-        }
-        return phone;
-    };
-
     
 </script>
 
