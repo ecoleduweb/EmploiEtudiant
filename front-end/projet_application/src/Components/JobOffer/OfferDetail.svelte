@@ -4,6 +4,8 @@
     import fetchCity from "../../Service/CityService"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
+    import { copy } from 'svelte-copy';
+    import { formatPhoneNumber } from "../../ts/utils"
     
     export let offer: JobOfferDetails
 
@@ -11,10 +13,16 @@
     let cityOptions: any;
     let selectedCity: any;
     let loaded = false;
+    let formattedPhone: string;
 
     onMount(async () => {
         cityOptions = await fetchCity()
+        if (offer && offer.enterprise && offer.enterprise.phone) {
+            formattedPhone = formatPhoneNumber(offer.enterprise.phone);
+        }
         loaded = true;
+        
+
     })
 
 
@@ -77,6 +85,8 @@
             <p class="text">{offer.title}</p>
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
             <p class="text">{offer.address}</p>
+            <h5 class="infoTitle">Numéro de téléphone</h5>
+            <p class="text">{formattedPhone}</p>
             <h5 class="infoTitle">Date de début</h5>
             <p class="text">{offer.offerDebut}</p>
             <h5 class="infoTitle">Date d'entrée en fonction</h5>
@@ -93,14 +103,19 @@
             <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
-            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Adresse URL vers l'offre d'emploi détaillée</h5>
-            {#if !hideURL}
-                <div class="link_padding">
-                    <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
+            <div class="row-copy">
+                {#if !hideURL}
+                    <div class="link_padding">
+                        <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+                    </div>
+                {:else}
+                    <p class="text CanBeHidden">{offer.offerLink}</p>
+                {/if} 
+                <div use:copy={offer.offerLink}>
+                    <img class="iconeCopy" src="copy.svg" alt="Edit icon" />
                 </div>
-            {:else}
-                <p class="text CanBeHidden">{offer.offerLink}</p>
-            {/if}                     
+            </div>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <div class="row">
                 <p class="text">{offer.email}</p> 
@@ -183,8 +198,23 @@
         justify-content: space-between;
         width: 90%;
     }
+    .row-copy {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 90%;
+    }
     .link_padding {
         padding-bottom: 3vh;
+    }
+    .iconeCopy {
+        width: 1.5vw;
+        height: 1.5vw;
+        cursor: pointer;
+    }
+
+    .iconeCopy:hover {
+        filter: invert(0.05);
     }
 
     @media (max-width: 768px) {
@@ -195,6 +225,13 @@
         .container {
             max-height: 60vh;
         }
-
+        .iconeCopy {
+            width: 5vw;
+            height: 5vw;
+        }
+        .row-copy {
+            flex-direction: row;
+            height: 4vh;
+        }
     }
 </style>

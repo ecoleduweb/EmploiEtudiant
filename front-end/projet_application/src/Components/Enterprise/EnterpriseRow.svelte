@@ -5,8 +5,10 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     export let handleModalClick: (id: number) => void
+    import { formatPhoneNumber } from "../../ts/utils"
     let ville: City
     let nomVille: string
+    let formattedPhone: string
 
     const getCity = async (id: number) => {
         try {
@@ -18,16 +20,21 @@
     }
 
     onMount(async () => {
-        await getCity(enterprise.cityId)
-    })
+        formattedPhone = formatPhoneNumber(enterprise.phone);
+        await getCity(enterprise.cityId);
+        
+    });
+    
 </script>
+
+
 
 <button class="enterprise" on:click={() => handleModalClick(enterprise.id)}>
     <div class="emploi">
         <div class="info">
             <p class="textTitre">{enterprise.name}</p>
             <p class="text">{enterprise.email}</p>
-            <p class="text">{enterprise.phone}</p>
+            <p class="text">{formattedPhone}</p>
             <p class="text">{enterprise.address}</p>
             <p class="text">{nomVille}</p>
         </div>
@@ -35,7 +42,7 @@
             <p class="textTitre">{enterprise.name}</p>
             <p class="text">{enterprise.email}</p>
         </div>
-        <img class="image" src="add.svg" alt="ajouter" />
+        <img class="image" src="searchBar.svg" alt="ajouter" />
     </div>
 </button>
 

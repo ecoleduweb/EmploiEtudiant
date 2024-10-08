@@ -10,7 +10,7 @@
     import { onMount } from "svelte"
     import fetchCity from "../../Service/CityService"
     export let handleEnterpriseClick: () => void
-
+    
     const schema = yup.object().shape({
         name: yup.string().required("Le nome de l'entreprise est requis."),
         address: yup

@@ -110,7 +110,7 @@
                     <p class="textSearch">Utilisateurs</p>
                 </button>
                 <button class="button" on:click={handleProgrammes}>
-                    <p class="textSearch">Modifier les programmes</p>
+                    <p class="textSearch">Programmes d'études</p>
                     <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
                 </button>
                 <button class="button" on:click={handleEmploi}>
@@ -195,7 +195,7 @@
                         class="button logout-button"
                         on:click={handleProgrammes}
                     >
-                        <p class="textLogout">Modifier les programmes</p>
+                        <p class="textLogout">Programmes d'études</p>
                         <img
                             class="iconeLogout"
                             src="edit.svg"
@@ -241,31 +241,18 @@
                     </button>
                 </div>
 
-                <div class="option">
-                    <button
-                        class="button logout-button"
-                        on:click={handleLogout}
-                    >
-                        <p class="textLogout">Déconnexion</p>
+                <div class="option dropdown">
+                    <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
                         <img
-                            class="iconeLogout"
-                            src="logout.svg"
-                            alt="Logout icon"
+                            class="iconeProfile"
+                            src="profile.svg"
+                            alt="Business icon"
                         />
                     </button>
-                </div>
-
-                <div class="option">
-                    <button
-                        class="button"
-                        on:click={handleProfile}
-                    >
-                        <p class={$currentUser?.isModerator ? "email ModFix" : "email UserFix"}>
-                            Connecté en 
-                            tant que 
-                            {$currentUser?.firstName} {$currentUser?.lastName}
-                        </p>
-                    </button>
+                    <div class="{$currentUser?.isModerator ? "dropdown-content-profile-admin" : "dropdown-content-profile"}">
+                        <a href="/profile">Modifier mon profil </a>
+                        <a href="/" on:click={handleLogout}>Déconnexion</a>
+                    </div>
                 </div>
 
             {:else}
@@ -386,6 +373,10 @@
         background-color: #555b66;
     }
 
+    .iconeProfile {
+        width: 3vw;
+    }
+
     p,
     a {
         color: white;
@@ -414,8 +405,38 @@
         margin-left: 15px;
     }
 
+    .dropdown-content-profile {
+        display: none;
+        position: absolute;
+        background-color: #1e2634;
+        width: 16.5%;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        right : 10vw;
+    }
+
+    .dropdown-content-profile-admin {
+        display: none;
+        position: absolute;
+        background-color: #1e2634;
+        width: 16.5%;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        right : 2vw;
+    }
+
+        /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content,
+    .dropdown:hover .dropdown-content-profile,
+    .dropdown:hover .dropdown-content-profile-admin {
+        display: flex;
+        flex-direction: column;
+    }
+
     /* Links inside the dropdown */
-    .dropdown-content a {
+    .dropdown-content a,
+    .dropdown-content-profile a,
+    .dropdown-content-profile-admin a {
         color: white;
         text-decoration: none;
         display: flex;
@@ -434,14 +455,10 @@
     }
 
     /* Change color of dropdown links on hover */
-    .dropdown-content a:hover {
+    .dropdown-content a:hover,
+    .dropdown-content-profile a:hover,
+    .dropdown-content-profile-admin a:hover {
         --x: 100%;
-    }
-
-    /* Show the dropdown menu on hover */
-    .dropdown:hover .dropdown-content {
-        display: flex;
-        flex-direction: column;
     }
 
     .button {

@@ -11,7 +11,7 @@
         <div class="info">
             <p class="text">{studyProgram.name}</p>
         </div>
-        <img class="image" src="edit.svg" alt="ajouter" />
+        <img class="image" src="edit.svg" alt="modifier" />
     </div>
 </button>
 
@@ -38,7 +38,10 @@
 
     .text {
         width: 100%;
+        text-align: left;
+        margin-left: 0.2vw;
     }
+
     .Program {
         display: flex;
         flex-direction: row;

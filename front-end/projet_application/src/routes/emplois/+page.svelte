@@ -59,7 +59,7 @@
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
-                <span class="text">EMPLOIS </span><span class="text">
+                <span class="text">OFFRES D'EMPLOIS </span><span class="text">
                     DISPONIBLES</span
                 >
             </h1>

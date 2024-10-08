@@ -490,7 +490,7 @@
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
-                >Adresse URL vers l'offre d'emploi détaillée</label
+                >Lien vers l'offre d'emploi détaillée</label
             >
             <input
                 type="text"
