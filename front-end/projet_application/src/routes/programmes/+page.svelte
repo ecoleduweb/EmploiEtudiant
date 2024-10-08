@@ -127,7 +127,7 @@
         <div class="haut-gauche">
             <h1 class="title">
                 <span class="text">PROGRAMMES </span><span class="text">
-                    DISPONIBLES</span
+                    D'ÉTUDES</span
                 >
             </h1>
         </div>

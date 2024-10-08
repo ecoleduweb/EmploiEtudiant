@@ -19,6 +19,7 @@
     let selectedCity: any
     let cityFromEnterprise: any = []
 
+    
     let prepareAndVerifyIfValid = async () => {
         if (enterprise !== null) {
             try {
