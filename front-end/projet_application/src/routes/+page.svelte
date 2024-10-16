@@ -44,6 +44,11 @@
                 >
             </h1>
             <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
+            <p class="text-welcome">Bienvenue sur le portail d'offres d'emploi du Cégep!
+                 En collaboration avec des étudiants en Techniques de l'informatique et sous la responsabilité de l'enseignant Antoine Chagnon-Michaud,
+                  le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
+                  les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment. <br>
+                  Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
             <span class="radiant"></span>
         </div>
 
@@ -55,6 +60,11 @@
                 >
             </h1>
             <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
+            <p class="text-welcome">Bienvenue sur le portail d'offres d'emploi du Cégep!
+                En collaboration avec des étudiants en Techniques de l'informatique et sous la responsabilité de l'enseignant Antoine Chagnon-Michaud,
+                 le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
+                 les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment. <br>
+                 Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
             <span class="radiant"></span>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -148,7 +158,7 @@
     .haut-gauche {
         display: flex;
         flex-direction: column;
-        width: 50%;
+        width: 100%;
         margin-left: 5.2%;
     }
     .haut-mobile {
@@ -168,12 +178,19 @@
         margin-right: 7.2%;
     }
     .radiant {
-        width: 210px;
+        width: 100%;
         height: 16px;
         background: linear-gradient(270deg, #bb2534, #b2243d, #a72348, #a02250);
     }
     .divFlex {
         display: flex;
+    }
+
+    .text-welcome
+    {
+        color: white;
+        font-size: 1.1rem;
+        margin-top: 20px;
     }
     @media (max-width: 768px) {
         .haut-gauche {
