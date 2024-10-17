@@ -65,6 +65,7 @@
                  le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
                  les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment.
                  Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
+
             <span class="radiant"></span>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
