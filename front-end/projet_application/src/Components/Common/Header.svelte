@@ -355,19 +355,6 @@
         width: 25%;
     }
 
-    .email 
-    {
-        margin-left: 0px;
-        text-align: center;
-    }
-
-    .UserFix {
-        margin-right: 0vw;
-    }
-    
-    .ModFix {
-        margin-right: 0vh;
-    }
 
     button:hover {
         background-color: #555b66;

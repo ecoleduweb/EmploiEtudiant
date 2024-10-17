@@ -322,12 +322,7 @@
         display: flex;
         flex-direction: column;
     }
-    .textOffre {
-        font-size: 2.5em;
-        margin: 0;
-        margin-bottom: 2vh;
-        color: white;
-    }
+
     .textSections {
         font-size: 1.8em;
         margin: 0;
