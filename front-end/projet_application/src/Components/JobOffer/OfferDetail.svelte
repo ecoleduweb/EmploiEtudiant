@@ -22,7 +22,6 @@
             formattedPhone = formatPhoneNumber(offer.enterprise.phone);
         }
         if (offer && offer.offerLink) {
-            // Vérifiez si l'utilisateur est sur un appareil mobile
                 url = getShortURL(offer.offerLink);
         }
         loaded = true;
