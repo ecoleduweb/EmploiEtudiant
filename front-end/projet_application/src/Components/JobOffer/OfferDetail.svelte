@@ -5,7 +5,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
     import { copy } from 'svelte-copy';
-    import { formatPhoneNumber } from "../../ts/utils"
+    import { formatPhoneNumber, getShortURL } from "../../ts/utils"
     
     export let offer: JobOfferDetails
 
@@ -14,11 +14,15 @@
     let selectedCity: any;
     let loaded = false;
     let formattedPhone: string;
+    let url = '';
 
     onMount(async () => {
         cityOptions = await fetchCity()
         if (offer && offer.enterprise && offer.enterprise.phone) {
             formattedPhone = formatPhoneNumber(offer.enterprise.phone);
+        }
+        if (offer && offer.offerLink) {
+                url = getShortURL(offer.offerLink);
         }
         loaded = true;
         
@@ -87,7 +91,7 @@
             <p class="text">{offer.address}</p>
             <h5 class="infoTitle">Numéro de téléphone</h5>
             <p class="text">{formattedPhone}</p>
-            <h5 class="infoTitle">Date de début</h5>
+            <h5 class="infoTitle">Date de publication</h5>
             <p class="text">{offer.offerDebut}</p>
             <h5 class="infoTitle">Date d'entrée en fonction</h5>
             <p class="text">{offer.dateEntryOffice}</p>
@@ -107,10 +111,10 @@
             <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
-                        <a href="{offer.offerLink}" class="text_link">{offer.offerLink}</a>
+                        <a href="{offer.offerLink}" class="text_link">{url}</a>
                     </div>
                 {:else}
-                    <p class="text CanBeHidden">{offer.offerLink}</p>
+                    <p class="text CanBeHidden">{url}</p>
                 {/if} 
                 <div use:copy={offer.offerLink}>
                     <img class="iconeCopy" src="copy.svg" alt="Edit icon" />
@@ -205,7 +209,8 @@
         width: 90%;
     }
     .link_padding {
-        padding-bottom: 3vh;
+        display: flex;
+        flex-direction: row;
     }
     .iconeCopy {
         width: 1.5vw;
