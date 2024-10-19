@@ -22,3 +22,12 @@ export const formatPhoneNumber = (phone: string): string => {
     }
     return phone;
 };
+
+export const getShortURL = (url: string) => {
+    try {
+        const { hostname } = new URL(url);
+        return hostname;
+    } catch (e) {
+        return url;
+    }
+};

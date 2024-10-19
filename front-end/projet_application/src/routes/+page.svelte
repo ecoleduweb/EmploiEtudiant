@@ -194,6 +194,7 @@
         margin-top: 20px;
         text-align: justify;
     }
+
     @media (max-width: 768px) {
         .haut-gauche {
             display: none;
@@ -229,7 +230,6 @@
             padding-left: 2vw;
             padding-right: 2vw;
         }
-
 
     }
 </style>
