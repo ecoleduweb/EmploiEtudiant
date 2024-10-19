@@ -23,11 +23,7 @@
         }
         if (offer && offer.offerLink) {
             // Vérifiez si l'utilisateur est sur un appareil mobile
-            if (window.matchMedia("(max-width: 768px)").matches) {
                 url = getShortURL(offer.offerLink);
-            } else {
-                url = offer.offerLink;
-            }
         }
         loaded = true;
         
