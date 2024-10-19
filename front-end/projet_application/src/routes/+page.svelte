@@ -65,6 +65,7 @@
                  le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
                  les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment.
                  Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
+
             <span class="radiant"></span>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -159,6 +160,7 @@
         display: flex;
         flex-direction: column;
         width: 100%;
+        width: 100%;
         margin-left: 5.2%;
     }
     .haut-mobile {
@@ -179,11 +181,20 @@
     }
     .radiant {
         width: 100%;
+        width: 100%;
         height: 16px;
         background: linear-gradient(270deg, #bb2534, #b2243d, #a72348, #a02250);
     }
     .divFlex {
         display: flex;
+    }
+
+    .text-welcome
+    {
+        color: white;
+        font-size: 0.9rem;
+        margin-top: 20px;
+        text-align: justify;
     }
 
     .text-welcome
@@ -218,6 +229,15 @@
             margin: 20px;
             width : 80vw;
             height: 12vh;
+        }
+
+        .text-welcome
+        {
+            font-size: 0.8rem;
+            margin-top: 20px;
+            text-align: justify;
+            padding-left: 2vw;
+            padding-right: 2vw;
         }
 
         .text-welcome
