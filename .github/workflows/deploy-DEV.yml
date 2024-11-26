@@ -51,6 +51,7 @@ jobs:
             echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
             echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
+            echo PUBLIC_PUBLIC_MEASUREMENT_ID=${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }} >> .env
             echo URL=${{ secrets.DEV_URL }} >> .env
             flask db upgrade
             echo 'Installing packages'
