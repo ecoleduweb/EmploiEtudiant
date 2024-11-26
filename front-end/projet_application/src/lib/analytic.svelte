@@ -3,14 +3,22 @@
   import { env } from "$env/dynamic/public"
   
 
-  const measurementId = env.PUBLIC_MEASUREMENT_ID
+  const measurementId: string | undefined = env.PUBLIC_MEASUREMENT_ID;
+
+  console.log("Measurement ID:", measurementId); 
 
   $: {
     if (typeof gtag !== 'undefined') {
-      gtag('config', 'MEASUREMENT_ID', {
+      if (measurementId) {
+      gtag('config', measurementId, {
         page_title: document.title,
         page_path: $page.url.pathname,
       })
+        } else {
+          console.warn('measurementId is not defined')
+        }
+    } else {
+      console.warn('gtag is not defined')
     }
   }
 </script>
