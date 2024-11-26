@@ -3,7 +3,7 @@
   import { env } from "$env/dynamic/public"
   
 
-  const measurementId: string | undefined = env.PUBLIC_MEASUREMENT_ID;
+  const measurementId: string | undefined = env.PUBLIC_PUBLIC_MEASUREMENT_ID;
 
   console.log("Measurement ID:", measurementId); 
 
