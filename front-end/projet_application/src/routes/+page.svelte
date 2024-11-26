@@ -160,7 +160,6 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        width: 100%;
         margin-left: 5.2%;
     }
     .haut-mobile {
@@ -181,7 +180,6 @@
     }
     .radiant {
         width: 100%;
-        width: 100%;
         height: 16px;
         background: linear-gradient(270deg, #bb2534, #b2243d, #a72348, #a02250);
     }
@@ -197,13 +195,6 @@
         text-align: justify;
     }
 
-    .text-welcome
-    {
-        color: white;
-        font-size: 0.9rem;
-        margin-top: 20px;
-        text-align: justify;
-    }
     @media (max-width: 768px) {
         .haut-gauche {
             display: none;
@@ -239,16 +230,6 @@
             padding-left: 2vw;
             padding-right: 2vw;
         }
-
-        .text-welcome
-        {
-            font-size: 0.8rem;
-            margin-top: 20px;
-            text-align: justify;
-            padding-left: 2vw;
-            padding-right: 2vw;
-        }
-
 
     }
 </style>
