@@ -7,6 +7,7 @@
     import { GET } from "../../ts/server"
     import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
     import { Hamburger } from 'svelte-hamburgers';
+    import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
 
     let open: boolean;
