@@ -9,10 +9,14 @@
 
   $: {
     if (typeof gtag !== 'undefined') {
+      if (measurementId) {
       gtag('config', measurementId, {
         page_title: document.title,
         page_path: $page.url.pathname,
       })
+        } else {
+          console.warn('measurementId is not defined')
+        }
     } else {
       console.warn('gtag is not defined')
     }
