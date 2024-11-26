@@ -1,33 +1,16 @@
 <script>
     import { onMount } from "svelte"
-    import { env } from "$env/dynamic/public"
+    import Analytic from "../../lib/analytic.svelte"
 
     let accepted = false
-
-    function initializeGoogleAnalytics() {
-        const measurementId = env.PUBLIC_MEASUREMENT_ID
-        if (!measurementId) {
-            return
-        }
-        // @ts-ignore
-        window.dataLayer = window.dataLayer || []
-        function gtag() {
-            // @ts-ignore
-            dataLayer.push(arguments)
-        }
-        gtag("js", new Date())
-        gtag("config", measurementId)
-    }
 
     function acceptCookies() {
         accepted = true
         localStorage.setItem("cookieConsent", "accepted")
-        initializeGoogleAnalytics()
     }
 
     onMount(() => {
         if (localStorage.getItem("cookieConsent") === "accepted") {
-            initializeGoogleAnalytics()
             accepted = true
         }
     })
@@ -49,6 +32,12 @@
         </p>
         <button id="cookieBannerOk" on:click={acceptCookies}>J'ai compris</button>
     </div>
+{/if}
+
+{#if accepted}
+
+    <Analytic />
+
 {/if}
 
 <style>
