@@ -1,8 +1,11 @@
 <script>
     import { onMount } from "svelte"
     import Analytic from "../../lib/analytic.svelte"
+    import { env } from "$env/dynamic/public"
+    import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
     let accepted = false
+    const measurementId = env.PUBLIC_PUBLIC_MEASUREMENT_ID;
 
     function acceptCookies() {
         accepted = true
@@ -37,7 +40,7 @@
 {#if accepted}
 
     <Analytic />
-
+    <GoogleAnalytics properties={[measurementId]} />
 {/if}
 
 <style>
