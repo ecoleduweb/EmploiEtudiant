@@ -41,7 +41,6 @@
 
     <Analytic />
     <GoogleAnalytics properties={[measurementId]} />
-
 {/if}
 
 <style>
