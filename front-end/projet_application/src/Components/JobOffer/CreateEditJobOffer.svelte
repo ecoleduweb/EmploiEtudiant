@@ -549,6 +549,10 @@
             <p class="errors-input">
                 {#if errors.acceptCondition}{errors.acceptCondition}{/if}
             </p>
+            {#if loading}
+                <LoadingSpinner />
+            {:else}
+
             <div class="send">
                 <Button
                     submit={true}
@@ -557,6 +561,7 @@
                     onClick={() => ""}
                 />
             </div>
+            {/if}
         </div>
         <div>
             <p class="condition">
