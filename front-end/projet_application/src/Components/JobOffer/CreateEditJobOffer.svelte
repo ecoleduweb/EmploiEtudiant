@@ -62,6 +62,7 @@
     let cityOptions: { label: string; value: number }[] = []
     let scheduleIds: number[] = []
     let selectedCityWritable = writable<any>()
+    let loading = false
 
     $: selectedCity = $selectedCityWritable
 
@@ -199,6 +200,7 @@
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
+        loading = true
         if (isJobOfferEdit) {
             await updateJobOffer()
         } else {
@@ -262,8 +264,9 @@
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 onFinished()
+                loading = false
             }
         } catch (err) {
 
@@ -276,11 +279,15 @@
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
                 requestData, false)
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 onFinished()
+                loading = false
+            }
+            else {
+                loading = false
+                
             }
         } catch (err) {
-
             
         }
     }
