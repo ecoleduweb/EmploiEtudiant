@@ -40,7 +40,7 @@
             try {
                 try {
                     const response = await POST<Login, any>("/user/login", form, false)
-                    logIn(response.token)
+                    logIn(response.data.token)
                 }
                 catch (err) 
                 {

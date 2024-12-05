@@ -62,6 +62,7 @@
     let cityOptions: { label: string; value: number }[] = []
     let scheduleIds: number[] = []
     let selectedCityWritable = writable<any>()
+    let loading = false
 
     $: selectedCity = $selectedCityWritable
 
@@ -199,11 +200,13 @@
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
+        loading = true
         if (isJobOfferEdit) {
             await updateJobOffer()
         } else {
             await createJobOffer()
         }
+        loading = false
     }
 
     const handleEnterprise = () => {
@@ -262,8 +265,10 @@
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 onFinished()
+            }
+            else if (response.status === 400) {
             }
         } catch (err) {
 
@@ -276,11 +281,12 @@
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
                 requestData, false)
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 onFinished()
             }
+            else {
+            }
         } catch (err) {
-
             
         }
     }
@@ -542,6 +548,10 @@
             <p class="errors-input">
                 {#if errors.acceptCondition}{errors.acceptCondition}{/if}
             </p>
+            {#if loading}
+                <LoadingSpinner />
+            {:else}
+
             <div class="send">
                 <Button
                     submit={true}
@@ -550,6 +560,7 @@
                     onClick={() => ""}
                 />
             </div>
+            {/if}
         </div>
         <div>
             <p class="condition">
