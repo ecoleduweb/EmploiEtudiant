@@ -11,10 +11,12 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@beyonk/svelte-google-analytics": "^2.6.4",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@types/gtag.js": "^0.0.20",
 		"carbon-components-svelte": "^0.82.10",
 		"cross-env": "^7.0.3",
 		"prettier": "3.2.5",
