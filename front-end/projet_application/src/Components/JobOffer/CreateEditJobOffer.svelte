@@ -206,6 +206,7 @@
         } else {
             await createJobOffer()
         }
+        loading = false
     }
 
     const handleEnterprise = () => {
@@ -266,13 +267,8 @@
                 requestData, false)
             if (response.status === 200 || response.status === 201) {
                 onFinished()
-                loading = false
             }
             else if (response.status === 400) {
-                loading = false
-            }
-            else {
-                loading = false
             }
         } catch (err) {
 
@@ -287,11 +283,8 @@
                 requestData, false)
             if (response.status === 200 || response.status === 201) {
                 onFinished()
-                loading = false
             }
             else {
-                loading = false
-                
             }
         } catch (err) {
             
