@@ -200,13 +200,23 @@
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
-        loading = true
-        if (isJobOfferEdit) {
-            await updateJobOffer()
-        } else {
-            await createJobOffer()
+        try {
+            loading = true
+            
+            if (isJobOfferEdit) {
+                await updateJobOffer()
+            } else {
+                await createJobOffer()
+            }
         }
-        loading = false
+        catch(err)
+        {
+            console.log(err)
+            // TODO logger
+        }
+        finally {
+            loading = false
+        }
     }
 
     const handleEnterprise = () => {
@@ -215,6 +225,7 @@
 
     
     const prepareAndThrowIfFormIsInvalid = async () => {
+        // validation de l'entreprise
         try {
             enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
             await entrepriseSchema.validate(enterprise, {abortEarly: false})
@@ -224,7 +235,7 @@
                 jobOfferErrors = extractErrors(err)
             }
         }
-        
+        // validation de l'offre
         try {
             scheduleIds = Array.isArray(scheduleSelected) && scheduleSelected.length !== 0 ? scheduleSelected.map(schedule => schedule.value) : [];
             const jobOfferToValidate = {
@@ -244,7 +255,7 @@
             }
         }
 
-        if (isObjectEmpty(enterpriseErrors) || isObjectEmpty(jobOfferErrors)) {
+        if (!isObjectEmpty(enterpriseErrors) || !isObjectEmpty(jobOfferErrors)) {
             throw new Error("Validation failed")
         }
 
@@ -266,10 +277,8 @@
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
-            if (response.status === 200 || response.status === 201) {
+            if (response) {
                 onFinished()
-            }
-            else if (response.status === 400) {
             }
         } catch (err) {
 
@@ -282,13 +291,11 @@
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
                 requestData, false)
-            if (response.status === 200 || response.status === 201) {
+            if (response) {
                 onFinished()
             }
-            else {
-            }
         } catch (err) {
-            
+            // TODO log error
         }
     }
 
