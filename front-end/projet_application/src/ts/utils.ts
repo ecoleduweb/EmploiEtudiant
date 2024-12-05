@@ -31,3 +31,7 @@ export const getShortURL = (url: string) => {
         return url;
     }
 };
+
+export const isObjectEmpty = (obj: any) => {
+    return Object.keys(obj).length === 0;
+}
