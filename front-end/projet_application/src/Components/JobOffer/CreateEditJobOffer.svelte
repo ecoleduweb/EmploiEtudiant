@@ -268,6 +268,12 @@
                 onFinished()
                 loading = false
             }
+            else if (response.status === 400) {
+                loading = false
+            }
+            else {
+                loading = false
+            }
         } catch (err) {
 
         }
