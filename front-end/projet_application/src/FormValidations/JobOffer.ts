@@ -60,9 +60,28 @@ const schema = yup.object().shape({
     approbationMessage: yup
         .string()
         .max(
-            6000,
-            "Le salaire doit être de 6000 caractères maximum",
+            255,
+            "Le message d'approbation doit être de 6000 caractères maximum",
         ),
+    offerLink: yup
+        .string()
+        .max(
+            255,
+            "Le lien vers l'offre doit être de 255 caractères maximum",
+        ).required("Le lien vers l'offre est requis")
+        .url("Le lien n'est pas valide")
+        .test("is-url", "Le site web semble inaccessible!", async (value) => {
+            try {
+                if (value) {
+                    const response = await fetch(value);
+                    return response.ok
+                }
+            } catch {
+                return false;
+            }
+            return false;
+        })
+    ,
     idProgramme: yup.array().min(1, "Le programme visé est requis"),
     acceptCondition: yup
         .boolean()
