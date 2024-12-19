@@ -17,7 +17,7 @@ export async function GET<T>(url: string, redirectToLoginOn401?: boolean): Promi
     }
 }
 
-export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<{ status: number, data: T1 }> {
+export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<{ data: T1 }> {
     var response
 
     try {
@@ -35,7 +35,7 @@ export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: b
 
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
-        return { status: response.status, data: data as T1 }
+        return { data: data as T1 }
     } catch (error) {
         console.error("Error posting:", error)
         error.name = response?.status
@@ -56,7 +56,7 @@ export async function DELETE(url: string): Promise<void> {
     }
 }
 
-export async function PUT<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<{ status: number, data: T1 }> {
+export async function PUT<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<{ data: T1 }> {
     try {
         var token = localStorage.getItem("token")
         if (!token) token = ""
@@ -71,7 +71,7 @@ export async function PUT<T, T1>(url: string, body: T, redirectToLoginOn401?: bo
         })
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
-        return { status: response.status, data: data as T1 }
+        return { data: data as T1 }
         //await handleResponse(response);
     } catch (error) {
         console.error("Error putting:", error)
@@ -104,6 +104,9 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401: boole
             return undefined as T
         } else if (response.status === 401 && redirectToLoginOn401) {
             window.location.href = "/login"
+        } else if (response.status === 400) {
+            // TODO Juste pour toi rino! Ajouter une nouvelle exception custom (dans un nouveau dossier nommé custom exceptions)
+            // qui permet de gérer les erreurs 400 et qui retourne le message d'erreur du serveur au client mettons (dans un sexy alert :P)
         } else {
             throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }

@@ -23,6 +23,7 @@ from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.services.email_service import sendMail
 from app.customexception.CustomException import NotFoundException
+import requests
 import os
 
 logger = getLogger(__name__)
@@ -174,3 +175,19 @@ def archiveJobOffer(current_user, id):
     except NotFoundException as e:
         logger.warning('Study Program not found with id : ' + str(id))
         return jsonify({'message': e.message}), e.errorCode
+    
+@job_offer_blueprint.route('/verifyURL', methods=['POST'])
+def verify_url():
+    data = request.get_json()
+    url = data.get('url')
+    if not url:
+        return jsonify({'error': 'URL is required'}), 400
+
+    try:
+        response = requests.get(url)
+        if response.ok:
+            return jsonify({'message': 'URL is accessible'}), 200
+        else:
+            return jsonify({'error': 'URL is not accessible'}), 404
+    except requests.RequestException as e:
+        return jsonify({'error': 'URL is not accessible', 'details': str(e)}), 404

@@ -7,7 +7,7 @@
     import type { JobOffer } from "../../Models/Offre"
     import type { Enterprise } from "../../Models/Enterprise"
     import { GET, POST, PUT } from "../../ts/server"
-    import { extractErrors, toFormattedDateString } from "../../ts/utils"
+    import { extractErrors, isObjectEmpty, toFormattedDateString } from "../../ts/utils"
     import { onMount } from "svelte"
     import { currentUser, isLoggedIn, studyPrograms } from "$lib"
     import fetchCity from "../../Service/CityService"
@@ -50,8 +50,8 @@
         isTemporary: false,
     }
 
-    let errors: any = {}
-    let errorsEnterprise: any = {}
+    let jobOfferErrors: any = {}
+    let enterpriseErrors: any = {}
     let isModerator: boolean = false
     let enterpriseSelected: { label: string; value: number }[] = []
     let enterpriseFromSelectedEnterprise: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -200,13 +200,25 @@
     let errorsAcceptCondition: string = "" // Define a variable to hold the error message for accepting condition
 
     const handleSubmit = async () => {
-        loading = true
-        if (isJobOfferEdit) {
-            await updateJobOffer()
-        } else {
-            await createJobOffer()
+        try {
+            loading = true
+            jobOfferErrors = {}  // reset errors before each submit (To remove old errors.)
+            enterpriseErrors = {}
+            
+            if (isJobOfferEdit) {
+                await updateJobOffer()
+            } else {
+                await createJobOffer()
+            }
         }
-        loading = false
+        catch(err)
+        {
+            console.log(err)
+            // TODO logger
+        }
+        finally {
+            loading = false
+        }
     }
 
     const handleEnterprise = () => {
@@ -214,61 +226,63 @@
     }
 
     
-    const prepareAndJobOfferIsValid = async () => {
-        let validatingjobOffer = false
-        if (jobOffer?.approbationMessage === null) 
-        {
-            jobOffer.approbationMessage = jobOffer?.approbationMessage  ? jobOffer.approbationMessage : ''
+    const prepareAndThrowIfFormIsInvalid = async () => {
+        // validation de l'entreprise
+        try {
+            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
+            await entrepriseSchema.validate(enterprise, {abortEarly: false})
         }
-
+        catch(err) {
+            if (err instanceof ValidationError) {
+                enterpriseErrors = extractErrors(err)
+            }
+        }
+        // validation de l'offre
         try {
             scheduleIds = Array.isArray(scheduleSelected) && scheduleSelected.length !== 0 ? scheduleSelected.map(schedule => schedule.value) : [];
-            enterprise.cityId = selectedCity[0]?.value ? selectedCity[0]?.value : -1
-
             const jobOfferToValidate = {
                 ...jobOffer,  
                 studyPrograms: selectedPrograms, 
                 scheduleIds
             }
-
-            await entrepriseSchema.validate(enterprise, {abortEarly: false})
-
-            validatingjobOffer = true
+            if (jobOffer?.approbationMessage === null) 
+            {
+                jobOffer.approbationMessage = jobOffer?.approbationMessage ? jobOffer.approbationMessage : ''
+            }
             await ValidationSchema.validate(jobOfferToValidate, { abortEarly: false })
-
-            return {
-                    enterprise: {
-                        ...enterprise,
-                    }, 
-                    jobOffer: {
-                        ...((({ acceptCondition, ...rest }) => rest)(jobOffer)),
-                    },
-                    studyPrograms: selectedPrograms.map((p) => p.value),
-                    scheduleIds: scheduleIds,
-                }
         }
         catch(err) {
-            if (err instanceof ValidationError && validatingjobOffer === true) {
-                errors = extractErrors(err)
-                errorsEnterprise = {}
+            if (err instanceof ValidationError) {
+                loading = false
+                jobOfferErrors = extractErrors(err)
             }
-            else if (err instanceof ValidationError && validatingjobOffer === false) 
-            {
-                errorsEnterprise = extractErrors(err)
-            }
+        }
+
+        if (!isObjectEmpty(enterpriseErrors) || !isObjectEmpty(jobOfferErrors)) {
+            loading = false
+            throw new Error("Validation failed")
+        }
+
+        return {
+            enterprise: {
+                ...enterprise,
+            }, 
+            jobOffer: {
+                ...((({ acceptCondition, ...rest }) => rest)(jobOffer)),
+            },
+            studyPrograms: selectedPrograms.map((p) => p.value),
+            scheduleIds: scheduleIds,
         }
     }
 
     async function createJobOffer() {
         try {
-            const requestData = await prepareAndJobOfferIsValid()
+            const requestData = await prepareAndThrowIfFormIsInvalid()
             const response = await POST<any, any>(
                 "/jobOffer/new",
                 requestData, false)
-            if (response.status === 200 || response.status === 201) {
+            if (response) {
                 onFinished()
-            }
-            else if (response.status === 400) {
             }
         } catch (err) {
 
@@ -277,17 +291,15 @@
 
     async function updateJobOffer() {
         try {
-            const requestData = await prepareAndJobOfferIsValid()
+            const requestData = await prepareAndThrowIfFormIsInvalid()
             const response = await PUT<any, any>(
                 `/jobOffer/${jobOffer.id}`,
                 requestData, false)
-            if (response.status === 200 || response.status === 201) {
+            if (response) {
                 onFinished()
             }
-            else {
-            }
         } catch (err) {
-            
+            // TODO log error
         }
     }
 
@@ -351,7 +363,7 @@
                     <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {:else}
                     <h1>Création d'une nouvelle entreprise</h1>
-                    <CreateEditEnterprise {enterprise} {errorsEnterprise} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
+                    <CreateEditEnterprise {enterprise} errorsEnterprise={enterpriseErrors} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
                 {/if}
             {/if}
 
@@ -373,7 +385,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.title}{errors.title}{/if}
+            {#if jobOfferErrors.title}{jobOfferErrors.title}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="schedule">Types d’emploi*</label>
@@ -391,7 +403,7 @@
             {/if}
         </div>
         <p class="errors-input">
-            {#if errors.scheduleIds}{errors.scheduleIds}{/if}
+            {#if jobOfferErrors.scheduleIds}{jobOfferErrors.scheduleIds}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="lieu">Adresse du lieu de travail*</label>
@@ -403,7 +415,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.address}{errors.address}{/if}
+            {#if jobOfferErrors.address}{jobOfferErrors.address}{/if}
         </p>
         <div class="form-group-horizontal-date">
             <div class="form-group-vertical">
@@ -419,7 +431,7 @@
                 />
             </div>
             <p class="errors-input">
-                {#if errors.offerDebut}{errors.offerDebut}{/if}
+                {#if jobOfferErrors.offerDebut}{jobOfferErrors.offerDebut}{/if}
             </p>
             <div class="form-group-vertical">
                 <label for="dateEntryOffice"
@@ -434,7 +446,7 @@
                 />
             </div>
             <p class="errors-input">
-                {#if errors.dateEntryOffice}{errors.dateEntryOffice}{/if}
+                {#if jobOfferErrors.dateEntryOffice}{jobOfferErrors.dateEntryOffice}{/if}
             </p>
             <div class="form-group-vertical">
                 <label for="deadlineApply">Date limite pour postuler*</label
@@ -449,7 +461,7 @@
                 />
             </div>
             <p class="errors-input">
-                {#if errors.deadlineApply}{errors.deadlineApply}{/if}
+                {#if jobOfferErrors.deadlineApply}{jobOfferErrors.deadlineApply}{/if}
             </p>
         </div>
         <div class="form-group-vertical">
@@ -468,7 +480,7 @@
             {/if}
         </div>
         <p class="errors-input">
-            {#if errors.studyPrograms}{errors.studyPrograms}{/if}
+            {#if jobOfferErrors.studyPrograms}{jobOfferErrors.studyPrograms}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="salary">Salaire horaire</label>
@@ -480,7 +492,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.salary}{errors.salary}{/if}
+            {#if jobOfferErrors.salary}{jobOfferErrors.salary}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="hoursPerWeek">Heures/semaine*</label>
@@ -492,7 +504,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.hoursPerWeek}{errors.hoursPerWeek}{/if}
+            {#if jobOfferErrors.hoursPerWeek}{jobOfferErrors.hoursPerWeek}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="offerLink"
@@ -506,7 +518,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.offerLink}{errors.offerLink}{/if}
+            {#if jobOfferErrors.offerLink}{jobOfferErrors.offerLink}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="courriel-contact">Courriel contact*</label>
@@ -518,7 +530,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.email}{errors.email}{/if}
+            {#if jobOfferErrors.email}{jobOfferErrors.email}{/if}
         </p>
         <div class="form-group-vertical">
             <label for="description">Description du poste*</label>
@@ -531,7 +543,7 @@
             />
         </div>
         <p class="errors-input">
-            {#if errors.description}{errors.description}{/if}
+            {#if jobOfferErrors.description}{jobOfferErrors.description}{/if}
         </p>
         <div class="accept-Condition">
             <div class="accept-horiz">
@@ -546,7 +558,7 @@
                 </label>
             </div>
             <p class="errors-input">
-                {#if errors.acceptCondition}{errors.acceptCondition}{/if}
+                {#if jobOfferErrors.acceptCondition}{jobOfferErrors.acceptCondition}{/if}
             </p>
             {#if loading}
                 <LoadingSpinner />
