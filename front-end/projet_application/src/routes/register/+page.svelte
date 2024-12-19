@@ -126,7 +126,7 @@
                     role: "user",
                     captchaToken, // Use the retrieved token
                 })
-                logIn(response.token)
+                logIn(response.data.token)
             } else {
                 popupEnabled = true
             }

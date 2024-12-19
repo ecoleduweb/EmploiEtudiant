@@ -202,6 +202,8 @@
     const handleSubmit = async () => {
         try {
             loading = true
+            jobOfferErrors = {}  // reset errors before each submit (To remove old errors.)
+            enterpriseErrors = {}
             
             if (isJobOfferEdit) {
                 await updateJobOffer()
@@ -232,7 +234,7 @@
         }
         catch(err) {
             if (err instanceof ValidationError) {
-                jobOfferErrors = extractErrors(err)
+                enterpriseErrors = extractErrors(err)
             }
         }
         // validation de l'offre
@@ -251,11 +253,13 @@
         }
         catch(err) {
             if (err instanceof ValidationError) {
-                enterpriseErrors = extractErrors(err)
+                loading = false
+                jobOfferErrors = extractErrors(err)
             }
         }
 
         if (!isObjectEmpty(enterpriseErrors) || !isObjectEmpty(jobOfferErrors)) {
+            loading = false
             throw new Error("Validation failed")
         }
 
