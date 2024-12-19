@@ -38,17 +38,11 @@ export const isObjectEmpty = (obj: any) => {
     return Object.keys(obj).length === 0;
 }
 
-
+// TODO retirer ce bout de code lorsque les erreurs du back-end pourront être affichées au front-end
 export const checkUrlAccessibility = async (url: string): Promise<boolean> => {
     try {
         const response = await POST<any, any>('/jobOffer/verifyURL', { url });
-        console.log(response)
-        if (response.data.message === 'URL is accessible') {
-            return true
-        }
-        else {
-            return false
-        }
+        return response.data.message === 'URL is accessible'
     } catch {
         return false;
     }
