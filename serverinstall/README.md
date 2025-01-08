@@ -1,4 +1,4 @@
-# Déamarrage à neuf d'un serveur pour le projet
+# Démarrage à neuf d'un serveur pour le projet
 
 Ce readme explique comment configurer le serveur, suite à un démarrage à neuf.
 
