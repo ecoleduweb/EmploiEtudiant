@@ -57,7 +57,8 @@
 
     onMount(async () => {
         try {
-            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
+            if(!$currentUser?.isModerator)
+                userHaveEnterprise = await getCurrentUserEnterprise() != undefined
         }
         catch (err) {
             userHaveEnterprise = false
