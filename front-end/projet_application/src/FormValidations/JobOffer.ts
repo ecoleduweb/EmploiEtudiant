@@ -17,7 +17,7 @@ const schema = yup.object().shape({
         .string()
         .max(
             100000,
-            "La description de l'offre doit être de 30000 caractères maximum",
+            "La description de l'offre doit être de 100 000 caractères maximum",
         )
         .required("La description de l'offre est requise"),
     dateEntryOffice: yup
