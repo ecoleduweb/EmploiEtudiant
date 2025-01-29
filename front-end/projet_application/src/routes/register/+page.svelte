@@ -94,10 +94,16 @@
             }))
     }
 
+    // État pour suivre si le formulaire a été soumis afin d'afficher la validation des critères de mot de passe
+    let formSubmitted = false
+
     const handleSubmit = async () => {
         try {
 
             validatePassword()
+
+            //Change le status de formSubmitted pour afficher la validation des critères de mot de passe
+            formSubmitted = true;
 
             await schema.validate(register, { abortEarly: false })
             errors = {
@@ -162,7 +168,7 @@
     <h1>Créer un compte</h1>
     <form on:submit|preventDefault={handleSubmit} class="form-register">
         <div class="info-block">
-            <h2>Informations personnelles</h2>
+            <h2>Informations <span class="hightlight">personnelles</span></h2>
             <div class="form-fields">
                 <div class="form-inputs">
                     <label for="firstName">Prénom</label>
@@ -195,11 +201,13 @@
             </div>
         </div>
         <div class="info-block">
-            <h2>Informations de l'utilisateur</h2>
+            <h2>Informations de l'<span class="hightlight">utilisateur</span></h2>
             <div class="form-connexion">
                 <div class="form-inputs">
                     <label for="email">Courriel</label>
-                    <input id="email" bind:value={register.user.email} />
+                    <input id="email" bind:value={register.user.email} 
+                        class="input-basic"
+                    />
                     <p class="errors-input">
                         {#if errors["user.email"]}
                             {errors["user.email"]}
@@ -209,11 +217,15 @@
                 <div class="form-inputs">
                     <label for="password">Mot de passe</label>
                     <input
+                        class="input-basic"
                         type="password"
                         id="password"
                         bind:value={register.user.password}
                         on:input={validatePassword}
                     />
+                    <p>
+                        <span class="password-requirements">Mot de passe complexe (12 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial)</span>
+                    </p>
                     <p class="errors-input">
                         {#if errors["user.password"]}
                             {errors["user.password"]}
@@ -223,6 +235,7 @@
                 <div class="form-inputs">
                     <label for="password">Valider Mot de passe</label>
                     <input
+                        class="input-basic"
                         type="password"
                         id="confirm_password"
                         bind:value={register.validatePassword}
@@ -233,75 +246,77 @@
                     </p>
                 </div>
                 <div class="password-validation-showcase">
-                    <ul class="list-requirements">
-                        {#if $validations.lowercase}
-                        <li>
-                            <span class="text-password-good">✔</span>
-                            <span class="text-password">Contient une lettre minuscule</span>
-                        </li>
-                    {:else}
-                        <li>
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Ne contient pas de lettre minuscule</span>
-                        </li>
-                    {/if}
-                
-                    {#if $validations.uppercase}
-                        <li>
-                            <span class="text-password-good">✔</span>
-                            <span class="text-password">Contient une lettre majuscule</span>
-                        </li>
-                    {:else}
-                        <li>
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Ne contient pas de lettre majuscule</span>
-                        </li>
-                    {/if}
-                    {#if $validations.digit}
-                        <li>
-                            <span class="text-password-good">✔</span>
-                            <span class="text-password">Contient un chiffre</span>
-                        </li>
-                    {:else}
-                        <li>
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Ne contient pas de chiffre</span></li>
-                    {/if}
-                    {#if $validations.specialChar}
-                        <li>
-                            <span class="text-password-good">✔</span>
-                            <span class="text-password">Contient un caractère spécial</span></li>
-                    {:else}
-                        <li>
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Ne contient pas de caractère spécial</span></li>
-                    {/if}
-                
-                    {#if $validations.length}
-                        <li>
-                            <span class="text-password-good">✔</span> 
-                            <span class="text-password">Mot de passe long</span>
-                        </li>
-                    {:else}
-                        <li> 
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Mot de passe trop court</span>
-                        </li>
-                    {/if}
-                    {#if register.validatePassword != ""}
-                        {#if $validations.corresponds}
+                    {#if formSubmitted}
+                        <ul class="list-requirements">
+                            {#if $validations.lowercase}
                             <li>
-                            <span class="text-password-good">✔</span> 
-                            <span class="text-password">Mot de passe correspondent</span>
+                                <span class="text-password-good">✔</span>
+                                <span class="text-password">Contient une lettre minuscule</span>
+                            </li>
+                        {:else}
+                            <li>
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Ne contient pas de lettre minuscule</span>
+                            </li>
+                        {/if}
+                    
+                        {#if $validations.uppercase}
+                            <li>
+                                <span class="text-password-good">✔</span>
+                                <span class="text-password">Contient une lettre majuscule</span>
+                            </li>
+                        {:else}
+                            <li>
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Ne contient pas de lettre majuscule</span>
+                            </li>
+                        {/if}
+                        {#if $validations.digit}
+                            <li>
+                                <span class="text-password-good">✔</span>
+                                <span class="text-password">Contient un chiffre</span>
+                            </li>
+                        {:else}
+                            <li>
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Ne contient pas de chiffre</span></li>
+                        {/if}
+                        {#if $validations.specialChar}
+                            <li>
+                                <span class="text-password-good">✔</span>
+                                <span class="text-password">Contient un caractère spécial</span></li>
+                        {:else}
+                            <li>
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Ne contient pas de caractère spécial</span></li>
+                        {/if}
+                    
+                        {#if $validations.length}
+                            <li>
+                                <span class="text-password-good">✔</span> 
+                                <span class="text-password">Mot de passe long</span>
                             </li>
                         {:else}
                             <li> 
-                            <span class="text-password-error">X</span> 
-                            <span class="text-password">Mot de passe ne correspondent pas</span>
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Mot de passe trop court</span>
                             </li>
                         {/if}
+                        {#if register.validatePassword != ""}
+                            {#if $validations.corresponds}
+                                <li>
+                                <span class="text-password-good">✔</span> 
+                                <span class="text-password">Mot de passe correspondent</span>
+                                </li>
+                            {:else}
+                                <li> 
+                                <span class="text-password-error">X</span> 
+                                <span class="text-password">Mot de passe ne correspondent pas</span>
+                                </li>
+                            {/if}
+                        {/if}
+                        </ul>
                     {/if}
-                    </ul>
                 </div>
             </div>
         </div>
