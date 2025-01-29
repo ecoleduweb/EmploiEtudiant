@@ -184,7 +184,7 @@
                 <span class="text">MES OFFRES D'EMPLOIS </span>
             </h1>
             {#if isRefusedOffer.length > 0}
-                <h2 class="textSections">Offres refusées</h2>
+                <h2 class="textSections">Offres <span class="hightlight-red">refusées</span></h2>
                 {#each isRefusedOffer as offer}
                     <OfferRow
                         {isModerator}
@@ -196,7 +196,7 @@
                 {/each}
             {/if}
             {#if toBeApprovedOffer.length > 0}
-                <h2 class="textSections">Offres en attente d'approbation</h2>
+                <h2 class="textSections">Offres en <span class="hightlight">attente d'approbation</span></h2>
                 {#each toBeApprovedOffer as offer}
                     <OfferRow
                         {isModerator}
@@ -208,7 +208,7 @@
                 {/each}
             {/if}
             {#if offerToCome.length > 0}
-                <h2 class="textSections">Offres bientôt affichées</h2>
+                <h2 class="textSections">Offres <span class="hightlight">bientôt affichées</span></h2>
                 {#each offerToCome as offer}
                     <OfferRow
                         {isModerator}
@@ -220,7 +220,7 @@
                 {/each}
             {/if}
             {#if offerDisplayed.length > 0}
-                <h2 class="textSections">Offres affichées</h2>
+                <h2 class="textSections">Offres <span class="hightlight">affichées</span></h2>
                 {#each offerDisplayed as offer}
                     <OfferRow
                         {isModerator}
@@ -232,7 +232,7 @@
                 {/each}
             {/if}
             {#if expiredOffer.length > 0}
-                <h2 class="textSections">Offres expirées</h2>
+                <h2 class="textSections">Offres <span class="hightlight-red">expirées</span></h2>
                 {#each expiredOffer as offer}
                     <OfferRow
                         {isModerator}
