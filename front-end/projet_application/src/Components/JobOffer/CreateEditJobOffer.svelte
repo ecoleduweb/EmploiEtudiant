@@ -284,8 +284,8 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-
+        } catch (err) { 
+            
         }
     }
 
