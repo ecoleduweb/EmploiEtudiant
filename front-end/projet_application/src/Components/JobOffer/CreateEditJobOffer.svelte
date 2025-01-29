@@ -515,6 +515,7 @@
                 bind:value={jobOffer.offerLink}
                 class="form-control"
                 id="offerLink"
+                placeholder="https://www.exemple.com/"
             />
         </div>
         <p class="errors-input">
@@ -527,7 +528,6 @@
                 bind:value={jobOffer.email}
                 class="form-control"
                 id="email"
-                placeholder="https://www.exemple.com/"
             />
         </div>
         <p class="errors-input">
