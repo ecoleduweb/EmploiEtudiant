@@ -30,7 +30,7 @@
         email: "",
         hoursPerWeek: 0,
         internship: false,
-        offerLink: "https://",
+        offerLink: "",
         offerStatus: 0,
         active: true,
         salary: "",
@@ -527,6 +527,7 @@
                 bind:value={jobOffer.email}
                 class="form-control"
                 id="email"
+                placeholder="https://www.exemple.com/"
             />
         </div>
         <p class="errors-input">
