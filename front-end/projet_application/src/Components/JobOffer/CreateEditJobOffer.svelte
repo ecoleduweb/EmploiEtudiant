@@ -359,20 +359,20 @@
                 {/if}
             {:else}
                 {#if isEnterpriseSelected}
-                    <h1>Création d'une nouvelle entreprise</h1>
+                    <h1>Création d'une nouvelle <span class="hightlight">entreprise</span></h1>
                     <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
                 {:else}
-                    <h1>Création d'une nouvelle entreprise</h1>
+                    <h1>Création d'une nouvelle <span class="hightlight">entreprise</span></h1>
                     <CreateEditEnterprise {enterprise} errorsEnterprise={enterpriseErrors} {cityOptions} selectedCity={selectedCityWritable} {cityFromEnterprise} ></CreateEditEnterprise>
                 {/if}
             {/if}
 
-            <h1>Création d'une nouvelle offre d'emploi</h1>
+            <h1>Création d'une nouvelle <span class="hightlight">offre d'emploi</span></h1>
         {:else}
             <h1>Mon entreprise</h1>
             <EntrepriseDetails {enterprise} {selectedCity} ></EntrepriseDetails>
 
-            <h1>Modification d'une offre d'emploi</h1>
+            <h1>Modification d'une <span class="hightlight">offre d'emploi</span></h1>
         {/if}
 
         <div class="form-group-vertical">
