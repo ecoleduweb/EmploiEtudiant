@@ -15,7 +15,6 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
-    import "../../styles/global.css"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 

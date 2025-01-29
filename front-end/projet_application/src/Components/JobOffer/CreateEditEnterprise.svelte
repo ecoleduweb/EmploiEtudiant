@@ -1,8 +1,6 @@
 <script lang="ts">
     import { MultiSelect } from "svelte-multiselect";
     import type { Writable } from "svelte/store"
-    import "../../styles/global.css"
-    //<span class="hightlight">personnelles</span>
 
     export let enterprise: any
     export let errorsEnterprise: any
