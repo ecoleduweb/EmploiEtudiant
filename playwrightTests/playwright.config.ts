@@ -71,8 +71,8 @@ export default defineConfig({
   webServer:
     [
       {
-        command: 'cd ../back-end/API && python -m flask run --debug --port 5001',
-        url: 'http://localhost:5001/ping',
+        command: 'cd ../back-end/API && py -m flask run --debug --port 5004',
+        url: 'http://localhost:5004/ping',
         reuseExistingServer: false
       },
       {
