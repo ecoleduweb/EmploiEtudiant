@@ -376,7 +376,7 @@
         {/if}
 
         <div class="form-group-vertical">
-            <label for="title">Titre du poste*</label>
+            <label for="title">Poste visé*</label>
             <input
                 type="text"
                 bind:value={jobOffer.title}
