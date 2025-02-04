@@ -6,7 +6,7 @@
     import Button from "../../Components/Inputs/Button.svelte";
     import type { User } from "../../Models/User"
     import { PUT } from "../../ts/server"
-    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
+    import { userHaveEnterprise } from "../../Service/EnterpriseService"
 
     let lastname: string
     let firstname: string
@@ -53,16 +53,10 @@
         }
     };
 
-    let userHaveEnterprise = false
+    let userEnterprise = false
 
     onMount(async () => {
-        try {
-            if(!$currentUser?.isModerator)
-                userHaveEnterprise = await getCurrentUserEnterprise() != undefined
-        }
-        catch (err) {
-            userHaveEnterprise = false
-        }
+        userEnterprise = await userHaveEnterprise($currentUser)
     })
 
 </script>
@@ -85,7 +79,7 @@
     </div>
 
     <div class="Modal">
-        {#if userHaveEnterprise}
+        {#if userEnterprise}
             <div class="divFlex">
                 <Button
                     onClick={handleShow}
