@@ -14,7 +14,7 @@
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
-    import { userHaveEnterprise } from "../../Service/EnterpriseService"
+    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -83,10 +83,10 @@
     
     let loaded = false
 
-    let userEnterprise = false
+    let userHaveEnterprise = false
 
     onMount(async () => {
-        userEnterprise = await userHaveEnterprise($currentUser)
+        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
 
         try 
         {
@@ -157,7 +157,7 @@
                 />
             </div>
 
-            {#if userEnterprise}
+            {#if userHaveEnterprise}
                 <div class="divFlex">
                     <Button
                         onClick={handleEditEnterprise}
