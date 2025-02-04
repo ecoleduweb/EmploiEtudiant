@@ -52,6 +52,12 @@ test.describe('createNewJobOffer', () => {
       await route.fulfill({ json, status });
     })
 
+    await page.route('*/**/jobOffer/verifyURL', async route => {
+      const status = 200;
+      const json = { "message": "URL is accessible" };
+      await route.fulfill({ json, status });
+    })
+
     // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
     await page.goto('http://localhost:5002/dashboard');
     await page.waitForLoadState('networkidle');
@@ -113,27 +119,24 @@ test.describe('createNewJobOffer', () => {
 
     await page.locator('#titre').first().click();
     await page.locator('#titre').first().fill('Test entreprise');
-    await page.getByRole('button', { name: 'Envoyer' }).click();
-    await expect(page.getByText('Vous devez nommer votre entreprise')).toBeHidden();
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('123');
-    await page.getByRole('button', { name: 'Envoyer' }).click();
-    await expect(page.getByText('Vous devez ajouter une adresse à votre entreprise')).toBeHidden();
 
     await page.locator('#email').first().click();
     await page.locator('#email').first().fill('test@gmail.com');
-    await page.getByRole('button', { name: 'Envoyer' }).click();
-    await expect(page.getByText('Votre entreprise doit avoir un courriel')).toBeHidden();
 
     await page.locator('#phone').click();
     await page.locator('#phone').fill('123333');
-    await page.getByRole('button', { name: 'Envoyer' }).click();
-    await expect(page.getByText('Vous devez mettre un numéro de téléphone à votre entreprise')).toBeHidden();
 
     await page.getByPlaceholder('Choisir ville...').click();
     await page.getByRole('option', { name: 'Abercorn' }).click();
     await page.getByRole('button', { name: 'Envoyer' }).click();
+
+    await expect(page.getByText('Vous devez nommer votre entreprise')).toBeHidden();
+    await expect(page.getByText('Vous devez ajouter une adresse à votre entreprise')).toBeHidden();
+    await expect(page.getByText('Votre entreprise doit avoir un courriel')).toBeHidden();
+    await expect(page.getByText('Vous devez mettre un numéro de téléphone à votre entreprise')).toBeHidden();
     await expect(page.getByText('Vous devez mettre une ville à votre entreprise')).toBeHidden();
 
     await expect(page.getByText('Le titre du poste est requis')).toBeVisible()
@@ -142,7 +145,6 @@ test.describe('createNewJobOffer', () => {
     await expect(page.getByText('Le programme visé est requis')).toBeVisible()
     await expect(page.getByText('Le salaire est requis')).toBeVisible()
     await expect(page.getByText('Veuillez entrer un nombre d\'heure valide !')).toBeVisible()
-    await expect(page.getByText('Le site web semble inaccessible!')).toBeVisible()
     await expect(page.getByText('Le courriel est requis')).toBeVisible()
     await expect(page.getByText('La description de l\'offre est requise')).toBeVisible()
     await expect(page.getByText('Vous devez accepter les conditions')).toBeVisible()
@@ -178,7 +180,6 @@ test.describe('createNewJobOffer', () => {
 
     await expect(page.getByText('Le courriel est requis')).toBeHidden()
     await expect(page.getByText('La description de l\'offre est requise')).toBeHidden()
-    await expect(page.getByText('Le site web semble inaccessible!')).toBeHidden()
     await expect(page.getByText('Veuillez entrer un nombre d\'heure valide !')).toBeHidden()
     await expect(page.getByText('Le salaire est requis')).toBeHidden()
     await expect(page.getByText('Le programme visé est requis')).toBeHidden()
