@@ -4,11 +4,11 @@ export const cityMocks = {
         url: '*/**/city/all',
         response: {
             status: 200,
-            json: {
+            json: [{
                 "city": "Abercorn",
                 "id": 1,
                 "region": "Mont\u00e9r\u00e9gie"
-            }
+            }]
         }
     },
     notFound: {

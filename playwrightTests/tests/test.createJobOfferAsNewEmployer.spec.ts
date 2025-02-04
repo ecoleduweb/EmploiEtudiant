@@ -1,60 +1,56 @@
 import { test, expect } from '@playwright/test';
+import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
+import { employerMocks } from '.././Helper/Mocks/employer.mock';
+import { cityMocks } from '.././Helper/Mocks/city.mock';
+import { employmentScheduleMocks } from '.././Helper/Mocks/employmentSchedule.mock';
+import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
+
 test.describe('createNewJobOffer', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.route('*/**/studyProgram/studyPrograms', async route => {
-      const status = 200;
-      const json = [{
-        "id": 9,
-        "name": "Arts visuels"
-      }];
+    await page.route(studyProgramMocks.success.url, async route => {
+      const status = studyProgramMocks.success.response.status;
+      const json = studyProgramMocks.success.response.json;
 
       await route.fulfill({ json, status });
     });
 
-    await page.route('*/**/employer/currentEmployer', async route => {
-      const status = 404;
-      const json = { "message": "employer not found" };
+    await page.route(employerMocks.success.url, async route => {
+      const status = employerMocks.notFound.response.status;
+      const json = employerMocks.notFound.response.json;
 
       await route.fulfill({ json, status });
     });
 
-    await page.route('*/**/city/all', async route => {
-      const status = 200;
-      const json = [{
-        "city": "Abercorn",
-        "id": 1,
-        "region": "Mont\u00e9r\u00e9gie"
-      }];
+    await page.route(cityMocks.success.url, async route => {
+      const status = cityMocks.success.response.status;
+      const json = cityMocks.success.response.json;
 
       await route.fulfill({ json, status });
     });
 
-    await page.route('*/**/employmentSchedule/all', async route => {
-      const status = 200;
-      const json = [{
-        "description": "Temps plein",
-        "id": 1
-      }]
+    await page.route(employmentScheduleMocks.success.url, async route => {
+      const status = employmentScheduleMocks.success.response.status;
+      const json = employmentScheduleMocks.success.response.json;
 
       await route.fulfill({ json, status });
     });
 
-    await page.route('*/**/jobOffer/new', async route => {
-      const status = 200;
-      const json = { "message": "Offre créée" };
+    await page.route(jobOfferMocks.jobOfferNew.url, async route => {
+      const status = jobOfferMocks.jobOfferNew.response.status;
+      const json = jobOfferMocks.jobOfferNew.response.json;
       await route.fulfill({ json, status });
     })
 
-    await page.route('*/**/jobOffer/employer/*', async route => {
-      const status = 404;
-      const json = { "message": "Offres non trouvées" };
+    await page.route(jobOfferMocks.jobOfferEmployer.url, async route => {
+      const status = jobOfferMocks.jobOfferEmployer.response.status;
+      const json = jobOfferMocks.jobOfferEmployer.response.json;
       await route.fulfill({ json, status });
     })
 
-    await page.route('*/**/jobOffer/verifyURL', async route => {
-      const status = 200;
-      const json = { "message": "URL is accessible" };
+    await page.route(jobOfferMocks.jobOfferVerifyURL.url, async route => {
+      const status = jobOfferMocks.jobOfferVerifyURL.response.status;
+      const json = jobOfferMocks.jobOfferVerifyURL.response.json;
       await route.fulfill({ json, status });
     })
 

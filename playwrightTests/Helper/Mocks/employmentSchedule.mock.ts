@@ -4,19 +4,19 @@ export const employmentScheduleMocks = {
         url: '*/**/employmentSchedule/all',
         response: {
             status: 200,
-            json: {
+            json: [{
                 "description": "Temps plein",
                 "id": 1
-            }
+            }]
         }
     },
     notFound: {
         url: '*/**/employmentSchedule/all',
         response: {
             status: 404,
-            json: {
+            json: [{
                 message: "pas d'horaire de travail trouvé"
-            }
+            }]
         }
     }
 } satisfies Record<string, MockConfig>;

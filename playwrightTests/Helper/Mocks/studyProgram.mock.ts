@@ -4,10 +4,10 @@ export const studyProgramMocks = {
         url: '*/**/studyProgram/studyPrograms',
         response: {
             status: 200,
-            json: {
+            json: [{
                 "id": 9,
                 "name": "Arts visuels"
-            }
+            }]
         }
     },
     notFound: {
