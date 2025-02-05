@@ -1,14 +1,16 @@
 # 🎭 Playwright
 
+## Description
+
+Les tests Playwright sont des tests frontend qui servent à **reproduire le comportement** d'un utilisateur régulier pour une page ou une fonctionnalité. Vous pouvez lui faire remplir des champs d'édition ou cliquer sur des boutons.
+
 ## Installation
 
-La base de données utilisée est celle des tests. Elle est supprimée chaque fois qu'un test est fait.
-Un utilisateur avec les accès `admin@gmail.com:test123` est créé comme administrateur pour le besoin des tests.
-Un utilisateur avec les accès `user@gmail.com:test123` est créé comme employeur pour le besoin des tests.
-Une ville nommée `ville` est aussi créée.
+Ce placer dans le répertoire `/playwright tests.`
+
 Installer les modules npm `npm install`.
 
-exécuter la commande  `npx playwright install`
+Exécuter la commande `npx playwright install`
 
 Ajouter l'extension au module vscode : [Lien](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright)
 
@@ -18,14 +20,25 @@ Pour rouler les test, faire `npm run test`
 
 La commande va démarrer flask et svelte et en suite rouler les tests.
 
+Les tests s'exécutent sur le port 5002, il ne faut pas qu'un processus s'exécute déjà sur ce port.
+
+## Debug
+
+Les tests peuvent être exécutés en debug, avec la possbilité d'insérer des points d'arrêt.
+
+![1738772896939](image/README/1738772896939.png)
+
+L'option Show browser permet de suivre les actions de l'agent de test en temps réel sur le navigateur.
+
+![1738772958266](image/README/1738772958266.png)
+
 ## Ajouter des tests
 
-### Installation
-Ajouter l'extension playwright à visual studio code
+Pour ajouter des tests, il faut créer un fichier correspondant à la fonctionnalité à tester.
 
-### Ajout
-- Cliquer sur le bouton Record new
-- Pour ajouter dans un fichier, faire Record at cursor.
+Dans le beforeEach, il faut appeler le mockApi et indiquer les routes à intercepter par le Mock. Ces routes doivent correspondre aux appels faits à l'API pendant le processus normal que Playwright va reproduire.![1738773337500](image/README/1738773337500.png)
+
+Si vous avez ajouté des routes ou qu'un des appels n'est pas pris en compte dans les fichiers de routes déjà présents, il faut ajouter une interception ou un résultat et l'importer dans votre fichier de test.
 
 ### Teardown
 
