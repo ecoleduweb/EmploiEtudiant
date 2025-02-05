@@ -94,16 +94,15 @@
             }))
     }
 
-    // État pour suivre si le formulaire a été soumis afin d'afficher la validation des critères de mot de passe
-    let formSubmitted = false
+    let showPasswordValidations = false
 
     const handleSubmit = async () => {
         try {
 
             validatePassword()
 
-            //Change le status de formSubmitted pour afficher la validation des critères de mot de passe
-            formSubmitted = true;
+            //Change le status de showPasswordValidations pour afficher la validation des critères de mot de passe
+            showPasswordValidations = true;
 
             await schema.validate(register, { abortEarly: false })
             errors = {
@@ -246,7 +245,7 @@
                     </p>
                 </div>
                 <div class="password-validation-showcase">
-                    {#if formSubmitted}
+                    {#if showPasswordValidations}
                         <ul class="list-requirements">
                             {#if $validations.lowercase}
                             <li>
