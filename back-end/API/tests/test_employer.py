@@ -1,4 +1,3 @@
-#Test deploiement seulement sur le back-end
 import pytest
 from app import create_app, db
 from app.models.employers_model import Employers
