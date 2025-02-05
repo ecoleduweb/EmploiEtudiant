@@ -15,15 +15,10 @@ export const getCurrentUserEnterprise = async () => {
 }
 
 export const checkIfUserHaveEnterprise = async (currentUser: User | undefined) => {
-  try {
-    if (!currentUser?.isModerator)
-      if (await getCurrentUserEnterprise() != undefined)
-        return true
-    return false
-  }
-  catch (err) {
-    return false //Indiquer que l'utilisateur n'a pas d'entreprise en cas d'erreur sur la recherche
-  }
+  if (!currentUser?.isModerator)
+    if (await getCurrentUserEnterprise() != undefined)
+      return true
+  return false
 }
 
 export const fetchEnterpriseWithId = async (employerId: number) => {
