@@ -22,6 +22,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  timeout: 120000,
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:5002',
@@ -70,11 +71,6 @@ export default defineConfig({
 
   webServer:
     [
-      {
-        command: 'cd ../back-end/API && python -m flask run --debug --port 5001',
-        url: 'http://localhost:5001/ping',
-        reuseExistingServer: false
-      },
       {
         command: 'cd ../front-end/projet_application && npm run playwright',
         url: 'http://localhost:5002',

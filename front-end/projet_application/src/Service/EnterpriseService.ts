@@ -1,4 +1,5 @@
 import type { Enterprise } from "../Models/Enterprise"
+import type { User } from "../Models/User"
 import { GET } from "../ts/server"
 
 const fetchAllEnterprises = async () => {
@@ -11,6 +12,12 @@ const fetchAllEnterprises = async () => {
 export const getCurrentUserEnterprise = async () => {
   const response: Enterprise = await GET<any>("/enterprise/currentEnterprise", false)
   return response
+}
+
+export const checkIfUserHaveEnterprise = async (currentUser: User | undefined) => {
+  if (!currentUser?.isModerator)
+    return (await getCurrentUserEnterprise() != undefined)
+  return false
 }
 
 export const fetchEnterpriseWithId = async (employerId: number) => {

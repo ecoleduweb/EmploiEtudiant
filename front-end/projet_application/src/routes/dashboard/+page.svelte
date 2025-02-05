@@ -14,8 +14,7 @@
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
-    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
-    import { copy } from 'svelte-copy';
+    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -85,15 +84,10 @@
     let loaded = false
 
     let userHaveEnterprise = false
-    
+
     onMount(async () => {
-        try {
-            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
-        }
-        catch (err) {
-            userHaveEnterprise = false
-        }
-        
+        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
+
         try 
         {
             if ($isLoggedIn) {
