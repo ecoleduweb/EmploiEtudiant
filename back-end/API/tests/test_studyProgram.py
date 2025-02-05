@@ -67,3 +67,30 @@ def test_addStudyProgram(client):
     token = responseLogin.json['token']
     response = client.post('/studyProgram/new', json=data, headers={'Authorization' : token})
     assert response.status_code == 200
+
+def test_editStudyProgram(client):
+    data = {
+        "name": "Informatiques"
+    }
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    response = client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
+    assert response.status_code == 200
+
+def test_editStudyProgram_sameName(client):
+    data = {
+        "name": "Informatique"
+    }
+    dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+    }
+    responseLogin = client.post('/user/login', json=dataLogin)
+    token = responseLogin.json['token']
+    client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
+    response = client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
+    assert response.status_code == 200
