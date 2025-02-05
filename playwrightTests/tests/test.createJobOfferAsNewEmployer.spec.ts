@@ -4,55 +4,23 @@ import { employerMocks } from '.././Helper/Mocks/employer.mock';
 import { cityMocks } from '.././Helper/Mocks/city.mock';
 import { employmentScheduleMocks } from '.././Helper/Mocks/employmentSchedule.mock';
 import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
+import { ApiMocker } from '.././Helper/mockApi';
+
+
 
 test.describe('createNewJobOffer', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.route(studyProgramMocks.success.url, async route => {
-      const status = studyProgramMocks.success.response.status;
-      const json = studyProgramMocks.success.response.json;
-
-      await route.fulfill({ json, status });
-    });
-
-    await page.route(employerMocks.success.url, async route => {
-      const status = employerMocks.notFound.response.status;
-      const json = employerMocks.notFound.response.json;
-
-      await route.fulfill({ json, status });
-    });
-
-    await page.route(cityMocks.success.url, async route => {
-      const status = cityMocks.success.response.status;
-      const json = cityMocks.success.response.json;
-
-      await route.fulfill({ json, status });
-    });
-
-    await page.route(employmentScheduleMocks.success.url, async route => {
-      const status = employmentScheduleMocks.success.response.status;
-      const json = employmentScheduleMocks.success.response.json;
-
-      await route.fulfill({ json, status });
-    });
-
-    await page.route(jobOfferMocks.jobOfferNew.url, async route => {
-      const status = jobOfferMocks.jobOfferNew.response.status;
-      const json = jobOfferMocks.jobOfferNew.response.json;
-      await route.fulfill({ json, status });
-    })
-
-    await page.route(jobOfferMocks.jobOfferEmployer.url, async route => {
-      const status = jobOfferMocks.jobOfferEmployer.response.status;
-      const json = jobOfferMocks.jobOfferEmployer.response.json;
-      await route.fulfill({ json, status });
-    })
-
-    await page.route(jobOfferMocks.jobOfferVerifyURL.url, async route => {
-      const status = jobOfferMocks.jobOfferVerifyURL.response.status;
-      const json = jobOfferMocks.jobOfferVerifyURL.response.json;
-      await route.fulfill({ json, status });
-    })
+    const apiMocker = new ApiMocker(page);
+    await apiMocker.addMocks([
+      studyProgramMocks.success,
+      employerMocks.notFound,
+      cityMocks.success,
+      employmentScheduleMocks.success,
+      jobOfferMocks.jobOfferNew,
+      jobOfferMocks.jobOfferEmployer,
+      jobOfferMocks.jobOfferVerifyURL])
+      .apply();
 
     // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
     await page.goto('http://localhost:5002/dashboard');
