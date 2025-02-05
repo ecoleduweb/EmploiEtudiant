@@ -72,11 +72,6 @@ export default defineConfig({
   webServer:
     [
       {
-        command: 'cd ../back-end/API && py -m flask run --debug --port 5004',
-        url: 'http://localhost:5004/ping',
-        reuseExistingServer: false
-      },
-      {
         command: 'cd ../front-end/projet_application && npm run playwright',
         url: 'http://localhost:5002',
         reuseExistingServer: false
