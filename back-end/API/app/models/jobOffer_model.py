@@ -22,6 +22,7 @@ class JobOffer(db.Model):
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None)
     last_modified_by_id = db.Column(db.Integer, nullable=True)
+    creationDate = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
