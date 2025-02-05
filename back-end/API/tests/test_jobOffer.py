@@ -1,4 +1,3 @@
-# test deploiment back-end
 import pytest
 from app import create_app, db
 from app.models.jobOffer_model import JobOffer
