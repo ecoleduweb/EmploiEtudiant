@@ -1,4 +1,5 @@
 <script lang="ts">
+    //Ajout d'un commentaire pour tester le deploiement
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import type { JobOffer } from "../../Models/Offre"
     import { GET } from "../../ts/server"
