@@ -16,8 +16,7 @@ export const getCurrentUserEnterprise = async () => {
 
 export const checkIfUserHaveEnterprise = async (currentUser: User | undefined) => {
   if (!currentUser?.isModerator)
-    if (await getCurrentUserEnterprise() != undefined)
-      return true
+    return (await getCurrentUserEnterprise() != undefined)
   return false
 }
 

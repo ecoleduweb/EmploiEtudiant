@@ -83,7 +83,7 @@ def getCurrentUserEnterprise(current_user):
         if employer:
             enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
         else:
-            logger.error("Couldn't get the current user to get the enterprise")
+            logger.info("Couldn't get the current user to get the enterprise")
             return jsonify({'message': 'Couldn\'t get the user'}), 404
         if enterprise:
             return jsonify(enterprise.to_json_string()), 200
@@ -91,5 +91,5 @@ def getCurrentUserEnterprise(current_user):
             logger.warn("No enterprise found the current user")
             return jsonify({'message': 'No enterprise found on the current user'}), 404
     except Exception as e:
-        logger.error("Error getting the user to get the enterprise")
+        logger.error("Error getting the user to get the enterprise", e)
         return jsonify({'message': 'Error when getting the user'}), 500
