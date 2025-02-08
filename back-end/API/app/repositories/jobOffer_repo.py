@@ -23,7 +23,7 @@ class JobOfferRepo:
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def updateJobOffer(self, data):
+    """def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
         jobOffer.title = data['jobOffer']['title']
         jobOffer.description = data['jobOffer']['description']
@@ -44,16 +44,43 @@ class JobOfferRepo:
         if 'approbationMessage' in data['jobOffer']:
             jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
         db.session.commit()
-        return jobOffer
+        return jobOffer"""
 
+        def updateJobOffer(self, data):
+        jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
+        jobOffer.title = data['jobOffer']['title']
+        jobOffer.description = data['jobOffer']['description']
+        jobOffer.address = data['jobOffer']['address']
+        jobOffer.offerDebut = data['jobOffer']['offerDebut']
+        jobOffer.dateEntryOffice = data['jobOffer']['dateEntryOffice']
+        jobOffer.deadlineApply = data['jobOffer']['deadlineApply']
+        jobOffer.email = data['jobOffer']['email']
+        jobOffer.hoursPerWeek = data['jobOffer']['hoursPerWeek']
+        jobOffer.offerLink = data['jobOffer']['offerLink']
+        jobOffer.salary = data['jobOffer']['salary']
+        jobOffer.active = data['jobOffer']['active']
+        jobOffer.employerId = data['jobOffer']['employerId']
+        jobOffer.last_modified_by_an_employer_date = datetime.now()
+
+        if 'isApproved' in data['jobOffer']:
+            jobOffer.isApproved = data['jobOffer']['isApproved']
+            
+        if 'approbationMessage' in data['jobOffer']:
+            jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
+        db.session.commit()
+        return jobOffer
+    # getById
+    #     # Ne pas oublier de faire mes tests
     def offreEmploi(self,id):
         jobOffer = JobOffer.query.filter_by(id=id).first()
         return jobOffer
 
+    # getAll
     def offresEmploi(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
+    # getApproved À renommer
     def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()
         jobOffers = JobOffer.query.filter(
