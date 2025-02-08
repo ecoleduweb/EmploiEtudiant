@@ -331,3 +331,37 @@ def test_updateJobOffer(client):
     response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
     assert VerifyData(response.json)
+
+
+def test_createJobOfferWithoutOfferLink(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Développeur Fullstack",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "offerLink": " ",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    assert response.status_code == 200
+    assert VerifyData(response.json)

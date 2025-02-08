@@ -67,22 +67,14 @@ const schema = yup.object().shape({
     offerLink: yup
         .string()
         .max(255, "Le lien vers l'offre doit être de 255 caractères maximum")
-        .transform((value) => {
-            // Si la valeur est undefined ou null, retourne une chaîne vide
-            if (!value) return "";
-            // Sinon, on fait le trim
-            return value.trim();
-        })
         .test("link-validation", "Le lien n'est pas valide", async function (value) {
-            console.log('OfferLink Value :' + value);
             if (!value || value == "") {
                 return true;
             }
             try {
                 new URL(value);
-                console.log('OfferLink Value :' + value);
             } catch {
-                return false;
+                return this.createError({ message: "Le lien n'est pas valide !" });
             }
             const isAccessible = await checkUrlAccessibility(value);
             if (!isAccessible) {

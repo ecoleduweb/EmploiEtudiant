@@ -285,7 +285,7 @@
                 onFinished()
             }
         } catch (err) { 
-            
+            console.error(err)
         }
     }
 
