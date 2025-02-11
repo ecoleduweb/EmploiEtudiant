@@ -6,7 +6,7 @@
     import Button from "../../Components/Inputs/Button.svelte";
     import type { User } from "../../Models/User"
     import { PUT } from "../../ts/server"
-    import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
+    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
     let lastname: string
     let firstname: string
@@ -56,12 +56,7 @@
     let userHaveEnterprise = false
 
     onMount(async () => {
-        try {
-            userHaveEnterprise = await getCurrentUserEnterprise() != undefined
-        }
-        catch (err) {
-            userHaveEnterprise = false
-        }
+        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
     })
 
 </script>
