@@ -19,7 +19,7 @@ jobs:
         run: npm i
         working-directory: playwrightTests
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install
         working-directory: playwrightTests
       - name: Run Playwright tests
         run: npx playwright test
