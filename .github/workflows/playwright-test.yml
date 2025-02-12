@@ -37,7 +37,7 @@ jobs:
         working-directory: playwrightTests
 
       - name: Install Playwright Browsers
-        run: npx playwright install chromium
+        run: npx playwright install chromium firefox webkit
         working-directory: playwrightTests
 
       - name: Run Playwright tests
