@@ -22,6 +22,26 @@ export const jobOfferMocks = {
                 message: "URL is accessible"
             }
         }
+    },
+
+    jobOfferVerifyURLWITHBADLINK: {
+        url: '*/**/jobOffer/verifyURL',
+        response: {
+            status: 400,
+            json: {
+                message: "URL is not accessible"
+            }
+        }
+    },
+
+    jobOfferVerifyURLWITHOUTLINK: {
+        url: '*/**/jobOffer/verifyURL',
+        response: {
+            status: 200,
+            json: {
+                message: "Offre créée"
+            }
+        }
     }
 } satisfies Record<string, MockConfig>;
 

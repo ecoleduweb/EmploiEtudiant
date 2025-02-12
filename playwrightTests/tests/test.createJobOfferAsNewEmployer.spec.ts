@@ -19,7 +19,9 @@ test.describe('createNewJobOffer', () => {
       employmentScheduleMocks.success,
       jobOfferMocks.jobOfferNew,
       jobOfferMocks.jobOfferEmployer,
-      jobOfferMocks.jobOfferVerifyURL])
+      jobOfferMocks.jobOfferVerifyURL,
+      jobOfferMocks.jobOfferVerifyURLWITHBADLINK,
+      jobOfferMocks.jobOfferVerifyURLWITHOUTLINK])
       .apply();
 
     // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
