@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - dev
-      - FE_Modification_Zach
+    paths:
+      - "front-end/**"  
   pull_request:
     branches:
       - dev
-      - FE_Modification_Zach
+    paths:
+      - "front-end/**"  
 
 jobs:
   Test_Build:
@@ -24,13 +26,11 @@ jobs:
           node-version: "20" # or any other version you want
 
       - name: Install dependencies
-        working-directory: front-end
+        working-directory: front-end/projet_application
         run: |
-          cd projet_application
           npm i
 
       - name: Test Build
-        working-directory: front-end
+        working-directory: front-end/projet_application
         run: |
-          cd projet_application
           npx vite build
