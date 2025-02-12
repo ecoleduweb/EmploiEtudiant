@@ -5,6 +5,7 @@ import { cityMocks } from '.././Helper/Mocks/city.mock';
 import { employmentScheduleMocks } from '.././Helper/Mocks/employmentSchedule.mock';
 import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
 import { ApiMocker } from '.././Helper/mockApi';
+import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 
 
 
@@ -20,8 +21,7 @@ test.describe('createNewJobOffer', () => {
       jobOfferMocks.jobOfferNew,
       jobOfferMocks.jobOfferEmployer,
       jobOfferMocks.jobOfferVerifyURL,
-      jobOfferMocks.jobOfferVerifyURLWITHBADLINK,
-      jobOfferMocks.jobOfferVerifyURLWITHOUTLINK])
+      enterpriseMocks.notFound])
       .apply();
 
     // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
