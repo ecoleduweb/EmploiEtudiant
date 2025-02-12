@@ -18,8 +18,11 @@ jobs:
       - name: Install dependencies
         run: npm i
         working-directory: playwrightTests
+      - name: Package updates
+        run: sudo apt-get update
+        working-directory: playwrightTests
       - name: Install Playwright Browsers
-        run: npx playwright install
+        run: npx playwright install --with-deps
         working-directory: playwrightTests
       - name: Run Playwright tests
         run: npx playwright test
