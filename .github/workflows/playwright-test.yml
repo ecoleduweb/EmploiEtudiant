@@ -19,9 +19,10 @@ jobs:
         run: npm i
         working-directory: playwrightTests
       - name: Package updates
+        run: sudo apt-get install -y libasound2t64 libffi7 libglib2.0-0
+        working-directory: playwrightTests
       - name: Install Playwright Browsers
-        run: sudo apt-get install -y libasound2t64 libffi7 libglib2.0-0 |
-          npx playwright install --with-deps
+        run: npx playwright install --with-deps
         working-directory: playwrightTests
       - name: Run Playwright tests
         run: npx playwright test
