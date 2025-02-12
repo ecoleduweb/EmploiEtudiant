@@ -33,16 +33,6 @@ export const jobOfferMocks = {
             }
         }
     },
-
-    jobOfferVerifyURLWITHOUTLINK: {
-        url: '*/**/jobOffer/verifyURL',
-        response: {
-            status: 200,
-            json: {
-                message: "Offre créée"
-            }
-        }
-    }
 } satisfies Record<string, MockConfig>;
 
 
