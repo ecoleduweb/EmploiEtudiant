@@ -30,7 +30,7 @@ jobs:
         run: sudo apt-get update
 
       - name: Install required system dependencies
-        run: sudo apt-get install -y libasound2 libffi8 libx264-dev
+        run: sudo apt-get install -y libasound2t64 libffi8 libx264-dev
 
       - name: Install Playwright Browsers
         run: npx playwright install --no-deps chromium firefox webkit
