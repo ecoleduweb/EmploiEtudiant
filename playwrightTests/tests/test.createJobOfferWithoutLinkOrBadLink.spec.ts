@@ -6,7 +6,6 @@ import { employmentScheduleMocks } from '.././Helper/Mocks/employmentSchedule.mo
 import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 
-
 test.describe('createNewJobOffer', () => {
 
     test.beforeEach(async ({ page }) => {
