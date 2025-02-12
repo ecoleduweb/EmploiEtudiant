@@ -68,7 +68,7 @@ const schema = yup.object().shape({
         .string()
         .max(255, "Le lien vers l'offre doit être de 255 caractères maximum")
         .test("link-validation", "Le lien n'est pas valide", async function (value) {
-            if (!value || value == "") {
+            if (!value) {
                 return true;
             }
             try {
