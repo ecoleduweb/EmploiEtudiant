@@ -1,4 +1,5 @@
 name: Playwright Tests New
+
 on:
   push:
     paths:
@@ -6,28 +7,41 @@ on:
   pull_request:
     paths:
       - "front-end/**"
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 20
+
       - name: Install dependencies
         run: npm i
         working-directory: playwrightTests
-      - name: Package updates
-        run: sudo apt-get install -y libasound2t64
-        working-directory: playwrightTests
+
+      - name: Update system packages
+        run: sudo apt-get update
+
+      - name: Install required system dependencies
+        run: sudo apt-get install -y libasound2 libffi8 libx264-dev
+
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --no-deps chromium firefox webkit
         working-directory: playwrightTests
+
       - name: Run Playwright tests
         run: npx playwright test
         working-directory: playwrightTests
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
