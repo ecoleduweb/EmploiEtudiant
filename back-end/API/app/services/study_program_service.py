@@ -11,9 +11,7 @@ class StudyProgramService:
 
     def editStudyProgram(self, id, name):
         if study_program_repo.studyProgramExist(id):
-            if not study_program_repo.doesAlreadyExist(name):
-                return study_program_repo.editStudyProgram(id, name)
-            raise Exception("Already created")
+            return study_program_repo.editStudyProgram(id, name)            
         raise NotFoundException("Job not found")
 
     def addStudyProgram(self, name):
