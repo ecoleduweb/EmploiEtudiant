@@ -8,7 +8,7 @@ import { loginMocks } from '../Helper/Mocks/login.mock';
 
 test.describe('checkIfUserHaveEnterprise', () => {
 
-    test.beforeAll(async ({ page }) => {
+    test.beforeEach(async ({ page }) => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             studyProgramMocks.success,
@@ -17,6 +17,7 @@ test.describe('checkIfUserHaveEnterprise', () => {
 
         // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
         await page.goto('http://localhost:5002/login');
+        await page.waitForLoadState('networkidle');
         await page.getByLabel('Nom d\'utilisateur').fill('test@gmail.com');
         await page.getByLabel('Mot de passe').fill('test');
         await page.getByRole('button', { name: 'Se connecter' }).click();

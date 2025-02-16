@@ -12,12 +12,7 @@ export const loginMocks = {
         response: {
             status: 200,
             json: {
-                "email": "test@gmail.com",
-                "exp": 1739397843,
-                "active": true,
-                "isModerator": false,
-                "firstName": "test",
-                "lastName": "test"
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNzM5NzM5NDY2LCJhY3RpdmUiOnRydWUsImlzTW9kZXJhdG9yIjpmYWxzZSwiZmlyc3ROYW1lIjoiIiwibGFzdE5hbWUiOiIifQ.Fft29KxIDl3KLPrJ_vxQONS1qd4kzor_Fighq7zH3Hk"
             }
         }
     }
