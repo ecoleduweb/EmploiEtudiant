@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests newconfig
 on:
   push:
     paths:
@@ -19,7 +19,7 @@ jobs:
       # Install dependencies for front-end project
       - name: Install front-end dependencies
         run: |
-          cd front-end
+          cd front-end/projet_application
           npm ci
 
       # Install dependencies for Playwright tests
