@@ -1,32 +1,47 @@
 name: Playwright Tests
 on:
   push:
-    paths:
-      - "front-end/**"
+    branches: [dev]
   pull_request:
-    paths:
-      - "front-end/**"
+    branches: [dev]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm i
-        working-directory: playwrightTests
+          node-version: lts/*
+
+      # Install dependencies for front-end project
+      - name: Install front-end dependencies
+        run: |
+          cd front-end
+          npm ci
+
+      # Install dependencies for Playwright tests
+      - name: Install Playwright test dependencies
+        run: |
+          cd playwrightTests
+          npm ci
+
+      # Install Playwright browsers
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-        working-directory: playwrightTests
+        run: |
+          cd playwrightTests
+          npx playwright install --with-deps
+
+      # Run Playwright tests
       - name: Run Playwright tests
-        run: npx playwright test
-        working-directory: playwrightTests
+        run: |
+          cd playwrightTests
+          npx playwright test
+
+      # Upload test results
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          path: playwrightTests/playwright-report/
+          retention-days: 1
