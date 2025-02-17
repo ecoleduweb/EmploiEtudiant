@@ -20,7 +20,9 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never' }]],
+  //reporter: [['html', { open: 'never' }]],
+  reporter: process.env.CI ? 'github' : 'list',
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: 120000,
   use: {
@@ -36,18 +38,7 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
+    }
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -69,12 +60,9 @@ export default defineConfig({
     // },
   ],
 
-  webServer:
-    [
-      {
-        command: 'cd ../front-end/projet_application && npm run playwright',
-        url: 'http://localhost:5002',
-        reuseExistingServer: false
-      },
-    ]
+  webServer: {
+    command: 'cd ../front-end/projet_application && npm run playwright',
+    url: 'http://localhost:5002',
+    reuseExistingServer: false,
+  }
 });
