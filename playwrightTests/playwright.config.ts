@@ -60,7 +60,7 @@ export default defineConfig({
 
   webServer: {
     command: 'cd ../front-end/projet_application && npm run playwright',
-    url: 'http://localhost:5003',
+    url: 'http://localhost:5002',
     reuseExistingServer: false,
     timeout: 120000,
   }
