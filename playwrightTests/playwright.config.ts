@@ -25,7 +25,7 @@ export default defineConfig({
   timeout: 120000,
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5003',
+    baseURL: 'http://localhost:5002',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -62,6 +62,5 @@ export default defineConfig({
     command: 'cd ../front-end/projet_application && npm run playwright',
     url: 'http://localhost:5002',
     reuseExistingServer: false,
-    timeout: 120000,
   }
 });
