@@ -58,12 +58,10 @@ export default defineConfig({
     // },
   ],
 
-  webServer:
-    [
-      {
-        command: 'cd ../front-end/projet_application && npm run playwright',
-        url: 'http://localhost:5003',
-        reuseExistingServer: false
-      },
-    ]
+  webServer: {
+    command: 'cd ../front-end/projet_application && npm run playwright',
+    url: 'http://localhost:5003',
+    reuseExistingServer: false,
+    timeout: 120000,
+  }
 });

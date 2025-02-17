@@ -37,7 +37,7 @@ jobs:
         working-directory: playwrightTests
 
       - name: Install Playwright Browsers
-        run: npx playwright install chromium firefox webkit
+        run: npx playwright install chromium
         working-directory: playwrightTests
 
       - name: Run Playwright tests
@@ -50,4 +50,4 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 1
