@@ -46,7 +46,7 @@ class JobOfferRepo:
         db.session.commit()
         return jobOffer"""
 
-        def updateJobOffer(self, data):
+    def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
         jobOffer.title = data['jobOffer']['title']
         jobOffer.description = data['jobOffer']['description']
