@@ -331,3 +331,57 @@ def test_updateJobOffer(client):
     response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
     assert response.status_code == 200
     assert VerifyData(response.json)
+
+
+def test_createJobOfferWithoutOfferLink(client):
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    #Très gros titre (Plus grand que 255)
+    job_offer1_data2 = {
+        "id": 1,
+        "title": "offre test 2",
+        "address": "123 rue de la rue",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2121-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "offerLink": " ",
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": None,
+        "isApproved": True,
+        "approvedDate": datetime.now()
+    }
+
+    data2 = {
+            "jobOffer": 
+            job_offer1_data2,
+            "enterprise": 
+            {
+                "id": 2,
+                "name": "Google",
+                "email": "google@gmail.com",
+                "phone": "1234567890",
+                "address": "123 rue google",
+                "cityId": 1
+            },
+            "studyPrograms": [
+                1,
+                2
+            ],
+            "scheduleIds": [
+                1
+            ]
+        }
+
+    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+
+    assert response2.status_code == 201
