@@ -129,11 +129,6 @@ Reste à mettre ça responsive :wink:
     margin-top: 3%;
     width: 100%;
 }
-.validation-criteria-item {
-    display: flex;
-    max-width: 80%;
-    margin-bottom: 4%;
-}
 
 @media screen and (max-width: 900px) and (min-width: 300px) {
     .form-register {
@@ -163,9 +158,5 @@ Reste à mettre ça responsive :wink:
     ul {
         padding-left: 10%;
         min-width: 20%;
-    }
-
-    ul > li > div > div {
-        height: 40%;
     }
 }
