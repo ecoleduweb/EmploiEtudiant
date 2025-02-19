@@ -1,4 +1,5 @@
 import * as yup from "yup"
+import { checkUrlAccessibility } from "../ts/utils"
 
 const schema = yup.object().shape({
     title: yup
@@ -15,8 +16,8 @@ const schema = yup.object().shape({
     description: yup
         .string()
         .max(
-            30000,
-            "La description de l'offre doit être de 30000 caractères maximum",
+            100000,
+            "La description de l'offre doit être de 100 000 caractères maximum",
         )
         .required("La description de l'offre est requise"),
     dateEntryOffice: yup
@@ -60,9 +61,30 @@ const schema = yup.object().shape({
     approbationMessage: yup
         .string()
         .max(
-            6000,
-            "Le salaire doit être de 6000 caractères maximum",
+            255,
+            "Le message d'approbation doit être de 6000 caractères maximum",
         ),
+    offerLink: yup
+        .string()
+        .max(255, "Le lien vers l'offre doit être de 255 caractères maximum")
+        .test("link-validation", "Le lien n'est pas valide", async function (value) {
+            if (!value) {
+                return true;
+            }
+            try {
+                new URL(value);
+            } catch {
+                return this.createError({ message: "Le lien n'est pas valide !" });
+            }
+            const isAccessible = await checkUrlAccessibility(value);
+            if (!isAccessible) {
+                return this.createError({
+                    message: "Le site web semble inaccessible!"
+                });
+            }
+            return true;
+        }),
+
     idProgramme: yup.array().min(1, "Le programme visé est requis"),
     acceptCondition: yup
         .boolean()

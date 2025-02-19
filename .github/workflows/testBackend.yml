@@ -1,6 +1,9 @@
 name: Test BackEnd
 
-on: pull_request
+on: 
+  pull_request:
+    paths:
+      - "back-end/**"
 
 jobs:
   unit-testing:

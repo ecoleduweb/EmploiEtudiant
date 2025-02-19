@@ -103,7 +103,7 @@
             <p class="text">{offer.hoursPerWeek}</p>
             <h5 class="infoTitle">Programme</h5>
             <p class="text">{offer.studyPrograms?.map((p) => p.name).join(", ")}</p>
-            <h5 class="infoTitle">Type du poste</h5>
+            <h5 class="infoTitle">Poste visé</h5>
             <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
             <h5 class="infoTitle">Description du poste</h5>
             <p class="text">{offer.description}</p>
