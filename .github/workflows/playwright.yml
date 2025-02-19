@@ -1,6 +1,13 @@
 name: Playwright Tests
 ## Voir si le déclenchement est approprié pour nos besoins,
 ## les tests se lancent sur toutes les branches à chaque push et pull requests
+## deploie le rapport sur GitHub Pages
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 on:
   push:
     paths:
