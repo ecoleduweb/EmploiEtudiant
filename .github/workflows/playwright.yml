@@ -48,6 +48,7 @@ jobs:
           name: playwright-report
           path: ./playwrightTests/playwright-report/
           retention-days: 1
+
       - name: Deploy report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
@@ -55,3 +56,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwrightTests/playwright-report
           destination_dir: reports/${{ github.run_id }}
+          keep_files: true
