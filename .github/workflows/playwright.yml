@@ -56,7 +56,7 @@ jobs:
           path: ./playwrightTests/playwright-report/
           retention-days: 1
 
-      - name: Deploy report to GitHub Pages
+      - name: Deployer report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -64,5 +64,5 @@ jobs:
           publish_dir: ./playwrightTests/playwright-report
           destination_dir: "docs"
           keep_files: false
-      - name: Purger le cache GitHub Pages
+      - name: Purge GitHub Pages cache
         run: curl -X PURGE https://ecoldeduweb.github.io/EmploiEtudiant
