@@ -155,7 +155,7 @@
             </div>
 
             {#if userHaveEnterprise}
-                <div class="divFlex">
+                <div class="divFlex" id="editEnterprise">
                     <Button
                         onClick={handleEditEnterprise}
                         text="Modifier ton entreprise"

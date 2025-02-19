@@ -68,18 +68,18 @@
 
 
 
-    const upsertStudyProgram = async (offer: StudyProgram | void) => 
+    const upsertStudyProgram = async (studyProgram: StudyProgram | void) => 
     {
-        if (offer !== undefined)
+        if (studyProgram !== undefined)
         {
-            if (offer.id >= 0) //Existant
+            if (studyProgram.id >= 0) //Existant
             {
-                await editStudy(offer)
+                await editStudy(studyProgram)
                 closeModal()
             }
             else //Nouveau 
             {
-                await addStudy(offer)
+                await addStudy(studyProgram)
                 closeModal()
             }
         }

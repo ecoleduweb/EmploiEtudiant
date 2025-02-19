@@ -80,7 +80,7 @@
 
     <div class="Modal">
         {#if userHaveEnterprise}
-            <div class="divFlex">
+            <div class="divFlex" id="editEnterprise">
                 <Button
                     onClick={handleShow}
                     text="Modifier ton entreprise"
