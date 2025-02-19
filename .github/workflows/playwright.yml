@@ -62,8 +62,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwrightTests/playwright-report
-          destination_dir: rapport/${{ github.run_id }}
           keep_files: true
-      - name: Mettre à jour index.html pour pointer vers le dernier rapport
-        run: |
-          echo '<meta http-equiv="refresh" content="0; url=./rapport/${{ github.run_id }}/index.html">' > ./playwrightTests/playwright-report/index.html
