@@ -15,6 +15,7 @@ from operator import attrgetter
 class JobOfferRepo:
 
     def createJobOffer(self, newJobOffer):
+        newJobOffer.last_modified_by_an_employer_date = datetime.now()
         db.session.add(newJobOffer)
         db.session.commit()
         return newJobOffer
@@ -22,29 +23,6 @@ class JobOfferRepo:
     def offresEmploiEmployeur(self, employerId, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-    
-    """def updateJobOffer(self, data):
-        jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
-        jobOffer.title = data['jobOffer']['title']
-        jobOffer.description = data['jobOffer']['description']
-        jobOffer.address = data['jobOffer']['address']
-        jobOffer.offerDebut = data['jobOffer']['offerDebut']
-        jobOffer.dateEntryOffice = data['jobOffer']['dateEntryOffice']
-        jobOffer.deadlineApply = data['jobOffer']['deadlineApply']
-        jobOffer.email = data['jobOffer']['email']
-        jobOffer.hoursPerWeek = data['jobOffer']['hoursPerWeek']
-        jobOffer.offerLink = data['jobOffer']['offerLink']
-        jobOffer.salary = data['jobOffer']['salary']
-        jobOffer.active = data['jobOffer']['active']
-        jobOffer.employerId = data['jobOffer']['employerId']
-
-        if 'isApproved' in data['jobOffer']:
-            jobOffer.isApproved = data['jobOffer']['isApproved']
-            
-        if 'approbationMessage' in data['jobOffer']:
-            jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
-        db.session.commit()
-        return jobOffer"""
 
     def updateJobOffer(self, data):
         jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
