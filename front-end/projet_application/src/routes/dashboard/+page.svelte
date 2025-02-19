@@ -16,6 +16,7 @@
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
+
     let showApproveModal = false;
     let showCreateEditOffer = false;
     let showEditEnterprise = false;
@@ -179,51 +180,104 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres <span class="hightlight-red">refusées</span></h2>
-                {#each isRefusedOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        offer={offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each isRefusedOffer as offer}
+                            <OfferRow
+                                {isModerator}
+                                offer={offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            />
+                        {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if toBeApprovedOffer.length > 0}
-                <h2 class="textSections">Offres en <span class="hightlight">attente d'approbation</span></h2>
-                {#each toBeApprovedOffer as offer}
+            <h2 class="textSections">Offres en <span class="hightlight-orange">attente d'approbation</span></h2>
+            <!-- Tableau pour afficher les offres en attente d'approbation -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Entreprise</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each toBeApprovedOffer as offer}
                     <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                     />
-                {/each}
+                    {/each}
+                </tbody>
+            </table>
             {/if}
             {#if offerToCome.length > 0}
-                <h2 class="textSections">Offres <span class="hightlight">bientôt affichées</span></h2>
-                {#each offerToCome as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <h2 class="textSections">Offres <span class="hightlight-light-blue">bientôt affichées</span></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each offerToCome as offer}
+                        <OfferRow
+                            {isModerator}
+                            {offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        />
+                    {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if offerDisplayed.length > 0}
                 <h2 class="textSections">Offres <span class="hightlight">affichées</span></h2>
-                {#each offerDisplayed as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each offerDisplayed as offer}
+                        <OfferRow
+                            {isModerator}
+                            {offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        />
+                    {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if expiredOffer.length > 0}
                 <h2 class="textSections">Offres <span class="hightlight-red">expirées</span></h2>
@@ -339,6 +393,26 @@
     .text {
         font-size: 2.5vw;
         margin: 0;
+    }
+
+    /* Section des tableaux*/
+    table {
+        width: 100%; /* Prend toute la largeur disponible */
+        border-collapse: collapse; /* Fusionne les bordures pour un bon alignement */
+        table-layout: fixed; /* Force une répartition égale des colonnes */
+    }
+
+    thead {
+        background: linear-gradient(2deg, hsl(218, 27%, 16%, 50%),hsl(173, 100%, 34%, 20%), hsl(173, 100%, 34%, 30%), hsl(173, 100%, 34%, 20%), hsl(218, 27%, 16%, 50%));
+        color: white;
+    }
+
+    th {
+        padding: 12px 12px 12px 0;
+        text-align: left; /* Ajuste selon le design */
+        border-bottom: 1px solid #ddd; /* Ligne séparatrice */
+        font-weight: bold;
+        text-align: left; /* Alignement du texte des en-têtes */
     }
 
     @media (max-width: 768px) {
