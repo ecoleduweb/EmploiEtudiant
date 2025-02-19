@@ -24,6 +24,39 @@ export const jobOfferMocks = {
         }
     },
 
+    jobOfferNewInvalidHour: {
+        url: '*/**/jobOffer/new',
+        response: {
+            status: 400,
+            json: {
+                field: "hoursPerWeek",
+                message: "Ce champ doit correspondre a un nombre."
+            }
+        }
+    },
+
+    jobOfferNewInvalidTitle: {
+        url: '*/**/jobOffer/new',
+        response: {
+            status: 400,
+            json: {
+                field: "title",
+                message: "Ce champ doit comporter entre 1 et {expectedLen} caracteres."
+            }
+        }
+    },
+
+    jobOfferNewInvalidEmail: {
+        url: '*/**/jobOffer/new',
+        response: {
+            status: 400,
+            json: {
+                field: "email",
+                message: "Le format du courriel est invalide."
+            }
+        }
+    },
+
     jobOfferVerifyURLWITHBADLINK: {
         url: '*/**/jobOffer/verifyURL',
         response: {
