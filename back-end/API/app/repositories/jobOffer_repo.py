@@ -92,7 +92,7 @@ class JobOfferRepo:
 
         jobOffers = self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
         return jobOffers
-    
+ 
     def addDetailsToJobOffer(self, jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails): 
         jobOffersDetails = []
         for jobOffer in jobOffers:
