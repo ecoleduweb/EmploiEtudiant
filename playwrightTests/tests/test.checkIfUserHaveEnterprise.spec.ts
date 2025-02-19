@@ -15,7 +15,6 @@ test.describe('checkIfUserHaveEnterprise', () => {
             loginMocks.success])
             .apply();
 
-        // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
         await page.goto('http://localhost:5002/login');
         await page.waitForLoadState('networkidle');
         await page.getByLabel('Nom d\'utilisateur').fill('test@gmail.com');

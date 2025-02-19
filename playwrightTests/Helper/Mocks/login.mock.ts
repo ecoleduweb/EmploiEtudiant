@@ -1,4 +1,22 @@
 import { MockConfig } from "../types";
+import jwt from 'jsonwebtoken';
+
+const generateToken = () => {
+    const payload = {
+        email: "test@gmail.com",
+        exp: Math.floor((Date.now() + 30 * 60 * 1000) / 1000), // 30 minutes from now
+        active: true,
+        isModerator: false,
+        firstName: "",
+        lastName: ""
+    };
+
+    // Clé secrète pour les tests
+    const SECRET_KEY = 'cle-secrette-pour-les-tests';
+
+    return jwt.sign(payload, SECRET_KEY);
+};
+
 export const loginMocks = {
     notFound: {
         url: '*/**/user/login',
@@ -12,7 +30,7 @@ export const loginMocks = {
         response: {
             status: 200,
             json: {
-                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZXhwIjoxNzM5NzM5NDY2LCJhY3RpdmUiOnRydWUsImlzTW9kZXJhdG9yIjpmYWxzZSwiZmlyc3ROYW1lIjoiIiwibGFzdE5hbWUiOiIifQ.Fft29KxIDl3KLPrJ_vxQONS1qd4kzor_Fighq7zH3Hk"
+                "token": generateToken()
             }
         }
     }
