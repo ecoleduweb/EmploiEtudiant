@@ -20,3 +20,10 @@ class LoginException(Exception):
         super().__init__(errorMessage)
         self.message = errorMessage
         self.errorCode = errorCode
+
+class ValidationException(Exception):
+    def __init__(self, field, message, errorCode):
+        super().__init__(field, message, errorCode)
+        self.errorCode = errorCode
+        self.field = field
+        self.message = message

@@ -5,24 +5,26 @@ from app.models.jobOffer_model import JobOffer
 from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
 from app.middleware.lengthVerify import verifyStringLen
-from app.customexception.CustomException import NotFoundException
+from app.middleware.numberVerify import verifyNumber
+from app.customexception.CustomException import ValidationException
+import re
 jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
 studyProgram_repo = StudyProgramRepo()
 class JobOfferService:
 
-    def offresEmploi(self, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
-        return jobOffer_repo.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
-    
-    def createJobOffer(self, data, employerId, isApproved, last_modified_by_id):
-
-        verifyStringLen(data['title'], 255)
-        verifyStringLen(data['address'], 255)
-        verifyStringLen(data['email'], 255)
-        verifyStringLen(data['offerLink'], 255)
-        verifyStringLen(data['salary'], 255)
-
-        new_job_offer = JobOffer(title=data['title'],
+    def validateJobOffer(self, data, employerId, isApproved, last_modified_by_id):
+        verifyStringLen('title', data['title'], 255)
+        verifyStringLen('address', data['address'], 255)
+        verifyStringLen('email', data['email'], 255)
+        verifyStringLen('offerLink', data['offerLink'], 255)
+        verifyStringLen('salary', data['salary'], 255)
+        verifyNumber('hoursPerWeek', data['hoursPerWeek'], [float, int])
+        if not (re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', data['email'])):
+            raise ValidationException('email', 'Le format du courriel est invalide.', 400)
+        new_job_offer = JobOffer(
+        
+         title=data['title'],
          description=data['description'],
          offerDebut=data["offerDebut"],
          address=data['address'],
@@ -37,14 +39,23 @@ class JobOfferService:
          isApproved=isApproved,
          approvedDate=datetime.now() if isApproved else None,
          last_modified_by_id=last_modified_by_id)
+        
+        return new_job_offer
 
+    def offresEmploi(self, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
+        return jobOffer_repo.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
+    
+    def createJobOffer(self, data, employerId, isApproved, last_modified_by_id):
+        new_job_offer = self.validateJobOffer(data, employerId, isApproved, last_modified_by_id)
         return jobOffer_repo.createJobOffer(new_job_offer)
     
     def offresEmploiEmployeur(self, employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     
     def updateJobOffer(self, data):
-        return jobOffer_repo.updateJobOffer(data)
+        job_offer = self.validateJobOffer(data, data['employerId'], data['isApproved'], data['last_modified_by_id'])
+        job_offer.id = data['id']
+        return jobOffer_repo.updateJobOffer(job_offer)
 
     def findById(self, id):
         return jobOffer_repo.offreEmploi(id)
