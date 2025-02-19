@@ -74,9 +74,9 @@
                 <h2 class="rowTitles-mobile">Employeur</h2>
             </div>
             <div class="rowTitles">
-                <h2 class="rowTitle">Titre</h2>
-                <h2 class="rowTitle">Horaire</h2>
-                <h2 class="rowTitle">Date d'entrée en vigueur</h2>
+                <h2 class="rowTitle">Poste visé</h2>
+                <h2 class="rowTitle">Type d'emploi</h2>
+                <h2 class="rowTitle">Date limite pour postuler</h2>
                 <h2 class="rowTitle">Programmes visés</h2>
                 <h2 class="rowTitle">Employeur</h2>
                 <h2 class="rowTitle">Détails</h2>

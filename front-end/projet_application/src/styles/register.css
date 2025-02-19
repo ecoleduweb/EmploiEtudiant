@@ -27,7 +27,7 @@ label {
     display: flex;
     flex-direction: column;
     margin: 10px 10px;
-    width: 25%;
+    width: 90%;
 }
 
 .form-buttons {
@@ -63,6 +63,7 @@ label {
 .form-fields {
     display: flex;
     flex-direction: row;
+    margin-left: 10px;
     justify-content: left;
     flex-wrap: wrap;
     width: 100%;
@@ -93,9 +94,9 @@ label {
 }
 
 .list-requirements {
-    width: 70%;
+    width: 100%;
     color: #878787;
-    margin-top: 10px;
+    margin-top: 0px;
     margin-bottom: 20px;
 }
 
@@ -104,6 +105,12 @@ label {
     margin: 10px 10px;
     width: 100%;
     justify-content: center;
+}
+
+.password-requirements {
+    color: #878787;
+    font-size: 0.7rem;
+    max-width: 90%;
 }
 /**
 Reste à mettre ça responsive :wink:
@@ -138,21 +145,27 @@ Reste à mettre ça responsive :wink:
         margin-top: 13px;
     }
 
-    .form-inputs 
-    {
-        margin-left: 0px;
+    .form-inputs {
+        margin-left: 6%;
         margin-right: 6%;
-        width: 50%;
+        width: 100%;
     }
 
-    ul 
-    {
-        padding-left: 20px;
+    .input-basic {
+        max-width: 85%;
+    }
+
+    .password-requirements {
+        color: #878787;
+        font-size: 0.7rem;
+    }
+
+    ul {
+        padding-left: 10%;
         min-width: 20%;
     }
 
-    ul > li > div > div 
-    {
+    ul > li > div > div {
         height: 40%;
     }
 }
