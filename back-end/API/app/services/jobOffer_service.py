@@ -17,7 +17,8 @@ class JobOfferService:
         verifyStringLen('title', data['title'], 255)
         verifyStringLen('address', data['address'], 255)
         verifyStringLen('email', data['email'], 255)
-        verifyStringLen('offerLink', data['offerLink'], 255)
+        if data['offerLink'] != "":
+            verifyStringLen('offerLink', data['offerLink'], 255)
         verifyStringLen('salary', data['salary'], 255)
         verifyNumber('hoursPerWeek', data['hoursPerWeek'], [float, int])
         if not (re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', data['email'])):

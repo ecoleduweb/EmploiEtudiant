@@ -65,7 +65,7 @@ def create_app():
 
     try:
         # port 5001 is used for playwright tests
-        if any("pytest" in arg for arg in sys.argv) or any("5001" in arg for arg in sys.argv):
+        if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
             print("Running tests")
@@ -101,24 +101,5 @@ def create_app():
     app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
 
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
-    
-
-    with app.app_context(): 
-        if any("5001" in arg for arg in sys.argv):
-            from app.models.user_model import User 
-            from app.models.city_model import City
-            from app.models.region_model import Region
-            from app.models.employmentSchedule_model import EmploymentSchedule
-            print("Refreshing the database")
-            db.drop_all()
-            db.create_all()
-            hashed_password = hasher.hash("test123")
-            db.session.add(User(firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True))
-            db.session.add(User(firstName="user", lastName="user", email="user@gmail.com", password=hashed_password, active=True, isModerator=False))
-            db.session.add(Region(region="region"))
-            db.session.add(City(city="ville", idRegion="1"))
-            db.session.add(EmploymentSchedule(description="temps plein"))
-            db.session.commit()
-            print("database refreshed")
 
     return app
