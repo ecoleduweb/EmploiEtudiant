@@ -16,7 +16,6 @@
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
-
     let showApproveModal = false;
     let showCreateEditOffer = false;
     let showEditEnterprise = false;
@@ -105,12 +104,9 @@
         {
             loaded = true
         }
-
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
-
-
 
     const getJobOffersEmployeur = async () => {
         try {
@@ -176,7 +172,8 @@
     {:else}
         <section class="offres">
             <h1 class="title">
-                <span class="text">MES OFFRES D'EMPLOIS </span>
+                <span>MES</span>
+                <span class="text"> OFFRES D'EMPLOIS </span>
             </h1>
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres <span class="hightlight-red">refusées</span></h2>
@@ -381,6 +378,8 @@
         left: 7.2%;
         margin: 0;
         margin-top: 30px;
+        color: white;
+        font-size: 2.5vw;
     }
     .title span:first-child {
         color: white;
@@ -416,8 +415,17 @@
     }
 
     @media (max-width: 768px) {
+        h2 {
+            font-size: 4vw;
+        }
         .text {
-            font-size: 6vw;
+            font-size: 4vw;
+        }
+        table thead {
+            font-size: 3vw; 
+        }
+        table tbody {
+            font-size: 3vw; 
         }
     }
 </style>
