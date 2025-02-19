@@ -65,4 +65,4 @@ jobs:
           destination_dir: "docs"
           keep_files: false
       - name: Purger le cache GitHub Pages
-        run: curl -X PURGE https://<ton-user>.github.io/<ton-repo>/
+        run: curl -X PURGE https://ecoldeduweb.github.io/EmploiEtudiant
