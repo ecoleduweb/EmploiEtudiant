@@ -62,5 +62,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwrightTests/playwright-report
-          destination_dir: ""
+          destination_dir: "docs"
           keep_files: false
+      - name: Purger le cache GitHub Pages
+        run: curl -X PURGE https://<ton-user>.github.io/<ton-repo>/
