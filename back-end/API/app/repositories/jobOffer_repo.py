@@ -47,18 +47,15 @@ class JobOfferRepo:
             jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
         db.session.commit()
         return jobOffer
-    # getById
-    #     # Ne pas oublier de faire mes tests
+
     def offreEmploi(self,id):
         jobOffer = JobOffer.query.filter_by(id=id).first()
         return jobOffer
 
-    # getAll
     def offresEmploi(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    # getApproved À renommer
     def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         today = date.today()
         jobOffers = JobOffer.query.filter(
