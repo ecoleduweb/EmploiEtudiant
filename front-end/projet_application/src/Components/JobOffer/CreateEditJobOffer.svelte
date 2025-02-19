@@ -30,7 +30,7 @@
         email: "",
         hoursPerWeek: 0,
         internship: false,
-        offerLink: "https://",
+        offerLink: "",
         offerStatus: 0,
         active: true,
         salary: "",
@@ -284,8 +284,8 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-
+        } catch (err) { 
+            console.error(err)
         }
     }
 
@@ -515,6 +515,7 @@
                 bind:value={jobOffer.offerLink}
                 class="form-control"
                 id="offerLink"
+                placeholder="https://www.exemple.com/"
             />
         </div>
         <p class="errors-input">
