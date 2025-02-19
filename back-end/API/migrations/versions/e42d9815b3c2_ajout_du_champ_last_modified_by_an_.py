@@ -16,25 +16,17 @@ depends_on = None
 def upgrade():
     # 1. Ajouter le nouveau champ (nullable au début car il y a des enregistrements existants)
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('last_modified_by_an_employer_date', sa.DateTime(timezone=True), nullable=True))
-        batch_op.alter_column('description',
-                existing_type=mysql.MEDIUMTEXT(),
-                type_=sa.Text(length=100000),
-                existing_nullable=False)
+        batch_op.add_column(sa.Column('last_modified_date', sa.DateTime(timezone=True), nullable=True))
 
     # 2. Mettre à jour TOUS les enregistrements existants avec la date d'exécution de la migration en UTC
-    op.execute("UPDATE job_offer SET last_modified_by_an_employer_date = UTC_TIMESTAMP()")
+    op.execute("UPDATE job_offer SET last_modified_date = UTC_TIMESTAMP()")
 
     # 3. Rendre le champ non nullable maintenant que tous les enregistrements ont une valeur
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.alter_column('last_modified_by_an_employer_date',
+        batch_op.alter_column('last_modified_date',
                 existing_type=sa.DateTime(timezone=True),
                 nullable=False)
 
 def downgrade():
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.alter_column('description',
-                existing_type=sa.Text(length=100000),
-                type_=mysql.MEDIUMTEXT(),
-                existing_nullable=False)
-        batch_op.drop_column('last_modified_by_an_employer_date')
+        batch_op.drop_column('last_modified_date')
