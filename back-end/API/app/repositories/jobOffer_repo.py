@@ -15,7 +15,7 @@ from operator import attrgetter
 class JobOfferRepo:
 
     def createJobOffer(self, newJobOffer):
-        newJobOffer.last_modified_by_an_employer_date = datetime.now()
+        newJobOffer.last_modified_by_an_employer_date = datetime.utcnow()
         db.session.add(newJobOffer)
         db.session.commit()
         return newJobOffer
@@ -38,7 +38,7 @@ class JobOfferRepo:
         jobOffer.salary = data['jobOffer']['salary']
         jobOffer.active = data['jobOffer']['active']
         jobOffer.employerId = data['jobOffer']['employerId']
-        jobOffer.last_modified_by_an_employer_date = datetime.now()
+        jobOffer.last_modified_by_an_employer_date = datetime.utcnow()
 
         if 'isApproved' in data['jobOffer']:
             jobOffer.isApproved = data['jobOffer']['isApproved']
