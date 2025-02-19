@@ -70,7 +70,7 @@
     <section>
         {#if loaded}
             <div class="rowTitles-mobile">
-                <h2 class="rowTitles-mobile">Titre</h2>
+                <h2 class="rowTitles-mobile">Poste visé</h2>
                 <h2 class="rowTitles-mobile">Employeur</h2>
             </div>
             <div class="rowTitles">
