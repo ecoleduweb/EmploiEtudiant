@@ -1,4 +1,2 @@
 reviews:
-  auto_review: true
-  when:
-    - min_approvals: 1
+  auto_review: false
