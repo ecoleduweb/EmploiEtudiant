@@ -37,12 +37,9 @@ class JobOfferRepo:
         jobOffer.salary = updatedJobOffer.salary
         jobOffer.active = updatedJobOffer.active
         jobOffer.employerId = updatedJobOffer.employerId
-
-        if updatedJobOffer.isApproved:
-            jobOffer.isApproved = updatedJobOffer.isApproved
-            
-        if updatedJobOffer.approbationMessage:
-            jobOffer.approbationMessage = updatedJobOffer.approbationMessage 
+        jobOffer.isApproved = updatedJobOffer.isApproved
+        jobOffer.approbationMessage = updatedJobOffer.approbationMessage 
+        
         db.session.commit()
         return jobOffer
 

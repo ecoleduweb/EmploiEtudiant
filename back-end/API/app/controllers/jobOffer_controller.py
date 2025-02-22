@@ -105,24 +105,8 @@ def offresEmploiEmployeur(current_user):
 @token_required
 def updateJobOffer(current_user, id):
     try:
-        jobOfferToUpdate = jobOffer_service.findById(id)
-        if jobOfferToUpdate:
-            data = request.get_json()
-            data["jobOffer"]["employerId"] = jobOfferToUpdate.employerId
-            data["jobOffer"]["isApproved"] = jobOfferToUpdate.isApproved
-            data["jobOffer"]["last_modified_by_id"] = jobOfferToUpdate.last_modified_by_id
-
-            # ACM Mettre toute la logique dans le service.
-            if not current_user.isModerator:
-                data["jobOffer"]["isApproved"] = None
-                data["jobOffer"]["approbationMessage"] = None
-                # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
-                # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
-                if data["jobOffer"]["isApproved"] == True:
-                    data["jobOffer"]["approvedDate"] = datetime.now()
-                jobOfferToUpdate.last_modified_by_id = current_user.id
-            
-            jobOffer = jobOffer_service.updateJobOffer(data["jobOffer"])
+            data = request.get_json()            
+            jobOffer = jobOffer_service.updateJobOffer(data["jobOffer"], current_user, id)
             employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
             # update offerProgram
             if 'studyPrograms' in data:
@@ -133,11 +117,13 @@ def updateJobOffer(current_user, id):
                 else:
                     sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
                 return jsonify(jobOffer.to_json_string()), 200
-        logger.warning('Job offer not found with data : ' + str(data))
+       
+    except NotFoundException as e:
+        logger.warning('Job offer not found with data : ' + str(e))
         return jsonify({'message': 'Job offer not found'}), 404
     except ValidationException as e:
         logger.warning("Could not create jobOffer, invalid data : " + str(e))
-        return jsonify({'field' : e.field,'message': e.message}), e.errorCode
+        return jsonify({'field' : e.field,'message': e.message}), 400
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():

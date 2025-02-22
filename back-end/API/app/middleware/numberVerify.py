@@ -6,4 +6,4 @@ def verifyNumber(field, data, formats):
             if isinstance(format(data), format):
                 return True
         except ValueError:    
-            raise ValidationException(field, "Ce champ doit correspondre a un nombre.", 400)
+            raise ValidationException(field, "Ce champ doit correspondre a un nombre.")

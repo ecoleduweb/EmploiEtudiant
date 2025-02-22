@@ -6,8 +6,12 @@ from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
 from app.middleware.lengthVerify import verifyStringLen
 from app.middleware.numberVerify import verifyNumber
-from app.customexception.CustomException import ValidationException
+from app.customexception.CustomException import ValidationException, NotFoundException
+from app.services.offer_program_service import OfferProgramService
+from app.services.employmentSchedule_service import EmploymentScheduleService
 import re
+offer_program_service = OfferProgramService()
+employment_schedule_service = EmploymentScheduleService()
 jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
 studyProgram_repo = StudyProgramRepo()
@@ -22,7 +26,7 @@ class JobOfferService:
         verifyStringLen('salary', data['salary'], 255)
         verifyNumber('hoursPerWeek', data['hoursPerWeek'], [float, int])
         if not (re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', data['email'])):
-            raise ValidationException('email', 'Le format du courriel est invalide.', 400)
+            raise ValidationException('email', 'Le format du courriel est invalide.')
         new_job_offer = JobOffer(
         
          title=data['title'],
@@ -53,7 +57,20 @@ class JobOfferService:
     def offresEmploiEmployeur(self, employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     
-    def updateJobOffer(self, data):
+    def updateJobOffer(self, data, current_user, id):
+        jobOfferToUpdate = self.findById(id)
+        if not jobOfferToUpdate:
+            raise NotFoundException
+        
+        data["employerId"] = jobOfferToUpdate.employerId
+        data["isApproved"] = jobOfferToUpdate.isApproved
+        data["last_modified_by_id"] = jobOfferToUpdate.last_modified_by_id
+        if not current_user.isModerator:
+            data["isApproved"] = None
+            data["approbationMessage"] = None
+            if data["isApproved"] == True:
+                data["approvedDate"] = datetime.now()
+            jobOfferToUpdate.last_modified_by_id = current_user.id
         job_offer = self.validateJobOffer(data, data['employerId'], data['isApproved'], data['last_modified_by_id'])
         job_offer.id = data['id']
         return jobOffer_repo.updateJobOffer(job_offer)
