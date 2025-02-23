@@ -60,17 +60,17 @@ class JobOfferService:
     def updateJobOffer(self, data, current_user, id):
         jobOfferToUpdate = self.findById(id)
         if not jobOfferToUpdate:
-            raise NotFoundException
+            raise NotFoundException("Job offer not found.")
         
         data["employerId"] = jobOfferToUpdate.employerId
         data["isApproved"] = jobOfferToUpdate.isApproved
         data["last_modified_by_id"] = jobOfferToUpdate.last_modified_by_id
-        if not current_user.isModerator:
+        if not current_user.isModerator and (jobOfferToUpdate.title != data["title"] or jobOfferToUpdate.description != data["description"]) or (not jobOfferToUpdate.isApproved and jobOfferToUpdate != data):
             data["isApproved"] = None
             data["approbationMessage"] = None
-            if data["isApproved"] == True:
-                data["approvedDate"] = datetime.now()
-            jobOfferToUpdate.last_modified_by_id = current_user.id
+        if data["isApproved"] == True:
+            data["approvedDate"] = datetime.now()
+        jobOfferToUpdate.last_modified_by_id = current_user.id
         job_offer = self.validateJobOffer(data, data['employerId'], data['isApproved'], data['last_modified_by_id'])
         job_offer.id = data['id']
         return jobOffer_repo.updateJobOffer(job_offer)
