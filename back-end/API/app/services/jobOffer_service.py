@@ -64,7 +64,7 @@ class JobOfferService:
                                         or jobOffer.deadlineApply != data["deadlineApply"]
                                         or jobOffer.email != data["email"]
                                         or jobOffer.hoursPerWeek != data["hoursPerWeek"]
-                                        or jobOffer.offerLink != data["hoursPerWeek"]
+                                        or jobOffer.offerLink != data["offerLink"]
                                         or jobOffer.salary != data["salary"]
                                         or jobOffer.active != data["active"]
                                         ):
