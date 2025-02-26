@@ -51,7 +51,7 @@
     {
         let list = document.getElementById(idList)
         let button = document.getElementById(idButton)
-        
+
         list!.style.display === "none" ? list!.style.display = "block" : list!.style.display = "none"
         button!.innerHTML === "v" ? button!.innerHTML = "^" : button!.innerHTML = "v"
     }
@@ -190,7 +190,7 @@
                 <div class="refusedOffers">
                     <div id="refusedOffersHeader">
                         <h2 class="textSections">Offres refusées</h2>  
-                        <button id="hideRefusedOfferList" on:click={() => handleChangeListVisibility("refusedOffersList", "hideRefusedOfferList")}>v</button>
+                        <button id="btnHideRefusedOfferList" on:click={() => handleChangeListVisibility("refusedOffersList", "btnHideRefusedOfferList")}>v</button>
                     </div>
                     <div id="refusedOffersList">
                         {#each isRefusedOffer as offer}
@@ -207,52 +207,81 @@
                 </div>
             {/if}
             {#if toBeApprovedOffer.length > 0}
-                <h2 class="textSections">Offres en attente d'approbation</h2>
-                {#each toBeApprovedOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <div class="toBeApprovedOffers">
+                    <div class="toBeApprovedOfferHeader">
+                        <h2 class="textSections">Offres en attente d'approbation</h2>
+                        <button id="btnHidetoBeApprovedOffer" on:click={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOffer")}>v</button>
+                    </div>
+                    <div id="toBeApprovedOffersList">
+                        {#each toBeApprovedOffer as offer}
+                            <OfferRow
+                                {isModerator}
+                                {offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            />
+                        {/each}
+                    </div>
+                </div>
             {/if}
             {#if offerToCome.length > 0}
-                <h2 class="textSections">Offres bientôt affichées</h2>
-                {#each offerToCome as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <div class="offerToCome">
+                    <div class="offerToComeHeader">
+                        <h2 class="textSections">Offres bientôt affichées</h2>
+                        <button id="btnHideOfferTocome" on:click={() => handleChangeListVisibility("offerToComeList", "btnHideOfferTocome")}>v</button>
+                    </div>
+                    <div id="offerToComeList">                
+                        {#each offerToCome as offer}
+                            <OfferRow
+                                {isModerator}
+                                {offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            />
+                        {/each}
+                    </div>
+                </div>
             {/if}
+
             {#if offerDisplayed.length > 0}
-                <h2 class="textSections">Offres affichées</h2>
-                {#each offerDisplayed as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <div class="offerDisplayed">
+                    <div class="offerDisplayedHeader">
+                        <h2 class="textSections">Offres affichées</h2>
+                        <button id="btnHideOfferDisplayed" on:click={() => handleChangeListVisibility("offerDisplayedList", "btnHideOfferDisplayed")}>v</button>
+                    </div>
+                    <div id="offerDisplayedList">
+                        {#each offerDisplayed as offer}
+                            <OfferRow
+                                {isModerator}
+                                {offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            /> 
+                        {/each}
+                    </div>
+                </div>
             {/if}
             {#if expiredOffer.length > 0}
-                <h2 class="textSections">Offres expirées</h2>
-                {#each expiredOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <div class="expiredOffer">
+                    <div class="expiredOfferHeader">
+                        <h2 class="textSections">Offres expirées</h2>
+                        <button id="btnHideExpiredOffer" on:click={() => handleChangeListVisibility("expiredOfferList", "btnHideExpiredOffer")}>v</button>
+                    </div>
+                        <div id="expiredOfferList">
+                        {#each expiredOffer as offer}
+                            <OfferRow
+                                {isModerator}
+                                {offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            />
+                        {/each}
+                    </div>
+                </div>
             {/if}
         </section>
     {/if}
@@ -357,10 +386,10 @@
         font-size: 2.5vw;
         margin: 0;
     }
-    #refusedOffersList {
+    #refusedOffersList, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
         display: block;
     }
-    #refusedOffersHeader {
+    #refusedOffersHeader, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
         display: flex;
         justify-content: space-between;
     }
