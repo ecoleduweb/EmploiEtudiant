@@ -15,6 +15,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
+    import { bool } from "yup"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -45,6 +46,14 @@
     {
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
+    }
+    const handleChangeListVisibility = (idList: string, idButton : string) => 
+    {
+        let list = document.getElementById(idList)
+        let button = document.getElementById(idButton)
+        
+        list!.style.display === "none" ? list!.style.display = "block" : list!.style.display = "none"
+        button!.innerHTML === "v" ? button!.innerHTML = "^" : button!.innerHTML = "v"
     }
     const closeEditEnterprise = () => {
         showEditEnterprise = false
@@ -178,16 +187,24 @@
                 <span class="text">MES OFFRES D'EMPLOIS </span>
             </h1>
             {#if isRefusedOffer.length > 0}
-                <h2 class="textSections">Offres refusées</h2>
-                {#each isRefusedOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        offer={offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                {/each}
+                <div class="refusedOffers">
+                    <div id="refusedOffersHeader">
+                        <h2 class="textSections">Offres refusées</h2>  
+                        <button id="hideRefusedOfferList" on:click={() => handleChangeListVisibility("refusedOffersList", "hideRefusedOfferList")}>v</button>
+                    </div>
+                    <div id="refusedOffersList">
+                        {#each isRefusedOffer as offer}
+                        <OfferRow
+                            {isModerator}
+                            offer={offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        />
+                    
+                        {/each}
+                    </div>
+                </div>
             {/if}
             {#if toBeApprovedOffer.length > 0}
                 <h2 class="textSections">Offres en attente d'approbation</h2>
@@ -340,7 +357,13 @@
         font-size: 2.5vw;
         margin: 0;
     }
-
+    #refusedOffersList {
+        display: block;
+    }
+    #refusedOffersHeader {
+        display: flex;
+        justify-content: space-between;
+    }
     @media (max-width: 768px) {
         .text {
             font-size: 6vw;
