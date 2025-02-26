@@ -15,6 +15,7 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
+    import { InvalidDataError } from "../../CustomError/invalidDataError"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -52,6 +53,7 @@
 
     let jobOfferErrors: any = {}
     let enterpriseErrors: any = {}
+    let invalidDataError: any = {}
     let isModerator: boolean = false
     let enterpriseSelected: { label: string; value: number }[] = []
     let enterpriseFromSelectedEnterprise: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -213,8 +215,7 @@
         }
         catch(err)
         {
-            console.log(err)
-            // TODO logger
+            console.error(err)
         }
         finally {
             loading = false
@@ -285,6 +286,12 @@
                 onFinished()
             }
         } catch (err) { 
+            if (err instanceof InvalidDataError) {              
+                invalidDataError.message = err.message;
+                invalidDataError.field = err.field;
+            } else {
+                console.error("Not Invalid data error", err);
+            }
             console.error(err)
         }
     }
@@ -299,7 +306,12 @@
                 onFinished()
             }
         } catch (err) {
-            // TODO log error
+            if (err instanceof InvalidDataError) {              
+                invalidDataError.message = err.message;
+                invalidDataError.field = err.field;
+            } else {
+                console.error("Not Invalid data error", err);
+            }
         }
     }
 
@@ -560,6 +572,7 @@
             </div>
             <p class="errors-input">
                 {#if jobOfferErrors.acceptCondition}{jobOfferErrors.acceptCondition}{/if}
+                {#if invalidDataError.message}{invalidDataError.field}: {invalidDataError.message}{/if}
             </p>
             {#if loading}
                 <LoadingSpinner />
