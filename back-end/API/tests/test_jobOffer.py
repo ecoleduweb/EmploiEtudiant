@@ -332,6 +332,15 @@ def test_updateJobOffer(client):
     assert response.status_code == 200
     assert VerifyData(response.json)
 
+def test_deleteJobOffer(client):
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.delete('/jobOffer/1', headers={'Authorization': token})
+    assert response.status_code == 200
 
 def test_createJobOfferWithoutOfferLink(client):
     data1 = {

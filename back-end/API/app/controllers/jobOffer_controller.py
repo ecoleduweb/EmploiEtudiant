@@ -65,7 +65,7 @@ def createJobOffer(current_user):
     except Exception as e:
         print("10")
         logger.warning("Could not create jobOffer, invalid data : " + str(e))
-        return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
+        return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400  
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
@@ -98,6 +98,17 @@ def offresEmploiEmployeur(current_user):
         return jsonify([]), 404
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+
+@job_offer_blueprint.route('/<int:id>', methods=['DELETE'])
+@token_admin_required
+def deleteJobOffer(current_user, id):
+    jobOfferToDelete = jobOffer_service.findById(id)
+    if jobOfferToDelete is None :
+        return jsonify({'message': 'Job offer not found'}), 404
+    else:
+        jobOffer_service.deleteJobOffer(id)
+        return jsonify({'message': 'Job offer deleted'}), 200 
+
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
