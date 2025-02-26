@@ -69,6 +69,7 @@
     
     <section>
         {#if loaded}
+        <!--
             <div class="rowTitles-mobile">
                 <h2 class="rowTitles-mobile">Poste visé</h2>
                 <h2 class="rowTitles-mobile">Employeur</h2>
@@ -80,10 +81,25 @@
                 <h2 class="rowTitle">Programmes visés</h2>
                 <h2 class="rowTitle">Employeur</h2>
                 <h2 class="rowTitle">Détails</h2>
-            </div>
-            {#each $jobOffers as offer}
-                <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
-            {/each}
+            </div>-->
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Poste visé</th>
+                        <th class="rowTitles">Type d'emploi</th>
+                        <th class="rowTitles">Date limite pour postuler</th>
+                        <th class="rowTitles">Programmes visés</th>
+                        <th>Employeur</th>
+                        <th>Détails</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {#each $jobOffers as offer}
+                    <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
+                {/each}
+                </tbody>
+            </table>
         {:else}
             <div class="loading">
                 <LoadingSpinner />
@@ -112,19 +128,11 @@
 
 <style scoped>
     main {
-        height: 100%;
-    }
-
-    .rowTitles {
+        flex: 1;
         display: flex;
-        margin-left: 5%;
-        justify-content: left;
-    }
-
-    .rowTitle {
-        color: #00ad9a;
-        text-align: center;
-        width: 20%;
+        flex-direction: column;
+        align-items: center;
+        margin: 12px;
     }
 
     .title {
@@ -144,11 +152,7 @@
         font-size: 2.5vw;
         margin: 0;
     }
-    main {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
+
     .haut {
         display: flex;
         width: 85%;
@@ -158,10 +162,27 @@
         display: flex;
         flex-direction: column;
         width: 50%;
-        margin-left: 5.2%;
+
     }
-    .rowTitles-mobile {
-        display: none;
+
+    /* Section des tableaux*/
+    table {
+        width: 100%; /* Prend toute la largeur disponible */
+        border-collapse: collapse; /* Fusionne les bordures pour un bon alignement */
+        table-layout: fixed; /* Force une répartition égale des colonnes */
+    }
+
+    thead {
+        background: linear-gradient(2deg, hsl(218, 27%, 16%, 50%),hsl(173, 100%, 34%, 20%), hsl(173, 100%, 34%, 30%), hsl(173, 100%, 34%, 20%), hsl(218, 27%, 16%, 50%));
+        color: white;
+    }
+
+    th {
+        padding: 12px 12px 12px 0;
+        text-align: left; /* Ajuste selon le design */
+        border-bottom: 1px solid #ddd; /* Ligne séparatrice */
+        font-weight: bold;
+        text-align: left; /* Alignement du texte des en-têtes */
     }
 
     @media (max-width: 768px)
@@ -177,18 +198,6 @@
         .rowTitles
         {
             display: none
-        }
-        .rowTitles-mobile
-        {
-            color: #00ad9a;
-            text-align: center;
-            display: flex;
-            justify-content: space-around;
-            width: 90vw;
-        }
-        h2 {
-            margin-top: 0;
-            margin-bottom: 1vh;
         }
     }
 

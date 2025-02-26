@@ -27,7 +27,7 @@
         }
     })
 </script>
-
+<!--
 <button class="offreEmploi" on:click={() => handleModalClick(offer)}>
     <div class="emploi">
         <div class="info-mobile">
@@ -43,29 +43,36 @@
         </div>
         <img class="image" src="add.svg" alt="ajouter" />
     </div>
-</button>
+</button>-->
+
+
+<tr class="offreEmploi" on:click={() => handleModalClick(offer)}>
+    <!-- Section mobile-->
+    <td class="mobile-content">{offer.title}</td>
+    <td class="mobile-employer">{offer.enterprise?.name}</td>
+    <td class="mobile-details"><img class="image" src="add.svg" alt="ajouter" /></td>
+
+    <!-- Section desktop-->
+    <td class="info">{offer.title}</td>
+    <td class="info">{offer.schedules?.map(x => x.description).join(', ')}</td>
+    <td class="info">{offer.deadlineApply}</td>
+    <td class="info">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
+    <td class="info">{offer.enterprise?.name}</td>
+    <td><img class="info image" src="add.svg" alt="ajouter" /></td>
+</tr>
+
 
 <style scoped>
     .offreEmploi {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 90%;
+        align-items: center;
+        color: white;
+        width: 100%; 
         border-width: 0px;
         border-bottom: 1px solid #00ad9a;
-        margin-left: 5.2%;
         background-color: transparent;
+        display: table-row; 
     }
-    .info {
-        display: flex;
-        width: 90%;
-        font-size: 1.2rem;
-        flex-direction: row;
-        justify-content: space-around;
-    }
-    .text {
-        width: 22%;
-    }
+
     .emploi {
         display: flex;
         flex-direction: row;
@@ -79,9 +86,7 @@
         height: 100%;
         padding: 5px 0px 5px 0px;
     }
-    .emploi:hover {
-        background-color: #555b66;
-    }
+    
     .image {
         width: 30px;
         height: 30px;
@@ -91,30 +96,25 @@
         display: none;
     }
 
+    tr:hover {
+        background-color: hsl(173, 100%, 34%, 50%); /* Effet survol optionnel */
+        cursor: pointer;
+    }
+
+    .image:hover {
+        background-color: hsl(185, 80%, 16%);
+    }
+/*
     @media (max-width: 768px) {
         .info {
             display: none;
         }
         .info-mobile {
             display: flex;
-            width: 90%;
-            font-size: 1.2rem;
             flex-direction: row;
-            justify-content: space-around;
+            
         }
-        .offreEmploi {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 90%;
-            border-width: 0px;
-            border-bottom: 1px solid #00ad9a;
-            margin-left: 5.2%;
-            background-color: transparent;
-        }
-        .text {
-            width: 100%;
-        }
+
         .emploi {
             display: flex;
             flex-direction: row;
@@ -128,14 +128,53 @@
             height: 100%;
             padding: 5px 0px 5px 0px;
         }
-        .emploi:hover {
-            background-color: #555b66;
+        .image {
+            width: 30px;
+            height: 30px;
+        }*/
+
+    @media (max-width: 768px) {
+        .desktop-only {
+            display: none;
         }
+        
+        /* Si vous souhaitez que seules les 3 premières cellules soient visibles */
+        .offreEmploi td:nth-child(n+4) {
+            display: none;
+        }
+        
+        /* Style pour les cellules mobiles */
+        .mobile-content, .mobile-employer, .mobile-details {
+            display: table-cell; /* Assure que les cellules sont traitées comme des cellules de tableau */
+        }
+        
+        .mobile-content {
+            width: 60%; /* Ajustez selon vos besoins */
+        }
+        
+        .mobile-employer {
+            width: 30%; /* Ajustez selon vos besoins */
+        }
+        
+        .mobile-details {
+            width: 10%; /* Ajustez selon vos besoins */
+            text-align: left;
+        }
+        
         .image {
             width: 30px;
             height: 30px;
         }
-
     }
+
+    @media (min-width: 769px) {
+        /* En mode desktop, cachez les cellules mobiles */
+        .mobile-content, .mobile-employer, .mobile-details {
+            display: none;
+        }
+    }
+
+
+
 
 </style>
