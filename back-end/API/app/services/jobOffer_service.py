@@ -9,6 +9,8 @@ from app.middleware.numberVerify import verifyNumber
 from app.customexception.CustomException import ValidationException, NotFoundException
 from app.services.offer_program_service import OfferProgramService
 from app.services.employmentSchedule_service import EmploymentScheduleService
+from app.services.email_service import sendMail
+import os
 import re
 offer_program_service = OfferProgramService()
 employment_schedule_service = EmploymentScheduleService()
@@ -42,10 +44,31 @@ class JobOfferService:
          active=data['active'],
          employerId=employerId,
          isApproved=isApproved,
-         approvedDate=datetime.now() if isApproved else None,
          last_modified_by_id=last_modified_by_id)
         
         return new_job_offer
+    
+    def DidEmployerChangeTextOfJobOfferOrUpdateValueOfRejectedJobOffer(self, current_user, jobOffer, data):
+        # Check if user is admin
+        if current_user.isModerator:
+            return False
+        # Vérifier si le titre ou la description d'une offre a changé
+        if jobOffer.title != data["title"] or jobOffer.description != data["description"]:
+            return True
+        
+        if not jobOffer.isApproved and (jobOffer.title != data["title"] 
+                                        or jobOffer.description != data["description"] 
+                                        or jobOffer.offerDebut != data["offerDebut"] 
+                                        or jobOffer.address != data["address"] 
+                                        or jobOffer.dateEntryOffice != data["dateEntryOffice"] 
+                                        or jobOffer.deadlineApply != data["deadlineApply"]
+                                        or jobOffer.email != data["email"]
+                                        or jobOffer.hoursPerWeek != data["hoursPerWeek"]
+                                        or jobOffer.offerLink != data["hoursPerWeek"]
+                                        or jobOffer.salary != data["salary"]
+                                        or jobOffer.active != data["active"]
+                                        ):
+            return True
 
     def offresEmploi(self, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploi(needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
@@ -62,17 +85,22 @@ class JobOfferService:
         if not jobOfferToUpdate:
             raise NotFoundException("Job offer not found.")
         
-        data["employerId"] = jobOfferToUpdate.employerId
-        data["isApproved"] = jobOfferToUpdate.isApproved
-        data["last_modified_by_id"] = jobOfferToUpdate.last_modified_by_id
-        if not current_user.isModerator and (jobOfferToUpdate.title != data["title"] or jobOfferToUpdate.description != data["description"]) or (not jobOfferToUpdate.isApproved and jobOfferToUpdate != data):
-            data["isApproved"] = None
-            data["approbationMessage"] = None
-        if data["isApproved"] == True:
-            data["approvedDate"] = datetime.now()
-        jobOfferToUpdate.last_modified_by_id = current_user.id
-        job_offer = self.validateJobOffer(data, data['employerId'], data['isApproved'], data['last_modified_by_id'])
-        job_offer.id = data['id']
+        data["jobOffer"]["employerId"] = jobOfferToUpdate.employerId
+        data["jobOffer"]["isApproved"] = jobOfferToUpdate.isApproved
+        if(self.DidEmployerChangeTextOfJobOfferOrUpdateValueOfRejectedJobOffer(current_user, jobOfferToUpdate, data["jobOffer"])):
+            data["jobOffer"]["isApproved"] = None
+            data["jobOffer"]["approbationMessage"] = None
+        job_offer = self.validateJobOffer(data["jobOffer"], data["jobOffer"]["employerId"], data["jobOffer"]["isApproved"], current_user.id)
+        job_offer.id = data["jobOffer"]["id"]
+        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], job_offer.id)
+        # update offerProgram
+        if 'studyPrograms' in data:
+            offer_program_service.updateOfferProgram(job_offer.id, data['studyPrograms'])
+        if job_offer.isApproved != data["jobOffer"]["isApproved"] and job_offer.isApproved == None:
+            if not current_user.isModerator:
+                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + job_offer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
+            else:
+                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + job_offer.title + "</b> a été modifiée avec succès.")
         return jobOffer_repo.updateJobOffer(job_offer)
 
     def findById(self, id):

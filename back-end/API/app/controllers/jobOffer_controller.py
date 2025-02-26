@@ -106,16 +106,7 @@ def offresEmploiEmployeur(current_user):
 def updateJobOffer(current_user, id):
     try:
         data = request.get_json()            
-        jobOffer = jobOffer_service.updateJobOffer(data["jobOffer"], current_user, id)
-        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-        # update offerProgram
-        if 'studyPrograms' in data:
-            offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
-        if jobOffer.isApproved != data["jobOffer"]["isApproved"] and jobOffer.isApproved == None:
-            if not current_user.isModerator:
-                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
-            else:
-                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
+        jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
         return jsonify(jobOffer.to_json_string()), 200
        
     except NotFoundException as e:
