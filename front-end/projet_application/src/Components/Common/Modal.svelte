@@ -1,7 +1,6 @@
 <script lang="ts">
     export let handleCloseClick: () => void
     export let widthFix: boolean | undefined = false
-    export let disableOverlayClose: boolean = false
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault()
@@ -10,11 +9,11 @@
 
     // Ferme le modal si l'utilisateur clique à l'extérieur du modal
     const handleOverlayClick = (event: MouseEvent) => {
-        if (!disableOverlayClose && (event.target as HTMLElement).classList.contains('overlay')) {
+        // Vérifie si l'utilisateur a cliqué sur l'overlay et non sur le modal
+        if ((event.target as HTMLElement).classList.contains('overlay')) {
             handleCloseClick()
         }
     }
-
 
     // Ferme le modal si l'utilisateur appuie sur la touche Escape
     const handleKeyDown = (event: KeyboardEvent) => {
