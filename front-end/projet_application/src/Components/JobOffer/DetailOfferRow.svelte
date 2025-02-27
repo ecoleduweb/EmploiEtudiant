@@ -27,24 +27,6 @@
         }
     })
 </script>
-<!--
-<button class="offreEmploi" on:click={() => handleModalClick(offer)}>
-    <div class="emploi">
-        <div class="info-mobile">
-            <p class="text">{offer.title}</p>
-            <p class="text">{offer.enterprise?.name}</p>
-        </div>
-        <div class="info">
-            <p class="text">{offer.title}</p>
-            <p class="text">{offer.schedules?.map(x => x.description).join(', ')}</p>
-            <p class="text">{offer.deadlineApply}</p>
-            <p class="text">{offer.studyPrograms?.map(x => x.name).join(', ')}</p>
-            <p class="text">{offer.enterprise?.name}</p>
-        </div>
-        <img class="image" src="add.svg" alt="ajouter" />
-    </div>
-</button>-->
-
 
 <tr class="offreEmploi" on:click={() => handleModalClick(offer)}>
     <!-- Section mobile-->
@@ -61,7 +43,6 @@
     <td><img class="info image" src="add.svg" alt="ajouter" /></td>
 </tr>
 
-
 <style scoped>
     .offreEmploi {
         align-items: center;
@@ -73,27 +54,9 @@
         display: table-row; 
     }
 
-    .emploi {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
-        height: 100%;
-        padding: 5px 0px 5px 0px;
-    }
-    
     .image {
         width: 30px;
         height: 30px;
-    }
-
-    .info-mobile {
-        display: none;
     }
 
     tr:hover {
@@ -104,40 +67,8 @@
     .image:hover {
         background-color: hsl(185, 80%, 16%);
     }
-/*
-    @media (max-width: 768px) {
-        .info {
-            display: none;
-        }
-        .info-mobile {
-            display: flex;
-            flex-direction: row;
-            
-        }
-
-        .emploi {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            height: 100%;
-            padding: 5px 0px 5px 0px;
-        }
-        .image {
-            width: 30px;
-            height: 30px;
-        }*/
 
     @media (max-width: 768px) {
-        .desktop-only {
-            display: none;
-        }
-        
         /* Si vous souhaitez que seules les 3 premières cellules soient visibles */
         .offreEmploi td:nth-child(n+4) {
             display: none;
@@ -147,20 +78,6 @@
         .mobile-content, .mobile-employer, .mobile-details {
             display: table-cell; /* Assure que les cellules sont traitées comme des cellules de tableau */
         }
-        
-        .mobile-content {
-            width: 60%; /* Ajustez selon vos besoins */
-        }
-        
-        .mobile-employer {
-            width: 30%; /* Ajustez selon vos besoins */
-        }
-        
-        .mobile-details {
-            width: 10%; /* Ajustez selon vos besoins */
-            text-align: left;
-        }
-        
         .image {
             width: 30px;
             height: 30px;

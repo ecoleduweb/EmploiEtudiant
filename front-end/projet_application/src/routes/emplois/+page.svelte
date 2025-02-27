@@ -69,29 +69,16 @@
     
     <section>
         {#if loaded}
-        <!--
-            <div class="rowTitles-mobile">
-                <h2 class="rowTitles-mobile">Poste visé</h2>
-                <h2 class="rowTitles-mobile">Employeur</h2>
-            </div>
-            <div class="rowTitles">
-                <h2 class="rowTitle">Poste visé</h2>
-                <h2 class="rowTitle">Type d'emploi</h2>
-                <h2 class="rowTitle">Date limite pour postuler</h2>
-                <h2 class="rowTitle">Programmes visés</h2>
-                <h2 class="rowTitle">Employeur</h2>
-                <h2 class="rowTitle">Détails</h2>
-            </div>-->
 
             <table>
                 <thead>
                     <tr>
-                        <th>Poste visé</th>
+                        <th class="mobile-emploi">Poste visé</th>
                         <th class="rowTitles">Type d'emploi</th>
                         <th class="rowTitles">Date limite pour postuler</th>
                         <th class="rowTitles">Programmes visés</th>
-                        <th>Employeur</th>
-                        <th>Détails</th>
+                        <th class="mobile-employer">Employeur</th>
+                        <th class="mobile-details">Détails</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,7 +118,6 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        align-items: center;
         margin: 12px;
     }
 
@@ -162,7 +148,6 @@
         display: flex;
         flex-direction: column;
         width: 50%;
-
     }
 
     /* Section des tableaux*/
@@ -198,6 +183,24 @@
         .rowTitles
         {
             display: none
+        }
+
+        table {
+        table-layout: fixed; /* Ceci est crucial pour que les largeurs fonctionnent */
+        width: 100%;
+        }
+        
+        .mobile-emploi {
+            width: 60%;
+        }
+        
+        .mobile-employer {
+            width: 30%;
+        }
+        
+        .mobile-details {
+            width: 10%;
+            text-align: left; /* Pour aligner l'image à gauche */
         }
     }
 
