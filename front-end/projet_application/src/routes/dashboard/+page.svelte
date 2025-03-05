@@ -15,6 +15,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
+    import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -23,16 +24,22 @@
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+    let showDeleteModal = false
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
+
+    const handleDeleteClick = (jobOffer: JobOfferDetails) => {
+       jobOfferSelected = jobOffer;
+       showDeleteModal = true
+    }
     
     const handleEditEnterprise = () => {
         showEditEnterprise = true
     }
-        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
+    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
@@ -60,6 +67,11 @@
     const closeModalArchive = () => 
     {
         showArchiveModal = false
+    }
+
+    const closeModalDelete = () => 
+    {
+        showDeleteModal = false
     }
 
     const onFinishedCallBack = async () => 
@@ -186,6 +198,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -198,6 +211,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -210,6 +224,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -222,6 +237,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -234,6 +250,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -279,6 +296,14 @@
         <ArchiveConfirm
             offer={jobOfferSelected}
             handleApproveClick={closeModalArchive}
+        />
+    </Modal>
+    {/if}
+    {#if showDeleteModal}
+    <Modal handleCloseClick={closeModalDelete}>
+        <DeleteOffer
+            offer={jobOfferSelected}
+            handleDeleteClick={closeModalDelete}
         />
     </Modal>
     {/if}
