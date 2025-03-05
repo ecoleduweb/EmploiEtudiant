@@ -16,17 +16,17 @@ depends_on = None
 def upgrade():
     # 1. Ajouter le nouveau champ (nullable au début car il y a des enregistrements existants)
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('last_modified_date', sa.DateTime(timezone=True), nullable=True))
+        batch_op.add_column(sa.Column('lastModifiedDate', sa.DateTime(timezone=True), nullable=True))
 
     # 2. Mettre à jour TOUS les enregistrements existants avec la date d'exécution de la migration en UTC
-    op.execute("UPDATE job_offer SET last_modified_date = UTC_TIMESTAMP()")
+    op.execute("UPDATE job_offer SET lastModifiedDate = UTC_TIMESTAMP()")
 
     # 3. Rendre le champ non nullable maintenant que tous les enregistrements ont une valeur
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.alter_column('last_modified_date',
+        batch_op.alter_column('lastModifiedDate',
                 existing_type=sa.DateTime(timezone=True),
                 nullable=False)
 
 def downgrade():
     with op.batch_alter_table('job_offer', schema=None) as batch_op:
-        batch_op.drop_column('last_modified_date')
+        batch_op.drop_column('lastModifiedDate')
