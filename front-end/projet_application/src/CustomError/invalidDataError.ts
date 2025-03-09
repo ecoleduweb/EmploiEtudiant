@@ -1,8 +1,11 @@
-export class InvalidDataError extends Error {
+export interface InvalidDataError extends Error {
     field: string;
-    constructor(message: string, field: string) {
-        super(message);
-        this.field = field;
-        this.name = "InvalidDataError";
-    }
+    name: "InvalidDataError";
+}
+
+export function createInvalidDataError(message: string, field: string): InvalidDataError {
+    const error = new Error(message) as InvalidDataError;
+    error.field = field;
+    error.name = "InvalidDataError";
+    return error;
 }

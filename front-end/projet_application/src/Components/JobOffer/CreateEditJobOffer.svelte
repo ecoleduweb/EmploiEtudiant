@@ -15,7 +15,6 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
-    import { InvalidDataError } from "../../CustomError/invalidDataError"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -285,14 +284,15 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) { 
-            if (err instanceof InvalidDataError) {              
-                invalidDataError.message = err.message;
-                invalidDataError.field = err.field;
+        } catch (err: any) {
+            if (err && typeof err === 'object' && 'field' in err && err.message) {
+                jobOfferErrors = {
+                    message: err.message,
+                    field: err.field
+                };
             } else {
                 console.error("Not Invalid data error", err);
             }
-            console.error(err)
         }
     }
 
@@ -305,10 +305,12 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-            if (err instanceof InvalidDataError) {              
-                invalidDataError.message = err.message;
-                invalidDataError.field = err.field;
+        } catch (err: any) {
+            if (err && typeof err === 'object' && 'field' in err && err.message) {
+                jobOfferErrors = {
+                    message: err.message,
+                    field: err.field
+                };
             } else {
                 console.error("Not Invalid data error", err);
             }
@@ -572,7 +574,7 @@
             </div>
             <p class="errors-input">
                 {#if jobOfferErrors.acceptCondition}{jobOfferErrors.acceptCondition}{/if}
-                {#if invalidDataError.message}{invalidDataError.field}: {invalidDataError.message}{/if}
+                {#if jobOfferErrors.message}{jobOfferErrors.field}: {jobOfferErrors.message}{/if}
             </p>
             {#if loading}
                 <LoadingSpinner />
