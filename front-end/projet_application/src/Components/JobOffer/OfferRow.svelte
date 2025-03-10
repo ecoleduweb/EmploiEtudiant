@@ -68,12 +68,12 @@
         border-radius: 4px;
     }
 
-    tr:hover {
-        background-color: hsl(173, 100%, 34%, 50%); /* Effet survol optionnel */
+    td {
+        color: white;
     }
 
-    .button:hover {
-        background-color: hsl(185, 80%, 16%);
+    tr:hover {
+        background-color: #555b66; /* Effet survol optionnel */
     }
 
     @media (max-width: 768px) {

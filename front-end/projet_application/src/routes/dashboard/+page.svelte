@@ -172,11 +172,10 @@
     {:else}
         <section class="offres">
             <h1 class="title">
-                <span>MES</span>
-                <span class="text"> OFFRES D'EMPLOIS </span>
+                <span>MES OFFRES D'EMPLOIS</span>
             </h1>
             {#if isRefusedOffer.length > 0}
-                <h2 class="textSections">Offres <span class="hightlight-red">refusées</span></h2>
+                <h2 class="textSections">Offres refusées</h2>
                 <table>
                     <thead>
                         <tr>
@@ -201,7 +200,7 @@
                 </table>
             {/if}
             {#if toBeApprovedOffer.length > 0}
-            <h2 class="textSections">Offres en <span class="hightlight-orange">attente d'approbation</span></h2>
+            <h2 class="textSections">Offres en attente d'approbation</h2>
             <!-- Tableau pour afficher les offres en attente d'approbation -->
             <table>
                 <thead>
@@ -227,7 +226,7 @@
             </table>
             {/if}
             {#if offerToCome.length > 0}
-                <h2 class="textSections">Offres <span class="hightlight-light-blue">bientôt affichées</span></h2>
+                <h2 class="textSections">Offres bientôt affichées</h2>
                 <table>
                     <thead>
                         <tr>
@@ -252,7 +251,7 @@
                 </table>
             {/if}
             {#if offerDisplayed.length > 0}
-                <h2 class="textSections">Offres <span class="hightlight">affichées</span></h2>
+                <h2 class="textSections">Offres affichées</h2>
                 <table>
                     <thead>
                         <tr>
@@ -277,7 +276,7 @@
                 </table>
             {/if}
             {#if expiredOffer.length > 0}
-                <h2 class="textSections">Offres <span class="hightlight-red">expirées</span></h2>
+                <h2 class="textSections">Offres expirées</h2>
                 {#each expiredOffer as offer}
                     <OfferRow
                         {isModerator}
@@ -402,7 +401,6 @@
     }
 
     thead {
-        background: linear-gradient(2deg, hsl(218, 27%, 16%, 50%),hsl(173, 100%, 34%, 20%), hsl(173, 100%, 34%, 30%), hsl(173, 100%, 34%, 20%), hsl(218, 27%, 16%, 50%));
         color: white;
     }
 
@@ -419,7 +417,7 @@
             font-size: 4vw;
         }
         .text {
-            font-size: 4vw;
+            font-size: 6vw;
         }
         table thead {
             font-size: 3vw; 
