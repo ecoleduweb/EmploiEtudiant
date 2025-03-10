@@ -35,12 +35,12 @@
     <td class="mobile-details"><img class="image" src="add.svg" alt="ajouter" /></td>
 
     <!-- Section desktop-->
-    <td class="info">{offer.title}</td>
-    <td class="info">{offer.schedules?.map(x => x.description).join(', ')}</td>
-    <td class="info">{offer.deadlineApply}</td>
-    <td class="info">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
-    <td class="info">{offer.enterprise?.name}</td>
-    <td><img class="info image" src="add.svg" alt="ajouter" /></td>
+    <td class="info desktop-only">{offer.title}</td>
+    <td class="info desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
+    <td class="info desktop-only">{offer.deadlineApply}</td>
+    <td class="info desktop-only">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
+    <td class="info desktop-only">{offer.enterprise?.name}</td>
+    <td><img class="info image desktop-only" src="add.svg" alt="ajouter" /></td>
 </tr>
 
 <style scoped>
@@ -69,8 +69,7 @@
     }
 
     @media (max-width: 768px) {
-        /* Si vous souhaitez que seules les 3 premières cellules soient visibles */
-        .offreEmploi td:nth-child(n+4) {
+        .desktop-only {
             display: none;
         }
         
