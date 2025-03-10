@@ -69,11 +69,11 @@
     }
 
     tr:hover {
-        background-color: hsl(173, 100%, 34%, 50%); /* Effet survol optionnel */
+        background-color: #455b66;
     }
 
     .button:hover {
-        background-color: hsl(185, 80%, 16%);
+        background-color: #455b66;
     }
 
     @media (max-width: 768px) {

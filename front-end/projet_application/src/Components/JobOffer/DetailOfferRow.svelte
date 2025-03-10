@@ -35,12 +35,12 @@
     <td class="mobile-details"><img class="image" src="add.svg" alt="ajouter" /></td>
 
     <!-- Section desktop-->
-    <td class="info desktop-only">{offer.title}</td>
-    <td class="info desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
-    <td class="info desktop-only">{offer.deadlineApply}</td>
-    <td class="info desktop-only">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
-    <td class="info desktop-only">{offer.enterprise?.name}</td>
-    <td><img class="info image desktop-only" src="add.svg" alt="ajouter" /></td>
+    <td class="desktop-only">{offer.title}</td>
+    <td class="desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
+    <td class="desktop-only">{offer.deadlineApply}</td>
+    <td class="desktop-only">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
+    <td class="desktop-only">{offer.enterprise?.name}</td>
+    <td><img class="image desktop-only" src="add.svg" alt="ajouter" /></td>
 </tr>
 
 <style scoped>
@@ -60,22 +60,13 @@
     }
 
     tr:hover {
-        background-color: hsl(173, 100%, 34%, 50%); /* Effet survol optionnel */
+        background-color: #555b66;
         cursor: pointer;
-    }
-
-    .image:hover {
-        background-color: hsl(185, 80%, 16%);
     }
 
     @media (max-width: 768px) {
         .desktop-only {
             display: none;
-        }
-        
-        /* Style pour les cellules mobiles */
-        .mobile-content, .mobile-employer, .mobile-details {
-            display: table-cell; /* Assure que les cellules sont traitées comme des cellules de tableau */
         }
         .image {
             width: 30px;
@@ -89,8 +80,4 @@
             display: none;
         }
     }
-
-
-
-
 </style>

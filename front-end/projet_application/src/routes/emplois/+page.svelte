@@ -158,7 +158,6 @@
     }
 
     thead {
-        background: linear-gradient(2deg, hsl(218, 27%, 16%, 50%),hsl(173, 100%, 34%, 20%), hsl(173, 100%, 34%, 30%), hsl(173, 100%, 34%, 20%), hsl(218, 27%, 16%, 50%));
         color: white;
     }
 
@@ -203,5 +202,4 @@
             text-align: left; /* Pour aligner l'image à gauche */
         }
     }
-
 </style>
