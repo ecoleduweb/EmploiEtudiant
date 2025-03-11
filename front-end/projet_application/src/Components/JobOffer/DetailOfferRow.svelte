@@ -29,18 +29,12 @@
 </script>
 
 <tr class="offreEmploi" on:click={() => handleModalClick(offer)}>
-    <!-- Section mobile-->
-    <td class="mobile-content">{offer.title}</td>
-    <td class="mobile-employer">{offer.enterprise?.name}</td>
-    <td class="mobile-details"><img class="image" src="add.svg" alt="ajouter" /></td>
-
-    <!-- Section desktop-->
-    <td class="desktop-only">{offer.title}</td>
+    <td>{offer.title}</td>
     <td class="desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
     <td class="desktop-only">{offer.deadlineApply}</td>
     <td class="desktop-only">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
-    <td class="desktop-only">{offer.enterprise?.name}</td>
-    <td><img class="image desktop-only" src="add.svg" alt="ajouter" /></td>
+    <td>{offer.enterprise?.name}</td>
+    <td><img class="image" src="add.svg" alt="ajouter" /></td>
 </tr>
 
 <style scoped>
@@ -51,6 +45,8 @@
         border-width: 0px;
         border-bottom: 1px solid #00ad9a;
         background-color: transparent;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
         display: table-row; 
     }
 
@@ -75,9 +71,5 @@
     }
 
     @media (min-width: 769px) {
-        /* En mode desktop, cachez les cellules mobiles */
-        .mobile-content, .mobile-employer, .mobile-details {
-            display: none;
-        }
     }
 </style>

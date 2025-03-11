@@ -49,8 +49,7 @@
     .offreEmploi {
         align-items: center;
         color: white;
-        /*width: 55%; */
-        width: 100%; /* ajouté pour tester nouveau model d'affichange */
+        width: 100%;
         border-width: 0px;
         border-bottom: 1px solid #00ad9a;
         background-color: transparent;

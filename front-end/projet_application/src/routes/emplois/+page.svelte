@@ -73,12 +73,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="mobile-emploi">Poste visé</th>
+                        <th>Poste visé</th>
                         <th class="rowTitles">Type d'emploi</th>
                         <th class="rowTitles">Date limite pour postuler</th>
                         <th class="rowTitles">Programmes visés</th>
-                        <th class="mobile-employer">Employeur</th>
-                        <th class="mobile-details">Détails</th>
+                        <th>Employeur</th>
+                        <th>Détails</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,10 +163,11 @@
 
     th {
         padding: 12px 12px 12px 0;
-        text-align: left; /* Ajuste selon le design */
-        border-bottom: 1px solid #ddd; /* Ligne séparatrice */
+        text-align: left;
+        border-bottom: 1px solid #ddd;
         font-weight: bold;
-        text-align: left; /* Alignement du texte des en-têtes */
+        text-align: left;
+        color: #00ad9a;
     }
 
     @media (max-width: 768px)
@@ -183,23 +184,21 @@
         {
             display: none
         }
-
         table {
         table-layout: fixed; /* Ceci est crucial pour que les largeurs fonctionnent */
         width: 100%;
         }
-        
-        .mobile-emploi {
+        th:nth-child(1), td:nth-child(1) {
             width: 60%;
         }
-        
-        .mobile-employer {
+
+        th:nth-child(5), td:nth-child(5) {
             width: 30%;
         }
-        
-        .mobile-details {
+
+        th:nth-child(6), td:nth-child(6) {
             width: 10%;
-            text-align: left; /* Pour aligner l'image à gauche */
+            text-align: left;
         }
     }
 </style>
