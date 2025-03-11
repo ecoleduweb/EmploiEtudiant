@@ -15,6 +15,7 @@ from operator import attrgetter
 class JobOfferRepo:
 
     def createJobOffer(self, newJobOffer):
+        newJobOffer.lastModifiedDate  = datetime.utcnow()
         db.session.add(newJobOffer)
         db.session.commit()
         return newJobOffer
@@ -23,26 +24,24 @@ class JobOfferRepo:
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def updateJobOffer(self, data):
-        jobOffer = JobOffer.query.filter_by(id=data['jobOffer']['id']).first()
-        jobOffer.title = data['jobOffer']['title']
-        jobOffer.description = data['jobOffer']['description']
-        jobOffer.address = data['jobOffer']['address']
-        jobOffer.offerDebut = data['jobOffer']['offerDebut']
-        jobOffer.dateEntryOffice = data['jobOffer']['dateEntryOffice']
-        jobOffer.deadlineApply = data['jobOffer']['deadlineApply']
-        jobOffer.email = data['jobOffer']['email']
-        jobOffer.hoursPerWeek = data['jobOffer']['hoursPerWeek']
-        jobOffer.offerLink = data['jobOffer']['offerLink']
-        jobOffer.salary = data['jobOffer']['salary']
-        jobOffer.active = data['jobOffer']['active']
-        jobOffer.employerId = data['jobOffer']['employerId']
-
-        if 'isApproved' in data['jobOffer']:
-            jobOffer.isApproved = data['jobOffer']['isApproved']
-            
-        if 'approbationMessage' in data['jobOffer']:
-            jobOffer.approbationMessage = data['jobOffer']['approbationMessage'] 
+    def updateJobOffer(self, updatedJobOffer):
+        jobOffer = JobOffer.query.filter_by(id=updatedJobOffer.id).first()
+        jobOffer.title = updatedJobOffer.title
+        jobOffer.description = updatedJobOffer.description
+        jobOffer.address = updatedJobOffer.address
+        jobOffer.offerDebut = updatedJobOffer.offerDebut
+        jobOffer.dateEntryOffice = updatedJobOffer.dateEntryOffice
+        jobOffer.deadlineApply = updatedJobOffer.deadlineApply
+        jobOffer.email = updatedJobOffer.email
+        jobOffer.hoursPerWeek = updatedJobOffer.hoursPerWeek
+        jobOffer.offerLink = updatedJobOffer.offerLink
+        jobOffer.salary = updatedJobOffer.salary
+        jobOffer.active = updatedJobOffer.active
+        jobOffer.employerId = updatedJobOffer.employerId
+        jobOffer.lastModifiedDate  = datetime.utcnow()
+        jobOffer.isApproved = updatedJobOffer.isApproved
+        jobOffer.approbationMessage = updatedJobOffer.approbationMessage 
+        
         db.session.commit()
         return jobOffer
 
@@ -87,7 +86,7 @@ class JobOfferRepo:
 
         jobOffers = self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
         return jobOffers
-    
+ 
     def addDetailsToJobOffer(self, jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails): 
         jobOffersDetails = []
         for jobOffer in jobOffers:
