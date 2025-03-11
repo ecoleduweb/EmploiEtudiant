@@ -410,6 +410,7 @@
         border-bottom: 1px solid #ddd; /* Ligne séparatrice */
         font-weight: bold;
         text-align: left; /* Alignement du texte des en-têtes */
+        color: #00ad9a;
     }
 
     @media (max-width: 768px) {
