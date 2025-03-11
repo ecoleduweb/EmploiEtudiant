@@ -68,11 +68,11 @@
     }
 
     tr:hover {
-        background-color: #455b66;
+        background-color: #555b66;
     }
 
     .button:hover {
-        background-color: #455b66;
+        background-color: #555b66;
     }
 
     @media (max-width: 768px) {

@@ -7,6 +7,7 @@
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import Table from "../../Components/Common/Table.svelte"
     import { pushState } from "$app/navigation"
     import { page } from '$app/stores'
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
@@ -53,6 +54,20 @@
             }
         }
     })
+
+        // Définition des colonnes pour le tableau des offres d'emploi
+        const columns = [
+        { key: 'posteVise', label: 'Poste visé' },
+        { key: 'typeEmploi', label: "Type d'emploi", class: "rowTitles" },
+        { key: 'dateLimite', label: 'Date limite pour postuler', class: "rowTitles" },
+        { key: 'programmesVises', label: 'Programmes visés', class: "rowTitles" },
+        { key: 'employeur', label: 'Employeur' },
+        { 
+        key: 'details', 
+        label: 'Détails',
+        formatter: (offer) => `<img class="image" src="add.svg" alt="ajouter" onclick="handleModalClick(${JSON.stringify(offer)})" />`
+    }
+    ];
 </script>
 
 <main>
@@ -69,7 +84,15 @@
     
     <section>
         {#if loaded}
-
+        <div class="emplois-table">
+            <Table
+                    columns={columns}
+                    data={$jobOffers}
+                    handleModalClick={handleAddJobOfferClick}
+                    rowComponent={DetailOfferRow}
+            />
+        </div>
+        <!--
             <table>
                 <thead>
                     <tr>
@@ -87,6 +110,7 @@
                 {/each}
                 </tbody>
             </table>
+        -->
         {:else}
             <div class="loading">
                 <LoadingSpinner />
@@ -179,26 +203,6 @@
         .title
         {
             width: 100vw;
-        }
-        .rowTitles
-        {
-            display: none
-        }
-        table {
-        table-layout: fixed; /* Ceci est crucial pour que les largeurs fonctionnent */
-        width: 100%;
-        }
-        th:nth-child(1), td:nth-child(1) {
-            width: 60%;
-        }
-
-        th:nth-child(5), td:nth-child(5) {
-            width: 30%;
-        }
-
-        th:nth-child(6), td:nth-child(6) {
-            width: 10%;
-            text-align: left;
         }
     }
 </style>
