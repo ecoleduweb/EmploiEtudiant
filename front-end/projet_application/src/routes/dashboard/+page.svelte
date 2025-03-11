@@ -24,6 +24,14 @@
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+    let iconeUp = "▲"
+    let iconeDown = "▼"
+    let iconeRefused;
+    let iconeToBeApproved;
+    let iconeToCome;
+    let iconeDisplayed;
+    let iconeExpired;
+    
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
@@ -51,9 +59,11 @@
     {
         let list = document.getElementById(idList)
         let button = document.getElementById(idButton)
-
+        console.log(iconeDown)
+        console.log(iconeUp)
         list!.style.display === "none" ? list!.style.display = "block" : list!.style.display = "none"
-        button!.innerHTML === "v" ? button!.innerHTML = "^" : button!.innerHTML = "v"
+        button!.innerHTML === iconeDown ? button!.innerHTML = iconeUp : button!.innerHTML = iconeDown
+
     }
     const closeEditEnterprise = () => {
         showEditEnterprise = false
@@ -163,6 +173,7 @@
                 <Button
                     onClick={handleCreateOffer}
                     text="Créer une nouvelle offre"
+
                 />
             </div>
 
@@ -188,9 +199,9 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <div class="refusedOffers">
-                    <div id="refusedOffersHeader">
+                    <div class="refusedOffersHeader">
                         <h2 class="textSections">Offres refusées</h2>  
-                        <button id="btnHideRefusedOfferList" on:click={() => handleChangeListVisibility("refusedOffersList", "btnHideRefusedOfferList")}>v</button>
+                        <Button cssId="btnHideRefusedOfferList" text={iconeDown} onClick={() => handleChangeListVisibility("refusedOffersList", "btnHideRefusedOfferList")}></Button>
                     </div>
                     <div id="refusedOffersList">
                         {#each isRefusedOffer as offer}
@@ -210,7 +221,7 @@
                 <div class="toBeApprovedOffers">
                     <div class="toBeApprovedOfferHeader">
                         <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <button id="btnHidetoBeApprovedOffer" on:click={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOffer")}>v</button>
+                        <Button cssId="btnHidetoBeApprovedOffer" text={iconeDown} onClick={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOffer")}></Button>
                     </div>
                     <div id="toBeApprovedOffersList">
                         {#each toBeApprovedOffer as offer}
@@ -229,7 +240,7 @@
                 <div class="offerToCome">
                     <div class="offerToComeHeader">
                         <h2 class="textSections">Offres bientôt affichées</h2>
-                        <button id="btnHideOfferTocome" on:click={() => handleChangeListVisibility("offerToComeList", "btnHideOfferTocome")}>v</button>
+                        <Button cssId="btnHideOfferTocome" text={iconeDown} onClick={() => handleChangeListVisibility("offerToComeList", "btnHideOfferTocome")}></Button>
                     </div>
                     <div id="offerToComeList">                
                         {#each offerToCome as offer}
@@ -249,7 +260,7 @@
                 <div class="offerDisplayed">
                     <div class="offerDisplayedHeader">
                         <h2 class="textSections">Offres affichées</h2>
-                        <button id="btnHideOfferDisplayed" on:click={() => handleChangeListVisibility("offerDisplayedList", "btnHideOfferDisplayed")}>v</button>
+                        <Button cssId="btnHideOfferDisplayed" text={iconeDown} onClick={() => handleChangeListVisibility("offerDisplayedList", "btnHideOfferDisplayed")}></Button>
                     </div>
                     <div id="offerDisplayedList">
                         {#each offerDisplayed as offer}
@@ -268,7 +279,7 @@
                 <div class="expiredOffer">
                     <div class="expiredOfferHeader">
                         <h2 class="textSections">Offres expirées</h2>
-                        <button id="btnHideExpiredOffer" on:click={() => handleChangeListVisibility("expiredOfferList", "btnHideExpiredOffer")}>v</button>
+                        <Button cssId="btnHideExpiredOffer" text={iconeDown} onClick={() => handleChangeListVisibility("expiredOfferList", "btnHideExpiredOffer")}></Button>
                     </div>
                         <div id="expiredOfferList">
                         {#each expiredOffer as offer}
@@ -386,6 +397,19 @@
         font-size: 2.5vw;
         margin: 0;
     }
+    .refusedOffersHeader, .toBeApprovedOfferHeader, .offerToComeHeader, .offerDisplayedHeader, .expiredOfferHeader {
+        display: flex;
+        justify-content: space-between;
+        width: 33%;
+    }
+    #btnHideOfferDisplayed, #btnHideOfferTocome, #btnHideExpiredOffer, #btnHideRefusedOfferList, #btnHidetoBeApprovedOffer {
+        background-color: #00ad9a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 0.5vw;
+        font-size: 1.5vw;
+    }
     #refusedOffersList, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
         display: block;
     }
@@ -393,6 +417,7 @@
         display: flex;
         justify-content: space-between;
     }
+
     @media (max-width: 768px) {
         .text {
             font-size: 6vw;
