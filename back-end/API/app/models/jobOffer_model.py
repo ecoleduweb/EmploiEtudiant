@@ -23,7 +23,7 @@ class JobOffer(db.Model):
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None) ## Date d'approbation de l'offre par l'administratrice
     last_modified_by_id = db.Column(db.Integer, nullable=True)
-    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) ## Date de la dernière modification de l'offre
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
