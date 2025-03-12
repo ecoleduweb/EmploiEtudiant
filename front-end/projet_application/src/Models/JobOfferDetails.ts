@@ -8,7 +8,7 @@ export interface JobOfferDetails extends JobOffer {
     description: string // description de l'offre
     offerDebut: string // date d'affichage de l'offre
     dateEntryOffice: string // date d'entrée au bureau
-    deadlineApply: string // date limite pour postuler
+    deadlineApply: string // date limite pour postuler. L'offre est retirée à cette date
     email: string // courriel de la personne à contacter
     hoursPerWeek: number // nombre d'heures par semaine
     internship: boolean // si l'offre est un stage
@@ -20,7 +20,7 @@ export interface JobOfferDetails extends JobOffer {
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation
     acceptCondition: boolean | null | undefined
-    approvedDate: string,
+    approvedDate: string, // Date d'approbation de l'offre par l'administratrice
     enterprise: Enterprise | null
     studyPrograms: StudyProgram[] | null
     schedules: { id: string, description: string }[] | null

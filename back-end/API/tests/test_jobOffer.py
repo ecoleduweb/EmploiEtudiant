@@ -229,7 +229,7 @@ def test_adminCreateOffer(client):
     EmployerCount = client.get('/enterprise/all', headers={'Authorization': token})
     assert response.status_code == 201 and response2.status_code == 200 and EmployerCount.status_code == 200 and len(EmployerCount.json) > 1
 
-def test_invalidJobOffer(client):
+def test_CreateJobOffer_InvalidTitle(client):
     data1 = {
         "email": "bigJoeDu91@cegeprdl.ca",
         "password": "test123"
@@ -279,10 +279,114 @@ def test_invalidJobOffer(client):
         }
 
     response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
-
+    assert response2.get_json() == {'field': 'title', 'message': 'Ce champ doit comporter entre 1 et 255 caracteres.'}
     assert response2.status_code == 400
 
+def test_CreateJobOffer_InvalidEmail(client):
+    data1 = {
+        "email": "bigJoeDu91@cegeprdl.ca",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
 
+    #Très gros titre (Plus grand que 255)
+    job_offer1_data2 = {
+        "id": 1,
+        "title": "titre exemple",
+        "address": "123 rue de la rue",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2121-12-12",
+        "email": "test@",
+        "hoursPerWeek": 40,
+        "offerLink": "www.google.com",
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": None,
+        "isApproved": True,
+        "approvedDate": datetime.now()
+    }
+
+    data2 = {
+            "jobOffer": 
+            job_offer1_data2,
+            "enterprise": 
+            {
+                "id": 2,
+                "name": "Google",
+                "email": "google@gmail.com",
+                "phone": "1234567890",
+                "address": "123 rue google",
+                "cityId": 1
+            },
+            "studyPrograms": [
+                1,
+                2
+            ],
+            "scheduleIds": [
+                1
+            ]
+        }
+
+    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    assert response2.get_json() == {'field': 'email', 'message': 'Le format du courriel est invalide.'}
+    assert response2.status_code == 400
+
+def test_CreateJobOffer_InvalidNumber(client):
+    data1 = {
+        "email": "bigJoeDu91@cegeprdl.ca",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    #Très gros titre (Plus grand que 255)
+    job_offer1_data2 = {
+        "id": 1,
+        "title": "titre exemple",
+        "address": "123 rue de la rue",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2121-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "pasUnNombre",
+        "offerLink": "www.google.com",
+        "salary": "1000",
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": None,
+        "isApproved": True,
+        "approvedDate": datetime.now()
+    }
+
+    data2 = {
+            "jobOffer": 
+            job_offer1_data2,
+            "enterprise": 
+            {
+                "id": 2,
+                "name": "Google",
+                "email": "google@gmail.com",
+                "phone": "1234567890",
+                "address": "123 rue google",
+                "cityId": 1
+            },
+            "studyPrograms": [
+                1,
+                2
+            ],
+            "scheduleIds": [
+                1
+            ]
+        }
+
+    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    assert response2.get_json() == {'field': 'hoursPerWeek', 'message': 'Ce champ doit correspondre a un nombre.'}
+    assert response2.status_code == 400
 
 def test_approveJobOffer(client):
     data = {
@@ -323,7 +427,7 @@ def test_updateJobOffer(client):
     }
 
     data1 = {
-        "email": "test@gmail.com",
+        "email": "admin@gmail.com",
         "password": "test123"
     }
     responseLogin = client.post('/user/login', json=data1)
@@ -332,14 +436,276 @@ def test_updateJobOffer(client):
     assert response.status_code == 200
     assert VerifyData(response.json)
 
+<<<<<<< HEAD
 def test_deleteJobOffer(client):
+=======
+def test_updateJobOffer_InvalidTitle(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Développeur FullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstackFullstack",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": 40,
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    assert response.get_json() == {'field': 'title', 'message': 'Ce champ doit comporter entre 1 et 255 caracteres.'}
+    assert response.status_code == 400
+
+def test_updateJobOffer_InvalidEmail(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Titre test",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@",
+        "hoursPerWeek": 40,
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    assert response.get_json() == {'field': 'email', 'message': 'Le format du courriel est invalide.'}
+    assert response.status_code == 400
+
+def test_updateJobOffer_InvalidNumber(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Titre test",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "pasUnNombre",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    assert response.get_json() == {'field': 'hoursPerWeek', 'message': 'Ce champ doit correspondre a un nombre.'}
+    assert response.status_code == 400
+
+def test_updateJobOffer_NotFound(client):
+    data = {
+        "jobOffer": {
+        "id": 9,
+        "title": "Titre test",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "40",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/9', json=data, headers={'Authorization': token})
+    assert response.get_json() == {'message': 'Job offer not found.'}
+    assert response.status_code == 404
+
+def test_updateJobOffer_IsApproved(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Développeur Fullstack",
+        "address": "123 rue de la liberte changé",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "40",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    assert response.json['isApproved']
+    assert response.status_code == 200
+
+def test_updateJobOffer_IsApproved_IsAdmin(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Tout change",
+        "address": "Tout change",
+        "description": "Tout change",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "40",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+>>>>>>> 49f952b449b87208f20930339d2f171eab86ea5a
     data1 = {
         "email": "admin@gmail.com",
         "password": "test123"
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
+<<<<<<< HEAD
     response = client.delete('/jobOffer/1', headers={'Authorization': token})
+=======
+    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    assert response.json['isApproved']
+    assert response.status_code == 200
+
+def test_updateJobOffer_IsApproved_ApprovedToNone(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Titre test changé",
+        "address": "123 rue de la liberte",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "40",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    assert response.json['isApproved'] == None
+    assert response.status_code == 200
+
+def test_updateJobOffer_IsApproved_DeclinedToNone(client):
+    data = {
+        "jobOffer": {
+        "id": 2,
+        "title": "Titre test",
+        "address": "123 rue de la liberte changé",
+        "description": "Développeur fullstack",
+        "dateEntryOffice": "2021-12-12",
+        "deadlineApply": "2021-12-12",
+        "email": "test@gmail.com",
+        "hoursPerWeek": "40",
+        "offerLink": "www.google.com",
+        "salary": '1000',
+        "offerDebut": "2021-12-12",
+        "active": True,
+        "approbationMessage": "Super offre!",
+        "employerId": 1,
+        "isApproved": True
+        },
+        "studyPrograms": [5, 6] ,
+        "scheduleIds": [1, 2]
+    }
+
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    responseLogin = client.post('/user/login', json=data1)
+    token = responseLogin.json['token']
+    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    assert response.json['isApproved'] == None
+>>>>>>> 49f952b449b87208f20930339d2f171eab86ea5a
     assert response.status_code == 200
 
 def test_createJobOfferWithoutOfferLink(client):
