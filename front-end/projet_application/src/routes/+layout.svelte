@@ -27,6 +27,6 @@
         flex: 1;
     }
     .footer-spacer {
-        height: 3.01vw
+        height: 3.01vw;
     }
 </style>
