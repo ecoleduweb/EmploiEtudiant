@@ -221,7 +221,7 @@
                 <div class="toBeApprovedOffers">
                     <div class="toBeApprovedOfferHeader">
                         <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOffer" text={iconeDown} onClick={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOffer")}></Button>
+                        <Button cssId="btnHidetoBeApprovedOfferList" text={iconeDown} onClick={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOfferList")}></Button>
                     </div>
                     <div id="toBeApprovedOffersList">
                         {#each toBeApprovedOffer as offer}
@@ -240,9 +240,9 @@
                 <div class="offerToCome">
                     <div class="offerToComeHeader">
                         <h2 class="textSections">Offres bientôt affichées</h2>
-                        <Button cssId="btnHideOfferTocome" text={iconeDown} onClick={() => handleChangeListVisibility("offerToComeList", "btnHideOfferTocome")}></Button>
+                        <Button cssId="btnHideOfferToCome" text={iconeDown} onClick={() => handleChangeListVisibility("offersToComeList", "btnHideOfferToCome")}></Button>
                     </div>
-                    <div id="offerToComeList">                
+                    <div id="offersToComeList">                
                         {#each offerToCome as offer}
                             <OfferRow
                                 {isModerator}
@@ -402,14 +402,7 @@
         justify-content: space-between;
         width: 33%;
     }
-    #btnHideOfferDisplayed, #btnHideOfferTocome, #btnHideExpiredOffer, #btnHideRefusedOfferList, #btnHidetoBeApprovedOffer {
-        background-color: #00ad9a;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 0.5vw;
-        font-size: 1.5vw;
-    }
+
     #refusedOffersList, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
         display: block;
     }
