@@ -7,7 +7,7 @@
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
     import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
     import { GET } from "../../ts/server"
-    import { onMount } from "svelte"
+    import { onMount, tick } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
@@ -24,19 +24,41 @@
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+    
     let iconeUp = "▲"
     let iconeDown = "▼"
-    let iconeRefused;
-    let iconeToBeApproved;
-    let iconeToCome;
-    let iconeDisplayed;
-    let iconeExpired;
+    let iconeRefused = iconeDown
+    let iconeToBeApproved = iconeDown
+    let iconeToCome = iconeDown
+    let iconeDisplayed = iconeDown
+    let iconeExpired = iconeDown
+
+    let isRefusedHidden : string | null = "false"
+    let isToBeApprovedHidden : string | null = "false"
+    let isToComeHidden : string | null = "false"
+    let isDisplayedHidden : string | null  = "false"
+    let isExpiredHidden : string | null = "false"
     
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
+
+    const handleLocalStorageStates = () => {
+        isRefusedHidden = localStorage.getItem("btnHideRefusedOfferList");
+        isToBeApprovedHidden = localStorage.getItem("btnHidetoBeApprovedOfferList");
+        isToComeHidden = localStorage.getItem("btnHideOfferToCome");
+        isDisplayedHidden = localStorage.getItem("btnHideOfferDisplayed");
+        isExpiredHidden = localStorage.getItem("btnHideExpiredOffer");
+
+        iconeRefused = isRefusedHidden === "true" ? iconeUp : iconeDown;
+        iconeToBeApproved = isToBeApprovedHidden === "true" ? iconeUp : iconeDown;
+        iconeToCome = isToComeHidden === "true" ? iconeUp : iconeDown;
+        iconeDisplayed = isDisplayedHidden === "true" ? iconeUp : iconeDown;
+        iconeExpired = isExpiredHidden === "true" ? iconeUp : iconeDown;
+    }
+    
     
     const handleEditEnterprise = () => {
         showEditEnterprise = true
@@ -57,14 +79,18 @@
     }
     const handleChangeListVisibility = (idList: string, idButton : string) => 
     {
-        let list = document.getElementById(idList)
-        let button = document.getElementById(idButton)
-        console.log(iconeDown)
-        console.log(iconeUp)
-        list!.style.display === "none" ? list!.style.display = "block" : list!.style.display = "none"
-        button!.innerHTML === iconeDown ? button!.innerHTML = iconeUp : button!.innerHTML = iconeDown
+        let list = document.getElementById(idList);
+        let button = document.getElementById(idButton);
 
+        let isHidden = list!.style.display === "none";
+        
+        isHidden = !isHidden;
+        localStorage.setItem(idButton, isHidden.toString());
+
+        list!.style.display = isHidden ? "none" : "block";
+        button!.innerHTML = isHidden ? iconeUp : iconeDown;
     }
+
     const closeEditEnterprise = () => {
         showEditEnterprise = false
     }
@@ -106,24 +132,27 @@
 
     onMount(async () => {
         userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
-
         try 
         {
             if ($isLoggedIn) {
                 isModerator = ($currentUser as any).isModerator === true
-                await getJobOffersEmployeur()
+                await getJobOffersEmployeur();
+
+
+                
             }
         }
         catch (error) 
         {
             console.error("Error while loading:", error)
         }
-
         finally 
         {
+            await tick();
+            handleLocalStorageStates();
             loaded = true
         }
-
+        
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
@@ -199,11 +228,11 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <div class="refusedOffers">
-                    <div class="refusedOffersHeader">
+                    <div class="refusedOffersHeader ">
                         <h2 class="textSections">Offres refusées</h2>  
-                        <Button cssId="btnHideRefusedOfferList" text={iconeDown} onClick={() => handleChangeListVisibility("refusedOffersList", "btnHideRefusedOfferList")}></Button>
+                        <Button cssId="btnHideRefusedOfferList" text={iconeRefused} onClick={() => handleChangeListVisibility("refusedOffersList", "btnHideRefusedOfferList")}></Button>
                     </div>
-                    <div id="refusedOffersList">
+                    <div id="refusedOffersList" style="display: {isRefusedHidden === 'true' ? 'none' : 'block'}">
                         {#each isRefusedOffer as offer}
                         <OfferRow
                             {isModerator}
@@ -221,9 +250,9 @@
                 <div class="toBeApprovedOffers">
                     <div class="toBeApprovedOfferHeader">
                         <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOfferList" text={iconeDown} onClick={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOfferList")}></Button>
+                        <Button cssId="btnHidetoBeApprovedOfferList" text={iconeToBeApproved} onClick={() => handleChangeListVisibility("toBeApprovedOffersList", "btnHidetoBeApprovedOfferList")}></Button>
                     </div>
-                    <div id="toBeApprovedOffersList">
+                    <div id="toBeApprovedOffersList" style="display: {isToBeApprovedHidden === 'true' ? 'none' : 'block'}">
                         {#each toBeApprovedOffer as offer}
                             <OfferRow
                                 {isModerator}
@@ -240,9 +269,9 @@
                 <div class="offerToCome">
                     <div class="offerToComeHeader">
                         <h2 class="textSections">Offres bientôt affichées</h2>
-                        <Button cssId="btnHideOfferToCome" text={iconeDown} onClick={() => handleChangeListVisibility("offersToComeList", "btnHideOfferToCome")}></Button>
+                        <Button cssId="btnHideOfferToCome" text={iconeToCome} onClick={() => handleChangeListVisibility("offersToComeList", "btnHideOfferToCome")}></Button>
                     </div>
-                    <div id="offersToComeList">                
+                    <div id="offersToComeList" style="display: {isToComeHidden === 'true' ? 'none' : 'block'}">                
                         {#each offerToCome as offer}
                             <OfferRow
                                 {isModerator}
@@ -260,9 +289,9 @@
                 <div class="offerDisplayed">
                     <div class="offerDisplayedHeader">
                         <h2 class="textSections">Offres affichées</h2>
-                        <Button cssId="btnHideOfferDisplayed" text={iconeDown} onClick={() => handleChangeListVisibility("offerDisplayedList", "btnHideOfferDisplayed")}></Button>
+                        <Button cssId="btnHideOfferDisplayed" text={iconeDisplayed} onClick={() => handleChangeListVisibility("offerDisplayedList", "btnHideOfferDisplayed")}></Button>
                     </div>
-                    <div id="offerDisplayedList">
+                    <div id="offerDisplayedList" style="display: {isDisplayedHidden === 'true' ? 'none' : 'block'}">
                         {#each offerDisplayed as offer}
                             <OfferRow
                                 {isModerator}
@@ -279,9 +308,9 @@
                 <div class="expiredOffer">
                     <div class="expiredOfferHeader">
                         <h2 class="textSections">Offres expirées</h2>
-                        <Button cssId="btnHideExpiredOffer" text={iconeDown} onClick={() => handleChangeListVisibility("expiredOfferList", "btnHideExpiredOffer")}></Button>
+                        <Button cssId="btnHideExpiredOffer" text={iconeExpired} onClick={() => handleChangeListVisibility("expiredOfferList", "btnHideExpiredOffer")} ></Button>
                     </div>
-                        <div id="expiredOfferList">
+                        <div id="expiredOfferList" style="display: {isExpiredHidden === 'true' ? 'none' : 'block'}">
                         {#each expiredOffer as offer}
                             <OfferRow
                                 {isModerator}
@@ -400,13 +429,14 @@
     .refusedOffersHeader, .toBeApprovedOfferHeader, .offerToComeHeader, .offerDisplayedHeader, .expiredOfferHeader {
         display: flex;
         justify-content: space-between;
-        width: 33%;
+        width: 55%;
     }
 
-    #refusedOffersList, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
+    #refusedOffersList, #toBeApprovedOffersList, #offersToComeList, #offerDisplayedList, #expiredOfferList {
         display: block;
     }
-    #refusedOffersHeader, #toBeApprovedOffersList, #offerToComeList, #offerDisplayedList, #expiredOfferList {
+
+    #refusedOffersHeader, #toBeApprovedOffersList, #offersToComeList, #offerDisplayedList, #expiredOfferList {
         display: flex;
         justify-content: space-between;
     }

@@ -23,7 +23,7 @@ test.describe('checkIfOffersHide', () => {
         await page.getByRole('button', { name: 'Se connecter' }).click();
     });
 
-    test('checkIfOffersComeBack', async ({ page }) => {
+    test('checkIfOffersHideAndComeBack', async ({ page }) => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             jobOfferMocks.jobOfferEmployerAll
@@ -69,6 +69,41 @@ test.describe('checkIfOffersHide', () => {
 
         await page.waitForTimeout(1000);
 
+    });
+
+    test('checkIfLocalStorageWorks', async ({ page }) => {
+        const apiMocker = new ApiMocker(page);
+        await apiMocker.addMocks([
+            jobOfferMocks.jobOfferEmployerAll
+        ]).apply();
+
+        await page.goto('http://localhost:5002/dashboard');
+        await page.waitForLoadState('networkidle');
+        if (await page.locator("#cookieBannerOk")) {
+            await page.locator("#cookieBannerOk").click()
+        }
+
+        await page.locator("#btnHideRefusedOfferList").click();
+        await page.locator("#btnHidetoBeApprovedOfferList").click();
+        await page.locator("#btnHideOfferDisplayed").click();
+        await page.locator("#btnHideOfferToCome").click();
+        await page.locator("#btnHideExpiredOffer").click();
+
+        await expect(page.locator("#refusedOffersList")).not.toBeVisible();
+        await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
+        await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
+        await expect(page.locator("#offersToComeList")).not.toBeVisible();
+        await expect(page.locator("#expiredOfferList")).not.toBeVisible();
+
+
+        await page.reload();
+        await page.waitForTimeout(1000);
+
+        await expect(page.locator("#refusedOffersList")).not.toBeVisible();
+        await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
+        await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
+        await expect(page.locator("#offersToComeList")).not.toBeVisible();
+        await expect(page.locator("#expiredOfferList")).not.toBeVisible();
     });
 
 });
