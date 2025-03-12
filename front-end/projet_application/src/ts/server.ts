@@ -47,8 +47,11 @@ export async function DELETE(url: string): Promise<void> {
     try {
         const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${localStorage.getItem("token")}`,
+            },
         })
-
         await handleResponse(response)
     } catch (error) {
         console.error("Error deleting:", error)

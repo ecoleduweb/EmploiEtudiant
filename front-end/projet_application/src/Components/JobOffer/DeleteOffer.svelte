@@ -9,15 +9,14 @@
 
     let approbationMessage: string = ""
 
-    const deleteOffer = async (isApproved: boolean) => {
-        if (isApproved) 
+    const deleteOffer = async (tobeDeleted: boolean) => {
+        if (tobeDeleted) 
         {
             try {
             const response = await DELETE(`/jobOffer/delete/${offer.id}`)
-            // TODO ajouter l'offre à la page sans recharger.
             window.location.reload()
             } catch (error) {
-                //console.error("Error approving job offer:", error)
+                console.log(error)
             }
         }
 

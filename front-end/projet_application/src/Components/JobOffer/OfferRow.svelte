@@ -35,9 +35,11 @@
                 <img class="image" src="archive.svg" alt="supprimer" />
             </button>
         {/if}
+        {#if isModerator === true}
         <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
-            <img class="image" src="#" alt="supprimer" />
+            <img class="image" src="delete.svg" alt="supprimer" />
         </button>
+        {/if}
     </div>
 </div>
 

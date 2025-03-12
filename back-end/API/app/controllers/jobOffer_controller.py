@@ -101,7 +101,7 @@ def offresEmploiEmployeur(current_user):
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
-@job_offer_blueprint.route('/<int:id>', methods=['DELETE'])
+@job_offer_blueprint.route('/delete/<int:id>', methods=['DELETE'])
 @token_admin_required
 def deleteJobOffer(current_user, id):
     jobOfferToDelete = jobOffer_service.findById(id)
