@@ -15,6 +15,7 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
+    import { InvalidDataError } from "../../CustomError/invalidDataError"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -285,10 +286,9 @@
                 onFinished()
             }
         } catch (err: any) {
-            if (err && typeof err === 'object' && 'field' in err && err.message) {
+            if (err instanceof InvalidDataError) {
                 jobOfferErrors = {
-                    message: err.message,
-                    field: err.field
+                    [err.field]: err.message
                 };
             } else {
                 console.error("Not Invalid data error", err);
@@ -306,10 +306,9 @@
                 onFinished()
             }
         } catch (err: any) {
-            if (err && typeof err === 'object' && 'field' in err && err.message) {
+            if (err instanceof InvalidDataError) {
                 jobOfferErrors = {
-                    message: err.message,
-                    field: err.field
+                    [err.field]: err.message
                 };
             } else {
                 console.error("Not Invalid data error", err);
@@ -574,7 +573,6 @@
             </div>
             <p class="errors-input">
                 {#if jobOfferErrors.acceptCondition}{jobOfferErrors.acceptCondition}{/if}
-                {#if jobOfferErrors.message}{jobOfferErrors.field}: {jobOfferErrors.message}{/if}
             </p>
             {#if loading}
                 <LoadingSpinner />

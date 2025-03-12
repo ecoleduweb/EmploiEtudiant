@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public"
-import { createInvalidDataError } from "../CustomError/invalidDataError"
+import { InvalidDataError } from "../CustomError/invalidDataError"
 
 export async function GET<T>(url: string, redirectToLoginOn401?: boolean): Promise<T> {
     try {
@@ -108,10 +108,9 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401: boole
         } else if (response.status === 400) {
             const { field, message } = await response.json();
             if (field === undefined || message === undefined) {
-                console.log("je suis ici");
                 throw new Error(`Error: ${response.status} - ${response.statusText}`)
             }
-            throw createInvalidDataError(message, field);
+            throw new InvalidDataError(message, field);
         } else {
             throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }
