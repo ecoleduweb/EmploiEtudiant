@@ -9,8 +9,6 @@ import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { employementScheduleByOfferIdMocks } from '../Helper/Mocks/employementScheduleByOfferId.mock';
 import { offerProgramMocks } from '../Helper/Mocks/offerProgram.mock';
-import { verify } from 'crypto';
-
 
 
 test.describe('createUpdateJobOfferBackEndError', () => {
