@@ -28,7 +28,7 @@
         padding: 30px 20px 20px 20px;
 
         width: 80%;
-        max-width: 600px;
+        max-width: 800px;
         max-height: 100%;
         box-sizing: border-box;
         text-align: center;

@@ -7,7 +7,6 @@
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
     import type { JobOfferDetails } from "../Models/JobOfferDetails"
-    import Table from "../Components/Common/Table.svelte"
 
     let loaded = false
     let latestJobOffers: JobOfferDetails[] = []
@@ -34,20 +33,6 @@
     const handleEmploiWithId = (id: number) => {
         goto(`/emplois?id=${id}`)
     }
-
-    // Définition des colonnes pour le tableau des offres d'emploi sur la page d'accueil
-    const columns = [
-        { key: 'titre', label: 'Titre' },         
-        { key: 'typeEmploi', label: "Type d'emploi", class: "rowTitles" },         
-        { key: 'dateLimite', label: 'Date limite pour postuler', class: "rowTitles" },         
-        { key: 'programmesVises', label: 'Programmes visés', class: "rowTitles" },         
-        { key: 'employeur', label: 'Employeur' },         
-        { 
-            key: 'details',          
-            label: 'Détails',         
-            formatter: (offer) => `<img class="image" src="add.svg" alt="ajouter" />`
-        }
-    ];
 </script>
 
 <main>
@@ -114,19 +99,10 @@
         </section>
     {:else}
         <section class="offres">
-            <!--
             {#each latestJobOffers as offer}
-                <DetailOfferRow {offer} 
-                handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
+            <DetailOfferRow {offer} 
+            handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
             {/each}
-            -->
-
-            <Table 
-            columns={columns}
-            data={latestJobOffers}
-            handleModalClick={(offer) => handleEmploiWithId(offer.id)}
-            rowComponent={DetailOfferRow}
-            />
         </section>
     {/if}
     

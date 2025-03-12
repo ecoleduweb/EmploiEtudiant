@@ -7,7 +7,7 @@
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
-    import Table from "../../Components/Common/Table.svelte"
+    import TableEmplois from "../../Components/JobOffer/TableEmplois.svelte"
     import { pushState } from "$app/navigation"
     import { page } from '$app/stores'
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
@@ -16,12 +16,21 @@
     let loaded = false
     let selectedOffer: JobOfferDetails = undefined as any
 
+    //initialement
     const handleAddJobOfferClick = (offer: JobOfferDetails) => {
         showModal = true
         selectedOffer = offer
-
         pushState("?id=" + offer.id, {})
     }
+    /*
+    const handleAddJobOfferClick = (id: number) => {
+        const offer = $jobOffers.find(o => o.id === id)
+        if (offer) {
+            showModal = true
+            selectedOffer = offer
+            pushState("?id=" + id, {})
+        }
+    }*/
     
     const closeModal = () => {
         showModal = false
@@ -29,6 +38,7 @@
     }
 
     const jobOffers = writable<JobOfferDetails[]>([])
+
     onMount(async () => {
         try {
             const response = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
@@ -54,20 +64,6 @@
             }
         }
     })
-
-        // Définition des colonnes pour le tableau des offres d'emploi
-        const columns = [
-        { key: 'posteVise', label: 'Poste visé' },
-        { key: 'typeEmploi', label: "Type d'emploi", class: "rowTitles" },
-        { key: 'dateLimite', label: 'Date limite pour postuler', class: "rowTitles" },
-        { key: 'programmesVises', label: 'Programmes visés', class: "rowTitles" },
-        { key: 'employeur', label: 'Employeur' },
-        { 
-        key: 'details', 
-        label: 'Détails',
-        formatter: (offer) => `<img class="image" src="add.svg" alt="ajouter" onclick="handleModalClick(${JSON.stringify(offer)})" />`
-    }
-    ];
 </script>
 
 <main>
@@ -81,36 +77,9 @@
         </div>
     </section>
 
-    
     <section>
         {#if loaded}
-        <div class="emplois-table">
-            <Table
-                    columns={columns}
-                    data={$jobOffers}
-                    handleModalClick={handleAddJobOfferClick}
-                    rowComponent={DetailOfferRow}
-            />
-        </div>
-        <!--
-            <table>
-                <thead>
-                    <tr>
-                        <th>Poste visé</th>
-                        <th class="rowTitles">Type d'emploi</th>
-                        <th class="rowTitles">Date limite pour postuler</th>
-                        <th class="rowTitles">Programmes visés</th>
-                        <th>Employeur</th>
-                        <th>Détails</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {#each $jobOffers as offer}
-                    <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
-                {/each}
-                </tbody>
-            </table>
-        -->
+            <TableEmplois offers={$jobOffers} handleOfferClick={handleAddJobOfferClick}/>
         {:else}
             <div class="loading">
                 <LoadingSpinner />
@@ -173,27 +142,6 @@
         flex-direction: column;
         width: 50%;
     }
-
-    /* Section des tableaux*/
-    table {
-        width: 100%; /* Prend toute la largeur disponible */
-        border-collapse: collapse; /* Fusionne les bordures pour un bon alignement */
-        table-layout: fixed; /* Force une répartition égale des colonnes */
-    }
-
-    thead {
-        color: white;
-    }
-
-    th {
-        padding: 12px 12px 12px 0;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        font-weight: bold;
-        text-align: left;
-        color: #00ad9a;
-    }
-
     @media (max-width: 768px)
     {
         .text{

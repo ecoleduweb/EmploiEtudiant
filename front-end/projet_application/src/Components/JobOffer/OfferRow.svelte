@@ -15,7 +15,7 @@
     let enterpriseName = "Entreprise inconnue";
 
     onMount(() => {
-        if ("enterprise" in offer && offer.enterprise) {
+        if (offer.enterprise) {
             enterpriseName = offer.enterprise.name;
         } else if (enterprise) {
             enterpriseName = enterprise.name;
@@ -54,7 +54,6 @@
         border-bottom: 1px solid #00ad9a;
         background-color: transparent;
     }
-
     .image {
         width: 30px;
         height: 30px;
@@ -66,15 +65,7 @@
         transition: background-color 0.3s ease;
         border-radius: 4px;
     }
-
     tr:hover {
         background-color: #555b66;
-    }
-
-    .button:hover {
-        background-color: #555b66;
-    }
-
-    @media (max-width: 768px) {
     }
 </style>

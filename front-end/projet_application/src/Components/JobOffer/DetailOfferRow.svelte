@@ -69,7 +69,4 @@
             height: 30px;
         }
     }
-
-    @media (min-width: 769px) {
-    }
 </style>
