@@ -436,9 +436,6 @@ def test_updateJobOffer(client):
     assert response.status_code == 200
     assert VerifyData(response.json)
 
-<<<<<<< HEAD
-def test_deleteJobOffer(client):
-=======
 def test_updateJobOffer_InvalidTitle(client):
     data = {
         "jobOffer": {
@@ -627,16 +624,12 @@ def test_updateJobOffer_IsApproved_IsAdmin(client):
         "scheduleIds": [1, 2]
     }
 
->>>>>>> 49f952b449b87208f20930339d2f171eab86ea5a
     data1 = {
         "email": "admin@gmail.com",
         "password": "test123"
     }
     responseLogin = client.post('/user/login', json=data1)
     token = responseLogin.json['token']
-<<<<<<< HEAD
-    response = client.delete('/jobOffer/1', headers={'Authorization': token})
-=======
     response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
     assert response.json['isApproved']
     assert response.status_code == 200
@@ -705,7 +698,6 @@ def test_updateJobOffer_IsApproved_DeclinedToNone(client):
     token = responseLogin.json['token']
     response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
     assert response.json['isApproved'] == None
->>>>>>> 49f952b449b87208f20930339d2f171eab86ea5a
     assert response.status_code == 200
 
 def test_createJobOfferWithoutOfferLink(client):
@@ -760,3 +752,47 @@ def test_createJobOfferWithoutOfferLink(client):
     response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
 
     assert response2.status_code == 201
+
+def test_deleteJobOfferNotExist(client):
+
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/15', headers={'Authorization': token})
+    
+    assert response2.status_code == 404
+    assert response2.json['message'] == 'Job offer not found'    
+
+def test_deleteJobOfferAsUser(client):
+ 
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
+    
+    assert response2.status_code == 401
+    assert response2.json['message'] == 'user is not admin'
+
+def test_deleteJobOfferAsAdmin(client):
+
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
+    
+    assert response2.status_code == 200
+    assert response2.json['message'] == 'Job offer deleted'
+
+

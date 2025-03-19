@@ -105,7 +105,13 @@ def offresEmploiEmployeur(current_user):
 @token_admin_required
 def deleteJobOffer(current_user, id):
     jobOfferToDelete = jobOffer_service.findById(id)
+
+    if token_admin_required is False:
+        logger.warning('User is not an admin')
+        return jsonify({'message': 'User is not an admin'}), 401
+
     if jobOfferToDelete is None :
+        logger.warning('Job offer not found with id : ' + str(id))
         return jsonify({'message': 'Job offer not found'}), 404
     else:
         jobOffer_service.deleteJobOffer(id)
