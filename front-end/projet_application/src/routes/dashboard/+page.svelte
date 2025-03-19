@@ -121,8 +121,6 @@
 
     const jobOffers = writable<JobOfferDetails[]>([])
 
-
-
     const getJobOffersEmployeur = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.

@@ -10,12 +10,15 @@
     let approbationMessage: string = ""
 
     const deleteOffer = async (tobeDeleted: boolean) => {
+        if (tobeDeleted) 
+        {
             try {
             const response = await DELETE(`/jobOffer/delete/${offer.id}`)
             window.location.reload()
             } catch (error) {
-                
+                console.error("Erreur lors de la suppression :",error)
             }
+        }
         handleDeleteClick()
     }
 </script>
