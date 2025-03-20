@@ -70,7 +70,7 @@ Le formulaire inclut des champs tels que le nom de l'entreprise, l'email et le m
     <p>{errors.companyName}</p>
   </div>
   <div>
-    <label for="email">Email</label>
+    <label for="email">Courriel</label>
     <input type="email" id="email" bind:value="{formData.email}" />
     <p>{errors.email}</p>
   </div>
@@ -79,13 +79,13 @@ Le formulaire inclut des champs tels que le nom de l'entreprise, l'email et le m
     <input type="password" id="password" bind:value="{formData.password}" />
     <p>{errors.password}</p>
   </div>
-  <button type="submit">Soumettre</button>
+  <button type="submit">Créer</button>
 </form>
 ```
 
 **Exemple d'interface :**
 
-![Exemple d'interface](./app/static/images/Création%20compte%20Entreprise.png)
+![Exemple d'interface](../front-end/projet_application/static/images/Création%20compte%20Entreprise.png)
 
 ### 🏗️ Back-end (Flask)
 
@@ -203,7 +203,7 @@ def register():
 
 **Exemple diagramme flux validation de formulaire front-end et back-end**
 
-![Exemple diagramme flux validation de formulaire front-end et back-end](./app/static/images/Diagramme%20flux%20validation%20de%20formulaire%20front-end%20et%20back-end.png)
+![Exemple diagramme flux validation de formulaire front-end et back-end](../front-end/projet_application/static/images/Diagramme%20flux%20validation%20de%20formulaire%20front-end%20et%20back-end.png)
 
 ## 🛠️ Conclusion
 
