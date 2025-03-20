@@ -12,10 +12,19 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
 from logging import getLogger
 from argon2 import PasswordHasher
-
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
 hasher = PasswordHasher()
 
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+otlp_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces")
 locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
@@ -62,6 +71,8 @@ def create_app():
     CORS(app)
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
+
+    FlaskInstrumentor().instrument_app(app)
 
     try:
         # port 5001 is used for playwright tests
