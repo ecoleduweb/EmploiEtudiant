@@ -12,19 +12,27 @@
     }
 </script>
 
-<Header />
-<CookieBanner />
+<div class="container">
+    <Header/>
+    <CookieBanner />
 
-<slot />
+    <main class="content">
+        <slot />
+    </main>
 
-<div class="FooterDiv">
-    <Footer />
+    <div class="footer-spacer"></div>
+    <Footer/>
 </div>
 
 <style lang="scss" scoped>
-    .FooterDiv {
-        position: fixed;
-        bottom: 0;
-        min-width: 100%;
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .content {
+        flex: 1;
+    }
+    .footer-spacer {
+        height: 3.01vw;
     }
 </style>
