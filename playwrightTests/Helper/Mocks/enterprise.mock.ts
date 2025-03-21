@@ -21,5 +21,20 @@ export const enterpriseMocks = {
                 "phone": "1231234123"
             }
         }
+    },
+    enterpriseEmployer: {
+        url: '*/**/enterprise/employer/*',
+        response: {
+            status: 200,
+            json: {
+                "address": "test",
+                "cityId": 1,
+                "email": "test@gmail.com",
+                "id": 7,
+                "isTemporary": false,
+                "name": "test",
+                "phone": "1231234123"
+            }
+        }
     }
 } satisfies Record<string, MockConfig>;
