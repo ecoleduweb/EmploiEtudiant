@@ -1,19 +1,16 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte"
     import type { JobOffer } from "../../Models/Offre"
-    import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
-    import { DELETE, GET, POST, PUT } from "../../ts/server"
+    import { DELETE } from "../../ts/server"
     export let offer: JobOffer
+    export const isDeleted = false;
     export let handleDeleteClick: () => void
 
-    let approbationMessage: string = ""
-
-    const deleteOffer = async (tobeDeleted: boolean) => {
-        if (tobeDeleted) 
+    const deleteOffer = async (isDeleted: boolean) => {
+        if (isDeleted) 
         {
             try {
-            const response = await DELETE(`/jobOffer/delete/${offer.id}`)
+            await DELETE(`/jobOffer/delete/${offer.id}`)
             window.location.reload()
             } catch (error) {
                 console.error("Erreur lors de la suppression :",error)

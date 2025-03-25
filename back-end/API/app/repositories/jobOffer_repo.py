@@ -20,11 +20,22 @@ class JobOfferRepo:
         db.session.commit()
         return newJobOffer
 
+    #def deleteJobOffer(self, id):
+     #   jobOffer = JobOffer.query.filter_by(id=id).first()
+      #  db.session.delete(jobOffer)
+       # db.session.commit()
+
     def deleteJobOffer(self, id):
-        jobOffer = JobOffer.query.filter_by(id=id).first()
-        db.session.delete(jobOffer)
-        db.session.commit()
-        return jsonify({'message': 'job offer deleted'})
+        try:
+            jobOffer = JobOffer.query.filter_by(id=id).first()
+            if jobOffer is None:
+                return jsonify({'message': 'Job offer not found'}), 404
+            db.session.delete(jobOffer)
+            db.session.commit()
+            return jsonify({'message': 'job offer deleted'})
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
     
     def offresEmploiEmployeur(self, employerId, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()

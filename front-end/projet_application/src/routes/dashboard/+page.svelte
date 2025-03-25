@@ -81,6 +81,7 @@
         closeModalApprove()
         closeModalArchive()
         closeModalCreateEdit()
+        closeModalDelete()
     }
 
     let enterprise: Enterprise = {
