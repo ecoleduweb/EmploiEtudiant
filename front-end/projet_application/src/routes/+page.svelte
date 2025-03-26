@@ -102,12 +102,6 @@
             <LoadingSpinner />
         </section>
     {:else}
-        <!--<section class="offres">
-            {#each latestJobOffers as offer}
-            <DetailOfferRow {offer} 
-            handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
-            {/each}
-        </section>-->
         <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
         {/if}
     
