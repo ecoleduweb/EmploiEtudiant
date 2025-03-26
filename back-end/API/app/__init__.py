@@ -88,24 +88,24 @@ def create_app():
 
     #Do not remove.
     migrate = Migrate(app, db)
+    if os.environ.get('ENABLE_TRACING', 'false').lower() == 'true':
+        resource = Resource(attributes={    
+                    ResourceAttributes.SERVICE_NAME: os.environ.get('TRACE_URL', 'API_EMPLOI_ETUDIANT_DEV'),
+                    ResourceAttributes.SERVICE_VERSION: "1.0.0",
+                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
+        })
 
-    resource = Resource(attributes={    
-                ResourceAttributes.SERVICE_NAME: "EMPLOI_ETUDIANT_DEV",
-                ResourceAttributes.SERVICE_VERSION: "1.0.0",
-                ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
-    })
+        trace_provider = TracerProvider(resource=resource)
+        otlp_trace_exporter = OTLPSpanExporter(endpoint=os.environ.get('TRACE_URL', 'http://143.110.223.189:4318/v1/traces'), timeout=5)
+        trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
+        trace_provider.add_span_processor(trace_batch_processor)
+        trace.set_tracer_provider(trace_provider)
 
-    trace_provider = TracerProvider(resource=resource)
-    otlp_trace_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces", timeout=5)
-    trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
-    trace_provider.add_span_processor(trace_batch_processor)
-    trace.set_tracer_provider(trace_provider)
+        FlaskInstrumentor().instrument_app(app)
+        RequestsInstrumentor().instrument()
 
-    FlaskInstrumentor().instrument_app(app)
-    RequestsInstrumentor().instrument()
-
-    with app.app_context():
-        SQLAlchemyInstrumentor().instrument(engine=db.engine)
+        with app.app_context():
+            SQLAlchemyInstrumentor().instrument(engine=db.engine)
 
     # END do not remove
     from app.controllers.user_controller import user_blueprint
