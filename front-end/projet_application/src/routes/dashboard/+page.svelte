@@ -178,104 +178,44 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres refusées</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Entreprise</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each isRefusedOffer as offer}
-                            <OfferRow
-                                {isModerator}
-                                offer={offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            />
-                        {/each}
-                    </tbody>
-                </table>
+                <TableDashboard
+                    offers={isRefusedOffer}
+                    isModerator={isModerator}
+                    handleEditModalClick={handleEditEmploiClick}
+                    handleApproveModalClick={handleApproveClick}
+                    handleArchiveModalClick={handleArchiveClick}
+                />
+
             {/if}
             {#if toBeApprovedOffer.length > 0}
-            <h2 class="textSections">Offres en attente d'approbation</h2>
-            <!-- Tableau pour afficher les offres en attente d'approbation -->
-            <table>
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Entreprise</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each toBeApprovedOffer as offer}
-                    <OfferRow
-                    {isModerator}
-                    {offer}
-                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                    />
-                    {/each}
-                </tbody>
-            </table>
+                <h2 class="textSections">Offres en attente d'approbation</h2>
+                <TableDashboard
+                offers={toBeApprovedOffer}
+                isModerator={isModerator}
+                handleEditModalClick={handleEditEmploiClick}
+                handleApproveModalClick={handleApproveClick}
+                handleArchiveModalClick={handleArchiveClick}
+                />
             {/if}
             {#if offerToCome.length > 0}
                 <h2 class="textSections">Offres bientôt affichées</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Entreprise</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {#each offerToCome as offer}
-                        <OfferRow
-                            {isModerator}
-                            {offer}
-                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                            handleApproveModalClick={() => {handleApproveClick(offer)}}
-                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        />
-                    {/each}
-                    </tbody>
-                </table>
+                <TableDashboard
+                offers={offerToCome}
+                isModerator={isModerator}
+                handleEditModalClick={handleEditEmploiClick}
+                handleApproveModalClick={handleApproveClick}
+                handleArchiveModalClick={handleArchiveClick}
+                />
             {/if}
             {#if offerDisplayed.length > 0}
                 <h2 class="textSections">Offres affichées</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Entreprise</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {#each offerDisplayed as offer}
-                        <OfferRow
-                            {isModerator}
-                            {offer}
-                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                            handleApproveModalClick={() => {handleApproveClick(offer)}}
-                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        />
-                    {/each}
-                    </tbody>
-                </table>
+                <TableDashboard
+                offers={offerDisplayed}
+                isModerator={isModerator}
+                handleEditModalClick={handleEditEmploiClick}
+                handleApproveModalClick={handleApproveClick}
+                handleArchiveModalClick={handleArchiveClick}
+                />
             {/if}
             {#if expiredOffer.length > 0}
                 <h2 class="textSections">Offres expirées</h2>
