@@ -33,7 +33,7 @@
         <div class="info-mobile">
             <p class="text">{offer.title}</p>
             <p class="text">{offer.enterprise?.name}</p>
-        </div>
+        </div>                        
         <div class="info">
             <p class="text">{offer.title}</p>
             <p class="text">{offer.schedules?.map(x => x.description).join(', ')}</p>

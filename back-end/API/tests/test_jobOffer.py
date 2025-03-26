@@ -752,3 +752,47 @@ def test_createJobOfferWithoutOfferLink(client):
     response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
 
     assert response2.status_code == 201
+
+def test_deleteJobOfferNotExist(client):
+
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/15', headers={'Authorization': token})
+    
+    assert response2.status_code == 500
+    assert response2.json['message'] == 'An error occurred while deleting the job offer'    
+
+def test_deleteJobOfferAsUser(client):
+ 
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
+    
+    assert response2.status_code == 401
+    assert response2.json['message'] == 'user is not admin'
+
+def test_deleteJobOfferAsAdmin(client):
+
+    data1 = {
+        "email": "admin@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
+    
+    assert response2.status_code == 200
+    assert response2.json['message'] == 'Job offer deleted'
+
+

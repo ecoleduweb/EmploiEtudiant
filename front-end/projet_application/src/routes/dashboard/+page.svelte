@@ -16,6 +16,7 @@
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
     import {hiddenListsService} from "../../Service/CollapsedOfferLists"
+    import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -24,33 +25,16 @@
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
-    
-    let iconeUp = "▲"
-    let iconeDown = "▼"
-    
-    
-
-
-    const { 
-        isRefusedHidden, 
-        isToBeApprovedHidden,
-        isToComeHidden,
-        isDisplayedHidden,
-        isExpiredHidden
-    } = hiddenListsService;
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
-
-   
-    
     
     const handleEditEnterprise = () => {
         showEditEnterprise = true 
     }
-        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
+    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
@@ -81,6 +65,11 @@
         showArchiveModal = false
     }
 
+    const closeModalDelete = () => 
+    {
+        showDeleteModal = false
+    }
+
     const onFinishedCallBack = async () => 
     {
         await getJobOffersEmployer()
@@ -88,6 +77,7 @@
         closeModalApprove()
         closeModalArchive()
         closeModalCreateEdit()
+        closeModalDelete()
     }
 
     let enterprise: Enterprise = {
@@ -125,8 +115,6 @@
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
-
-
 
     const getJobOffersEmployer = async () => {
         try {
@@ -196,101 +184,65 @@
                 <span class="text">MES OFFRES D'EMPLOIS </span>
             </h1>
             {#if isRefusedOffer.length > 0}
-                <div class="refusedOffers">
-                    <div class="offersHeader ">
-                        <h2 class="textSections">Offres refusées</h2>  
-                        <Button cssId="btnHideRefusedOfferList" text={$isRefusedHidden ? iconeUp : iconeDown} onClick={() => {hiddenListsService.isRefusedHidden.update(value => !value);}}></Button>
-                    </div>
-                    <div id="refusedOffersList" style="display: {$isRefusedHidden ? 'none' : 'block'}">
-                        {#each isRefusedOffer as offer}
-                        <OfferRow
-                            {isModerator}
-                            offer={offer}
-                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                            handleApproveModalClick={() => {handleApproveClick(offer)}}
-                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        />
-                    
-                        {/each}
-                    </div>
-                </div>
+                <h2 class="textSections">Offres refusées</h2>
+                {#each isRefusedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        offer={offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
             {/if}
             {#if toBeApprovedOffer.length > 0}
-                <div class="toBeApprovedOffers">
-                    <div class="offersHeader">
-                        <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOfferList" text={$isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{hiddenListsService.isToBeApprovedHidden.update(value => !value);}}></Button>
-                    </div>
-                    <div id="toBeApprovedOffersList" style="display: {$isToBeApprovedHidden ? 'none' : 'block'}">
-                        {#each toBeApprovedOffer as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            />
-                        {/each}
-                    </div>
-                </div>
+                <h2 class="textSections">Offres en attente d'approbation</h2>
+                {#each toBeApprovedOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
             {/if}
             {#if offerToCome.length > 0}
-                <div class="offerToCome">
-                    <div class="offersHeader">
-                        <h2 class="textSections">Offres bientôt affichées</h2>
-                        <Button cssId="btnHideOfferToCome" text={$isToComeHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isToComeHidden.update(value => !value);}}></Button>
-                    </div>
-                    <div id="offersToComeList" style="display: {$isToComeHidden ? 'none' : 'block'}">                
-                        {#each offerToCome as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            />
-                        {/each}
-                    </div>
-                </div>
+                <h2 class="textSections">Offres bientôt affichées</h2>
+                {#each offerToCome as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
             {/if}
 
             {#if offerDisplayed.length > 0}
-                <div class="offerDisplayed">
-                    <div class="offersHeader">
-                        <h2 class="textSections">Offres affichées</h2>
-                        <Button cssId="btnHideOfferDisplayed" text={$isDisplayedHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isDisplayedHidden.update(value => !value);}}></Button>
-                    </div>
-                    <div id="offerDisplayedList" style="display: {$isDisplayedHidden ? 'none' : 'block'}">
-                        {#each offerDisplayed as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            /> 
-                        {/each}
-                    </div>
-                </div>
+                <h2 class="textSections">Offres affichées</h2>
+                {#each offerDisplayed as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
             {/if}
             {#if expiredOffer.length > 0}
-                <div class="expiredOffer">
-                    <div class="offersHeader">
-                        <h2 class="textSections">Offres expirées</h2>
-                            <Button cssId="btnHideExpiredOffer" text={$isExpiredHidden ? iconeUp : iconeDown} onClick={() => { hiddenListsService.isExpiredHidden.update(value => !value);}} ></Button>
-                    </div>
-                        <div id="expiredOfferList" style="display: {$isExpiredHidden ? 'none' : 'block'}">
-                        {#each expiredOffer as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            />
-                        {/each}
-                    </div>
-                </div>
+                <h2 class="textSections">Offres expirées</h2>
+                {#each expiredOffer as offer}
+                    <OfferRow
+                        {isModerator}
+                        {offer}
+                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                        handleApproveModalClick={() => {handleApproveClick(offer)}}
+                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    />
+                {/each}
             {/if}
         </section>
     {/if}
@@ -334,6 +286,15 @@
         <ArchiveConfirm
             offer={jobOfferSelected}
             handleApproveClick={closeModalArchive}
+        />
+    </Modal>
+    {/if}
+    {#if showDeleteModal}
+    <Modal handleCloseClick={() => closeModalDelete()}>
+        <DeleteOffer
+            offer={jobOfferSelected}
+            deleteOfferAndCloseModal={deleteOfferAndCloseModal}
+            closeModalDelete={closeModalDelete}
         />
     </Modal>
     {/if}
