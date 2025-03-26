@@ -4,19 +4,19 @@
     import { DELETE } from "../../ts/server"
     export let offer: JobOffer
     export const isDeleted = false;
-    export let handleDeleteClick: () => void
+    export let handleDeleteClick: (idJobOffer: number | null) => void
 
     const deleteOffer = async (isDeleted: boolean) => {
         if (isDeleted) 
         {
             try {
             await DELETE(`/jobOffer/delete/${offer.id}`)
-            window.location.reload()
+            handleDeleteClick(offer.id)
             } catch (error) {
                 console.error("Erreur lors de la suppression :",error)
             }
         }
-        handleDeleteClick()
+        handleDeleteClick(null)
     }
 </script>
 
