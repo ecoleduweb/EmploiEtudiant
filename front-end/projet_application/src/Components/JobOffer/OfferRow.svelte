@@ -6,6 +6,7 @@
     export let handleEditModalClick: (id: number) => void
     export let handleApproveModalClick: (id: number) => void
     export let handleArchiveModalClick: (id: number) => void
+    export let handleDeleteModalClick: (id: number) => void
 </script>
 
 <div class="offreEmploi">
@@ -34,6 +35,10 @@
                 <img class="image" src="archive.svg" alt="supprimer" />
             </button>
         {/if}
+        <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
+            <img class="image" src="delete.svg" alt="supprimer" />
+        </button>
+       
     </div>
 </div>
 
