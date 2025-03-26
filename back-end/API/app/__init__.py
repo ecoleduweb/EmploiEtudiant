@@ -21,15 +21,6 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry._logs import set_logger_provider
-from opentelemetry.sdk._logs import LoggerProvider
-from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
-from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-import logging
-
-# Import the custom handler
-from opentelemetryloghandler import OpenTelemetryLogHandler
 
 hasher = PasswordHasher()
 
@@ -54,12 +45,8 @@ dictConfig({
             "filename": "logs.txt",
             "level": "WARN",
         },
-        "telemetry": {
-            "class": "__main__.OpenTelemetryLogHandler",  # Reference your handler class
-            "level": "INFO",
-        }
     },
-    "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler", "telemetry"]},
+    "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler"]},
 }
 )
 SWAGGER_URL_PREFIX = "/swagger"
