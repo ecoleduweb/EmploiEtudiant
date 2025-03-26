@@ -32,8 +32,17 @@
     }
 
     const handleDeleteClick = (jobOffer: JobOfferDetails) => {
-       jobOfferSelected = jobOffer;
-       showDeleteModal = true
+        jobOfferSelected = jobOffer
+        showDeleteModal = true
+    }
+
+    const deleteOfferAndCloseModal = (idJobOffer: number | null) => {
+       //jobOfferSelected = jobOffer;
+       showDeleteModal = false
+
+       if (idJobOffer !== null) {
+            jobOffers.update((jobOffers) => jobOffers.filter((x) => x.id !== idJobOffer))
+        }
     }
     
     const handleEditEnterprise = () => {
@@ -69,12 +78,9 @@
         showArchiveModal = false
     }
 
-    const closeModalDelete = (idJobOffer: number | null) => 
+    const closeModalDelete = () => 
     {
         showDeleteModal = false
-        if (idJobOffer !== null) {
-            jobOffers.update((jobOffers) => jobOffers.filter((x) => x.id !== idJobOffer))
-        }
     }
 
     const onFinishedCallBack = async () => 
@@ -84,7 +90,7 @@
         closeModalApprove()
         closeModalArchive()
         closeModalCreateEdit()
-        closeModalDelete(jobOfferSelected.id)
+        closeModalDelete()
     }
 
     let enterprise: Enterprise = {
@@ -302,10 +308,11 @@
     </Modal>
     {/if}
     {#if showDeleteModal}
-    <Modal handleCloseClick={() => closeModalDelete(jobOfferSelected.id)}>
+    <Modal handleCloseClick={() => closeModalDelete()}>
         <DeleteOffer
             offer={jobOfferSelected}
-            handleDeleteClick={closeModalDelete}
+            deleteOfferAndCloseModal={deleteOfferAndCloseModal}
+            closeModalDelete={closeModalDelete}
         />
     </Modal>
     {/if}

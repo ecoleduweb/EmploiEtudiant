@@ -4,19 +4,16 @@
     import { DELETE } from "../../ts/server"
     export let offer: JobOffer
     export const isDeleted = false;
-    export let handleDeleteClick: (idJobOffer: number | null) => void
+    export let deleteOfferAndCloseModal: (idJobOffer: number | null) => void
+    export let closeModalDelete: () => void
 
-    const deleteOffer = async (isDeleted: boolean) => {
-        if (isDeleted) 
-        {
-            try {
+    const deleteOffer = async () => {
+        try {
             await DELETE(`/jobOffer/delete/${offer.id}`)
-            handleDeleteClick(offer.id)
-            } catch (error) {
-                console.error("Erreur lors de la suppression :",error)
-            }
+            deleteOfferAndCloseModal(offer.id)
+        } catch (error) {
+            console.error("Erreur lors de la suppression :",error)
         }
-        handleDeleteClick(null)
     }
 </script>
 
@@ -26,9 +23,9 @@
             <h5 class="infoTitle">Voulez-vous vraiment supprimer cette offre?</h5>
         </div>
         <div class="button">
-            <Button text="Confirmer" onClick={() => deleteOffer(true)} />
+            <Button text="Confirmer" onClick={() => deleteOffer()} />
 
-            <Button text="Refuser" onClick={() => deleteOffer(false)} />
+            <Button text="Refuser" onClick={() => closeModalDelete()} />
         </div>
     </div>
 </div>

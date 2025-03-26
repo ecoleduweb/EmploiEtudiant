@@ -105,13 +105,15 @@ def offresEmploiEmployeur(current_user):
 @token_admin_required
 def deleteJobOffer(current_user, id):
     jobOfferToDelete = jobOffer_service.findById(id)
-    if jobOfferToDelete is None :
-        logger.warning('Job offer not found with id : ' + str(id))
-        return jsonify({'message': 'Job offer not found'}), 404
-    else:
+    try:
         jobOffer_service.deleteJobOffer(id)
-        return jsonify({'message': 'Job offer deleted'}), 200 
-
+        return jsonify({'message': 'Job offer deleted'}), 200
+    except NotFoundException as e:
+        logger.warning('Job offer not found')
+        return jsonify({'message': e.message}), 404
+    except Exception as e:
+        logger.error('An error occurred while deleting the job offer : ' + str(e))
+        return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
