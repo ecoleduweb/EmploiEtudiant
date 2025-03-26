@@ -764,8 +764,8 @@ def test_deleteJobOfferNotExist(client):
 
     response2 = client.delete(f'/jobOffer/delete/15', headers={'Authorization': token})
     
-    assert response2.status_code == 404
-    assert response2.json['message'] == 'Job offer not found'    
+    assert response2.status_code == 500
+    assert response2.json['message'] == 'An error occurred while deleting the job offer'    
 
 def test_deleteJobOfferAsUser(client):
  

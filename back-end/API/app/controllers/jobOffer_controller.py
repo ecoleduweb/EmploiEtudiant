@@ -109,7 +109,7 @@ def deleteJobOffer(current_user, id):
         jobOffer_service.deleteJobOffer(id)
         return jsonify({'message': 'Job offer deleted'}), 200
     except NotFoundException as e:
-        logger.warning('Job offer not found')
+        logger.warning('Job offer not found' + str(e))
         return jsonify({'message': e.message}), 404
     except Exception as e:
         logger.error('An error occurred while deleting the job offer : ' + str(e))
