@@ -28,6 +28,9 @@ from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 import logging
 
+# Import the custom handler
+from opentelemetryloghandler import OpenTelemetryLogHandler
+
 hasher = PasswordHasher()
 
 locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
@@ -51,8 +54,12 @@ dictConfig({
             "filename": "logs.txt",
             "level": "WARN",
         },
+        "telemetry": {
+            "class": "__main__.OpenTelemetryLogHandler",  # Reference your handler class
+            "level": "INFO",
+        }
     },
-    "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler"]},
+    "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler", "telemetry"]},
 }
 )
 SWAGGER_URL_PREFIX = "/swagger"
@@ -107,41 +114,11 @@ def create_app():
     trace_provider.add_span_processor(trace_batch_processor)
     trace.set_tracer_provider(trace_provider)
 
-    log_provider = LoggerProvider(resource=resource)
-    otlp_log_exporter = OTLPLogExporter(endpoint="http://143.110.223.189:4318/v1/logs", timeout=5)
-    batch_processor = BatchLogRecordProcessor(otlp_log_exporter)
-    log_provider.add_log_record_processor(batch_processor)
-    set_logger_provider(log_provider)
-
-
     FlaskInstrumentor().instrument_app(app)
     RequestsInstrumentor().instrument()
 
     with app.app_context():
         SQLAlchemyInstrumentor().instrument(engine=db.engine)
-
-    LoggingInstrumentor().instrument(
-        set_logging_format=True,
-        log_level=logging.INFO,
-        tracer_provider=trace_provider,
-        logger_provider=log_provider,
-    )
-
-    @app.after_request
-    def flush_telemetry(response):
-        try:
-            # Flush logs
-            if batch_processor:
-                batch_processor.force_flush()
-            
-            # Flush traces
-            if trace_batch_processor:
-                trace_batch_processor.force_flush()
-            
-            logger.debug("Telemetry flushed after request")
-        except Exception as e:
-            logger.error(f"Error flushing telemetry: {str(e)}")
-        return response
 
     # END do not remove
     from app.controllers.user_controller import user_blueprint
