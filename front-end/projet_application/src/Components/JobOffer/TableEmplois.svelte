@@ -1,10 +1,9 @@
     <script lang="ts">
         import type { JobOfferDetails } from "../../Models/JobOfferDetails";
         import DetailOfferRow from "./DetailOfferRow.svelte";
-        import type { JobOffer } from "../../Models/Offre";
 
         export let offers: JobOfferDetails[] = [];
-        export let handleOfferClick: (offer: JobOffer) => void;
+        export let handleOfferClick: (offer : JobOfferDetails) => void;
     </script>
 
     <div class="table-container">

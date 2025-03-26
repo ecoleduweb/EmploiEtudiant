@@ -8,6 +8,7 @@
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import TableEmplois from "../../Components/JobOffer/TableEmplois.svelte"
+    import TableEmplois from "../../Components/JobOffer/TableEmplois.svelte"
     import { pushState } from "$app/navigation"
     import { page } from '$app/stores'
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
@@ -38,6 +39,7 @@
     }
 
     const jobOffers = writable<JobOfferDetails[]>([])
+
 
     onMount(async () => {
         try {
@@ -76,6 +78,7 @@
             </h1>
         </div>
     </section>
+
 
     <section>
         {#if loaded}
