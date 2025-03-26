@@ -103,13 +103,16 @@ def create_app():
 
     trace_provider = TracerProvider(resource=resource)
     otlp_trace_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces", timeout=5)
-    trace_provider.add_span_processor(BatchSpanProcessor(otlp_trace_exporter))
+    trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
+    trace_provider.add_span_processor(trace_batch_processor)
     trace.set_tracer_provider(trace_provider)
 
     log_provider = LoggerProvider(resource=resource)
     otlp_log_exporter = OTLPLogExporter(endpoint="http://143.110.223.189:4318/v1/logs", timeout=5)
-    log_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_log_exporter))
+    batch_processor = BatchLogRecordProcessor(otlp_log_exporter)
+    log_provider.add_log_record_processor(batch_processor)
     set_logger_provider(log_provider)
+
 
     FlaskInstrumentor().instrument_app(app)
     RequestsInstrumentor().instrument()
@@ -123,6 +126,22 @@ def create_app():
         tracer_provider=trace_provider,
         logger_provider=log_provider,
     )
+
+    @app.after_request
+    def flush_telemetry(response):
+        try:
+            # Flush logs
+            if batch_processor:
+                batch_processor.force_flush()
+            
+            # Flush traces
+            if trace_batch_processor:
+                trace_batch_processor.force_flush()
+            
+            logger.debug("Telemetry flushed after request")
+        except Exception as e:
+            logger.error(f"Error flushing telemetry: {str(e)}")
+        return response
 
     # END do not remove
     from app.controllers.user_controller import user_blueprint
