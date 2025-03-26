@@ -15,7 +15,8 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
-
+    import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
+    
     let showApproveModal = false;
     let showCreateEditOffer = false;
     let showEditEnterprise = false;
