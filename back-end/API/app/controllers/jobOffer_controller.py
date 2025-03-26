@@ -101,6 +101,20 @@ def offresEmploiEmployeur(current_user):
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
+@job_offer_blueprint.route('/delete/<int:id>', methods=['DELETE'])
+@token_admin_required
+def deleteJobOffer(current_user, id):
+    jobOfferToDelete = jobOffer_service.findById(id)
+    try:
+        jobOffer_service.deleteJobOffer(id)
+        return jsonify({'message': 'Job offer deleted'}), 200
+    except NotFoundException as e:
+        logger.warning('Job offer not found' + str(e))
+        return jsonify({'message': e.message}), 404
+    except Exception as e:
+        logger.error('An error occurred while deleting the job offer : ' + str(e))
+        return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
+
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
 def updateJobOffer(current_user, id):

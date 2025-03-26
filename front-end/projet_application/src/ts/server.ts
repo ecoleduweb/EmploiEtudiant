@@ -1,4 +1,5 @@
 import { env } from "$env/dynamic/public"
+import { InvalidDataError } from "../CustomError/invalidDataError"
 
 export async function GET<T>(url: string, redirectToLoginOn401?: boolean): Promise<T> {
     try {
@@ -47,8 +48,11 @@ export async function DELETE(url: string): Promise<void> {
     try {
         const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${localStorage.getItem("token")}`,
+            },
         })
-
         await handleResponse(response)
     } catch (error) {
         console.error("Error deleting:", error)
@@ -105,8 +109,11 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401: boole
         } else if (response.status === 401 && redirectToLoginOn401) {
             window.location.href = "/login"
         } else if (response.status === 400) {
-            // TODO Juste pour toi rino! Ajouter une nouvelle exception custom (dans un nouveau dossier nommé custom exceptions)
-            // qui permet de gérer les erreurs 400 et qui retourne le message d'erreur du serveur au client mettons (dans un sexy alert :P)
+            const { field, message } = await response.json();
+            if (field === undefined || message === undefined) {
+                throw new Error(`Error: ${response.status} - ${response.statusText}`)
+            }
+            throw new InvalidDataError(message, field);
         } else {
             throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }

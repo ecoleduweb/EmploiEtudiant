@@ -24,6 +24,11 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 hasher = PasswordHasher()
 
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+otlp_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces")
 locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
@@ -71,6 +76,8 @@ def create_app():
     CORS(app)
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
+
+    FlaskInstrumentor().instrument_app(app)
 
     try:
         # port 5001 is used for playwright tests
