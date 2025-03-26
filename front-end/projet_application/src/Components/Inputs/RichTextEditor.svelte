@@ -3,7 +3,6 @@
     import { Editor } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
     import Underline from '@tiptap/extension-underline'
-    import { contentSecurityPolicy } from "helmet"
 
     const dispatch = createEventDispatcher();
 
