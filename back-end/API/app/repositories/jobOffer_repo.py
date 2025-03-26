@@ -20,11 +20,6 @@ class JobOfferRepo:
         db.session.commit()
         return newJobOffer
 
-    #def deleteJobOffer(self, id):
-     #   jobOffer = JobOffer.query.filter_by(id=id).first()
-      #  db.session.delete(jobOffer)
-       # db.session.commit()
-
     def deleteJobOffer(self, id):
         try:
             jobOffer = JobOffer.query.filter_by(id=id).first()
