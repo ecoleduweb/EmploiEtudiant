@@ -13,7 +13,7 @@
         <div class="info">
             <p class="text">{offer.title}</p>
             <p class="text">{offer.offerDebut}</p>
-            <p class="text">{ offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</p>
+            <p class="text">{@html offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</p>
         </div>
         <div class="info-mobile">
             <p class="text">{offer.title}</p>
