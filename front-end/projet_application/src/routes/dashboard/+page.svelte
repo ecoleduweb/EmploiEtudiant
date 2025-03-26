@@ -7,7 +7,7 @@
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
     import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
     import { GET } from "../../ts/server"
-    import { onMount, tick } from "svelte"
+    import { onMount} from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
@@ -15,7 +15,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
-    import { bool } from "yup"
+    import {hiddenListsService} from "../../Service/CollapsedOfferLists"
 
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -30,49 +30,25 @@
     
     
 
-    let isRefusedHidden : boolean
-    let isToBeApprovedHidden : boolean
-    let isToComeHidden : boolean
-    let isDisplayedHidden : boolean
-    let isExpiredHidden : boolean
 
-    $: display_RefusedOffers = isRefusedHidden ? 'none' : 'block';
-    $: display_ToBeApprovedOffers = isToBeApprovedHidden ? 'none' : 'block';
-    $: display_ToComeOffers = isToComeHidden ? 'none' : 'block';
-    $: display_DisplayedOffers = isDisplayedHidden ? 'none' : 'block';
-    $: display_ExpiredOffers = isExpiredHidden ? 'none' : 'block';
-
-
+    const { 
+        isRefusedHidden, 
+        isToBeApprovedHidden,
+        isToComeHidden,
+        isDisplayedHidden,
+        isExpiredHidden
+    } = hiddenListsService;
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
 
-    const handleLocalStorageStates = () => {
-        
-        let listeEtats = localStorage.getItem("listeDesEtats");
-        if(listeEtats){
-            let etats = JSON.parse(listeEtats) as { [key: string]: boolean }
-            isRefusedHidden = etats["btnHideRefusedOfferList"]
-            isToBeApprovedHidden = etats["btnHidetoBeApprovedOfferList"]
-            isToComeHidden = etats["btnHideOfferToCome"]
-            isDisplayedHidden = etats["btnHideOfferDisplayed"]
-            isExpiredHidden = etats["btnHideExpiredOffer"]
-        }
-        else{
-            isRefusedHidden = false
-            isToBeApprovedHidden = false
-            isToComeHidden = false
-            isDisplayedHidden = false
-            isExpiredHidden = false
-        }
-
-       }
+   
     
     
     const handleEditEnterprise = () => {
-        showEditEnterprise = true
+        showEditEnterprise = true 
     }
         const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
@@ -87,31 +63,6 @@
     {
         jobOfferSelected = jobOffer;
         showArchiveModal = true;
-    }
-    
-    const handleAffichageLocalStorage = () => 
-    {
-        let listeDesEtats = localStorage.getItem("listeDesEtats");
-
-        if(listeDesEtats){
-            let etats = JSON.parse(listeDesEtats) as { [key: string]: boolean }
-            etats["btnHideRefusedOfferList"] = isRefusedHidden
-            etats["btnHidetoBeApprovedOfferList"] = isToBeApprovedHidden
-            etats["btnHideOfferToCome"] = isToComeHidden
-            etats["btnHideOfferDisplayed"] = isDisplayedHidden
-            etats["btnHideExpiredOffer"] = isExpiredHidden
-            localStorage.setItem("listeDesEtats", JSON.stringify(etats));
-        }
-        else{
-            let etats = {
-                "btnHideRefusedOfferList": isRefusedHidden,
-                "btnHidetoBeApprovedOfferList": isToBeApprovedHidden,
-                "btnHideOfferToCome": isToComeHidden,
-                "btnHideOfferDisplayed": isDisplayedHidden,
-                "btnHideExpiredOffer": isExpiredHidden
-            }
-            localStorage.setItem("listeDesEtats", JSON.stringify(etats));
-        }
     }
 
     const closeEditEnterprise = () => {
@@ -159,10 +110,7 @@
         {
             if ($isLoggedIn) {
                 isModerator = ($currentUser as any).isModerator === true
-                await getJobOffersEmployer();
-                handleLocalStorageStates();
-
-                
+                await getJobOffersEmployer();    
             }
         }
         catch (error) 
@@ -251,9 +199,9 @@
                 <div class="refusedOffers">
                     <div class="offersHeader ">
                         <h2 class="textSections">Offres refusées</h2>  
-                        <Button cssId="btnHideRefusedOfferList" text={isRefusedHidden? iconeUp : iconeDown} onClick={() => {isRefusedHidden = !isRefusedHidden; handleAffichageLocalStorage()}}></Button>
+                        <Button cssId="btnHideRefusedOfferList" text={$isRefusedHidden ? iconeUp : iconeDown} onClick={() => {hiddenListsService.isRefusedHidden.update(value => !value);}}></Button>
                     </div>
-                    <div id="refusedOffersList" style="display: {isRefusedHidden ? 'none' : 'block'}">
+                    <div id="refusedOffersList" style="display: {$isRefusedHidden ? 'none' : 'block'}">
                         {#each isRefusedOffer as offer}
                         <OfferRow
                             {isModerator}
@@ -271,9 +219,9 @@
                 <div class="toBeApprovedOffers">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOfferList" text={isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{isToBeApprovedHidden = !isToBeApprovedHidden; handleAffichageLocalStorage()}}></Button>
+                        <Button cssId="btnHidetoBeApprovedOfferList" text={$isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{hiddenListsService.isToBeApprovedHidden.update(value => !value);}}></Button>
                     </div>
-                    <div id="toBeApprovedOffersList" style="display: {isToBeApprovedHidden ? 'none' : 'block'}">
+                    <div id="toBeApprovedOffersList" style="display: {$isToBeApprovedHidden ? 'none' : 'block'}">
                         {#each toBeApprovedOffer as offer}
                             <OfferRow
                                 {isModerator}
@@ -290,9 +238,9 @@
                 <div class="offerToCome">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres bientôt affichées</h2>
-                        <Button cssId="btnHideOfferToCome" text={isToComeHidden? iconeUp : iconeDown} onClick={() => {isToComeHidden = !isToComeHidden; handleAffichageLocalStorage()}}></Button>
+                        <Button cssId="btnHideOfferToCome" text={$isToComeHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isToComeHidden.update(value => !value);}}></Button>
                     </div>
-                    <div id="offersToComeList" style="display: {isToComeHidden ? 'none' : 'block'}">                
+                    <div id="offersToComeList" style="display: {$isToComeHidden ? 'none' : 'block'}">                
                         {#each offerToCome as offer}
                             <OfferRow
                                 {isModerator}
@@ -310,9 +258,9 @@
                 <div class="offerDisplayed">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres affichées</h2>
-                        <Button cssId="btnHideOfferDisplayed" text={isDisplayedHidden? iconeUp : iconeDown} onClick={() => {isDisplayedHidden = !isDisplayedHidden; handleAffichageLocalStorage()}}></Button>
+                        <Button cssId="btnHideOfferDisplayed" text={$isDisplayedHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isDisplayedHidden.update(value => !value);}}></Button>
                     </div>
-                    <div id="offerDisplayedList" style="display: {isDisplayedHidden ? 'none' : 'block'}">
+                    <div id="offerDisplayedList" style="display: {$isDisplayedHidden ? 'none' : 'block'}">
                         {#each offerDisplayed as offer}
                             <OfferRow
                                 {isModerator}
@@ -329,9 +277,9 @@
                 <div class="expiredOffer">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres expirées</h2>
-                            <Button cssId="btnHideExpiredOffer" text={isExpiredHidden? iconeUp : iconeDown} onClick={() => { isExpiredHidden = !isExpiredHidden; handleAffichageLocalStorage()}} ></Button>
+                            <Button cssId="btnHideExpiredOffer" text={$isExpiredHidden ? iconeUp : iconeDown} onClick={() => { hiddenListsService.isExpiredHidden.update(value => !value);}} ></Button>
                     </div>
-                        <div id="expiredOfferList" style="display: {isExpiredHidden ? 'none' : 'block'}">
+                        <div id="expiredOfferList" style="display: {$isExpiredHidden ? 'none' : 'block'}">
                         {#each expiredOffer as offer}
                             <OfferRow
                                 {isModerator}
