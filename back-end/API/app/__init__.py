@@ -13,18 +13,23 @@ from logging.config import dictConfig
 from logging import getLogger
 from argon2 import PasswordHasher
 from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.semconv.resource import ResourceAttributes
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.sdk._logs import LoggerProvider
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+import logging
 
 hasher = PasswordHasher()
 
-provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter())
-provider.add_span_processor(processor)
-trace.set_tracer_provider(provider)
-otlp_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces")
 locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
@@ -32,6 +37,7 @@ dictConfig({
     "formatters": {
         "default": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
         "simpleformatter": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
@@ -72,8 +78,6 @@ def create_app():
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
 
-    FlaskInstrumentor().instrument_app(app)
-
     try:
         # port 5001 is used for playwright tests
         if any("pytest" in arg for arg in sys.argv):
@@ -90,6 +94,36 @@ def create_app():
 
     #Do not remove.
     migrate = Migrate(app, db)
+
+    resource = Resource(attributes={    
+                ResourceAttributes.SERVICE_NAME: "EMPLOI_ETUDIANT_DEV",
+                ResourceAttributes.SERVICE_VERSION: "1.0.0",
+                ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
+    })
+
+    trace_provider = TracerProvider(resource=resource)
+    otlp_trace_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces", timeout=5)
+    trace_provider.add_span_processor(BatchSpanProcessor(otlp_trace_exporter))
+    trace.set_tracer_provider(trace_provider)
+
+    log_provider = LoggerProvider(resource=resource)
+    otlp_log_exporter = OTLPLogExporter(endpoint="http://143.110.223.189:4318/v1/logs", timeout=5)
+    log_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_log_exporter))
+    set_logger_provider(log_provider)
+
+    FlaskInstrumentor().instrument_app(app)
+    RequestsInstrumentor().instrument()
+
+    with app.app_context():
+        SQLAlchemyInstrumentor().instrument(engine=db.engine)
+
+    LoggingInstrumentor().instrument(
+        set_logging_format=True,
+        log_level=logging.INFO,
+        tracer_provider=trace_provider,
+        logger_provider=log_provider,
+    )
+
     # END do not remove
     from app.controllers.user_controller import user_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
