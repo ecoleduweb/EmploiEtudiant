@@ -16,21 +16,11 @@
     let loaded = false
     let selectedOffer: JobOfferDetails = undefined as any
 
-    //initialement
     const handleAddJobOfferClick = (offer: JobOfferDetails) => {
         showModal = true
         selectedOffer = offer
         pushState("?id=" + offer.id, {})
     }
-    /*
-    const handleAddJobOfferClick = (id: number) => {
-        const offer = $jobOffers.find(o => o.id === id)
-        if (offer) {
-            showModal = true
-            selectedOffer = offer
-            pushState("?id=" + id, {})
-        }
-    }*/
     
     const closeModal = () => {
         showModal = false
@@ -38,7 +28,6 @@
     }
 
     const jobOffers = writable<JobOfferDetails[]>([])
-
 
     onMount(async () => {
         try {

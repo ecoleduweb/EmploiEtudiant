@@ -4,6 +4,7 @@
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
     import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
+    import TableEmplois from "../Components/JobOffer/TableEmplois.svelte"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
     import type { JobOfferDetails } from "../Models/JobOfferDetails"
@@ -32,6 +33,9 @@
 
     const handleEmploiWithId = (id: number) => {
         goto(`/emplois?id=${id}`)
+    }
+    const handleOfferClick = (offer: JobOfferDetails) => {
+        handleEmploiWithId(offer.id);
     }
 </script>
 
@@ -98,13 +102,14 @@
             <LoadingSpinner />
         </section>
     {:else}
-        <section class="offres">
+        <!--<section class="offres">
             {#each latestJobOffers as offer}
             <DetailOfferRow {offer} 
             handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
             {/each}
-        </section>
-    {/if}
+        </section>-->
+        <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
+        {/if}
     
     <style scoped>
         .Loading 
