@@ -16,6 +16,7 @@
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
     import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
+    import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
     
     let showApproveModal = false;
     let showCreateEditOffer = false;
@@ -24,16 +25,31 @@
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
+    let showDeleteModal = false
 
     const handleCreateOffer = () => {
         showCreateEditOffer = true
         jobOfferSelected = undefined as any
     }
+
+    const handleDeleteClick = (jobOffer: JobOfferDetails) => {
+        jobOfferSelected = jobOffer
+        showDeleteModal = true
+    }
+
+    const deleteOfferAndCloseModal = (idJobOffer: number | null) => {
+       //jobOfferSelected = jobOffer;
+       showDeleteModal = false
+
+       if (idJobOffer !== null) {
+            jobOffers.update((jobOffers) => jobOffers.filter((x) => x.id !== idJobOffer))
+        }
+    }
     
     const handleEditEnterprise = () => {
         showEditEnterprise = true
     }
-        const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
+    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
         jobOfferSelected = jobOffer;
         showCreateEditOffer = true
@@ -63,6 +79,11 @@
         showArchiveModal = false
     }
 
+    const closeModalDelete = () => 
+    {
+        showDeleteModal = false
+    }
+
     const onFinishedCallBack = async () => 
     {
         await getJobOffersEmployeur()
@@ -70,6 +91,7 @@
         closeModalApprove()
         closeModalArchive()
         closeModalCreateEdit()
+        closeModalDelete()
     }
 
     let enterprise: Enterprise = {
@@ -157,7 +179,7 @@
             </div>
 
             {#if userHaveEnterprise}
-                <div class="divFlex">
+                <div class="divFlex" id="editEnterprise">
                     <Button
                         onClick={handleEditEnterprise}
                         text="Modifier ton entreprise"
@@ -184,6 +206,7 @@
                     handleEditModalClick={handleEditEmploiClick}
                     handleApproveModalClick={handleApproveClick}
                     handleArchiveModalClick={handleArchiveClick}
+                    handleDeleteModalClick={handleDeleteClick}
                 />
 
             {/if}
@@ -195,6 +218,7 @@
                 handleEditModalClick={handleEditEmploiClick}
                 handleApproveModalClick={handleApproveClick}
                 handleArchiveModalClick={handleArchiveClick}
+                handleDeleteModalClick={handleDeleteClick}
                 />
             {/if}
             {#if offerToCome.length > 0}
@@ -205,6 +229,7 @@
                 handleEditModalClick={handleEditEmploiClick}
                 handleApproveModalClick={handleApproveClick}
                 handleArchiveModalClick={handleArchiveClick}
+                handleDeleteModalClick={handleDeleteClick}
                 />
             {/if}
             {#if offerDisplayed.length > 0}
@@ -215,6 +240,7 @@
                 handleEditModalClick={handleEditEmploiClick}
                 handleApproveModalClick={handleApproveClick}
                 handleArchiveModalClick={handleArchiveClick}
+                handleDeleteModalClick={handleDeleteClick}
                 />
             {/if}
             {#if expiredOffer.length > 0}
@@ -226,6 +252,7 @@
                         handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                         handleApproveModalClick={() => {handleApproveClick(offer)}}
                         handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
                 {/each}
             {/if}
@@ -271,6 +298,15 @@
         <ArchiveConfirm
             offer={jobOfferSelected}
             handleApproveClick={closeModalArchive}
+        />
+    </Modal>
+    {/if}
+    {#if showDeleteModal}
+    <Modal handleCloseClick={() => closeModalDelete()}>
+        <DeleteOffer
+            offer={jobOfferSelected}
+            deleteOfferAndCloseModal={deleteOfferAndCloseModal}
+            closeModalDelete={closeModalDelete}
         />
     </Modal>
     {/if}

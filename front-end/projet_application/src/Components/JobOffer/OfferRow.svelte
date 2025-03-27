@@ -11,6 +11,7 @@
     export let handleEditModalClick: (id: number) => void;
     export let handleApproveModalClick: (id: number) => void;
     export let handleArchiveModalClick: (id: number) => void;
+    export let handleDeleteModalClick: (id: number) => void
 
     let enterpriseName = "Entreprise inconnue";
 
@@ -33,8 +34,11 @@
             <button class="button" on:click={() => handleApproveModalClick(offer.id)}>
                 <img class="image" src="check.svg" alt="approve" />
             </button>
+            <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
+                <img class="image" src="delete.svg" alt="supprimer" />
+            </button>
         {/if}
-        <button class="button" on:click={() => handleEditModalClick(offer.id)}>
+        <button class="button edit" on:click={() => handleEditModalClick(offer.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
         {#if offer.isApproved && ((new Date().toISOString().split("T")[0]) <= (new Date(offer.deadlineApply).toISOString().split("T")[0]))}

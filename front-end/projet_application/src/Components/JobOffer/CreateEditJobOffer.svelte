@@ -15,6 +15,7 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
+    import { InvalidDataError } from "../../CustomError/invalidDataError"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -30,7 +31,7 @@
         email: "",
         hoursPerWeek: 0,
         internship: false,
-        offerLink: "https://",
+        offerLink: "",
         offerStatus: 0,
         active: true,
         salary: "",
@@ -52,6 +53,7 @@
 
     let jobOfferErrors: any = {}
     let enterpriseErrors: any = {}
+    let invalidDataError: any = {}
     let isModerator: boolean = false
     let enterpriseSelected: { label: string; value: number }[] = []
     let enterpriseFromSelectedEnterprise: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -213,8 +215,7 @@
         }
         catch(err)
         {
-            console.log(err)
-            // TODO logger
+            console.error(err)
         }
         finally {
             loading = false
@@ -284,8 +285,14 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-
+        } catch (err: any) {
+            if (err instanceof InvalidDataError) {
+                jobOfferErrors = {
+                    [err.field]: err.message
+                };
+            } else {
+                console.error("Not Invalid data error", err);
+            }
         }
     }
 
@@ -298,8 +305,14 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-            // TODO log error
+        } catch (err: any) {
+            if (err instanceof InvalidDataError) {
+                jobOfferErrors = {
+                    [err.field]: err.message
+                };
+            } else {
+                console.error("Not Invalid data error", err);
+            }
         }
     }
 
@@ -515,6 +528,7 @@
                 bind:value={jobOffer.offerLink}
                 class="form-control"
                 id="offerLink"
+                placeholder="https://www.exemple.com/"
             />
         </div>
         <p class="errors-input">
