@@ -126,7 +126,6 @@
         {
             loaded = true
         }
-
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
@@ -199,55 +198,108 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <h2 class="textSections">Offres refusées</h2>
-                {#each isRefusedOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        offer={offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each isRefusedOffer as offer}
+                            <OfferRow
+                                {isModerator}
+                                offer={offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                            />
+                        {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if toBeApprovedOffer.length > 0}
-                <h2 class="textSections">Offres en attente d'approbation</h2>
-                {#each toBeApprovedOffer as offer}
+            <h2 class="textSections">Offres en attente d'approbation</h2>
+            <!-- Tableau pour afficher les offres en attente d'approbation -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Entreprise</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each toBeApprovedOffer as offer}
                     <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                    {isModerator}
+                    {offer}
+                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                    handleApproveModalClick={() => {handleApproveClick(offer)}}
+                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                    handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
-                {/each}
+                    {/each}
+                </tbody>
+            </table>
             {/if}
             {#if offerToCome.length > 0}
                 <h2 class="textSections">Offres bientôt affichées</h2>
-                {#each offerToCome as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each offerToCome as offer}
+                        <OfferRow
+                            {isModerator}
+                            {offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                        />
+                    {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if offerDisplayed.length > 0}
                 <h2 class="textSections">Offres affichées</h2>
-                {#each offerDisplayed as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each offerDisplayed as offer}
+                        <OfferRow
+                            {isModerator}
+                            {offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                        />
+                    {/each}
+                    </tbody>
+                </table>
             {/if}
             {#if expiredOffer.length > 0}
                 <h2 class="textSections">Offres expirées</h2>
@@ -361,6 +413,8 @@
         left: 7.2%;
         margin: 0;
         margin-top: 30px;
+        color: white;
+        font-size: 2.5vw;
     }
     .title span:first-child {
         color: white;
@@ -375,9 +429,37 @@
         margin: 0;
     }
 
+    /* Section des tableaux*/
+    table {
+        width: 100%; /* Prend toute la largeur disponible */
+        border-collapse: collapse; /* Fusionne les bordures pour un bon alignement */
+        table-layout: fixed; /* Force une répartition égale des colonnes */
+    }
+
+    thead {
+        color: white;
+    }
+
+    th {
+        padding: 12px 12px 12px 0;
+        text-align: left; /* Ajuste selon le design */
+        border-bottom: 1px solid #ddd; /* Ligne séparatrice */
+        font-weight: bold;
+        text-align: left; /* Alignement du texte des en-têtes */
+    }
+
     @media (max-width: 768px) {
+        h2 {
+            font-size: 4vw;
+        }
         .text {
             font-size: 6vw;
+        }
+        table thead {
+            font-size: 3vw; 
+        }
+        table tbody {
+            font-size: 3vw; 
         }
     }
 </style>
