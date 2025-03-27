@@ -8,6 +8,7 @@
   export let handleEditModalClick: (offer: JobOfferDetails) => void;
   export let handleApproveModalClick: (offer: JobOfferDetails) => void;
   export let handleArchiveModalClick: (offer: JobOfferDetails) => void;
+  export let handleDeleteModalClick: (offer: JobOfferDetails) => void;
 
 </script>
 
@@ -30,6 +31,7 @@
                   handleEditModalClick={() => handleEditModalClick(offer)}
                   handleApproveModalClick={() => handleApproveModalClick(offer)}
                   handleArchiveModalClick={() => handleArchiveModalClick(offer)}
+                  handleDeleteModalClick={() => {handleDeleteModalClick(offer)}}
               />
           {/each}
       </tbody>
