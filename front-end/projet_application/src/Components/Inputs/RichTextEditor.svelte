@@ -15,7 +15,7 @@
         editor = new Editor({
             element: element,
             extensions: [StarterKit, Underline],
-            content: description || 'Écrivez ici...',
+            content: description || '',
             onTransaction: () => {
                 // force re-render so `editor.isActive` works as expected
                 editor = editor;
