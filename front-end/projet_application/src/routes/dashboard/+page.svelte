@@ -278,6 +278,7 @@
                                 handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                                 handleApproveModalClick={() => {handleApproveClick(offer)}}
                                 handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                             />
                         {/each}
                     </div>
@@ -309,6 +310,7 @@
                                 handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                                 handleApproveModalClick={() => {handleApproveClick(offer)}}
                                 handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                             /> 
                         {/each}
                     </div>
