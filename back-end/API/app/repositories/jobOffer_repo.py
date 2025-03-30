@@ -19,6 +19,11 @@ class JobOfferRepo:
         db.session.add(newJobOffer)
         db.session.commit()
         return newJobOffer
+
+    def deleteJobOffer(self, id):
+        jobOffer = JobOffer.query.filter_by(id=id).first()
+        db.session.delete(jobOffer)
+        db.session.commit()
     
     def offresEmploiEmployeur(self, employerId, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         jobOffers = JobOffer.query.filter_by(employerId=employerId).all()

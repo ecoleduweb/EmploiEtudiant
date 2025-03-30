@@ -76,6 +76,9 @@ class JobOfferService:
     def createJobOffer(self, data, employerId, isApproved, last_modified_by_id):
         new_job_offer = self.validateJobOffer(data, employerId, isApproved, last_modified_by_id)
         return jobOffer_repo.createJobOffer(new_job_offer)
+
+    def deleteJobOffer(self, id):
+        return jobOffer_repo.deleteJobOffer(id)
     
     def offresEmploiEmployeur(self, employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
