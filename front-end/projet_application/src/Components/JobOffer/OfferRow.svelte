@@ -22,13 +22,25 @@
             enterpriseName = enterprise.name;
         }
     });
+
+    function truncateHtml(html : string, maxLength : number) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const text = div.textContent || div.innerText || '';
+        
+        if (text.length <= maxLength) {
+            return html;
+        }
+        
+        return text.substring(0, maxLength) + '...';
+    }
 </script>
 
 
 <tr class="offreEmploi">
     <td>{offer.title}</td>
     <td>{enterpriseName}</td>
-    <td>{@html offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</td>
+    <td>{@html truncateHtml(offer.description, 100)}</td>
     <td>{offer.offerDebut}</td>
     <td>
         {#if isModerator}
