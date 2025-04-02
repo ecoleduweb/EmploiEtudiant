@@ -28,114 +28,45 @@
     })
 </script>
 
-<button class="offreEmploi" on:click={() => handleModalClick(offer)}>
-    <div class="emploi">
-        <div class="info-mobile">
-            <p class="text">{offer.title}</p>
-            <p class="text">{offer.enterprise?.name}</p>
-        </div>                        
-        <div class="info">
-            <p class="text">{offer.title}</p>
-            <p class="text">{offer.schedules?.map(x => x.description).join(', ')}</p>
-            <p class="text">{offer.deadlineApply}</p>
-            <p class="text">{offer.studyPrograms?.map(x => x.name).join(', ')}</p>
-            <p class="text">{offer.enterprise?.name}</p>
-        </div>
-        <img class="image" src="add.svg" alt="ajouter" />
-    </div>
-</button>
+<tr class="offreEmploi" on:click={() => handleModalClick(offer)}>
+    <td>{offer.title}</td>
+    <td class="desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
+    <td class="desktop-only">{offer.deadlineApply}</td>
+    <td class="desktop-only">{offer.studyPrograms?.map(x => x.name).join(', ')}</td>
+    <td>{offer.enterprise?.name}</td>
+    <td><img class="image" src="add.svg" alt="ajouter" /></td>
+</tr>
 
 <style scoped>
     .offreEmploi {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 90%;
-        border-width: 0px;
-        border-bottom: 1px solid #00ad9a;
-        margin-left: 5.2%;
-        background-color: transparent;
-    }
-    .info {
-        display: flex;
-        width: 90%;
-        font-size: 1.2rem;
-        flex-direction: row;
-        justify-content: space-around;
-    }
-    .text {
-        width: 22%;
-    }
-    .emploi {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
         align-items: center;
         color: white;
-        border-radius: 4px;
+        width: 100%; 
+        border-width: 0px;
+        border-bottom: 1px solid #00ad9a;
+        background-color: transparent;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        width: 100%;
-        height: 100%;
-        padding: 5px 0px 5px 0px;
+        display: table-row; 
     }
-    .emploi:hover {
-        background-color: #555b66;
-    }
+
     .image {
         width: 30px;
         height: 30px;
     }
 
-    .info-mobile {
-        display: none;
+    tr:hover {
+        background-color: #555b66;
+        cursor: pointer;
     }
 
     @media (max-width: 768px) {
-        .info {
+        .desktop-only {
             display: none;
-        }
-        .info-mobile {
-            display: flex;
-            width: 90%;
-            font-size: 1.2rem;
-            flex-direction: row;
-            justify-content: space-around;
-        }
-        .offreEmploi {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 90%;
-            border-width: 0px;
-            border-bottom: 1px solid #00ad9a;
-            margin-left: 5.2%;
-            background-color: transparent;
-        }
-        .text {
-            width: 100%;
-        }
-        .emploi {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            height: 100%;
-            padding: 5px 0px 5px 0px;
-        }
-        .emploi:hover {
-            background-color: #555b66;
         }
         .image {
             width: 30px;
             height: 30px;
         }
-
     }
-
 </style>
