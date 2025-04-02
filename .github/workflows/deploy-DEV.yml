@@ -53,7 +53,7 @@ jobs:
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
             echo URL=${{ secrets.DEV_URL }} >> .env
             echo ENABLE_TRACING=true >> .env
-            echo TRACE_URL=http://143.110.223.189:4318/v1/traces >> .env
+            echo TRACE_URL=https://telemetry.edwrdl.ca:4318/v1/traces >> .env
             echo APPLICATION_NAME=API_EMPLOI_ETUDIANT_DEV >> .env
             flask db upgrade
             echo 'Installing packages'
@@ -66,7 +66,7 @@ jobs:
             echo 'Building front-end'
             echo PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY }} >> .env
             echo PUBLIC_PUBLIC_MEASUREMENT_ID=${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }} >> .env
-            echo PUBLIC_TRACE_URL=http://143.110.223.189:4318/v1/traces >> .env
+            echo PUBLIC_TRACE_URL=https://telemetry.edwrdl.ca:4318/v1/traces >> .env
             echo PUBLIC_APPLICATION_NAME=EMPLOI_ETUDIANT_DEV >> .env
             echo PUBLIC_ENABLED_TELEMETRY=TRUE >> .env
             npm run build
