@@ -303,16 +303,29 @@
             {/if}
             {#if expiredOffer.length > 0}
                 <h2 class="textSections">Offres expirées</h2>
-                {#each expiredOffer as offer}
-                    <OfferRow
-                        {isModerator}
-                        {offer}
-                        handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                        handleApproveModalClick={() => {handleApproveClick(offer)}}
-                        handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                        handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                    />
-                {/each}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each expiredOffer as offer}
+                        <OfferRow
+                            {isModerator}
+                            {offer}
+                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                            handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                        />
+                    {/each}
+                    </tbody>
+                </table>
             {/if}
         </section>
     {/if}
