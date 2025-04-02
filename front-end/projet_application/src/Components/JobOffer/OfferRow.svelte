@@ -15,7 +15,7 @@
     let enterpriseName = "Entreprise inconnue";
 
     onMount(() => {
-        if ("enterprise" in offer && offer.enterprise) {
+        if (offer.enterprise) {
             enterpriseName = offer.enterprise.name;
         } else if (enterprise) {
             enterpriseName = enterprise.name;
