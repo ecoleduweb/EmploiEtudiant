@@ -7,9 +7,10 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { Resource } from '@opentelemetry/resources';
+import { env } from "$env/dynamic/public";
 
-const TRACE_URL = import.meta.env.VITE_TRACE_URL || 'http://143.110.223.189:4318/v1/traces';
-const APPLICATION_NAME = import.meta.env.VITE_APPLICATION_NAME || 'EMPLOI_ETUDIANT_DEV';
+const TRACE_URL = env.PUBLIC_TRACE_URL;
+const APPLICATION_NAME = env.PUBLIC_APPLICATION_NAME;
 
 const exporter = new OTLPTraceExporter({
     url: TRACE_URL,

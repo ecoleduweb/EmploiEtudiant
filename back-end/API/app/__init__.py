@@ -24,11 +24,6 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 hasher = PasswordHasher()
 
-provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter())
-provider.add_span_processor(processor)
-trace.set_tracer_provider(provider)
-otlp_exporter = OTLPSpanExporter(endpoint="http://143.110.223.189:4318/v1/traces")
 locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
@@ -97,13 +92,13 @@ def create_app():
     migrate = Migrate(app, db)
     if os.environ.get('ENABLE_TRACING', 'false').lower() == 'true':
         resource = Resource(attributes={    
-                    ResourceAttributes.SERVICE_NAME: os.environ.get('TRACE_URL', 'API_EMPLOI_ETUDIANT_DEV'),
+                    ResourceAttributes.SERVICE_NAME: os.environ.get('APPLICATION_NAME', 'API_EMPLOI_ETUDIANT_DEV'),
                     ResourceAttributes.SERVICE_VERSION: "1.0.0",
                     ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
         })
 
         trace_provider = TracerProvider(resource=resource)
-        otlp_trace_exporter = OTLPSpanExporter(endpoint=os.environ.get('TRACE_URL', 'http://143.110.223.189:4318/v1/traces'), timeout=5)
+        otlp_trace_exporter = OTLPSpanExporter(endpoint=os.environ.get('TRACE_URL', 'https://telemetry.edwrdl.ca:4318/v1/traces'), timeout=5)
         trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
         trace_provider.add_span_processor(trace_batch_processor)
         trace.set_tracer_provider(trace_provider)
