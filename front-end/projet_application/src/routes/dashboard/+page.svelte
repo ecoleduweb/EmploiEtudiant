@@ -140,7 +140,6 @@
         {
             loaded = true
         }
-        
     })
 
     const jobOffers = writable<JobOfferDetails[]>([])
@@ -219,37 +218,64 @@
                         <Button cssId="btnHideRefusedOfferList" text={$isRefusedHidden ? iconeUp : iconeDown} onClick={() => {hiddenListsService.isRefusedHidden.update(value => !value);}}></Button>
                     </div>
                     <div id="refusedOffersList" style="display: {$isRefusedHidden ? 'none' : 'block'}">
+                        <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {#each isRefusedOffer as offer}
-                        <OfferRow
+                                <OfferRow
+                                    {isModerator}
+                                    offer={offer}
+                                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                    handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                    handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                            />
+                    
+                                {/each}
+                    </div>
+                </div>
+                    </tbody>
+                </table>
+            {/if}
+            {#if toBeApprovedOffer.length > 0}
+                <div class="toBeApprovedOffers">
+                    <div class="offersHeader">
+                    <h2 class="textSections">Offres en attente d'approbation</h2>
+                        <Button cssId="btnHidetoBeApprovedOfferList" text={$isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{hiddenListsService.isToBeApprovedHidden.update(value => !value);}}></Button>
+                    </div>
+                    <div id="toBeApprovedOffersList" style="display: {$isToBeApprovedHidden ? 'none' : 'block'}">
+                    <!-- Tableau pour afficher les offres en attente d'approbation -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Entreprise</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each toBeApprovedOffer as offer}
+                            <OfferRow
                             {isModerator}
-                            offer={offer}
+                            {offer}
                             handleEditModalClick={() => {handleEditEmploiClick(offer)}}
                             handleApproveModalClick={() => {handleApproveClick(offer)}}
                             handleArchiveModalClick={() => {handleArchiveClick(offer)}}
                             handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                     />
-                    
-                        {/each}
-                    </div>
-                </div>
-            {/if}
-            {#if toBeApprovedOffer.length > 0}
-                <div class="toBeApprovedOffers">
-                    <div class="offersHeader">
-                        <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOfferList" text={$isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{hiddenListsService.isToBeApprovedHidden.update(value => !value);}}></Button>
-                    </div>
-                    <div id="toBeApprovedOffersList" style="display: {$isToBeApprovedHidden ? 'none' : 'block'}">
-                        {#each toBeApprovedOffer as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                    />
-                        {/each}
+                            {/each}
+                </tbody>
+            </table>
                     </div>
                 </div>
             {/if}
@@ -260,18 +286,31 @@
                         <Button cssId="btnHideOfferToCome" text={$isToComeHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isToComeHidden.update(value => !value);}}></Button>
                     </div>
                     <div id="offersToComeList" style="display: {$isToComeHidden ? 'none' : 'block'}">                
-                        {#each offerToCome as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                            />
-                        {/each}
+                        <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each offerToCome as offer}
+                                <OfferRow
+                                    {isModerator}
+                                    {offer}
+                                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                    handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                    handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                                />
+                            {/each}
                     </div>
                 </div>
+                    </tbody>
+                </table>
             {/if}
 
             {#if offerDisplayed.length > 0}
@@ -281,18 +320,31 @@
                     <Button cssId="btnHideOfferDisplayed" text={$isDisplayedHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isDisplayedHidden.update(value => !value);}}></Button>
                 </div>
                 <div id="offerDisplayedList" style="display: {$isDisplayedHidden ? 'none' : 'block'}">
+                    <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     {#each offerDisplayed as offer}
-                        <OfferRow
-                            {isModerator}
-                            {offer}
-                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                            handleApproveModalClick={() => {handleApproveClick(offer)}}
-                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                            handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                        /> 
-                    {/each}
+                            <OfferRow
+                                {isModerator}
+                                {offer}
+                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                            /> 
+                        {/each}
                 </div>
             </div>
+                    </tbody>
+                </table>
             {/if}
             {#if expiredOffer.length > 0}
                 <div class="expiredOffer">
@@ -413,6 +465,8 @@
         left: 7.2%;
         margin: 0;
         margin-top: 30px;
+        color: white;
+        font-size: 2.5vw;
     }
     .title span:first-child {
         color: white;
@@ -426,6 +480,25 @@
         font-size: 2.5vw;
         margin: 0;
     }
+
+    /* Section des tableaux*/
+    table {
+        width: 100%; /* Prend toute la largeur disponible */
+        border-collapse: collapse; /* Fusionne les bordures pour un bon alignement */
+        table-layout: fixed; /* Force une répartition égale des colonnes */
+    }
+
+    thead {
+        color: white;
+    }
+
+    th {
+        padding: 12px 12px 12px 0;
+        text-align: left; /* Ajuste selon le design */
+        border-bottom: 1px solid #ddd; /* Ligne séparatrice */
+        font-weight: bold;
+        text-align: left; /* Alignement du texte des en-têtes */
+    }
     .offersHeader {
         display: flex;
         justify-content: space-between;
@@ -435,8 +508,17 @@
 
 
     @media (max-width: 768px) {
+        h2 {
+            font-size: 4vw;
+        }
         .text {
             font-size: 6vw;
+        }
+        table thead {
+            font-size: 3vw; 
+        }
+        table tbody {
+            font-size: 3vw; 
         }
     }
 </style>

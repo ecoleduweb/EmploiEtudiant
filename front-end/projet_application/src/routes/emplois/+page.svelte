@@ -7,6 +7,7 @@
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import TableEmplois from "../../Components/JobOffer/TableOffer.svelte"
     import { pushState } from "$app/navigation"
     import { page } from '$app/stores'
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
@@ -18,7 +19,6 @@
     const handleAddJobOfferClick = (offer: JobOfferDetails) => {
         showModal = true
         selectedOffer = offer
-
         pushState("?id=" + offer.id, {})
     }
     
@@ -28,6 +28,7 @@
     }
 
     const jobOffers = writable<JobOfferDetails[]>([])
+
     onMount(async () => {
         try {
             const response = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
@@ -66,24 +67,10 @@
         </div>
     </section>
 
-    
+
     <section>
         {#if loaded}
-            <div class="rowTitles-mobile">
-                <h2 class="rowTitles-mobile">Titre</h2>
-                <h2 class="rowTitles-mobile">Employeur</h2>
-            </div>
-            <div class="rowTitles">
-                <h2 class="rowTitle">Poste visé</h2>
-                <h2 class="rowTitle">Type d'emploi</h2>
-                <h2 class="rowTitle">Date limite pour postuler</h2>
-                <h2 class="rowTitle">Programmes visés</h2>
-                <h2 class="rowTitle">Employeur</h2>
-                <h2 class="rowTitle">Détails</h2>
-            </div>
-            {#each $jobOffers as offer}
-                <DetailOfferRow {offer} handleModalClick={handleAddJobOfferClick} />
-            {/each}
+            <TableEmplois offers={$jobOffers} handleOfferClick={handleAddJobOfferClick}/>
         {:else}
             <div class="loading">
                 <LoadingSpinner />
@@ -112,19 +99,10 @@
 
 <style scoped>
     main {
-        height: 100%;
-    }
-
-    .rowTitles {
+        flex: 1;
         display: flex;
-        margin-left: 5%;
-        justify-content: left;
-    }
-
-    .rowTitle {
-        color: #00ad9a;
-        text-align: center;
-        width: 20%;
+        flex-direction: column;
+        margin: 12px;
     }
 
     .title {
@@ -144,11 +122,7 @@
         font-size: 2.5vw;
         margin: 0;
     }
-    main {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
+
     .haut {
         display: flex;
         width: 85%;
@@ -158,12 +132,7 @@
         display: flex;
         flex-direction: column;
         width: 50%;
-        margin-left: 5.2%;
     }
-    .rowTitles-mobile {
-        display: none;
-    }
-
     @media (max-width: 768px)
     {
         .text{
@@ -174,22 +143,5 @@
         {
             width: 100vw;
         }
-        .rowTitles
-        {
-            display: none
-        }
-        .rowTitles-mobile
-        {
-            color: #00ad9a;
-            text-align: center;
-            display: flex;
-            justify-content: space-around;
-            width: 90vw;
-        }
-        h2 {
-            margin-top: 0;
-            margin-bottom: 1vh;
-        }
     }
-
 </style>

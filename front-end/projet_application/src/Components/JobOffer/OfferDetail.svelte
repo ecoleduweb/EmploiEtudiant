@@ -181,7 +181,7 @@
         margin-bottom: 1.75vw;
     }
     .container {
-        width: 95%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         text-align: left;
