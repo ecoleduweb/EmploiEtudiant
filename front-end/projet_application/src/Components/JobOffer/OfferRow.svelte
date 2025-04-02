@@ -3,11 +3,10 @@
     import type { JobOffer } from "../../Models/Offre";
     import type { JobOfferDetails } from "../../Models/JobOfferDetails";
     import type { Enterprise } from "../../Models/Enterprise";
-
     export let isModerator: boolean;
     export let offer:  JobOfferDetails;
-    
     export let enterprise: Enterprise | null = null; 
+
     export let handleEditModalClick: (id: number) => void;
     export let handleApproveModalClick: (id: number) => void;
     export let handleArchiveModalClick: (id: number) => void;
@@ -60,7 +59,6 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
-
     .image {
         width: 30px;
         height: 30px;
@@ -72,15 +70,11 @@
         transition: background-color 0.3s ease;
         border-radius: 4px;
     }
-
     td {
         color: white;
     }
 
     tr:hover {
         background-color: #555b66;
-    }
-
-    @media (max-width: 768px) {
     }
 </style>
