@@ -240,10 +240,11 @@
                             />
                     
                                 {/each}
-                    </div>
-                </div>
+                    
                     </tbody>
                 </table>
+            </div>
+        </div>
             {/if}
             {#if toBeApprovedOffer.length > 0}
                 <div class="toBeApprovedOffers">
@@ -307,10 +308,11 @@
                                     handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                                 />
                             {/each}
-                    </div>
-                </div>
+                    
                     </tbody>
-                </table>
+                    </table>
+                </div>
+            </div>
             {/if}
 
             {#if offerDisplayed.length > 0}
@@ -341,10 +343,11 @@
                                 handleDeleteModalClick={() => {handleDeleteClick(offer)}}
                             /> 
                         {/each}
-                </div>
-            </div>
+                
                     </tbody>
                 </table>
+            </div>
+        </div>
             {/if}
             {#if expiredOffer.length > 0}
                 <div class="expiredOffer">
