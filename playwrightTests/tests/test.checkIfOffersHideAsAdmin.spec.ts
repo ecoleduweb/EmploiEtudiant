@@ -35,7 +35,6 @@ test.describe('checkIfOffersHide', () => {
             await page.locator("#cookieBannerOk").click()
         }
 
-        await page.waitForTimeout(1000);
 
         await expect(page.locator("#refusedOffersList")).toBeVisible();
         await page.locator("#btnHideRefusedOfferList").click();
@@ -67,7 +66,6 @@ test.describe('checkIfOffersHide', () => {
         await page.locator("#btnHideExpiredOffer").click();
         await expect(page.locator("#expiredOfferList")).toBeVisible();
 
-        await page.waitForTimeout(1000);
 
     });
 
