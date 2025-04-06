@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 
-
 export interface CollapseListsStates {
     hideRefusedOffer: boolean;
     hideToBeApprovedOffer: boolean;
@@ -8,7 +7,6 @@ export interface CollapseListsStates {
     hideOfferDisplayed: boolean;
     hideExpiredOffer: boolean;
 }
-
 
 const defaultStates: CollapseListsStates = {
     hideRefusedOffer: false,
@@ -20,44 +18,31 @@ const defaultStates: CollapseListsStates = {
 
 const LOCAL_STORAGE_KEY = "hiddenListsStates";
 
-
 export function getStatesFromStorage(): CollapseListsStates {
     if (!browser) return { ...defaultStates };
 
-    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!storedData) return { ...defaultStates };
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stored) return { ...defaultStates };
 
     try {
-        const parsedData = JSON.parse(storedData);
-        return {
-            hideRefusedOffer: parsedData.hideRefusedOffer ?? defaultStates.hideRefusedOffer,
-            hideToBeApprovedOffer: parsedData.hideToBeApprovedOffer ?? defaultStates.hideToBeApprovedOffer,
-            hideOfferToCome: parsedData.hideOfferToCome ?? defaultStates.hideOfferToCome,
-            hideOfferDisplayed: parsedData.hideOfferDisplayed ?? defaultStates.hideOfferDisplayed,
-            hideExpiredOffer: parsedData.hideExpiredOffer ?? defaultStates.hideExpiredOffer
-        };
-    } catch (error) {
-        console.error("Error parsing collapse states from localStorage:", error);
+        const parsed = JSON.parse(stored);
+        return parsed as CollapseListsStates;
+    } catch (e) {
+        console.error("Erreur lors du parse des états:", e);
         return { ...defaultStates };
     }
 }
 
-/**
- * Sauvegarde les états de collapse dans le localStorage
- */
 export function storeStatesInStorage(states: CollapseListsStates): void {
     if (!browser) return;
 
     try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(states));
-    } catch (error) {
-        console.error("Error storing collapse states in localStorage:", error);
+    } catch (e) {
+        console.error("Erreur lors du stockage des états:", e);
     }
 }
 
-/**
- * Met à jour un état spécifique et sauvegarde tous les états
- */
 export function updateState(
     currentStates: CollapseListsStates,
     key: keyof CollapseListsStates,
