@@ -1,85 +1,69 @@
-import { writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
-interface CollapseListsStates {
-    isRefusedHidden: boolean;
-    isToBeApprovedHidden: boolean;
-    isToComeHidden: boolean;
-    isDisplayedHidden: boolean;
-    isExpiredHidden: boolean;
+
+export interface CollapseListsStates {
+    hideRefusedOffer: boolean;
+    hideToBeApprovedOffer: boolean;
+    hideOfferToCome: boolean;
+    hideOfferDisplayed: boolean;
+    hideExpiredOffer: boolean;
 }
 
-class CollapseListsStatesService {
-    private localStorageKey = "hiddenListsStates";
 
-    public isRefusedHidden: Writable<boolean> = writable(false);
-    public isToBeApprovedHidden: Writable<boolean> = writable(false);
-    public isToComeHidden: Writable<boolean> = writable(false);
-    public isDisplayedHidden: Writable<boolean> = writable(false);
-    public isExpiredHidden: Writable<boolean> = writable(false);
+const defaultStates: CollapseListsStates = {
+    hideRefusedOffer: false,
+    hideToBeApprovedOffer: false,
+    hideOfferToCome: false,
+    hideOfferDisplayed: false,
+    hideExpiredOffer: false
+};
 
-    constructor() {
-        // Charger les états uniquement côté client
-        if (browser) {
-            this.loadHiddenStates();
-            this.setupStateSubscriptions();
-        }
-    }
+const LOCAL_STORAGE_KEY = "hiddenListsStates";
 
-    // Charger les états depuis le localStorage
-    private loadHiddenStates(): void {
-        const storedStates = this.getDataFromLocalStorage();
 
-        if (storedStates) {
-            this.isRefusedHidden.set(storedStates["btnHideRefusedOfferList"] || false);
-            this.isToBeApprovedHidden.set(storedStates["btnHidetoBeApprovedOfferList"] || false);
-            this.isToComeHidden.set(storedStates["btnHideOfferToCome"] || false);
-            this.isDisplayedHidden.set(storedStates["btnHideOfferDisplayed"] || false);
-            this.isExpiredHidden.set(storedStates["btnHideExpiredOffer"] || false);
-        }
-    }
+export function getStatesFromStorage(): CollapseListsStates {
+    if (!browser) return { ...defaultStates };
 
-    // Configurer des abonnements pour sauvegarder automatiquement
-    private setupStateSubscriptions(): void {
-        this.isRefusedHidden.subscribe(() => this.saveHiddenStates());
-        this.isToBeApprovedHidden.subscribe(() => this.saveHiddenStates());
-        this.isToComeHidden.subscribe(() => this.saveHiddenStates());
-        this.isDisplayedHidden.subscribe(() => this.saveHiddenStates());
-        this.isExpiredHidden.subscribe(() => this.saveHiddenStates());
-    }
+    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!storedData) return { ...defaultStates };
 
-    private getDataFromLocalStorage(): { [key: string]: boolean } | null {
-        if (!browser) return null;
-
-        const data = localStorage.getItem(this.localStorageKey);
-        return data ? JSON.parse(data) : null;
-    }
-
-    private saveHiddenStates(): void {
-        if (!browser) return;
-
-        // Créer un objet avec les états actuels
-        const stateToStore = {
-            "btnHideRefusedOfferList": this.getCurrentValue(this.isRefusedHidden),
-            "btnHidetoBeApprovedOfferList": this.getCurrentValue(this.isToBeApprovedHidden),
-            "btnHideOfferToCome": this.getCurrentValue(this.isToComeHidden),
-            "btnHideOfferDisplayed": this.getCurrentValue(this.isDisplayedHidden),
-            "btnHideExpiredOffer": this.getCurrentValue(this.isExpiredHidden)
+    try {
+        const parsedData = JSON.parse(storedData);
+        return {
+            hideRefusedOffer: parsedData.hideRefusedOfferList ?? defaultStates.hideRefusedOffer,
+            hideToBeApprovedOffer: parsedData.hideToBeApprovedOfferList ?? defaultStates.hideToBeApprovedOffer,
+            hideOfferToCome: parsedData.hideOfferToCome ?? defaultStates.hideOfferToCome,
+            hideOfferDisplayed: parsedData.hideOfferDisplayed ?? defaultStates.hideOfferDisplayed,
+            hideExpiredOffer: parsedData.hideExpiredOffer ?? defaultStates.hideExpiredOffer
         };
-
-        // Sauvegarder dans le localStorage
-        localStorage.setItem(this.localStorageKey, JSON.stringify(stateToStore));
-    }
-
-    // Méthode utilitaire pour obtenir la valeur actuelle d'un store
-    private getCurrentValue(store: Writable<boolean>): boolean {
-        let value: boolean | undefined;
-        store.subscribe(($value) => {
-            value = $value;
-        })();
-        return value ?? false;
+    } catch (error) {
+        console.error("Error parsing collapse states from localStorage:", error);
+        return { ...defaultStates };
     }
 }
 
-// Créer une instance unique
-export const hiddenListsService = new CollapseListsStatesService();
+/**
+ * Sauvegarde les états de collapse dans le localStorage
+ */
+export function storeStatesInStorage(states: CollapseListsStates): void {
+    if (!browser) return;
+
+    try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(states));
+    } catch (error) {
+        console.error("Error storing collapse states in localStorage:", error);
+    }
+}
+
+/**
+ * Met à jour un état spécifique et sauvegarde tous les états
+ */
+export function updateState(
+    currentStates: CollapseListsStates,
+    key: keyof CollapseListsStates,
+    value: boolean
+): CollapseListsStates {
+    const newStates = { ...currentStates, [key]: value };
+    storeStatesInStorage(newStates);
+    return newStates;
+}

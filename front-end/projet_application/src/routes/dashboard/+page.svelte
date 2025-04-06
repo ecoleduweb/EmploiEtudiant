@@ -15,7 +15,8 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
-    import {hiddenListsService} from "../../Service/CollapsedOfferLists"
+    import {getStatesFromStorage, updateState} from "../../Service/CollapsedOfferLists"
+    import type {CollapseListsStates} from "../../Service/CollapsedOfferLists"
     import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
 
     let showApproveModal = false;
@@ -32,13 +33,12 @@
 
 
 
-    const { 
-        isRefusedHidden, 
-        isToBeApprovedHidden,
-        isToComeHidden,
-        isDisplayedHidden,
-        isExpiredHidden
-    } = hiddenListsService;
+    let hideListsStates = getStatesFromStorage();
+
+    function toggleList(nomListe: keyof CollapseListsStates) {
+    hideListsStates = updateState(hideListsStates, nomListe, !hideListsStates[nomListe]);
+}
+
     let showDeleteModal = false
 
     const handleCreateOffer = () => {
@@ -215,9 +215,9 @@
                 <div class="refusedOffers">
                     <div class="offersHeader ">
                         <h2 class="textSections">Offres refusées</h2>  
-                        <Button cssId="btnHideRefusedOfferList" text={$isRefusedHidden ? iconeUp : iconeDown} onClick={() => {hiddenListsService.isRefusedHidden.update(value => !value);}}></Button>
+                        <Button cssId="btnHideRefusedOfferList" text={hideListsStates.hideRefusedOffer ? iconeUp : iconeDown} onClick={() => {toggleList("hideRefusedOffer")}}></Button>
                     </div>
-                    <div id="refusedOffersList" style="display: {$isRefusedHidden ? 'none' : 'block'}">
+                    <div id="refusedOffersList" style="display: {hideListsStates.hideRefusedOffer ? 'none' : 'block'}">
                         <table>
                     <thead>
                         <tr>
@@ -250,9 +250,9 @@
                 <div class="toBeApprovedOffers">
                     <div class="offersHeader">
                     <h2 class="textSections">Offres en attente d'approbation</h2>
-                        <Button cssId="btnHidetoBeApprovedOfferList" text={$isToBeApprovedHidden? iconeUp : iconeDown} onClick={() =>{hiddenListsService.isToBeApprovedHidden.update(value => !value);}}></Button>
+                        <Button cssId="btnHidetoBeApprovedOfferList" text={hideListsStates.hideToBeApprovedOffer? iconeUp : iconeDown} onClick={() =>{toggleList("hideToBeApprovedOffer")}}></Button>
                     </div>
-                    <div id="toBeApprovedOffersList" style="display: {$isToBeApprovedHidden ? 'none' : 'block'}">
+                    <div id="toBeApprovedOffersList" style="display: {hideListsStates.hideToBeApprovedOffer ? 'none' : 'block'}">
                     <!-- Tableau pour afficher les offres en attente d'approbation -->
             <table>
                 <thead>
@@ -284,9 +284,9 @@
                 <div class="offerToCome">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres bientôt affichées</h2>
-                        <Button cssId="btnHideOfferToCome" text={$isToComeHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isToComeHidden.update(value => !value);}}></Button>
+                        <Button cssId="btnHideOfferToCome" text={hideListsStates.hideOfferToCome? iconeUp : iconeDown} onClick={() => {toggleList("hideOfferToCome")}}></Button>
                     </div>
-                    <div id="offersToComeList" style="display: {$isToComeHidden ? 'none' : 'block'}">                
+                    <div id="offersToComeList" style="display: {hideListsStates.hideOfferToCome ? 'none' : 'block'}">                
                         <table>
                     <thead>
                         <tr>
@@ -319,9 +319,9 @@
             <div class="offerDisplayed">
                 <div class="offersHeader">
                     <h2 class="textSections">Offres affichées</h2>
-                    <Button cssId="btnHideOfferDisplayed" text={$isDisplayedHidden? iconeUp : iconeDown} onClick={() => {hiddenListsService.isDisplayedHidden.update(value => !value);}}></Button>
+                    <Button cssId="btnHideOfferDisplayed" text={hideListsStates.hideOfferDisplayed? iconeUp : iconeDown} onClick={() => {toggleList("hideOfferDisplayed")}}></Button>
                 </div>
-                <div id="offerDisplayedList" style="display: {$isDisplayedHidden ? 'none' : 'block'}">
+                <div id="offerDisplayedList" style="display: {hideListsStates.hideOfferDisplayed ? 'none' : 'block'}">
                     <table>
                     <thead>
                         <tr>
@@ -353,34 +353,35 @@
                 <div class="expiredOffer">
                     <div class="offersHeader">
                         <h2 class="textSections">Offres expirées</h2>
-                            <Button cssId="btnHideExpiredOffer" text={$isExpiredHidden ? iconeUp : iconeDown} onClick={() => { hiddenListsService.isExpiredHidden.update(value => !value);}} ></Button>
+                            <Button cssId="btnHideExpiredOffer" text={hideListsStates.hideExpiredOffer ? iconeUp : iconeDown} onClick={() => { toggleList("hideExpiredOffer")}} ></Button>
                     </div>
-                        <div id="expiredOfferList" style="display: {$isExpiredHidden ? 'none' : 'block'}">
+                        <div id="expiredOfferList" style="display: {hideListsStates.hideExpiredOffer ? 'none' : 'block'}">
                         <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Entreprise</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {#each expiredOffer as offer}
-                                <OfferRow
-                                    {isModerator}
-                                    {offer}
-                                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                    handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                                    handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                                />
-                            {/each}
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Entreprise</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {#each expiredOffer as offer}
+                                        <OfferRow
+                                            {isModerator}
+                                            {offer}
+                                            handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                            handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                            handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                            handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                                        />
+                                    {/each}
+                            
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                    </tbody>
-                </table>
             {/if}
         </section>
     {/if}
