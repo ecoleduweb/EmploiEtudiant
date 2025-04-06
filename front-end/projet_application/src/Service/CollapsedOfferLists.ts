@@ -31,7 +31,7 @@ export function getStatesFromStorage(): CollapseListsStates {
         const parsedData = JSON.parse(storedData);
         return {
             hideRefusedOffer: parsedData.hideRefusedOffer ?? defaultStates.hideRefusedOffer,
-            hideToBeApprovedOffer: parsedData.hideToBeApprovedOfferList ?? defaultStates.hideToBeApprovedOffer,
+            hideToBeApprovedOffer: parsedData.hideToBeApprovedOffer ?? defaultStates.hideToBeApprovedOffer,
             hideOfferToCome: parsedData.hideOfferToCome ?? defaultStates.hideOfferToCome,
             hideOfferDisplayed: parsedData.hideOfferDisplayed ?? defaultStates.hideOfferDisplayed,
             hideExpiredOffer: parsedData.hideExpiredOffer ?? defaultStates.hideExpiredOffer
