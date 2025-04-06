@@ -356,18 +356,31 @@
                             <Button cssId="btnHideExpiredOffer" text={$isExpiredHidden ? iconeUp : iconeDown} onClick={() => { hiddenListsService.isExpiredHidden.update(value => !value);}} ></Button>
                     </div>
                         <div id="expiredOfferList" style="display: {$isExpiredHidden ? 'none' : 'block'}">
-                        {#each expiredOffer as offer}
-                            <OfferRow
-                                {isModerator}
-                                {offer}
-                                handleEditModalClick={() => {handleEditEmploiClick(offer)}}
-                                handleApproveModalClick={() => {handleApproveClick(offer)}}
-                                handleArchiveModalClick={() => {handleArchiveClick(offer)}}
-                                handleDeleteModalClick={() => {handleDeleteClick(offer)}}
-                            />
-                        {/each}
+                        <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Entreprise</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {#each expiredOffer as offer}
+                                <OfferRow
+                                    {isModerator}
+                                    {offer}
+                                    handleEditModalClick={() => {handleEditEmploiClick(offer)}}
+                                    handleApproveModalClick={() => {handleApproveClick(offer)}}
+                                    handleArchiveModalClick={() => {handleArchiveClick(offer)}}
+                                    handleDeleteModalClick={() => {handleDeleteClick(offer)}}
+                                />
+                            {/each}
                     </div>
                 </div>
+                    </tbody>
+                </table>
             {/if}
         </section>
     {/if}

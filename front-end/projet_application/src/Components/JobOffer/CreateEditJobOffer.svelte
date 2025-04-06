@@ -1,6 +1,7 @@
 <script lang="ts">
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
+    import RichTextEditor from "../Inputs/RichTextEditor.svelte"
     import MultiSelect from "svelte-multiselect"
     import ValidationSchema, { entrepriseSchema } from "../../FormValidations/JobOffer"
     import {ValidationError} from "yup"
@@ -548,12 +549,9 @@
         </p>
         <div class="form-group-vertical">
             <label for="description">Description du poste*</label>
-            <textarea
-                rows="15"
-                cols="50"
-                bind:value={jobOffer.description}
-                class="form-control"
-                id="description"
+            <RichTextEditor
+                description={jobOffer.description}
+                on:change={(e) => (jobOffer.description = e.detail)}
             />
         </div>
         <p class="errors-input">

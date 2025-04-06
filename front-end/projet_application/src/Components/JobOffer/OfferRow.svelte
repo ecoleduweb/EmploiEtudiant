@@ -3,6 +3,7 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails";
     import type { JobOffer } from "../../Models/Offre";
     import type { Enterprise } from "../../Models/Enterprise";
+    import { removeHtmlTags } from "../../ts/utils";
     export let isModerator: boolean;
     export let offer:  JobOfferDetails;
     export let enterprise: Enterprise | null = null; 
@@ -24,10 +25,11 @@
     });
 </script>
 
+
 <tr class="offreEmploi">
     <td>{offer.title}</td>
     <td>{enterpriseName}</td>
-    <td>{offer.description.length > 100 ? offer.description.substring(0, 100) + "..." : offer.description}</td>
+    <td>{@html removeHtmlTags(offer.description).length > 100 ? removeHtmlTags(offer.description).substring(0,100) + "..." : removeHtmlTags(offer.description)}</td>
     <td>{offer.offerDebut}</td>
     <td>
         {#if isModerator}
