@@ -439,7 +439,7 @@
     {/if}
 </main>
 
-<style scoped>
+<style lang="scss" scoped>
     main {
         flex: 1;
         display: flex;
@@ -498,6 +498,7 @@
         margin: 0;
     }
 
+    
     /* Section des tableaux*/
     table {
         width: 100%; /* Prend toute la largeur disponible */
@@ -519,7 +520,10 @@
     .offersHeader {
         display: flex;
         justify-content: space-between;
-        width: 55%;
+        width:40%;
+        :global(.button) {
+            margin: 1em;
+        }
     }
 
 
