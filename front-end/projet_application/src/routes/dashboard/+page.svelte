@@ -524,6 +524,7 @@
         :global(.button) {
             margin: 1em;
         }
+
     }
 
 
