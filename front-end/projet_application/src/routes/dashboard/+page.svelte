@@ -28,8 +28,8 @@
     let isJobOfferEdit = false
     let isModerator = false
     
-    let iconeUp = "▲"
-    let iconeDown = "▼"
+    let iconeUp = "⮞"
+    let iconeDown = "⮟"
     
 
 
