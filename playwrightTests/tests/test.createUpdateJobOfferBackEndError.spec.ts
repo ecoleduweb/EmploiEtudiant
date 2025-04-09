@@ -81,8 +81,9 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('test@gmail.com');
 
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('Test description');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('Test description');
 
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
@@ -137,8 +138,9 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.locator('#email').first().click();
     await page.locator('#email').first().fill('test@gmail.com');
 
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('Test description');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('Test description');
 
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();

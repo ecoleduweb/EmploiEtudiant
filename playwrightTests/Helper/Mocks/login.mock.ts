@@ -1,12 +1,12 @@
 import { MockConfig } from "../types";
 import jwt from 'jsonwebtoken';
 
-const generateToken = () => {
+const generateToken = (isModerator) => {
     const payload = {
         email: "test@gmail.com",
         exp: Math.floor((Date.now() + 30 * 60 * 1000) / 1000), // 30 minutes from now
         active: true,
-        isModerator: false,
+        isModerator: isModerator,
         firstName: "",
         lastName: ""
     };
@@ -30,7 +30,16 @@ export const loginMocks = {
         response: {
             status: 200,
             json: {
-                "token": generateToken()
+                "token": generateToken(false)
+            }
+        }
+    },
+    successModerator: {
+        url: '*/**/user/login',
+        response: {
+            status: 200,
+            json: {
+                "token": generateToken(true)
             }
         }
     }
