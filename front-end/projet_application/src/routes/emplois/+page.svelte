@@ -49,13 +49,17 @@
     let selectedSchedule: { label: string; value: number }[] = []
 
     const getSchedule = async () => {
-        const response = await GET<any>(
-            `/employmentSchedule/all`,
-        )
-        scheduleOption = response.map((schedule: { id: number; description: string }) => ({
+        try {
+            const response = await GET<any>(
+                `/employmentSchedule/all`,
+            )
+            scheduleOption = response.map((schedule: { id: number; description: string }) => ({
             label: schedule.description,
             value: schedule.id,
-        }))
+        })) 
+        } catch (error) {
+            console.error("Error fetching schedules:", error)
+        }
     }
 
     const confirmModalFilter = () => {
