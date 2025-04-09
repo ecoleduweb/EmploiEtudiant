@@ -84,11 +84,11 @@
         });
     };
 
-    const removeProgram = (program: { label: string; value: number }) => {
+    const onRemoveProgramFilterClick = (program: { label: string; value: number }) => {
         selectedPrograms = selectedPrograms.filter((x) => x.value !== program.value)
         confirmModalFilter()
     }
-    const removeSchedule = (schedule: { label: string; value: number }) => {
+    const onRemoveScheduleFilterClick = (schedule: { label: string; value: number }) => {
         selectedSchedule = selectedSchedule.filter((x) => x.value !== schedule.value)
         confirmModalFilter()
     }
@@ -148,13 +148,13 @@
                             {#if selectedPrograms.length > 0}
                                 <div class="badge">
                                     {selectedPrograms[0].label}
-                                    <button type="button" class="badge-close" on:click={() => removeProgram(selectedPrograms[0])}>x</button>
+                                    <button type="button" class="badge-close" on:click={() => onRemoveProgramFilterClick (selectedPrograms[0])}>x</button>
                                 </div>
                             {/if}
                             {#if selectedSchedule.length > 0}
                                 <div class="badge">
                                     {selectedSchedule[0].label}
-                                    <button type="button" class="badge-close" on:click={() => removeSchedule(selectedSchedule[0])}>x</button>
+                                    <button type="button" class="badge-close" on:click={() => onRemoveScheduleFilterClick (selectedSchedule[0])}>x</button>
                                 </div>
                             {/if}
                         </div>
