@@ -310,15 +310,10 @@
             if (err instanceof InvalidDataError) {
                 jobOfferErrors = {
                     [err.field]: err.message
-                };
             } else {
                 console.error("Not Invalid data error", err);
             }
         }
-    }
-
-    let maxDateString: any
-    $: {
         let offerDebut = new Date(jobOffer.offerDebut)
         let maxDate = new Date(
             offerDebut.setDate(offerDebut.getDate() + 15 * 7),
