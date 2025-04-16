@@ -162,7 +162,7 @@
     let dateNow = new Date().toISOString().split("T")[0]
 
     $: toBeApprovedOffer = $jobOffers.filter((x) => x.isApproved === null)
-        .sort((a, b) => new Date(a.offerDebut).getTime() - new Date(b.offerDebut).getTime());
+        .sort((a, b) => new Date(a.lastModifiedDate).getTime() - new Date(b.lastModifiedDate).getTime());
     $: isRefusedOffer = $jobOffers.filter((x) => x.isApproved === false)
     $: offerToCome = $jobOffers.filter((x) => {
         if (!x.isApproved) return false
