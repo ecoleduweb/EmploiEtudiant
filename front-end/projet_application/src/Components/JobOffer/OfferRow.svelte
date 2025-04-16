@@ -1,14 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails";
     import type { JobOffer } from "../../Models/Offre";
+    import type { JobOfferDetails } from "../../Models/JobOfferDetails";
     import type { Enterprise } from "../../Models/Enterprise";
     import { removeHtmlTags } from "../../ts/utils";
     export let isModerator: boolean;
     export let offer:  JobOfferDetails;
     export let enterprise: Enterprise | null = null; 
 
-    
     export let handleEditModalClick: (id: number) => void;
     export let handleApproveModalClick: (id: number) => void;
     export let handleArchiveModalClick: (id: number) => void;
@@ -59,6 +58,8 @@
         border-width: 0px;
         border-bottom: 1px solid #00ad9a;
         background-color: transparent;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
     }
     .image {
         width: 30px;
@@ -71,6 +72,10 @@
         transition: background-color 0.3s ease;
         border-radius: 4px;
     }
+    td {
+        color: white;
+    }
+
     tr:hover {
         background-color: #555b66;
     }
