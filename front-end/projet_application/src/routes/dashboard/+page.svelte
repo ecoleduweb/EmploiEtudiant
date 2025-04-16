@@ -436,17 +436,6 @@
         :global(.button) {
             margin: 40px 10px 0 10px;
         }
-        #btnHideExpiredOffer {
-            background: linear-gradient(135deg, #4CAF50, #81C784);
-            color: rgb(255, 255, 255);
-            border: none;
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
     }
 
 
