@@ -1,12 +1,13 @@
 from app.repositories.jobOffer_repo import JobOfferRepo
 from app.repositories.enterprise_repo import EnterpriseRepo
+from app.repositories.employer_repo import EmployerRepo
 from app.repositories.study_program_repo import StudyProgramRepo
 from app.models.jobOffer_model import JobOffer
 from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
 from app.middleware.lengthVerify import verifyStringLen
 from app.middleware.numberVerify import verifyNumber
-from app.customexception.CustomException import ValidationException, NotFoundException
+from app.customexception.CustomException import ValidationException, NotFoundException , PermissionException
 from app.services.offer_program_service import OfferProgramService
 from app.services.employmentSchedule_service import EmploymentScheduleService
 from app.services.email_service import sendMail
@@ -16,6 +17,7 @@ offer_program_service = OfferProgramService()
 employment_schedule_service = EmploymentScheduleService()
 jobOffer_repo = JobOfferRepo()
 enterprise_repo = EnterpriseRepo()
+employer_repo = EmployerRepo()
 studyProgram_repo = StudyProgramRepo()
 class JobOfferService:
 
@@ -77,8 +79,25 @@ class JobOfferService:
         new_job_offer = self.validateJobOffer(data, employerId, isApproved, last_modified_by_id)
         return jobOffer_repo.createJobOffer(new_job_offer)
 
-    def deleteJobOffer(self, id):
-        return jobOffer_repo.deleteJobOffer(id)
+    def deleteJobOffer(self, current_user, id):
+        jobOffer = self.findById(id)
+        if not jobOffer:
+            raise NotFoundException("Job offer not found")
+        
+        idEmploye = jobOffer.employerId
+        employer = employer_repo.getEmployer(idEmploye)
+        if not employer:
+            raise NotFoundException("Employer not found for this job offer")
+        employerUserId = employer.userId
+        
+        if not current_user.isModerator and employerUserId != current_user.id:
+            raise PermissionException("Permission denied")
+
+        jobOfferToDelete = jobOffer_repo.offreEmploi(id)
+        # Envoyer un courriel quand le statut d'une offre d'emploi est en attente d'approbation
+        if jobOfferToDelete.isApproved != True:
+            sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de suppression d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToDelete.title + "</b> a été annulée avec succès.")
+        return jobOfferToDelete
     
     def offresEmploiEmployeur(self, employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails):
         return jobOffer_repo.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
@@ -99,12 +118,13 @@ class JobOfferService:
         # update offerProgram
         if 'studyPrograms' in data:
             offer_program_service.updateOfferProgram(job_offer.id, data['studyPrograms'])
+        updatedJobOffer = jobOffer_repo.updateJobOffer(job_offer)
         if job_offer.isApproved != data["jobOffer"]["isApproved"] and job_offer.isApproved == None:
             if not current_user.isModerator:
                 sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + job_offer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
             else:
                 sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + job_offer.title + "</b> a été modifiée avec succès.")
-        return jobOffer_repo.updateJobOffer(job_offer)
+        return updatedJobOffer
 
     def findById(self, id):
         return jobOffer_repo.offreEmploi(id)
