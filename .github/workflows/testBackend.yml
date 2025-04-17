@@ -1,6 +1,6 @@
 name: Test BackEnd
 
-on: 
+on:
   pull_request:
     paths:
       - "back-end/**"
@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
 
       - name: Install all packages
         working-directory: back-end

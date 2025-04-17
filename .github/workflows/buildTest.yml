@@ -5,12 +5,12 @@ on:
     branches:
       - dev
     paths:
-      - "front-end/**"  
+      - "front-end/**"
   pull_request:
     branches:
       - dev
     paths:
-      - "front-end/**"  
+      - "front-end/**"
 
 jobs:
   Test_Build:
@@ -18,17 +18,21 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20" # or any other version you want
 
-      - name: Install dependencies
-        working-directory: front-end/projet_application
+      - name: Clean up node_modules and package-lock.json projet_application
         run: |
-          npm i
+          rm -rf node_modules package-lock.json
+        working-directory: front-end/projet_application
+
+      - name: Install front-end dependencies
+        run: npm install
+        working-directory: front-end/projet_application
 
       - name: Test Build
         working-directory: front-end/projet_application
