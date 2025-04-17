@@ -27,6 +27,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Clean up node_modules and package-lock.json
+        run: |
+          rm -rf node_modules package-lock.json
+        working-directory: front-end/projet_application
 
       - name: Install front-end dependencies
         run: npm ci
