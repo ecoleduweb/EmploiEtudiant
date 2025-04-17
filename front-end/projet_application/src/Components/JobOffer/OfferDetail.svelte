@@ -106,7 +106,7 @@
             <h5 class="infoTitle">Poste visé</h5>
             <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
             <h5 class="infoTitle">Description du poste</h5>
-            <p class="text">{offer.description}</p>
+            <div class="description">{@html offer.description}</div>
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
             <div class="row-copy">
                 {#if !hideURL}
@@ -173,6 +173,10 @@
         margin-bottom: 1.75vw;
         color: black;
     }
+    .description {
+        border-left: 1px solid #555;
+        padding-left: 1vw;
+    }
     .text_link
     {
         font-size: 1.1rem;
@@ -181,7 +185,7 @@
         margin-bottom: 1.75vw;
     }
     .container {
-        width: 95%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         text-align: left;

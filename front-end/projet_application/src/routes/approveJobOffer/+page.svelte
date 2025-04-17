@@ -111,10 +111,6 @@
         justify-content: center;
         align-items: center;
     }
-    .divFlex {
-        display: flex;
-        margin-bottom: 40px;
-    }
     .title {
         left: 7.2%;
         margin: 0;
@@ -127,23 +123,5 @@
     .title span:last-child {
         color: #00ad9a;
         margin: 0;
-    }
-    .offres {
-        display: flex;
-        flex-direction: column;
-        margin-left: 10%;
-    }
-    .textOffre {
-        font-size: 2.5em;
-        margin: 0;
-        margin-bottom: 1%;
-        color: white;
-    }
-    .textSections {
-        font-size: 1.8em;
-        margin: 0;
-        margin-top: 15px;
-        margin-bottom: 5;
-        color: white;
     }
 </style>

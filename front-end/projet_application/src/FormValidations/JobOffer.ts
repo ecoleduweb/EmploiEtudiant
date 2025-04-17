@@ -58,12 +58,6 @@ const schema = yup.object().shape({
             "Le salaire doit être de 255 caractères maximum",
         )
         .required("Le salaire est requis"),
-    approbationMessage: yup
-        .string()
-        .max(
-            255,
-            "Le message d'approbation doit être de 6000 caractères maximum",
-        ),
     offerLink: yup
         .string()
         .max(255, "Le lien vers l'offre doit être de 255 caractères maximum")

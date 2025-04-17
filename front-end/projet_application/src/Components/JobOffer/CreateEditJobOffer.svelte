@@ -1,6 +1,7 @@
 <script lang="ts">
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
+    import RichTextEditor from "../Inputs/RichTextEditor.svelte"
     import MultiSelect from "svelte-multiselect"
     import ValidationSchema, { entrepriseSchema } from "../../FormValidations/JobOffer"
     import {ValidationError} from "yup"
@@ -15,6 +16,7 @@
     import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
+    import { InvalidDataError } from "../../CustomError/invalidDataError"
     export let onFinished: () => Promise<void>
     export let isJobOfferEdit: boolean
 
@@ -52,6 +54,7 @@
 
     let jobOfferErrors: any = {}
     let enterpriseErrors: any = {}
+    let invalidDataError: any = {}
     let isModerator: boolean = false
     let enterpriseSelected: { label: string; value: number }[] = []
     let enterpriseFromSelectedEnterprise: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
@@ -213,8 +216,7 @@
         }
         catch(err)
         {
-            console.log(err)
-            // TODO logger
+            console.error(err)
         }
         finally {
             loading = false
@@ -284,8 +286,14 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) { 
-            console.error(err)
+        } catch (err: any) {
+            if (err instanceof InvalidDataError) {
+                jobOfferErrors = {
+                    [err.field]: err.message
+                };
+            } else {
+                console.error("Not Invalid data error", err);
+            }
         }
     }
 
@@ -298,8 +306,14 @@
             if (response) {
                 onFinished()
             }
-        } catch (err) {
-            // TODO log error
+        } catch (err: any) {
+            if (err instanceof InvalidDataError) {
+                jobOfferErrors = {
+                    [err.field]: err.message
+                };
+            } else {
+                console.error("Not Invalid data error", err);
+            }
         }
     }
 
@@ -535,12 +549,9 @@
         </p>
         <div class="form-group-vertical">
             <label for="description">Description du poste*</label>
-            <textarea
-                rows="15"
-                cols="50"
-                bind:value={jobOffer.description}
-                class="form-control"
-                id="description"
+            <RichTextEditor
+                description={jobOffer.description}
+                on:change={(e) => (jobOffer.description = e.detail)}
             />
         </div>
         <p class="errors-input">

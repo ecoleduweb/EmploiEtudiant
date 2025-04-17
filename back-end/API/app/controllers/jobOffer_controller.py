@@ -22,9 +22,10 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.services.email_service import sendMail
-from app.customexception.CustomException import NotFoundException
+from app.customexception.CustomException import NotFoundException, ValidationException
 import requests
 import os
+from app.utils.SanitizeDOM import sanitize_html
 
 logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -51,6 +52,8 @@ def createJobOffer(current_user):
                 enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
                 employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
+        description = data["jobOffer"].get('description', '')
+        data["jobOffer"]['description'] = sanitize_html(description)
         jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved, current_user.id)
         for studyProgramId in data["studyPrograms"]:
             offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
@@ -62,9 +65,11 @@ def createJobOffer(current_user):
         sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (<b>" + jobOffer.title + "</b>) a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
         sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de <b>" + jobOffer.title + "</b> par <b>" + current_user.firstName + "</b> <b>" + current_user.lastName + "</b>, pour l'entreprise " + enterprise.name + ".")
         return jobOffer.to_json_string(), 201
-    except Exception as e:
-        print("10")
+    except ValidationException as e:
         logger.warning("Could not create jobOffer, invalid data : " + str(e))
+        return jsonify({'field' : e.field,'message': e.message}), 400
+    except Exception as e:
+        logger.error("Could not create jobOffer, invalid data : " + str(e))
         return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
@@ -99,35 +104,36 @@ def offresEmploiEmployeur(current_user):
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
+@job_offer_blueprint.route('/delete/<int:id>', methods=['DELETE'])
+@token_admin_required
+def deleteJobOffer(current_user, id):
+    jobOfferToDelete = jobOffer_service.findById(id)
+    try:
+        jobOffer_service.deleteJobOffer(id)
+        return jsonify({'message': 'Job offer deleted'}), 200
+    except NotFoundException as e:
+        logger.warning('Job offer not found' + str(e))
+        return jsonify({'message': e.message}), 404
+    except Exception as e:
+        logger.error('An error occurred while deleting the job offer : ' + str(e))
+        return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
+
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
 def updateJobOffer(current_user, id):
-    jobOfferToUpdate = jobOffer_service.findById(id)
-    if jobOfferToUpdate:
-        data = request.get_json()
-        # ACM Mettre toute la logique dans le service.
-        if not current_user.isModerator:
-            data["jobOffer"]["isApproved"] = None
-            data["jobOffer"]["approbationMessage"] = None
-            # ACM Ajouter une logique pour envoyer un message à l'admin d'approver l'offre si l'offre change de statut.
-            # Une offre qui a le même contenu (le message d'explication de l'offre) devrait restée approuvée.
-            if data["jobOffer"]["isApproved"] == True:
-                data["jobOffer"]["approvedDate"] = datetime.now()
-            jobOfferToUpdate.last_modified_by_id = current_user.id
-        
-        jobOffer = jobOffer_service.updateJobOffer(data)
-        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-        # update offerProgram
-        if 'studyPrograms' in data:
-            offer_program_service.updateOfferProgram(jobOffer.id, data['studyPrograms'])
-        if jobOffer:
-            if not current_user.isModerator:
-                sendMail(current_user.email, "Modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
-            else:
-                sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de modification d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOffer.title + "</b> a été modifiée avec succès.")
-            return jsonify(jobOffer.to_json_string()), 200
-    logger.warning('Job offer not found with data : ' + str(data))
-    return jsonify({'message': 'Job offer not found'}), 404
+    try:
+        data = request.get_json()            
+        description = data.get('jobOffer', {}).get('description', '')
+        data['jobOffer']['description'] = sanitize_html(description)
+        jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
+        return jsonify(jobOffer.to_json_string()), 200
+       
+    except NotFoundException as e:
+        logger.warning('Job offer not found with data : ' + str(e))
+        return jsonify({'message': e.message}), 404
+    except ValidationException as e:
+        logger.warning("Could not create jobOffer, invalid data : " + str(e))
+        return jsonify({'field' : e.field,'message': e.message}), 400
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():

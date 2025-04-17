@@ -62,8 +62,9 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Lien vers l\'offre d\'emploi détaillée').fill('https://google.ca');
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('email@email.com');
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('aa');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('aa');
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.locator('.modal')).toHaveCount(0);
@@ -140,8 +141,9 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('test@gmail.com');
 
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('Test description');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('Test description');
 
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
@@ -190,8 +192,9 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Lien vers l\'offre d\'emploi détaillée').fill('');
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('email@email.com');
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('aa');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('aa');
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.locator('.modal')).toHaveCount(0);
@@ -228,8 +231,9 @@ test.describe('createNewJobOffer', () => {
     await page.getByLabel('Lien vers l\'offre d\'emploi détaillée').fill('https://google.caaaaaaaaaa');
     await page.locator('#email').nth(1).click();
     await page.locator('#email').nth(1).fill('email@email.com');
-    await page.getByLabel('Description du poste*').click();
-    await page.getByLabel('Description du poste*').fill('aa');
+    // [contenteditable="true"] représente le rich text editor de la description de l'offre
+    await page.locator('[contenteditable="true"]').click();
+    await page.keyboard.type('aa');
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
     await expect(page.getByText('Le site web semble inaccessible!')).toBeVisible();
