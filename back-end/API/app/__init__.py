@@ -12,7 +12,15 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
 from logging import getLogger
 from argon2 import PasswordHasher
-
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 hasher = PasswordHasher()
 
@@ -23,6 +31,7 @@ dictConfig({
     "formatters": {
         "default": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
         "simpleformatter": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
@@ -63,9 +72,11 @@ def create_app():
     # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
 
+    FlaskInstrumentor().instrument_app(app)
+
     try:
         # port 5001 is used for playwright tests
-        if any("pytest" in arg for arg in sys.argv) or any("5001" in arg for arg in sys.argv):
+        if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
             print("Running tests")
@@ -79,6 +90,25 @@ def create_app():
 
     #Do not remove.
     migrate = Migrate(app, db)
+    if os.environ.get('ENABLE_TRACING', 'false').lower() == 'true':
+        resource = Resource(attributes={    
+                    ResourceAttributes.SERVICE_NAME: os.environ.get('APPLICATION_NAME', 'API_EMPLOI_ETUDIANT_DEV'),
+                    ResourceAttributes.SERVICE_VERSION: "1.0.0",
+                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
+        })
+
+        trace_provider = TracerProvider(resource=resource)
+        otlp_trace_exporter = OTLPSpanExporter(endpoint=os.environ.get('TRACE_URL', 'https://telemetry.edwrdl.ca:4318/v1/traces'), timeout=5)
+        trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
+        trace_provider.add_span_processor(trace_batch_processor)
+        trace.set_tracer_provider(trace_provider)
+
+        FlaskInstrumentor().instrument_app(app)
+        RequestsInstrumentor().instrument()
+
+        with app.app_context():
+            SQLAlchemyInstrumentor().instrument(engine=db.engine)
+
     # END do not remove
     from app.controllers.user_controller import user_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
@@ -101,24 +131,5 @@ def create_app():
     app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
 
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
-    
-
-    with app.app_context(): 
-        if any("5001" in arg for arg in sys.argv):
-            from app.models.user_model import User 
-            from app.models.city_model import City
-            from app.models.region_model import Region
-            from app.models.employmentSchedule_model import EmploymentSchedule
-            print("Refreshing the database")
-            db.drop_all()
-            db.create_all()
-            hashed_password = hasher.hash("test123")
-            db.session.add(User(firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True))
-            db.session.add(User(firstName="user", lastName="user", email="user@gmail.com", password=hashed_password, active=True, isModerator=False))
-            db.session.add(Region(region="region"))
-            db.session.add(City(city="ville", idRegion="1"))
-            db.session.add(EmploymentSchedule(description="temps plein"))
-            db.session.commit()
-            print("database refreshed")
 
     return app

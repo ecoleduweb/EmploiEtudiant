@@ -1,5 +1,6 @@
 import type { ErrorResponse } from "../Models/ErrorResponse"
 import { POST } from "./server"
+import striptags from "striptags";
 
 export const extractErrors = (err: ErrorResponse | any) => {
     return err.inner.reduce((acc: string[], err: ErrorResponse) => {
@@ -46,4 +47,8 @@ export const checkUrlAccessibility = async (url: string): Promise<boolean> => {
     } catch {
         return false;
     }
+};
+
+export const removeHtmlTags = (html: string): string => {
+    return striptags(html);
 };
