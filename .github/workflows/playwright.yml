@@ -28,15 +28,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Clean up node_modules and package-lock.json projet_application
-        run: |
-          rm -rf node_modules package-lock.json
+      - name: Install front-end dependencies
+        run: npm ci
         working-directory: front-end/projet_application
-
-      - name: Clean up node_modules and package-lock.json playwrightTests
-        run: |
-          rm -rf node_modules package-lock.json
-        working-directory: playwrightTests
 
       - name: Install playwright test dependencies
         run: npm install
