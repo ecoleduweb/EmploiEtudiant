@@ -25,11 +25,6 @@ jobs:
         with:
           node-version: "20" # or any other version you want
 
-      - name: Clean up node_modules and package-lock.json projet_application
-        run: |
-          rm -rf node_modules package-lock.json
-        working-directory: front-end/projet_application
-
       - name: Install front-end dependencies
         run: npm install
         working-directory: front-end/projet_application
