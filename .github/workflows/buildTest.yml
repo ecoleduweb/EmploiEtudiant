@@ -25,10 +25,9 @@ jobs:
         with:
           node-version: "20" # or any other version you want
 
-      - name: Install dependencies
+      - name: Install front-end dependencies
+        run: npm ci
         working-directory: front-end/projet_application
-        run: |
-          npm i
 
       - name: Test Build
         working-directory: front-end/projet_application
