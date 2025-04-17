@@ -43,7 +43,7 @@ jobs:
         working-directory: front-end/projet_application
 
       - name: Install playwright test dependencies
-        run: npm ci
+        run: npm install
         working-directory: playwrightTests
 
       - name: Install Playwright Browsers
