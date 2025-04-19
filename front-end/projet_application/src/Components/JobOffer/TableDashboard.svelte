@@ -16,11 +16,11 @@
   <table>
       <thead>
           <tr>
-              <th>Titre</th>
-              <th>Entreprise</th>
-              <th>Description</th>
-              <th>Date d'affichage</th>
-              <th>Actions</th>
+              <th class="column-Titre">Titre</th>
+              <th class="column-Entreprise">Entreprise</th>
+              <th class="column-Description">Description</th>
+              <th class="column-Date">Date d'affichage</th>
+              <th class="column-Actions">Actions</th>
           </tr>
       </thead>
       <tbody>
@@ -61,7 +61,21 @@
       font-weight: bold;
       color: #00ad9a;
   }
-  
+  th.column-Titre {
+      width: 20%;
+  }
+  th.column-Entreprise {
+      width: 10%;
+  }
+  th.column-Description {
+      width: 50%;
+  }
+  th.column-Date {
+      width: 9%;
+  }
+  th.column-Actions {
+      width: 11%;
+  }
   @media (max-width: 768px) {
       th {
           font-size: 3vw;
