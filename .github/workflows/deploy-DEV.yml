@@ -37,6 +37,14 @@ jobs:
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/
             pip install -r requirements.txt
+            if [ ! -d "venv" ]; then
+              echo "Creating virtual environment..."
+              python -m venv venv
+            else
+              echo "Virtual environment already exists, skipping creation."
+            fi
+            source venv/bin/activate
+            pip install -r requirements.txt
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/API
             touch .env
             echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }} >> .env
