@@ -36,13 +36,21 @@ jobs:
             sudo apt-get install -y libmariadb-dev
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/prod_project/ProjetApplicationH2024/back-end/
-            pip install -r requirements.txt
+                        cd /${{ secrets.SSH_USERNAME}}/prod_project/ProjetApplicationH2024/back-end/
+            if [ ! -d "venv" ]; then
+              echo "Creating virtual environment..."
+              sudo apt-get install -y python3-venv
+              python3 -m venv venv
+            else
+              echo "Virtual environment already exists, skipping creation."
+            fi
             cd /${{ secrets.SSH_USERNAME}}/prod_project/ProjetApplicationH2024/back-end/API
             touch .env
             echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }} >> .env
             echo DATABASE_DEV_URL=${{ secrets.DATABASE_PROD_URL }} >> .env
             echo CORS=${{ secrets.PROD_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            echo MAIL_ENABLED=True >> .env
             echo MAIL_SERVER=${{ secrets.SMTP_SERVER }} >> .env
             echo MAIL_PORT=${{ secrets.SMTP_PORT }} >> .env
             echo MAIL_SENDER=${{ secrets.SMTP_SENDER }} >> .env
