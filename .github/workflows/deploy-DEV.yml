@@ -39,7 +39,8 @@ jobs:
             pip install -r requirements.txt
             if [ ! -d "venv" ]; then
               echo "Creating virtual environment..."
-              python -m venv venv
+              sudo apt-get install -y python3-venv
+              python3 -m venv venv
             else
               echo "Virtual environment already exists, skipping creation."
             fi
