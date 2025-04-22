@@ -102,7 +102,9 @@
             <LoadingSpinner />
         </section>
     {:else}
-        <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
+        <section class="section-table-emplois">
+            <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
+        </section>
         {/if}
     
     <style scoped>
@@ -193,6 +195,12 @@
         margin-top: 20px;
         text-align: justify;
     }
+    .section-table-emplois {
+    display: flex;
+    justify-content: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    }
 
     @media (max-width: 768px) {
         .haut-gauche {
@@ -229,6 +237,15 @@
             padding-left: 2vw;
             padding-right: 2vw;
         }
-
+        .section-table-emplois {
+        padding-left: 3rem;
+        padding-right: 3rem;
+        }
+        }
+        @media (min-width: 1024px) {
+        .section-table-emplois {
+            padding-left: 6rem;
+            padding-right: 6rem;
+        }
     }
 </style>

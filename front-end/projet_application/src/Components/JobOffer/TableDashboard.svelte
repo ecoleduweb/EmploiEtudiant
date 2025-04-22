@@ -19,7 +19,7 @@
               <th>Titre</th>
               <th>Entreprise</th>
               <th>Description</th>
-              <th>Date</th>
+              <th>Date d'affichage</th>
               <th>Actions</th>
           </tr>
       </thead>
