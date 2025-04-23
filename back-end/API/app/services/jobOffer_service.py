@@ -95,7 +95,7 @@ class JobOfferService:
 
         jobOfferToDelete = jobOffer_repo.offreEmploi(id)
         # Envoyer un courriel quand le statut d'une offre d'emploi est en attente d'approbation
-        if jobOfferToDelete.isApproved != True and current_user.isModerator= False:
+        if jobOfferToDelete.isApproved != True and current_user.isModerator == False:
             sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de suppression d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToDelete.title + "</b> a été annulée avec succès.")
         return jobOfferToDelete
     
