@@ -21,4 +21,4 @@ opentelemetry-instrumentation-requests==0.52b1
 opentelemetry-instrumentation-sqlalchemy==0.52b1
 opentelemetry-sdk==1.31.1
 opentelemetry-exporter-otlp==1.31.1
-bleach==6.0.0
+bleach==6.0.0df
