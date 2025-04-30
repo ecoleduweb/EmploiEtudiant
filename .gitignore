@@ -5,6 +5,7 @@ node_modules/
 /playwright/.cache/
 /build/
 logs.txt
+back-end/myenv/
 **/.DS_Store
 .env
-back-end/myenv/
+
