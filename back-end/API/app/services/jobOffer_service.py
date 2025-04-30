@@ -108,6 +108,11 @@ class JobOfferService:
         
         data["jobOffer"]["employerId"] = jobOfferToUpdate.employerId
         data["jobOffer"]["isApproved"] = jobOfferToUpdate.isApproved
+        Employer = employer_repo.getEmployer(data["jobOffer"]["employerId"])
+        if not Employer:
+            raise NotFoundException("Employer not found.")
+        if not current_user.isModerator and Employer.userId != current_user.id:
+            raise PermissionException("Permission denied")
         if(self.DidEmployerChangeTextOfJobOfferOrUpdateValueOfRejectedJobOffer(current_user, jobOfferToUpdate, data["jobOffer"])):
             data["jobOffer"]["isApproved"] = None
             data["jobOffer"]["approbationMessage"] = None
