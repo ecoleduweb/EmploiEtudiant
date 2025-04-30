@@ -4,6 +4,7 @@
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
     import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
+    import TableEmplois from "../Components/JobOffer/TableOffer.svelte"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
     import type { JobOfferDetails } from "../Models/JobOfferDetails"
@@ -32,6 +33,9 @@
 
     const handleEmploiWithId = (id: number) => {
         goto(`/emplois?id=${id}`)
+    }
+    const handleOfferClick = (offer: JobOfferDetails) => {
+        handleEmploiWithId(offer.id);
     }
 </script>
 
@@ -98,13 +102,10 @@
             <LoadingSpinner />
         </section>
     {:else}
-        <section class="offres">
-            {#each latestJobOffers as offer}
-                <DetailOfferRow {offer} 
-                handleModalClick={(function() {handleEmploiWithId(offer.id)})}/>
-            {/each}
+        <section class="section-table-emplois">
+            <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
         </section>
-    {/if}
+        {/if}
     
     <style scoped>
         .Loading 
@@ -194,6 +195,12 @@
         margin-top: 20px;
         text-align: justify;
     }
+    .section-table-emplois {
+    display: flex;
+    justify-content: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    }
 
     @media (max-width: 768px) {
         .haut-gauche {
@@ -230,6 +237,15 @@
             padding-left: 2vw;
             padding-right: 2vw;
         }
-
+        .section-table-emplois {
+        padding-left: 3rem;
+        padding-right: 3rem;
+        }
+        }
+        @media (min-width: 1024px) {
+        .section-table-emplois {
+            padding-left: 6rem;
+            padding-right: 6rem;
+        }
     }
 </style>

@@ -20,11 +20,13 @@
 
 <style scoped>
     .modal {
+        position: relative;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         background-color: #ffffff;
         border-radius: 10px;
-        padding: 20px;
+        padding: 30px 20px 20px 20px;
+
         width: 80%;
         max-width: 800px;
         max-height: 100%;
@@ -48,10 +50,13 @@
     }
 
     .close {
+        position: absolute;
+        top: -5px;
+        right: 8px;
         background: none;
         border: none;
         cursor: pointer;
-        height: 100%;
+        padding: 5px;
     }
 
     .image {

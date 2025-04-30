@@ -20,7 +20,6 @@
         border: none;
         border-radius: 14px;
         cursor: pointer;
-        cursor: pointer;
         background: linear-gradient(
                 90deg,
                 var(--c1, #992050),
@@ -37,7 +36,6 @@
         font-size: 16px;
         border: none;
         border-radius: 14px;
-        cursor: pointer;
         cursor: pointer;
         transition: 0.5s;
         background: linear-gradient(

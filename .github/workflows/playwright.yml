@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -33,7 +33,7 @@ jobs:
         working-directory: front-end/projet_application
 
       - name: Install playwright test dependencies
-        run: npm ci
+        run: npm install
         working-directory: playwrightTests
 
       - name: Install Playwright Browsers
