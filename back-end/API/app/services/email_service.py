@@ -4,13 +4,8 @@ import logging
 from msal import ConfidentialClientApplication
 from flask import current_app, request
 
-# Variable d'environnement pour le status d'activation
 enabled = os.environ.get('MAIL_ENABLED') == "True"
-
-# Configuration du logger
 logger = logging.getLogger(__name__)
-
-# Scopes pour l'API Graph
 scopes = ['https://graph.microsoft.com/.default']
 
 def get_microsoft_graph_token():
@@ -20,7 +15,6 @@ def get_microsoft_graph_token():
     Returns:
         dict: The token result containing 'access_token' if successful, or error details.
     """
-    # Récupération des variables d'environnement dans la fonction
     client_id = os.environ.get('MAIL_CLIENT_ID')
     client_secret = os.environ.get('MAIL_CLIENT_SECRET')
     tenant_id = os.environ.get('MAIL_TENANT_ID')
