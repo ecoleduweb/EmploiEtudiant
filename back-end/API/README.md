@@ -100,10 +100,14 @@ flask run
 ```bash
   python -m venv myenv
 ```
-  Ensuite activer l'environnement avec la commande :
+  Ensuite activer naviguer vers Scripts :
 
 ```bash
-  myenv\Scripts\activate
+  cd myenv\Scripts\
+```
+   Activer l'environnement
+```bash
+  .\Activate.ps1
 ```
   Reinstaller les packages requirements.txt :
 ```bash
@@ -114,5 +118,5 @@ Pour desactiver votre environnement utiliser la commande :
 ```bash
   deactivate
 ```
-Note : Pour utiliser l'environnement vous devrez l'activer(```myenv\Scripts\activate```) à chaque fois et ne pas oublier de le desactiver quand vous avez fini
+Note : Pour utiliser l'environnement vous devrez l'activer(```.\Activate.ps1```) à chaque fois et ne pas oublier de le desactiver quand vous avez fini
 
