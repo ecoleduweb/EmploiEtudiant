@@ -35,10 +35,11 @@
             <button class="button" on:click={() => handleApproveModalClick(offer.id)}>
                 <img class="image" src="check.svg" alt="approve" />
             </button>
-            <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
-                <img class="image" src="delete.svg" alt="supprimer" />
-            </button>
         {/if}
+        <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
+            <img class="image" src="delete.svg" alt="supprimer" />
+        </button>
+        
         <button class="button edit" on:click={() => handleEditModalClick(offer.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
