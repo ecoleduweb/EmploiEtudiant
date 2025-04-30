@@ -25,6 +25,7 @@ from app.services.email_service import sendMail
 from app.customexception.CustomException import NotFoundException, ValidationException , PermissionException
 import requests
 import os
+from app.utils.SanitizeDOM import sanitize_html
 
 logger = getLogger(__name__)
 job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -51,6 +52,8 @@ def createJobOffer(current_user):
                 enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
                 employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
+        description = data["jobOffer"].get('description', '')
+        data["jobOffer"]['description'] = sanitize_html(description)
         jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved, current_user.id)
         for studyProgramId in data["studyPrograms"]:
             offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
@@ -124,6 +127,8 @@ def deleteJobOffer(current_user, id):
 def updateJobOffer(current_user, id):
     try:
         data = request.get_json()            
+        description = data.get('jobOffer', {}).get('description', '')
+        data['jobOffer']['description'] = sanitize_html(description)
         jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
         return jsonify(jobOffer.to_json_string()), 200
        

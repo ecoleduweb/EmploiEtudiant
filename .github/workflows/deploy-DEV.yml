@@ -36,6 +36,8 @@ jobs:
             sudo update-locale
             python -m pip install --upgrade pip
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/
+            python3 -m venv venv
+            source venv/bin/activate
             pip install -r requirements.txt
             cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/API
             touch .env
@@ -43,15 +45,19 @@ jobs:
             echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
             echo CORS=${{ secrets.DEV_CORS_IP }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            echo MAIL_ENABLED=True >> .env
             echo MAIL_SERVER=${{ secrets.SMTP_SERVER }} >> .env
             echo MAIL_PORT=${{ secrets.SMTP_PORT }} >> .env
             echo MAIL_SENDER=${{ secrets.SMTP_SENDER }} >> .env
             echo MAIL_SERVER_LOGIN=${{ secrets.SMTP_LOGIN }} >> .env
             echo MAIL_SERVER_PASSWORD=${{ secrets.SMTP_PASSWORD }} >> .env
-            echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
+            echo MAIL_ADMINISTRATOR_ADDRESS=emploietudiant@mailinator.com >> .env
             echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
             echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
             echo URL=${{ secrets.DEV_URL }} >> .env
+            echo ENABLE_TRACING=true >> .env
+            echo TRACE_URL=https://telemetry.edwrdl.ca/traces >> .env
+            echo APPLICATION_NAME=API_EMPLOI_ETUDIANT_DEV >> .env
             flask db upgrade
             echo 'Installing packages'
             sudo systemctl enable back-end
@@ -63,7 +69,7 @@ jobs:
             echo 'Building front-end'
             echo PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY }} >> .env
             echo PUBLIC_PUBLIC_MEASUREMENT_ID=${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }} >> .env
-            echo PUBLIC_TRACE_URL=http://143.110.223.189:4318/v1/traces >> .env
+            echo PUBLIC_TRACE_URL=https://telemetry.edwrdl.ca/traces >> .env
             echo PUBLIC_APPLICATION_NAME=EMPLOI_ETUDIANT_DEV >> .env
             echo PUBLIC_ENABLED_TELEMETRY=TRUE >> .env
             npm run build
