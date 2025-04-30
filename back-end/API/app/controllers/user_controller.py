@@ -205,6 +205,8 @@ def requestResetPassword():
 
 @user_blueprint.route('/resetPassword', methods=['POST'])
 def resetPassword():
+    logger.warning("A user tried to use reset password with an invalid token")
+
     try:
         data = request.get_json()
         decryptedData = json.loads(decrypt(data['token']))

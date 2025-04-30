@@ -1,35 +1,83 @@
 import requests
 import os
+import logging
 from msal import ConfidentialClientApplication
 from flask import current_app, request
 
-client_id = os.environ.get('CLIENT_ID')
-client_secret = os.environ.get('MAIL_CLIENT_SECRET')
-tenant_id = os.environ.get('MAIL_TENANT_ID')
-graph_user_id = os.environ.get('MAIL_GRAPH_USER_ID')
+# Variable d'environnement pour le status d'activation
 enabled = os.environ.get('MAIL_ENABLED') == "True"
 
-# Initialiser l'application
-app = ConfidentialClientApplication(
-    client_id=client_id,
-    client_credential=client_secret,
-    authority=f"https://login.microsoftonline.com/{tenant_id}"
-)
+# Configuration du logger
+logger = logging.getLogger(__name__)
 
-# Obtenir un token pour l'API Graph
+# Scopes pour l'API Graph
 scopes = ['https://graph.microsoft.com/.default']
-# scopes = ["https://graph.microsoft.com/Mail.Send"]
-result = app.acquire_token_for_client(scopes=scopes)
-def sendMail(receiver_mail, subject, content):
-    # Fonction pour envoyer un email via l'API Graph
-    # email = "
-    if (not enabled or request.url_root.find("http://localhost") == 0 or current_app.config.get('TESTING')):
-        return
-    if "access_token" in result:
-        # Mettre empetucg dans le .env.... en fait il est déjà la.
-        graph_endpoint = f"https://graph.microsoft.com/v1.0/users/{graph_user_id}/sendMail"
 
-        subject = "Site de recrutement - " + subject
+def get_microsoft_graph_token():
+    """
+    Acquires an access token for Microsoft Graph API using client credentials flow.
+    
+    Returns:
+        dict: The token result containing 'access_token' if successful, or error details.
+    """
+    # Récupération des variables d'environnement dans la fonction
+    client_id = os.environ.get('MAIL_CLIENT_ID')
+    client_secret = os.environ.get('MAIL_CLIENT_SECRET')
+    tenant_id = os.environ.get('MAIL_TENANT_ID')
+    
+    try:
+        # Initialise l'application confidentielle pour l'authentification
+        app = ConfidentialClientApplication(
+            client_id=client_id,
+            client_credential=client_secret,
+            authority=f"https://login.microsoftonline.com/{tenant_id}"
+        )
+        
+        # Acquisition du token pour le client
+        result = app.acquire_token_for_client(scopes=scopes)
+        
+        if "access_token" not in result:
+            logger.warning(f"Échec d'obtention du token: {result.get('error')} - {result.get('error_description')}")
+        else:
+            logger.info("Token Microsoft Graph obtenu avec succès")
+            
+        return result
+    except Exception as e:
+        logger.error(f"Erreur lors de l'acquisition du token Microsoft Graph: {str(e)}")
+        return {"error": "authentication_failed", "error_description": str(e)}
+
+def sendMail(receiver_mail, subject, content):
+    """
+    Envoie un email via l'API Microsoft Graph.
+    
+    Args:
+        receiver_mail (str): Adresse email du destinataire
+        subject (str): Sujet de l'email
+        content (str): Contenu de l'email (sera intégré dans un template HTML)
+    """
+    logger.info(f"Tentative d'envoi de mail à {receiver_mail}")
+    
+    # Récupération de l'ID utilisateur Graph
+    graph_user_id = os.environ.get('MAIL_GRAPH_USER_ID')
+    
+    # Vérifications préliminaires - ne pas envoyer en local ou en test
+    if (not enabled or current_app.config.get('TESTING')):
+        logger.info(f"Envoi d'email désactivé: enabled={enabled}, URL={request.url_root}, testing={current_app.config.get('TESTING')}")
+        return
+    
+    # Obtention du token
+    logger.info("Appel à get_microsoft_graph_token()")
+    token_result = get_microsoft_graph_token()
+    logger.info(f"Résultat de token obtenu: {'succès' if 'access_token' in token_result else 'échec'}")
+    
+    if "access_token" in token_result:
+        # Point de terminaison Graph pour l'envoi d'email
+        graph_endpoint = f"https://graph.microsoft.com/v1.0/users/{graph_user_id}/sendMail"
+        
+        # Construction du sujet avec préfixe
+        formatted_subject = "Site de recrutement - " + subject
+        
+        # Template HTML pour l'email
         html = """\
             <html>
             <body>
@@ -47,9 +95,10 @@ def sendMail(receiver_mail, subject, content):
             </html>
             """
 
+        # Construction du corps de la requête pour l'API Graph
         email_msg = {
             'message': {
-                'subject': subject,
+                'subject': formatted_subject,
                 'body': {
                     'contentType': "HTML",
                     'content': html
@@ -63,19 +112,28 @@ def sendMail(receiver_mail, subject, content):
                 ]
             }
         }
-        print(email_msg)
+        
+        # En-têtes de la requête
         headers = {
-            'Authorization': 'Bearer ' + result['access_token'],
+            'Authorization': 'Bearer ' + token_result['access_token'],
             'Content-Type': 'application/json'
         }
         
-        response = requests.post(graph_endpoint, headers=headers, json=email_msg)
-        
-        if response.status_code == 202:
-            print("Email envoyé avec succès!")
-        else:
-            print(f"Erreur lors de l'envoi de l'email: {response.status_code}")
-            print(response.text)
+        try:
+            # Envoi de la requête à l'API Graph
+            response = requests.post(graph_endpoint, headers=headers, json=email_msg)
+            # Traitement de la réponse
+            if response.status_code == 202:
+                logger.info(f"Email envoyé avec succès à {receiver_mail}")
+                return True
+            else:
+                logger.warning(f"Échec de l'envoi d'email: Code {response.status_code} - {response.text}")
+                return False
+        except Exception as e:
+            logger.error(f"Erreur lors de l'envoi de l'email: {str(e)}")
+            # Log la traceback complète
+            logger.exception("Exception complète:")
+            return False
     else:
-        print(result.get("error"))
-        print(result.get("error_description"))
+        logger.warning(f"Impossible d'envoyer l'email: problème d'authentification - {token_result.get('error')}")
+        return False
