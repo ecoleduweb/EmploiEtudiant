@@ -7,4 +7,8 @@ node_modules/
 logs.txt
 **/.DS_Store
 .env
+<<<<<<< HEAD
 myenv/
+=======
+/myenv
+>>>>>>> cefa80f599e0398350a5240403db413db9d5bae7

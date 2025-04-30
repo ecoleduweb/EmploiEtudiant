@@ -22,7 +22,7 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.services.email_service import sendMail
-from app.customexception.CustomException import NotFoundException, ValidationException
+from app.customexception.CustomException import NotFoundException, ValidationException , PermissionException
 import requests
 import os
 from app.utils.SanitizeDOM import sanitize_html
@@ -100,20 +100,24 @@ def offresEmploiEmployeur(current_user):
         employerId = employer_service.getEmployerByUserId(current_user.id).id
     except Exception as e:
         logger.warning('Employer not found : ' + str(e))
+        
         return jsonify([]), 404
     jobOffers = jobOffer_service.offresEmploiEmployeur(employerId, needsEntrepriseDetails, needsEmploymentScheduleDetails, needsStudyProgramDetails)
     return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/delete/<int:id>', methods=['DELETE'])
-@token_admin_required
+@token_required
 def deleteJobOffer(current_user, id):
     jobOfferToDelete = jobOffer_service.findById(id)
     try:
-        jobOffer_service.deleteJobOffer(id)
+        jobOffer_service.deleteJobOffer(current_user,id)
         return jsonify({'message': 'Job offer deleted'}), 200
     except NotFoundException as e:
         logger.warning('Job offer not found' + str(e))
         return jsonify({'message': e.message}), 404
+    except PermissionException as e:
+        logger.warning('Permission denied' + str(e))
+        return jsonify({'message': e.message}), 403
     except Exception as e:
         logger.error('An error occurred while deleting the job offer : ' + str(e))
         return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
