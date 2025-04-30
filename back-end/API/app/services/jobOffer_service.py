@@ -88,9 +88,8 @@ class JobOfferService:
         employer = employer_repo.getEmployer(idEmploye)
         if not employer:
             raise NotFoundException("Employer not found for this job offer")
-        employerUserId = employer.userId
         
-        if not current_user.isModerator and employerUserId != current_user.id:
+        if not current_user.isModerator and employer.userId != current_user.id:
             raise PermissionException("Permission denied")
 
         jobOfferToDelete = jobOffer_repo.offreEmploi(id)
