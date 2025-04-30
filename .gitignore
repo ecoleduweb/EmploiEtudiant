@@ -7,4 +7,4 @@ node_modules/
 logs.txt
 **/.DS_Store
 .env
-myenv/
+back-end/myenv/
