@@ -20,14 +20,12 @@ def get_microsoft_graph_token():
     tenant_id = os.environ.get('MAIL_TENANT_ID')
     
     try:
-        # Initialise l'application confidentielle pour l'authentification
         app = ConfidentialClientApplication(
             client_id=client_id,
             client_credential=client_secret,
             authority=f"https://login.microsoftonline.com/{tenant_id}"
         )
-        
-        # Acquisition du token pour le client
+
         result = app.acquire_token_for_client(scopes=scopes)
         
         if "access_token" not in result:
@@ -51,27 +49,21 @@ def sendMail(receiver_mail, subject, content):
     """
     logger.info(f"Tentative d'envoi de mail à {receiver_mail}")
     
-    # Récupération de l'ID utilisateur Graph
     graph_user_id = os.environ.get('MAIL_GRAPH_USER_ID')
     
-    # Vérifications préliminaires - ne pas envoyer en local ou en test
     if (not enabled or current_app.config.get('TESTING')):
         logger.info(f"Envoi d'email désactivé: enabled={enabled}, URL={request.url_root}, testing={current_app.config.get('TESTING')}")
         return
     
-    # Obtention du token
     logger.info("Appel à get_microsoft_graph_token()")
     token_result = get_microsoft_graph_token()
     logger.info(f"Résultat de token obtenu: {'succès' if 'access_token' in token_result else 'échec'}")
     
     if "access_token" in token_result:
-        # Point de terminaison Graph pour l'envoi d'email
         graph_endpoint = f"https://graph.microsoft.com/v1.0/users/{graph_user_id}/sendMail"
         
-        # Construction du sujet avec préfixe
         formatted_subject = "Site de recrutement - " + subject
         
-        # Template HTML pour l'email
         html = """\
             <html>
             <body>
@@ -88,8 +80,6 @@ def sendMail(receiver_mail, subject, content):
             </body>
             </html>
             """
-
-        # Construction du corps de la requête pour l'API Graph
         email_msg = {
             'message': {
                 'subject': formatted_subject,
@@ -107,16 +97,13 @@ def sendMail(receiver_mail, subject, content):
             }
         }
         
-        # En-têtes de la requête
         headers = {
             'Authorization': 'Bearer ' + token_result['access_token'],
             'Content-Type': 'application/json'
         }
         
         try:
-            # Envoi de la requête à l'API Graph
             response = requests.post(graph_endpoint, headers=headers, json=email_msg)
-            # Traitement de la réponse
             if response.status_code == 202:
                 logger.info(f"Email envoyé avec succès à {receiver_mail}")
                 return True
@@ -125,7 +112,6 @@ def sendMail(receiver_mail, subject, content):
                 return False
         except Exception as e:
             logger.error(f"Erreur lors de l'envoi de l'email: {str(e)}")
-            # Log la traceback complète
             logger.exception("Exception complète:")
             return False
     else:
