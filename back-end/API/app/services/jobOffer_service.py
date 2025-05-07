@@ -80,13 +80,12 @@ class JobOfferService:
         return jobOffer_repo.createJobOffer(new_job_offer)
 
     def deleteJobOffer(self, current_user, id):
-        jobOffer = self.findById(id) 
-
-        if not jobOffer:
+        jobOfferToDelete = self.findById(id) 
+        if not jobOfferToDelete:
             raise NotFoundException("Job offer not found")
 
         current_employer = employer_repo.getEmployerByUserId(current_user.id)
-        employer = employer_repo.getEmployer(jobOffer.employerId)
+        employer = employer_repo.getEmployer(jobOfferToDelete.employerId)
         enterprise = enterprise_repo.getEnterprise(employer.enterpriseId) 
 
         if not employer:
@@ -98,7 +97,7 @@ class JobOfferService:
         if not current_user.isModerator and current_employer.enterpriseId != enterprise.id:
             raise PermissionException("Permission denied")
 
-        jobOfferToDelete = jobOffer_repo.offreEmploi(id)
+        jobOffer_repo.deleteJobOffer(id)
         # Envoyer un courriel quand le statut d'une offre d'emploi est en attente d'approbation
         if jobOfferToDelete.isApproved != True and current_user.isModerator == False:
             sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de suppression d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToDelete.title + "</b> a été annulée avec succès.")
