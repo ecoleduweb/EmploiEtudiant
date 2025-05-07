@@ -197,7 +197,7 @@
                 <div class="divFlex" id="editEnterprise">
                     <Button
                         onClick={handleEditEnterprise}
-                        text="Modifier ton entreprise"
+                        text="Modifier l'entreprise"
                     />
                 </div>
             {/if}
@@ -211,7 +211,7 @@
     {:else}
         <section class="offres">
             <h1 class="title">
-                <span>MES OFFRES D&apos;EMPLOIS</span>
+                <span>MES OFFRES D&apos;EMPLOI</span>
             </h1>
             {#if isRefusedOffer.length > 0}
                 <div class="offersHeader ">
