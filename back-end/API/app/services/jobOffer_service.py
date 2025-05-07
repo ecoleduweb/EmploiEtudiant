@@ -89,7 +89,7 @@ class JobOfferService:
         enterprise = enterprise_repo.getEnterprise(employer.enterpriseId) 
 
         if not current_user.isModerator and current_employer.enterpriseId != enterprise.id:
-        raise PermissionException("Permission denied")
+            raise PermissionException("Permission denied")
         
         jobOffer_repo.deleteJobOffer(id)
 
