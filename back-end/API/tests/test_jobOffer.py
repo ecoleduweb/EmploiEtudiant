@@ -59,8 +59,20 @@ def app():
             "isTemporary": False,
             "cityId": 1,
         }
+
+        enterprise_data2 = {
+            "id": 2,
+            "name": "Développeur",
+            "email": "entreprise2@test.com",
+            "phone": "321-321-4321",
+            "address": "123 rue de la rue",
+            "isTemporary": False,
+            "cityId": 1,
+        }
         enterprise = Enterprise(**enterprise_data)
+        enterprise2 = Enterprise(**enterprise_data2)
         db.session.add(enterprise)
+        db.session.add(enterprise2)
         employer_data = {
             "id": 1,
             "verified": True,
@@ -71,13 +83,23 @@ def app():
         employer2_data = {
             "id": 2,
             "verified": True,
-            "userId": 3,
+            "userId": 2,
             "enterpriseId": 1,
         }
+
+        employer3_data = {
+            "id": 3,
+            "verified": True,
+            "userId": None,
+            "enterpriseId": 2,
+        }
+
         employers = Employers(**employer_data)
         db.session.add(employers)
         employers2 = Employers(**employer2_data)    
         db.session.add(employers2)
+        employers3 = Employers(**employer3_data)
+        db.session.add(employers3)
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
         job_offer2_data = {
@@ -110,7 +132,7 @@ def app():
             "salary": '1000',
             "offerDebut": "2021-12-12",
             "active": True,
-            "employerId": 2,
+            "employerId": 3,
             "isApproved": False
         }
         job_offer2 = JobOffer(**job_offer2_data)

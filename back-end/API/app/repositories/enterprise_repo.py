@@ -78,7 +78,7 @@ class EnterpriseRepo:
         enterprise = Enterprise.query.filter_by(name=name).first()
         return enterprise.id
     
-def getEnterpriseByEmployerId(self, employerId):
+    def getEnterpriseByEmployerId(self, employerId):
         employer = Employers.query \
             .join(Enterprise, Employers.enterpriseId == Enterprise.id) \
             .filter(Employers.id == employerId) \

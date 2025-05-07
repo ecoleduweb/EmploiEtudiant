@@ -80,16 +80,22 @@ class JobOfferService:
         return jobOffer_repo.createJobOffer(new_job_offer)
 
     def deleteJobOffer(self, current_user, id):
-        jobOffer = self.findById(id)
+        jobOffer = self.findById(id) 
+
         if not jobOffer:
             raise NotFoundException("Job offer not found")
-        
-        idEmploye = jobOffer.employerId
-        employer = employer_repo.getEmployer(idEmploye)
+
+        current_employer = employer_repo.getEmployerByUserId(current_user.id)
+        employer = employer_repo.getEmployer(jobOffer.employerId)
+        enterprise = enterprise_repo.getEnterprise(employer.enterpriseId) 
+
         if not employer:
             raise NotFoundException("Employer not found for this job offer")
+
+        if not enterprise:
+            raise NotFoundException("Enterprise not found for this job offer")
         
-        if not current_user.isModerator and employer.userId != current_user.id:
+        if not current_user.isModerator and current_employer.enterpriseId != enterprise.id:
             raise PermissionException("Permission denied")
 
         jobOfferToDelete = jobOffer_repo.offreEmploi(id)
@@ -103,15 +109,21 @@ class JobOfferService:
     
     def updateJobOffer(self, data, current_user, id):
         jobOfferToUpdate = self.findById(id)
+
         if not jobOfferToUpdate:
             raise NotFoundException("Job offer not found.")
         
         data["jobOffer"]["employerId"] = jobOfferToUpdate.employerId
         data["jobOffer"]["isApproved"] = jobOfferToUpdate.isApproved
         Employer = employer_repo.getEmployer(data["jobOffer"]["employerId"])
+        Enterprise = enterprise_repo.getEnterprise(Employer.enterpriseId)
+        Current_Employer = employer_repo.getEmployerByUserId(current_user.id)
+
         if not Employer:
             raise NotFoundException("Employer not found.")
-        if not current_user.isModerator and Employer.userId != current_user.id:
+        if not Enterprise:
+            raise NotFoundException("Enterprise not found.")
+        if not current_user.isModerator and Current_Employer.enterpriseId != Enterprise.id:
             raise PermissionException("Permission denied")
         if(self.DidEmployerChangeTextOfJobOfferOrUpdateValueOfRejectedJobOffer(current_user, jobOfferToUpdate, data["jobOffer"])):
             data["jobOffer"]["isApproved"] = None
