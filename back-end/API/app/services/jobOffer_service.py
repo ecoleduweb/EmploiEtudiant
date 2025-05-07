@@ -88,16 +88,17 @@ class JobOfferService:
         employer = employer_repo.getEmployer(jobOfferToDelete.employerId)
         enterprise = enterprise_repo.getEnterprise(employer.enterpriseId) 
 
+        if not current_user.isModerator and current_employer.enterpriseId != enterprise.id:
+        raise PermissionException("Permission denied")
+        
+        jobOffer_repo.deleteJobOffer(id)
+
         if not employer:
             raise NotFoundException("Employer not found for this job offer")
 
         if not enterprise:
             raise NotFoundException("Enterprise not found for this job offer")
-        
-        if not current_user.isModerator and current_employer.enterpriseId != enterprise.id:
-            raise PermissionException("Permission denied")
 
-        jobOffer_repo.deleteJobOffer(id)
         # Envoyer un courriel quand le statut d'une offre d'emploi est en attente d'approbation
         if jobOfferToDelete.isApproved != True and current_user.isModerator == False:
             sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Confirmation de suppression d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToDelete.title + "</b> a été annulée avec succès.")
