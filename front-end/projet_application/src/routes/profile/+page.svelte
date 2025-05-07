@@ -83,7 +83,7 @@
             <div class="divFlex" id="editEnterprise">
                 <Button
                     onClick={handleShow}
-                    text="Modifier ton entreprise"
+                    text="Modifier l'entreprise"
                 />
             </div>
         {/if}
