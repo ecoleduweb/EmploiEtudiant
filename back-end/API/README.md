@@ -90,3 +90,33 @@ logger.critical("message")
 flask db upgrade (pour update les changements)
 flask run
 ```
+
+## Comment installer un environnement virtuel
+
+- S'assurer d'être dans le dossier \back-end 
+   
+   Executer la commande :
+
+```bash
+  python -m venv myenv
+```
+  Ensuite activer naviguer vers Scripts :
+
+```bash
+  cd myenv\Scripts\
+```
+   Activer l'environnement
+```bash
+  .\Activate.ps1
+```
+  Reinstaller les packages requirements.txt :
+```bash
+  pip install -r requirements.txt
+```
+Pour desactiver votre environnement utiliser la commande :
+
+```bash
+  deactivate
+```
+Note : Pour utiliser l'environnement vous devrez l'activer(```.\Activate.ps1```) à chaque fois et ne pas oublier de le desactiver quand vous avez fini
+
