@@ -26,3 +26,9 @@ class ValidationException(Exception):
         super().__init__(field, message)
         self.field = field
         self.message = message
+
+class PermissionException(Exception):
+    def __init__(self, message="Vous n'avez pas la permission d'effectuer cette action"):
+        super().__init__(message)
+        self.message = message
+        self.errorCode = 403

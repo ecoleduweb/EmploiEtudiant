@@ -64,11 +64,20 @@ def app():
         employer_data = {
             "id": 1,
             "verified": True,
-            "userId": None,
+            "userId": 1,
+            "enterpriseId": 1,
+        }
+
+        employer2_data = {
+            "id": 2,
+            "verified": True,
+            "userId": 3,
             "enterpriseId": 1,
         }
         employers = Employers(**employer_data)
         db.session.add(employers)
+        employers2 = Employers(**employer2_data)    
+        db.session.add(employers2)
         job_offer = JobOffer(**job_offer1_data)
         db.session.add(job_offer)
         job_offer2_data = {
@@ -87,8 +96,27 @@ def app():
             "employerId": None,
             "isApproved": False
         }
+
+        job_offer3_data = {
+            "id": 3,
+            "title": "Développeur",
+            "address": "123 rue de la rue",
+            "description": "Développeur front-end",
+            "dateEntryOffice": "2021-12-12",
+            "deadlineApply": "2121-12-12",
+            "email": "test@gmail.com",
+            "hoursPerWeek": 40,
+            "offerLink": "www.google.com",
+            "salary": '1000',
+            "offerDebut": "2021-12-12",
+            "active": True,
+            "employerId": 2,
+            "isApproved": False
+        }
         job_offer2 = JobOffer(**job_offer2_data)
+        job_offer3 = JobOffer(**job_offer3_data)
         db.session.add(job_offer2)
+        db.session.add(job_offer3)
         hashed_password = hasher.hash("test123")
         user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
         admin = User(id=2, firstName="Joe", lastName="Baril", email="bigJoeDu91@cegeprdl.ca", password=hashed_password, active=True, isModerator=True)
@@ -215,7 +243,6 @@ def test_adminCreateOffer(client):
         "cityId": 1,
         "isTemporary": True
     }
-
 
     hashed_password = hasher.hash("test123")
     user = User(id=3, firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True)
@@ -764,22 +791,8 @@ def test_deleteJobOfferNotExist(client):
 
     response2 = client.delete(f'/jobOffer/delete/15', headers={'Authorization': token})
     
-    assert response2.status_code == 500
-    assert response2.json['message'] == 'An error occurred while deleting the job offer'    
-
-def test_deleteJobOfferAsUser(client):
- 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
-    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
-    
-    assert response2.status_code == 401
-    assert response2.json['message'] == 'user is not admin'
+    assert response2.status_code == 404
+    assert response2.json['message'] == 'Job offer not found'    
 
 def test_deleteJobOfferAsAdmin(client):
 
@@ -794,5 +807,36 @@ def test_deleteJobOfferAsAdmin(client):
     
     assert response2.status_code == 200
     assert response2.json['message'] == 'Job offer deleted'
+
+def test_deleteOwnJobOfferAsEmployee(client):
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/2', headers={'Authorization': token})
+
+    assert response2.status_code == 200
+    assert response2.json['message'] == 'Job offer deleted'  
+
+def test_deleteOthersJobOfferAsEmployee(client):
+ 
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123"
+    }
+    response1 = client.post('/user/login', json=data1)
+    token = response1.json['token']
+
+    response2 = client.delete(f'/jobOffer/delete/3', headers={'Authorization': token})
+    
+    assert response2.status_code == 403
+    assert response2.json['message'] == 'Permission denied'
+
+
+
+
 
 
