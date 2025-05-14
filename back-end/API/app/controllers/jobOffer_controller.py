@@ -135,6 +135,9 @@ def updateJobOffer(current_user, id):
     except NotFoundException as e:
         logger.warning('Job offer not found with data : ' + str(e))
         return jsonify({'message': e.message}), 404
+    except PermissionException as e:
+        logger.warning('Permission denied' + str(e))
+        return jsonify({'message': e.message}), 403
     except ValidationException as e:
         logger.warning("Could not create jobOffer, invalid data : " + str(e))
         return jsonify({'field' : e.field,'message': e.message}), 400
