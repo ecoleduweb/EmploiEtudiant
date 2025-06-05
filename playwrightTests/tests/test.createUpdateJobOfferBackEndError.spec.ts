@@ -24,6 +24,7 @@ test.describe('createUpdateJobOfferBackEndError', () => {
       jobOfferMocks.jobOfferNew,
       enterpriseMocks.success])
       .apply();
+    await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
   });
 
   test('Nouvelle offre invalide', async ({ page }) => {
