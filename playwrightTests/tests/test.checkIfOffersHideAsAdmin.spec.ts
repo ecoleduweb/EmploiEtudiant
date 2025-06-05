@@ -15,6 +15,7 @@ test.describe('checkIfOffersHide', () => {
             studyProgramMocks.success,
             loginMocks.successModerator])
             .apply();
+        await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
 
         await page.goto('http://localhost:5002/login');
         await page.waitForLoadState('networkidle');

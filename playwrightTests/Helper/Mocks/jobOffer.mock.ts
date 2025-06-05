@@ -54,18 +54,10 @@ export const jobOfferMocks = {
                 "active": true,
                 "address": "123 rue bacon",
                 "approbationMessage": "\ud83e\udd96",
-                "lastModifiedDate": new Date().toISOString().split('T')[0],
-                "approvedDate": new Date().toISOString().split('T')[0],
-                "dateEntryOffice": (() => {
-                    const date = new Date();
-                    date.setDate(date.getDate() + 1);
-                    return date.toISOString().split('T')[0];
-                })(),
-                "deadlineApply": (() => {
-                    const date = new Date();
-                    date.setDate(date.getDate() + 1);
-                    return date.toISOString().split('T')[0];
-                })(),
+                "lastModifiedDate": '2016-02-25',
+                "approvedDate": '2016-02-25',
+                "dateEntryOffice": '2016-02-26',
+                "deadlineApply": '2016-02-27',
                 "description": "\ud83e\udd96",
                 "email": "bob@cegeprdl.ca",
                 "employerId": 2,
@@ -82,11 +74,7 @@ export const jobOfferMocks = {
                 "id": 5,
                 "isApproved": true,
                 "last_modified_by_id": 2,
-                "offerDebut": (() => {
-                    const date = new Date();
-                    date.setDate(date.getDate() + 1);
-                    return date.toISOString().split('T')[0];
-                })(),
+                "offerDebut": '2016-02-26',
                 "offerLink": "https://google.ca",
                 "salary": "23456789",
                 "schedules": [
@@ -137,9 +125,9 @@ export const jobOfferMocks = {
                         "active": true,
                         "address": "maison",
                         "approbationMessage": "sdsd",
-                        "approvedDate": "Wed, 19 Feb 2025 11:40:35 GMT",
-                        "dateEntryOffice": "2025-01-29",
-                        "deadlineApply": "2025-01-30",
+                        "approvedDate": "2015-02-25",
+                        "dateEntryOffice": "2015-03-10",
+                        "deadlineApply": "2015-03-01",
                         "description": "Lorem ipsum dolor sit amet",
                         "email": "vincent.bouch1@gmail.com",
                         "employerId": 2,
@@ -156,7 +144,7 @@ export const jobOfferMocks = {
                         "id": 3,
                         "isApproved": true,
                         "last_modified_by_id": 2,
-                        "offerDebut": "2025-01-28",
+                        "offerDebut": "2015-02-27",
                         "offerLink": "https://nodejs.org/fr/blog/release/v20.11.1",
                         "salary": "10",
                         "schedules": [
@@ -177,9 +165,9 @@ export const jobOfferMocks = {
                         "active": true,
                         "address": "sda",
                         "approbationMessage": "",
-                        "approvedDate": "Wed, 26 Feb 2025 11:46:55 GMT",
-                        "dateEntryOffice": "2025-02-05",
-                        "deadlineApply": "2025-02-05",
+                        "approvedDate": "2016-02-25",
+                        "dateEntryOffice": "2016-03-05",
+                        "deadlineApply": "2025-03-01",
                         "description": "Lorem ipsum dolor sit amet",
                         "email": "asdasd@asdasd.ca",
                         "employerId": 2,
@@ -196,7 +184,7 @@ export const jobOfferMocks = {
                         "id": 4,
                         "isApproved": false,
                         "last_modified_by_id": 2,
-                        "offerDebut": "2025-02-05",
+                        "offerDebut": "2016-02-26",
                         "offerLink": "https://youtu.be",
                         "salary": "44",
                         "schedules": [
@@ -218,8 +206,8 @@ export const jobOfferMocks = {
                         "address": "80 rue frontenac",
                         "approbationMessage": null,
                         "approvedDate": null,
-                        "dateEntryOffice": "2025-03-12",
-                        "deadlineApply": "2028-09-25",
+                        "dateEntryOffice": "2016-03-12",
+                        "deadlineApply": "2016-09-25",
                         "description": "Merci !",
                         "email": "courriel@contact.com",
                         "employerId": 6,
@@ -236,7 +224,7 @@ export const jobOfferMocks = {
                         "id": 8,
                         "isApproved": true,
                         "last_modified_by_id": 3,
-                        "offerDebut": "2028-06-14",
+                        "offerDebut": "2016-06-14",
                         "offerLink": "",
                         "salary": "66",
                         "schedules": [
@@ -258,8 +246,8 @@ export const jobOfferMocks = {
                         "address": "80 rue frontenac",
                         "approbationMessage": null,
                         "approvedDate": null,
-                        "dateEntryOffice": "2025-03-12",
-                        "deadlineApply": "2028-09-24",
+                        "dateEntryOffice": "2016-03-12",
+                        "deadlineApply": "2016-09-24",
                         "description": "Merci !",
                         "email": "courriel@contact.com",
                         "employerId": 6,
@@ -276,7 +264,7 @@ export const jobOfferMocks = {
                         "id": 8,
                         "isApproved": true,
                         "last_modified_by_id": 3,
-                        "offerDebut": "2024-06-13",
+                        "offerDebut": "2015-06-13",
                         "offerLink": "",
                         "salary": "66",
                         "schedules": [
@@ -298,8 +286,8 @@ export const jobOfferMocks = {
                         "address": "80 rue frontenac",
                         "approbationMessage": null,
                         "approvedDate": null,
-                        "dateEntryOffice": "2025-03-01",
-                        "deadlineApply": "2025-03-15",
+                        "dateEntryOffice": "2016-03-01",
+                        "deadlineApply": "2016-03-15",
                         "description": "dxfchkl",
                         "email": "ll@cegeprdl.ca",
                         "employerId": 5,
@@ -316,7 +304,7 @@ export const jobOfferMocks = {
                         "id": 7,
                         "isApproved": null,
                         "last_modified_by_id": 3,
-                        "offerDebut": "2025-03-01",
+                        "offerDebut": "2016-03-01",
                         "offerLink": "",
                         "salary": "77",
                         "schedules": [
