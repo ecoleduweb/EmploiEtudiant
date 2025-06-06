@@ -67,9 +67,6 @@
   th.column-Entreprise {
       width: 10%;
   }
-  th.column-Description {
-      width: 50%;
-  }
   th.column-Date {
       width: 9%;
   }
