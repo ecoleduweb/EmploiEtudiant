@@ -1,7 +1,8 @@
 name: PROD - Build & Deploy
 on:
   push:
-    branches: [PRODUCTION]
+    tags:
+      - "v*"
 
 jobs:
   deploy:
