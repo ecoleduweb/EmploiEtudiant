@@ -50,7 +50,7 @@ jobs:
             echo MAIL_ENABLED=True >> .env
             echo MAIL_CLIENT_ID=${{ secrets.MAIL_CLIENT_ID }} >> .env
             echo CLIENT_SECRET=${{ secrets.MAIL_CLIENT_SECRET }} >> .env
-            echo TENANT_ID=${{ secrets.MAIL_TENANT_ID }} >> .env
+            echo MAIL_TENANT_ID=${{ secrets.MAIL_TENANT_ID }} >> .env
             echo MAIL_GRAPH_USER_ID=${{ secrets.MAIL_GRAPH_USER_ID }} >> .env
             echo MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }} >> .env
             echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
