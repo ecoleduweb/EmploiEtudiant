@@ -17,6 +17,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME}}
 
           script: |
+            set -x
             sudo systemctl stop front-end
             sudo systemctl stop back-end
             echo 'moving log file to logs folder'
