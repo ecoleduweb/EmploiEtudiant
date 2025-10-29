@@ -8,6 +8,9 @@
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
     import type { JobOfferDetails } from "../Models/JobOfferDetails"
+    import AfficherOffres from "../Components/JobOffer/AfficherOffres.svelte"
+    import APropos from "../Components/Common/APropos.svelte"
+    import LargeButton from "../Components/Inputs/LargeButton.svelte"
 
     let loaded = false
     let latestJobOffers: JobOfferDetails[] = []
@@ -48,12 +51,15 @@
                 >
             </h1>
             <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
-            <p class="text-welcome">Bienvenue sur le portail d'offres d'emploi du Cégep!
-                 En collaboration avec des étudiants en Techniques de l'informatique et sous la responsabilité de l'enseignant Antoine Chagnon-Michaud,
-                  le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
-                  les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment.
-                  Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
+    
             <span class="radiant"></span>
+        </div>
+        <div class="haut-droite">
+            <Button
+                text="À PROPOS DU PORTAIL"
+                onClick={() => goto("/apropos")}
+            />
+
         </div>
 
         <!-- ------------SECTION MOBILE DEBUT ----------- -->
@@ -64,12 +70,10 @@
                 >
             </h1>
             <h2 class="text mb">DU CÉGEP DE RIVIÈRE-DU-LOUP</h2>
-            <p class="text-welcome">Bienvenue sur le portail d'offres d'emploi du Cégep!
-                En collaboration avec des étudiants en Techniques de l'informatique et sous la responsabilité de l'enseignant Antoine Chagnon-Michaud,
-                 le Cégep de Rivière-du-Loup a développé un nouveau Portail d'offres d'emploi. Celui-ci a pour objectif d'afficher 
-                 les offres d'emploi destinées à nos élèves actuels ou qui ont obtenu leur diplôme récemment.
-                 Veuillez noter que les entreprises sont responsables de la qualité du français dans leurs offres d'emploi respectives.</p>
-
+            <Button
+                text="À PROPOS DU PORTAIL"
+                onClick={() => goto("/apropos")}
+            />
             <span class="radiant"></span>
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -87,12 +91,6 @@
             <div class="buttonDiv">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <div class="divFlex" on:click={handleEmploi}>
-                    <Button
-                        text="Consulter toutes les offres"
-                        onClick={() => ""}
-                    />
-                </div>
             </div>
         </div>
     </section>
@@ -103,7 +101,8 @@
         </section>
     {:else}
         <section class="section-table-emplois">
-            <TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>
+            <!--<TableEmplois offers={latestJobOffers} handleOfferClick={handleOfferClick}/>-->
+            <AfficherOffres />
         </section>
         {/if}
     
@@ -156,12 +155,21 @@
     .haut {
         display: flex;
         widows: 85%;
+        justify-content: space-between; 
+        align-items: flex-start;
     }
     .haut-gauche {
         display: flex;
         flex-direction: column;
         width: 100%;
         margin-left: 5.2%;
+    }
+    .haut-droite{
+     display: flex;
+        align-items: center;
+        padding-top: 30px;
+        width: 40%;
+        justify-content: flex-end;   
     }
     .haut-mobile {
         display: none;
@@ -188,13 +196,6 @@
         display: flex;
     }
 
-    .text-welcome
-    {
-        color: white;
-        font-size: 0.9rem;
-        margin-top: 20px;
-        text-align: justify;
-    }
     .section-table-emplois {
     display: flex;
     justify-content: center;

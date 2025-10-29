@@ -7,7 +7,7 @@
     import { GET } from "../../ts/server"
     import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
     import { Hamburger } from 'svelte-hamburgers';
-    import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
+    //import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
 
     let open: boolean;
@@ -82,6 +82,11 @@
     const handleRegister = () => {
         open = false
         goto("/register")
+    }
+
+    const handleAPropos = () => {
+        open = false
+        goto("/a-propos")
     }
 
     const handleLogout = () => {
