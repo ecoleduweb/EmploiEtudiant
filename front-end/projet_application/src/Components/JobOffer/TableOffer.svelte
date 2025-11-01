@@ -46,6 +46,15 @@
             font-weight: bold;
             color: #00ad9a;
         }
+        th:nth-child(1) {
+                width: 34%; /* Poste visé */
+            }
+            th:nth-child(2) {
+                width: 8%; /* Type d'emploi */
+            }
+            th:nth-child(3) {
+                width: 8%; /* Date limite pour postuler */
+            }
         @media (max-width: 768px) {
             .rowTitles {
                 display: none;
