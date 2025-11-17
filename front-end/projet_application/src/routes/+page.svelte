@@ -15,7 +15,7 @@
     onMount(async () => {
         try 
         {
-            latestJobOffers = await GET<JobOfferDetails[]>("/jobOffer/approved?getRecentOnly=true&entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
+            latestJobOffers = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
         }
         catch (error) 
         {

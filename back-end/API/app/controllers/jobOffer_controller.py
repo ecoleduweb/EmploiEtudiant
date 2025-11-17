@@ -144,17 +144,12 @@ def updateJobOffer(current_user, id):
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
-    getRecentOnly = request.args.get("getRecentOnly") == "true"
     getEntrepriseDetails = request.args.get("entrepriseDetails") == "true"
     employmentScheduleDetails = request.args.get("employmentScheduleDetails") == "true"
     studyProgramDetails = request.args.get("studyProgramDetails") == "true"
 
-    if getRecentOnly:
-        jobOffers = jobOffer_service.getRecentOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
-    else:
-        jobOffers = jobOffer_service.getOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-        return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
+    jobOffers = jobOffer_service.getOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
+    return jsonify([jobOffer.to_json_string() for jobOffer in jobOffers])
 
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required

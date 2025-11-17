@@ -148,9 +148,6 @@ class JobOfferService:
     def getOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
         return jobOffer_repo.getOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
     
-    def getRecentOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
-        return jobOffer_repo.getRecentOffers(getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-    
     def linkJobOfferEmployer(self, data):
         return jobOffer_repo.linkJobOfferEmployer(data)
     
