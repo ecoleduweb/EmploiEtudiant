@@ -66,32 +66,7 @@ class JobOfferRepo:
             JobOffer.deadlineApply >= today
         ).order_by(JobOffer.approvedDate.desc()).all()
         return self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-    
-    def getRecentOffers(self, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails):
-        today = date.today()
-        last_week = today - timedelta(days=7)
-        jobOffers = JobOffer.query.filter(
-            JobOffer.isApproved == True,
-            JobOffer.offerDebut <= today,
-            JobOffer.deadlineApply >= today,
-            JobOffer.approvedDate > last_week
-        ) \
-        .order_by(JobOffer.approvedDate.desc()).all()
 
-        # If no recents job offers are found, then we get the latest 5.
-        if len(jobOffers) == 0:
-            jobOffers = JobOffer.query.filter(
-                JobOffer.isApproved == True,
-                JobOffer.offerDebut <= today,
-                JobOffer.deadlineApply >= today
-            )\
-            .order_by(JobOffer.approvedDate.desc()) \
-            .limit(5) \
-            .all()
-
-        jobOffers = self.addDetailsToJobOffer(jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails)
-        return jobOffers
- 
     def addDetailsToJobOffer(self, jobOffers, getEntrepriseDetails, employmentScheduleDetails, studyProgramDetails): 
         jobOffersDetails = []
         for jobOffer in jobOffers:
