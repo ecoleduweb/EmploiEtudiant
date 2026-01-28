@@ -8,7 +8,6 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask import Flask, jsonify
 
-from flask_swagger_ui import get_swaggerui_blueprint
 from logging.config import dictConfig
 from logging import getLogger
 from argon2 import PasswordHasher
@@ -24,7 +23,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 hasher = PasswordHasher()
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.utf8') # Set locale to french (Permet de trier correctement avec les accents...)
+locale.setlocale(locale.LC_ALL, 'fr_FR.utf8')  # Set locale to french (Permet de trier correctement avec les accents...)
 
 dictConfig({
     "version": 1,
@@ -47,8 +46,8 @@ dictConfig({
         },
     },
     "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler"]},
-}
-)
+})
+
 SWAGGER_URL_PREFIX = "/swagger"
 SWAGGER_LOCATION = "/static/swagger.json"
 
@@ -58,7 +57,6 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     config={"app_name": "Gestion de demandes d'emplois"},
 )
 
-
 db = SQLAlchemy()
 
 load_dotenv()
@@ -67,15 +65,16 @@ logger = getLogger(__name__)
 
 def create_app():
     app = Flask(__name__)
-    # Temporary CORS bypass
+
+    # CORS
     CORS(app)
-    # Set CORS origins
     CORS(app, origins=[os.environ.get('CORS')])
 
+    # Instrumentation
     FlaskInstrumentor().instrument_app(app)
 
     try:
-        # port 5001 is used for playwright tests
+        # base de données pour tests ou dev
         if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
@@ -86,19 +85,30 @@ def create_app():
         logger.warning("Error loading environment variables : " + str(e))
         return jsonify({'message': 'Error loading environment variables'}), 500
 
-    db.init_app(app)
+    # ** Configuration SQLAlchemy : forcer le plugin mysql_native_password **
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "connect_args": {
+            "auth_plugin_map": {"mysql_native_password": "mysql_native_password"}
+        }
+    }
 
-    #Do not remove.
+    # Initialisation des extensions
+    db.init_app(app)
     migrate = Migrate(app, db)
+
+    # Tracing (optionnel)
     if os.environ.get('ENABLE_TRACING', 'false').lower() == 'true':
-        resource = Resource(attributes={    
-                    ResourceAttributes.SERVICE_NAME: os.environ.get('APPLICATION_NAME', 'API_EMPLOI_ETUDIANT_DEV'),
-                    ResourceAttributes.SERVICE_VERSION: "1.0.0",
-                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
+        resource = Resource(attributes={
+            ResourceAttributes.SERVICE_NAME: os.environ.get('APPLICATION_NAME', 'API_EMPLOI_ETUDIANT_DEV'),
+            ResourceAttributes.SERVICE_VERSION: "1.0.0",
+            ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "development"
         })
 
         trace_provider = TracerProvider(resource=resource)
-        otlp_trace_exporter = OTLPSpanExporter(endpoint=os.environ.get('TRACE_URL', 'https://telemetry.edwrdl.ca:4318/v1/traces'), timeout=5)
+        otlp_trace_exporter = OTLPSpanExporter(
+            endpoint=os.environ.get('TRACE_URL', 'https://telemetry.edwrdl.ca:4318/v1/traces'),
+            timeout=5
+        )
         trace_batch_processor = BatchSpanProcessor(otlp_trace_exporter)
         trace_provider.add_span_processor(trace_batch_processor)
         trace.set_tracer_provider(trace_provider)
@@ -109,7 +119,7 @@ def create_app():
         with app.app_context():
             SQLAlchemyInstrumentor().instrument(engine=db.engine)
 
-    # END do not remove
+    # Import des contrôleurs
     from app.controllers.user_controller import user_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
     from app.controllers.city_controller import city_blueprint
@@ -119,7 +129,8 @@ def create_app():
     from app.controllers.study_program_controller import study_program_blueprint
     from app.controllers.offer_program_controller import offer_program_blueprint
     from app.controllers.employmentSchedule_controller import employment_schedule_blueprint
-    
+
+    # Enregistrement des blueprints
     app.register_blueprint(ping_blueprint)
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(job_offer_blueprint, url_prefix='/jobOffer')
@@ -130,6 +141,7 @@ def create_app():
     app.register_blueprint(offer_program_blueprint, url_prefix='/offerProgram')
     app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
 
+    # Swagger UI
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
 
     return app

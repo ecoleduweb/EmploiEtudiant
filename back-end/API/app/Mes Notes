@@ -1,0 +1,72 @@
+Voici le résumé clair et simple que tu voulais 👇
+
+🧠 Résumé : à quoi sert Flask dans ton projet
+
+👉 Flask est le backend de ton application.
+
+C’est le serveur qui :
+
+reçoit les requêtes envoyées par ton frontend (ex : login, création d’employeur),
+
+parle à la base de données (MariaDB),
+
+exécute la logique métier (authentification, vérifications),
+
+renvoie des réponses JSON au frontend.
+
+Le fichier app/__init__.py contient la fonction create_app() qui :
+
+crée l’application Flask,
+
+configure la base de données et les extensions (SQLAlchemy, Migrate),
+
+enregistre les routes (API),
+
+permet à Flask d’être lancé et utilisé dans les migrations et les tests.
+
+💡 En une seule phrase
+
+Flask est le cœur du backend : il connecte le frontend à la base de données, applique la logique de ton application, et gère les API que tu appelles depuis ton interface.
+-----------------------------------------------------
+PyMySQL, c’est une bibliothèque Python qui sert à se connecter à une base de données MySQL 🐍🗄️
+
+En clair : ça permet à un programme Python de lire, écrire et gérer des données MySQL.
+
+À quoi ça sert ?
+
+Se connecter à une base MySQL
+
+Exécuter des requêtes SQL (SELECT, INSERT, UPDATE, DELETE)
+
+Récupérer des données depuis MySQL dans Python
+
+Utilisé souvent avec Flask, Django, scripts d’automatisation, APIs, etc.
+
+Pourquoi PyMySQL ?
+
+100% Python (pas besoin de compilateur)
+
+Simple à installer
+
+Alternative à mysqlclient ou MySQLdb
+
+Installation
+pip install pymysql
+
+Mini exemple
+import pymysql
+
+conn = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="password",
+    database="testdb"
+)
+
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM users")
+
+for row in cursor.fetchall():
+    print(row)
+
+conn.close()

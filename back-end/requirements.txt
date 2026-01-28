@@ -6,7 +6,6 @@ Flask-Migrate==4.0.7
 Flask-Script==2.0.6
 flask-swagger-ui==4.11.1
 gunicorn==22.0.0
-mariadb==1.1.10
 node==1.2.2
 PyJWT==2.8.0
 PyMySQL==1.1.1
