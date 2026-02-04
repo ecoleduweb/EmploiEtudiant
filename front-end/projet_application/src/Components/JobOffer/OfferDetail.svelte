@@ -1,34 +1,52 @@
 <script lang="ts">
     import { onMount } from "svelte"
-    import LoadingSpinner from "../Common/LoadingSpinner.svelte";
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     import fetchCity from "../../Service/CityService"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
-    import { copy } from 'svelte-copy';
+    import { copy } from "svelte-copy"
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
-    
+    import Telegram from "../Common/Telegram.svelte"
+    import Facebook from "../Common/Facebook.svelte"
+    import Email from "../Common/Email.svelte"
+    import X from "../Common/X.svelte"
+    import WhatsApp from "../Common/WhatsApp.svelte"
+    import Messenger from "../Common/Messenger.svelte"
     export let offer: JobOfferDetails
 
-    let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://";
-    let cityOptions: any;
-    let selectedCity: any;
-    let loaded = false;
-    let formattedPhone: string;
-    let url = '';
+    let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://"
+    let cityOptions: any
+    let selectedCity: any
+    let loaded = false
+    let formattedPhone: string
+
+    let url = ""
+    let fullUrl = ""
+    let title = ""
+    let desc = ""
+    let showShareModal = false
+
+    const openShareModal = async () => {
+        showShareModal = true
+    }
+
+    const closeShareModal = async () => {
+        showShareModal = false
+    }
 
     onMount(async () => {
         cityOptions = await fetchCity()
         if (offer && offer.enterprise && offer.enterprise.phone) {
-            formattedPhone = formatPhoneNumber(offer.enterprise.phone);
+            formattedPhone = formatPhoneNumber(offer.enterprise.phone)
         }
         if (offer && offer.offerLink) {
-                url = getShortURL(offer.offerLink);
+            fullUrl = offer.offerLink
+            url = getShortURL(offer.offerLink)
         }
-        loaded = true;
-        
-
+        title = offer.title
+        desc = offer.description
+        loaded = true
     })
-
 
     $: if (cityOptions) {
         const city = cityOptions.find(
@@ -41,9 +59,7 @@
     }
 </script>
 
-
 <div class="container">
-
     {#if !loaded}
         <div class="Loading2">
             <LoadingSpinner />
@@ -60,7 +76,7 @@
             <div class="info">
                 <h2 class="infoTitle separator">Entreprise:</h2>
                 <div class="form-group-vertical">
-                    <h5 class="infoTitle" >Nom*</h5>
+                    <h5 class="infoTitle">Nom*</h5>
                     <p>{offer.enterprise.name}</p>
                 </div>
                 <div class="form-group-vertical">
@@ -80,9 +96,9 @@
                     <p>{selectedCity[0].label}</p>
                 </div>
             </div>
-            <br>
-            {/if}
-            
+            <br />
+        {/if}
+
         <div class="info">
             <h2 class="infoTitle separator">Offre:</h2>
             <h5 class="infoTitle">Nom du poste</h5>
@@ -102,43 +118,97 @@
             <h5 class="infoTitle">Heure par semaine</h5>
             <p class="text">{offer.hoursPerWeek}</p>
             <h5 class="infoTitle">Programme</h5>
-            <p class="text">{offer.studyPrograms?.map((p) => p.name).join(", ")}</p>
+            <p class="text">
+                {offer.studyPrograms?.map((p) => p.name).join(", ")}
+            </p>
             <h5 class="infoTitle">Poste visé</h5>
-            <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
+            <p class="text">
+                {offer.schedules?.map((s) => s.description).join(", ")}
+            </p>
             <h5 class="infoTitle">Description du poste</h5>
             <div class="description">{@html offer.description}</div>
-            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>
+                Lien vers l'offre d'emploi détaillée
+            </h5>
             <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
-                        <a href="{offer.offerLink}" class="text_link">{url}</a>
+                        <a href={offer.offerLink} class="text_link">{url}</a>
                     </div>
                 {:else}
                     <p class="text CanBeHidden">{url}</p>
-                {/if} 
+                {/if}
                 <div use:copy={offer.offerLink}>
                     <img class="iconeCopy" src="copy.svg" alt="Edit icon" />
                 </div>
             </div>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <div class="row">
-                <p class="text">{offer.email}</p> 
-                    <a href="mailto:{offer.email}">
-                        <Button text="Postuler par courriel" />
-                    </a>
+                <p class="text">{offer.email}</p>
+                <a href="mailto:{offer.email}">
+                    <Button text="Postuler par courriel" />
+                </a>
+                <div class="share-button-wrapper">
+                    <Button text="Partager" onClick={openShareModal} />
+                </div>
             </div>
         </div>
     {/if}
 </div>
 
+<!-- Modal de partage -->
+{#if showShareModal}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="modal-overlay" on:click={closeShareModal}>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="modal-content" on:click|stopPropagation>
+            <div class="modal-header">
+                <h3>Partager l'offre</h3>
+                <button
+                    class="close-btn"
+                    on:click={closeShareModal}
+                    aria-label="Fermer">&times;</button
+                >
+            </div>
+            <div class="modal-body">
+                <p>Partagez cette offre sur:</p>
+                <div class="share-buttons">
+                    <Telegram class="share-button" text={title} url={fullUrl} />
+                    <Facebook
+                        class="share-button"
+                        quote={title}
+                        url={fullUrl}
+                    />
+                    <Email
+                        class="share-button"
+                        subject={title}
+                        body={`${desc}\n\nLien: ${fullUrl}`}
+                    />
+                    <WhatsApp
+                        class="share-button"
+                        text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}
+                    />
+                    <X
+                        class="share-button"
+                        text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}
+                        url={fullUrl}
+                    />
+
+                    <Messenger class="share-button" url={fullUrl} />
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
 <style scoped>
-    .CanBeHidden 
-    {
+    .CanBeHidden {
         display: none;
     }
 
-    .container > .Loading2 
-    {
+    .container > .Loading2 {
         display: flex !important;
         justify-content: center !important;
     }
@@ -177,8 +247,7 @@
         border-left: 1px solid #555;
         padding-left: 1vw;
     }
-    .text_link
-    {
+    .text_link {
         font-size: 1.1rem;
         bottom: 2vh;
         color: #00ad9a;
@@ -226,6 +295,77 @@
         filter: invert(0.05);
     }
 
+    /* Styles de la modale */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        color: #00ad9a;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #555;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-btn:hover {
+        color: #00ad9a;
+    }
+
+    .modal-body {
+        color: black;
+    }
+
+    .modal-body p {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 1rem 0;
+    }
+
     @media (max-width: 768px) {
         .row {
             flex-direction: column;
@@ -241,6 +381,24 @@
         .row-copy {
             flex-direction: row;
             height: 4vh;
+        }
+        .modal-content {
+            padding: 1.5rem;
+            width: 95%;
+        }
+        .modal-header h3 {
+            font-size: 1.2rem;
+        }
+        .modal-body p {
+            font-size: 1rem;
+        }
+        .share-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .share-button-wrapper :global(.button) {
+            padding: 8px 12px;
+            font-size: 14px;
         }
     }
 </style>
