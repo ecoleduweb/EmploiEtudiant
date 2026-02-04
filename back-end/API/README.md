@@ -11,11 +11,7 @@ Dans le dossier back-end
 ```bash
 pip install -r requirements.txt
 ```
-Mes notes :
-Dans mon fichier requirements.txt, le paquet mariadb==1.1.10 doit être retiré lorsque j'exécute le projet sous Windows, car ce module n’est pas compatible avec Python 3.14 sur Windows.
-Ce module nécessite la présence du MariaDB Connector/C, un composant natif qui doit être installé séparément, et qui n’est pas détecté automatiquement sous Windows avec Python 3.14.
-Comme alternative, j’utilise pymysql, une bibliothèque 100% Python, qui ne nécessite aucune compilation ni dépendance native.
-pymysql est pleinement compatible avec MariaDB, car MariaDB utilise le protocole MySQL.
+
 
 ### Setting up the environment variables
 
@@ -37,10 +33,6 @@ GRANT ALL PRIVILEGES ON H2024.* TO 'admin'@'localhost';
 GRANT ALL PRIVILEGES ON H2024TEST.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
-Mes notes :
-On doit se positioner dans API/app/_init.py c'est la ou se trouve la creation de l'app avec FLASK 
-flask --app app:create_app db upgrade
-Ou comme ca peut savoir Flask methode qui permet d ecreer l'applciaiton  ensuit eon fait les upgrade dans base donne 
 
 
 Finalement, rouler les migrations
@@ -52,12 +44,7 @@ note : Si flaks n'est pas installé en global, tu peux utiliser
 ### Demarre l'app
 
 `flask run --debug` debug permet de redémarrer l'application quand on modifie le code.
-Mes note:
-Quand je fais comme ce script ca lance mais ca redirige vers la route / qui est vide donc je dosi toujours apres lurl 1127...:5000/route comme /ping ou une autre route 
-et ensuite pour tester avec post avec methode post :
-curl -X POST http://127.0.0.1:5000/user/login `
-     -H "Content-Type: application/json" `
-     -d '{"email":"test@gmail.com","password":"phil123"}'
+
 
 
 Pour se connecter, utiliser les identifiants `test@gmail.com` et le mot de passe `phil123`

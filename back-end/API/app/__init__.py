@@ -85,12 +85,7 @@ def create_app():
         logger.warning("Error loading environment variables : " + str(e))
         return jsonify({'message': 'Error loading environment variables'}), 500
 
-    # ** Configuration SQLAlchemy : forcer le plugin mysql_native_password **
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "connect_args": {
-            "auth_plugin_map": {"mysql_native_password": "mysql_native_password"}
-        }
-    }
+   
 
     # Initialisation des extensions
     db.init_app(app)
