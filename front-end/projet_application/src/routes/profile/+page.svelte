@@ -3,9 +3,9 @@
     import { currentUser, isLoggedIn } from "$lib"
     import { onMount } from "svelte"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
-    import Button from "../../Components/Inputs/Button.svelte";
+    import Button from "../../Components/Inputs/Button.svelte"
     import type { User } from "../../Models/User"
-    import { PUT } from "../../ts/server"
+    import { GET, PUT } from "../../ts/server"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
     let lastname: string
@@ -24,12 +24,11 @@
     const ChangePassword = () => {
         PUT<any, any>("/user/updatePassword", {
             email: ($currentUser as User).email,
-            password: password
+            password: password,
         })
 
         isLoggedIn.set(false)
         goto("/")
-        localStorage.removeItem("token")
     }
 
     const ChangeUser = (lastName: string, firstName: string) => {
@@ -37,106 +36,123 @@
             const updatedUser = {
                 lastname: lastName || $currentUser?.lastName,
                 firstname: firstName || $currentUser?.firstName,
-                email: ($currentUser as User).email
-            };
+                email: ($currentUser as User).email,
+            }
 
-            PUT<any, any>("/user/user", updatedUser);
+            PUT<any, any>("/user/user", updatedUser)
 
             if ($currentUser?.firstName !== firstName && firstName) {
-                currentUser.set({ ...$currentUser!, firstName: firstName });
+                currentUser.set({ ...$currentUser!, firstName: firstName })
             }
             if ($currentUser?.lastName !== lastName && lastName) {
-                currentUser.set({ ...$currentUser!, lastName: lastName });
+                currentUser.set({ ...$currentUser!, lastName: lastName })
             }
         } catch {
-            alert("Erreur lors de la modification de l'utilisateur");
+            alert("Erreur lors de la modification de l'utilisateur")
         }
-    };
+    }
 
     let userHaveEnterprise = false
 
     onMount(async () => {
-        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
+        try {
+            const user = await GET<User>("/user/getUser", false)
+            currentUser.set(user)
+            isLoggedIn.set(true)
+            userHaveEnterprise = await checkIfUserHaveEnterprise(user)
+        } catch {
+            isLoggedIn.set(false)
+            currentUser.set(undefined)
+            goto("/login")
+        }
     })
-
 </script>
 
 {#if $currentUser}
-<div class="container">
-    <h1 class="title">
-        <span class="text">MON</span>
-        <span class="text">PROFIL</span>
-    </h1>
-    <div class="info">
-        <h5 class="infoTitle">Email</h5>
-        <p class="text_content">{$currentUser.email}</p>
-        <h5 class="infoTitle">Prénom</h5>
-        <p class="text_content">{$currentUser.firstName}</p>
-        <h5 class="infoTitle">Nom</h5>
-        <p class="text_content">{$currentUser.lastName}</p>
-        <br>
-        
-    </div>
+    <div class="container">
+        <h1 class="title">
+            <span class="text">MON</span>
+            <span class="text">PROFIL</span>
+        </h1>
+        <div class="info">
+            <h5 class="infoTitle">Email</h5>
+            <p class="text_content">{$currentUser.email}</p>
+            <h5 class="infoTitle">Prénom</h5>
+            <p class="text_content">{$currentUser.firstName}</p>
+            <h5 class="infoTitle">Nom</h5>
+            <p class="text_content">{$currentUser.lastName}</p>
+            <br />
+        </div>
 
-    <div class="Modal">
-        {#if userHaveEnterprise}
-            <div class="divFlex" id="editEnterprise">
-                <Button
-                    onClick={handleShow}
-                    text="Modifier l'entreprise"
-                />
-            </div>
+        <div class="Modal">
+            {#if userHaveEnterprise}
+                <div class="divFlex" id="editEnterprise">
+                    <Button onClick={handleShow} text="Modifier l'entreprise" />
+                </div>
+            {/if}
+        </div>
+        {#if showEnterpriseEditModal}
+            <ModifyEnterprise handleCloseClick={closeModal}></ModifyEnterprise>
         {/if}
+
+        <div class="more-information">
+            <h5 class="infoTitleBig">Modifier mon profil:</h5>
+            <div class="editInfo">
+                <h5 class="infoModify">Prénom:</h5>
+                <input
+                    type="text_content"
+                    bind:value={firstname}
+                    placeholder="Nouveau prénom:"
+                    class="input"
+                />
+
+                <div class="button">
+                    <Button
+                        text="Changer"
+                        onClick={() =>
+                            ChangeUser($currentUser.lastName, firstname)}
+                    />
+                </div>
+            </div>
+
+            <div class="editInfo">
+                <h5 class="infoModify">Nom:</h5>
+                <input
+                    type="text_content"
+                    bind:value={lastname}
+                    placeholder="Nouveau nom:"
+                    class="input"
+                />
+
+                <div class="button">
+                    <Button
+                        text="Changer"
+                        onClick={() =>
+                            ChangeUser(lastname, $currentUser.firstName)}
+                    />
+                </div>
+            </div>
+            <div class="editInfo">
+                <h5 class="infoModify">Mot de passe:</h5>
+                <input
+                    type="text_content"
+                    bind:value={password}
+                    placeholder="Nouveau mot de passe"
+                    class="input"
+                />
+
+                <div class="button">
+                    <Button text="Changer" onClick={() => ChangePassword()} />
+                </div>
+            </div>
+            <div>
+                <h5>
+                    Une reconnexion est nécessaire pour appliquer les
+                    modifications.
+                </h5>
+            </div>
+        </div>
     </div>
-    {#if showEnterpriseEditModal}
-        <ModifyEnterprise handleCloseClick={closeModal}>
-        </ModifyEnterprise>
-    {/if}
-
-    <div class="more-information">
-        <h5 class="infoTitleBig">Modifier mon profil:</h5>
-        <div class="editInfo">
-            <h5 class="infoModify">Prénom:</h5>
-            <input type="text_content"
-                bind:value={firstname}
-                placeholder="Nouveau prénom:"
-                class="input"
-            />
-
-            <div class="button">
-                <Button text="Changer" onClick={() => ChangeUser($currentUser.lastName, firstname)}/>
-            </div>
-        </div>
-
-        <div class="editInfo">
-            <h5 class="infoModify">Nom:</h5>
-            <input type="text_content"
-                bind:value={lastname}
-                placeholder="Nouveau nom:"
-                class="input"
-            />
-
-            <div class="button">
-                <Button text="Changer" onClick={() => ChangeUser(lastname, $currentUser.firstName)}/>
-            </div>
-        </div>
-        <div class="editInfo">
-            <h5 class="infoModify">Mot de passe:</h5>
-            <input type="text_content"
-                bind:value={password}
-                placeholder="Nouveau mot de passe"
-                class="input"
-            />
-
-            <div class="button">
-                <Button text="Changer" onClick={() => ChangePassword()}/>
-            </div>
-        </div>
-        <div>
-            <h5>Une reconnexion est nécessaire pour appliquer les modifications.</h5>
-        </div>
-    </div>
-</div>
 {/if}
 
 <style scoped>
@@ -170,8 +186,7 @@
         margin-right: 1.5vw;
         width: 20vw;
     }
-    .input
-    {
+    .input {
         width: 10vw;
         margin-right: 1vw;
         margin-bottom: 0.5vw;
@@ -199,7 +214,11 @@
         margin-left: 4.5vw;
     }
 
-    .editInfo > div, .title, .infoTitle, p, div > h5 {
+    .editInfo > div,
+    .title,
+    .infoTitle,
+    p,
+    div > h5 {
         color: white;
     }
 
@@ -220,7 +239,6 @@
     .divFlex {
         margin-bottom: 1vh;
     }
-    
 
     @media (max-width: 768px) {
         .text {
@@ -234,8 +252,7 @@
             font-size: 4vw;
             width: 100%;
         }
-        .infoModify
-        {
+        .infoModify {
             font-size: 4vw;
             margin-bottom: 1.5vw;
             width: 30vw;
@@ -250,7 +267,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center; 
+            align-items: center;
             width: 80vw;
         }
         .text_content {

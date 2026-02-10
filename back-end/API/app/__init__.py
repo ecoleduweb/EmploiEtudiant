@@ -68,9 +68,10 @@ logger = getLogger(__name__)
 def create_app():
     app = Flask(__name__)
     # Temporary CORS bypass
-    CORS(app)
+    #CORS(app)
     # Set CORS origins
-    CORS(app, origins=[os.environ.get('CORS')])
+    CORS(app, supports_credentials=True, origins=[os.environ.get('CORS')])
+    
 
     FlaskInstrumentor().instrument_app(app)
 

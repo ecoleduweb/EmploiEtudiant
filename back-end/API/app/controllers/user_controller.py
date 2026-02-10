@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, make_response, request, Blueprint
 import os
 from logging import getLogger
 from jwt import decode
@@ -34,7 +34,9 @@ def login():
     try:
         data = request.get_json()
         token = user_service.login(data["email"], data["password"])
-        return jsonify({'token' : token})
+        resp =jsonify({"message":'Setting the cookie'}) 
+        resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=False,max_age=60 * 30,path='/')
+        return resp
     except LoginException as e:
         if data["email"] != "" and data["email"] != None:
             if len(data["email"]) <= 255:
@@ -45,6 +47,12 @@ def login():
         else:
             logger.warning("An unauthentificated user tried logging without an email.")
             return jsonify({'message': "Impossible de se connecter: aucun email à été fournis"}), 401
+        
+@user_blueprint.route('/logout', methods=['POST'])
+def logout():
+        resp =jsonify({"message":'Logged out successfully'}) 
+        resp.set_cookie("token", "", expires=0, path="/")
+        return resp,200
     
 @user_blueprint.route('/register', methods=['POST'])
 def register():
@@ -62,6 +70,13 @@ def register():
         return jsonify({'message': 'User already exists'}), 400
 
     return user_service.register(data)
+
+@user_blueprint.route("/me", methods=['GET'])
+@token_required
+def me(current_user):
+    return jsonify({"isModerator": current_user.isModerator,"email": current_user.email,
+        "firstName": current_user.firstName,
+        "lastName": current_user.lastName}),200
 
 @user_blueprint.route('/updatePassword', methods=['PUT'])
 @token_required
@@ -135,14 +150,10 @@ def getAllUsers(current_user):
 @user_blueprint.route('/getUser', methods=['GET'])
 @token_required
 def getUser(current_user):
-    token = request.headers.get('Authorization')
-    data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
-    email = data['email']
-    if not token:
-        logger.warning('Token not provided to get user')
-        return jsonify({'message': 'Token not provided'}), 400
-    user = user_service.getUser(email)
-    return jsonify(user.to_json_string())
+    return jsonify({"email": current_user.email,
+        "firstName": current_user.firstName,
+        "lastName": current_user.lastName,
+        "isModerator": current_user.isModerator}),200
 
 @user_blueprint.route('/makeAdmin', methods=['PUT'])
 @token_admin_required

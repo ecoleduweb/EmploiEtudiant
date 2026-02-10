@@ -1,35 +1,15 @@
 import { jwtDecode } from "jwt-decode";
 import type Token from "../Models/Token";
-import { currentUser, isLoggedIn } from "$lib";
+import { currentUser, isLoggedIn, session } from "$lib";
 import { goto } from "$app/navigation";
 
-const LocalStorageKey = "token"
 
-export const decodeToken = (): Token | null => {
-  const token = localStorage.getItem(LocalStorageKey)
-  return token ? jwtDecode<Token>(token) : null
-}
 
-export const isTokenExpired = () => {
-  const decoded = decodeToken()
-  const currentTime = Math.floor(Date.now() / 1000);
-  return decoded ? decoded.exp < currentTime : true;
-}
+export const logIn = (isModerator: boolean, email: string, firstName: string, lastName: string) => {
+  currentUser.set({ isModerator, email, firstName, lastName } as any)
+  isLoggedIn.set(true)
+  goto("/dashboard")
 
-export const disconnectUser = () => {
-  localStorage.token = undefined
-  currentUser.set(undefined)
-  isLoggedIn.set(false)
-}
-
-export const logIn = (token: any) => {
-  if (token != "") {
-    localStorage.setItem(LocalStorageKey, token)
-
-    const decodedUser = jwtDecode(token) as any
-    setInfoFromDecoded(decodedUser)
-    goto("/dashboard")
-  }
 }
 
 export const setInfoFromDecoded = (decoded: any) => {

@@ -10,9 +10,7 @@ logger = getLogger(__name__)
 def token_required(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            token = request.headers.get('Authorization')
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization']
+            token = request.cookies.get('token')
             if not token:
                 logger.warning('No token provided')
                 return jsonify({'message': 'a valid token is missing'}), 401
