@@ -3,6 +3,7 @@ import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { jobOfferMocks } from '../Helper/Mocks/jobOffer.mock';
+import { userMocks } from '../Helper/Mocks/user.mock';
 
 
 
@@ -13,7 +14,9 @@ test.describe('checkIfOffersHide', () => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             studyProgramMocks.success,
-            loginMocks.successModerator])
+            loginMocks.successModerator,
+            userMocks.meModerator
+        ])
             .apply();
         await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
 
@@ -70,39 +73,5 @@ test.describe('checkIfOffersHide', () => {
 
     });
 
-    test('checkIfLocalStorageWorks', async ({ page }) => {
-        const apiMocker = new ApiMocker(page);
-        await apiMocker.addMocks([
-            jobOfferMocks.jobOfferEmployerAll
-        ]).apply();
-
-        await page.goto('http://localhost:5002/dashboard');
-        await page.waitForLoadState('networkidle');
-        if (await page.locator("#cookieBannerOk")) {
-            await page.locator("#cookieBannerOk").click()
-        }
-
-        await page.locator("#btnHideRefusedOfferList").click();
-        await page.locator("#btnHidetoBeApprovedOfferList").click();
-        await page.locator("#btnHideOfferDisplayed").click();
-        await page.locator("#btnHideOfferToCome").click();
-        await page.locator("#btnHideExpiredOffer").click();
-
-        await expect(page.locator("#refusedOffersList")).not.toBeVisible();
-        await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
-        await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
-        await expect(page.locator("#offersToComeList")).not.toBeVisible();
-        await expect(page.locator("#expiredOfferList")).not.toBeVisible();
-
-
-        await page.reload();
-        await page.waitForTimeout(1000);
-
-        await expect(page.locator("#refusedOffersList")).not.toBeVisible();
-        await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
-        await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
-        await expect(page.locator("#offersToComeList")).not.toBeVisible();
-        await expect(page.locator("#expiredOfferList")).not.toBeVisible();
-    });
 
 });

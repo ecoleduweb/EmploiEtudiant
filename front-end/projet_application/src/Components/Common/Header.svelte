@@ -7,6 +7,7 @@
     import { GET, POST } from "../../ts/server"
     import { Hamburger } from "svelte-hamburgers"
     import { GoogleAnalytics } from "@beyonk/svelte-google-analytics"
+    import type { User } from "../../Models/User"
 
     let open: boolean
 
@@ -22,21 +23,18 @@
 
     const checkSession = async () => {
         try {
-            const me = await GET<{ isModerator: boolean }>("/user/me", false)
+            const me = await GET<{ user:User}>("/user/me", false)
+            currentUser.set(me as any)
             isLoggedIn.set(true)
-            currentUser.set({ isModerator: me.isModerator } as any)
         } catch {
-            isLoggedIn.set(false)
             currentUser.set(undefined)
+            isLoggedIn.set(false)
+            
         }
     }
     onMount(async () => {
-        try {
             await checkSession()
-        } catch (err) {
-        } finally {
             studyPrograms.set(await fetchStudyPrograms())
-        }
     })
 
     const handleEmploi = () => {

@@ -7,6 +7,7 @@
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { logIn } from "../../lib/tokenLib"
+    import type { User } from "../../Models/User"
 
     const schema = yup.object().shape({
         email: yup
@@ -36,18 +37,12 @@
             }
             try {
                 try {
-                    const response = await POST<Login, any>(
+                    const response = await POST<Login, User>(
                         "/user/login",
                         form,
                         false,
                     )
-                    const me = await GET<{
-                        isModerator: boolean
-                        email: string
-                        firstName: string
-                        lastName: string
-                    }>("/user/me", false)
-                    logIn(me.isModerator, me.email, me.firstName, me.lastName)
+                    logIn(response.data)
                 } catch (err) {
                     if (err.name == 403) {
                         errors = {

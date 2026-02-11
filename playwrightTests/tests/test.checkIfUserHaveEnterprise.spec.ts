@@ -3,6 +3,7 @@ import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
+import { userMocks } from '../Helper/Mocks/user.mock';
 
 
 
@@ -12,7 +13,8 @@ test.describe('checkIfUserHaveEnterprise', () => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             studyProgramMocks.success,
-            loginMocks.success])
+            loginMocks.success,
+            userMocks.meModerator])
             .apply();
 
         await page.goto('http://localhost:5002/login');

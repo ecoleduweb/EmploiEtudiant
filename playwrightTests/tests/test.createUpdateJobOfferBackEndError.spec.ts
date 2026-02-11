@@ -9,6 +9,7 @@ import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { employementScheduleByOfferIdMocks } from '../Helper/Mocks/employementScheduleByOfferId.mock';
 import { offerProgramMocks } from '../Helper/Mocks/offerProgram.mock';
+import { userMocks } from '../Helper/Mocks/user.mock';
 
 
 test.describe('createUpdateJobOfferBackEndError', () => {
@@ -22,7 +23,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
       employementScheduleByOfferIdMocks.success,
       employmentScheduleMocks.success,
       jobOfferMocks.jobOfferNew,
-      enterpriseMocks.success])
+      enterpriseMocks.success,
+    ])
       .apply();
     await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
   });
@@ -96,6 +98,7 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await apiMocker.addMocks([jobOfferMocks.jobOfferNewOffer]).apply();
     await apiMocker.addMocks([jobOfferMocks.jobOfferUpdateInvalid]).apply();
     await apiMocker.addMocks([loginMocks.success]).apply();
+    await apiMocker.addMocks([userMocks.meUser]).apply();
     await apiMocker.addMocks([enterpriseMocks.enterpriseEmployer]).apply();
     await apiMocker.addMocks([offerProgramMocks.success]).apply();
     await apiMocker.addMocks([jobOfferMocks.jobOfferVerifyURL]).apply();

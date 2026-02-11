@@ -1,4 +1,4 @@
-from flask import jsonify, make_response, request, Blueprint
+from flask import jsonify,request, Blueprint
 import os
 from logging import getLogger
 from jwt import decode
@@ -34,8 +34,11 @@ def login():
     try:
         data = request.get_json()
         token = user_service.login(data["email"], data["password"])
-        resp =jsonify({"message":'Setting the cookie'}) 
-        resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=False,max_age=60 * 30,path='/')
+        user=user_service.getUser(data["email"])
+        resp=jsonify({"isModerator": user.isModerator, "email": user.email,
+        "firstName": user.firstName, "lastName": user.lastName})
+        secure_cookie = os.environ.get("COOKIE_SECURE", "False") == "True"
+        resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=secure_cookie,max_age=60 * 30,path='/')
         return resp
     except LoginException as e:
         if data["email"] != "" and data["email"] != None:
@@ -51,8 +54,8 @@ def login():
 @user_blueprint.route('/logout', methods=['POST'])
 def logout():
         resp =jsonify({"message":'Logged out successfully'}) 
-        resp.set_cookie("token", "", expires=0, path="/")
-        return resp,200
+        resp.delete_cookie("token", path="/")
+        return resp
     
 @user_blueprint.route('/register', methods=['POST'])
 def register():

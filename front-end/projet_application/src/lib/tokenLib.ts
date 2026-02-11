@@ -1,12 +1,11 @@
-import { jwtDecode } from "jwt-decode";
-import type Token from "../Models/Token";
-import { currentUser, isLoggedIn, session } from "$lib";
+import { currentUser, isLoggedIn } from "$lib";
 import { goto } from "$app/navigation";
+import type { User } from "../Models/User";
 
 
 
-export const logIn = (isModerator: boolean, email: string, firstName: string, lastName: string) => {
-  currentUser.set({ isModerator, email, firstName, lastName } as any)
+export const logIn = (user: User) => {
+  currentUser.set(user)
   isLoggedIn.set(true)
   goto("/dashboard")
 

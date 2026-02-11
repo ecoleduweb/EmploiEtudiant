@@ -53,19 +53,10 @@
     }
 
     let userHaveEnterprise = false
-
     onMount(async () => {
-        try {
-            const user = await GET<User>("/user/getUser", false)
-            currentUser.set(user)
-            isLoggedIn.set(true)
-            userHaveEnterprise = await checkIfUserHaveEnterprise(user)
-        } catch {
-            isLoggedIn.set(false)
-            currentUser.set(undefined)
-            goto("/login")
-        }
+        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
     })
+  
 </script>
 
 {#if $currentUser}
