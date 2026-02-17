@@ -6,6 +6,12 @@ const config = {
     // Consult https://kit.svelte.dev/docs/integrations#preprocessors
     // for more information about preprocessors
     preprocess: vitePreprocess(),
+    //C'est l'option qui active les runes de Svelte 5 dans votre projet.
+    /*Les runes sont la nouvelle syntaxe de réactivité de Svelte 5. Ce sont des mots-clés spéciaux qui commencent par $ :
+        compilerOptions: {
+        runes: true
+    },
+   */
 
     kit: {
         // adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.

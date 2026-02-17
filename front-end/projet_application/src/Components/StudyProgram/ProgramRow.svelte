@@ -1,12 +1,16 @@
 <script lang="ts">
     import type { StudyProgram } from "../../Models/StudyProgram";
 
-    export let studyProgram: StudyProgram
-    export let handleModalClick: () => void
+    interface Props {
+        studyProgram: StudyProgram;
+        handleModalClick: () => void;
+    }
+
+    let { studyProgram, handleModalClick }: Props = $props();
 
 </script>
 
-<button class="studyProgram" on:click={() => handleModalClick()}>
+<button class="studyProgram" onclick={() => handleModalClick()}>
     <div class="Program">
         <div class="info">
             <p class="text">{studyProgram.name}</p>

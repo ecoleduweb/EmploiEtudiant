@@ -1,6 +1,10 @@
 <script lang="ts">
-    export let enterprise: any
-    export let selectedCity: any
+    interface Props {
+        enterprise: any;
+        selectedCity: any;
+    }
+
+    let { enterprise, selectedCity }: Props = $props();
 </script>
 
 <div class="form-group-vertical">

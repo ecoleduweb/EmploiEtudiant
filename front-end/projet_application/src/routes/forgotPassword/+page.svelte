@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { preventDefault } from 'svelte/legacy';
+
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
@@ -14,19 +16,19 @@
             .email("Le courriel n'est pas valide"),
     })
 
-    let errors: ForgotPassword = {
+    let errors: ForgotPassword = $state({
         email: "",
-    }
+    })
 
-    let login: ForgotPassword = {
+    let login: ForgotPassword = $state({
         email: "",
-    }
+    })
 
     let successPopupMessage = "La requête de changement de mot de passe à été envoyée."
     let failedPopupMessage = "La requête de changement de mot de passe n'a pas pu être envoyée."
 
-    let popupMessage = ""
-    let showPopup = false
+    let popupMessage = $state("")
+    let showPopup = $state(false)
 
     const handlePopupClose = async () => 
     {
@@ -62,7 +64,7 @@
         <h1>Mot de passe oublié</h1>
         <form
             class="forgotPassword-form"
-            on:submit|preventDefault={handleSubmit}
+            onsubmit={preventDefault(handleSubmit)}
         >
             <label for="email">Entrez votre courriel</label>
             <input

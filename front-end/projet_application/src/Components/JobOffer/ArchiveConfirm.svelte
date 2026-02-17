@@ -4,8 +4,12 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
     import { GET, POST, PUT } from "../../ts/server"
-    export let offer: JobOffer
-    export let handleApproveClick: () => void
+    interface Props {
+        offer: JobOffer;
+        handleApproveClick: () => void;
+    }
+
+    let { offer, handleApproveClick }: Props = $props();
 
     let approbationMessage: string = ""
 

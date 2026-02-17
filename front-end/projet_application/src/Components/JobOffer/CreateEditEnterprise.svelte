@@ -1,15 +1,29 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { MultiSelect } from "svelte-multiselect";
     import type { Writable } from "svelte/store"
 
-    export let enterprise: any
-    export let errorsEnterprise: any
-    export let cityOptions: any
-    export let selectedCity: Writable<any>
-    export let cityFromEnterprise: any
+    interface Props {
+        enterprise: any;
+        errorsEnterprise: any;
+        cityOptions: any;
+        selectedCity: Writable<any>;
+        cityFromEnterprise: any;
+    }
 
-    let selectCity: any
-    $: selectedCity.set(selectCity)
+    let {
+        enterprise = $bindable(),
+        errorsEnterprise,
+        cityOptions,
+        selectedCity,
+        cityFromEnterprise = $bindable()
+    }: Props = $props();
+
+    let selectCity: any = $state()
+    run(() => {
+        selectedCity.set(selectCity)
+    });
 </script>
 
 <div class="form-group-vertical">

@@ -12,12 +12,16 @@
     import { PUT } from "../../ts/server"
     import fetchCity from "../../Service/CityService"
     
-    export let handleCloseClick: () => void
-    let enterprise: Enterprise
-    let errorsEnterprise: any = [];
-    let cityOptions: { label: string; value: number }[] = [];
-    let selectedCity: any
-    let cityFromEnterprise: any = []
+    interface Props {
+        handleCloseClick: () => void;
+    }
+
+    let { handleCloseClick }: Props = $props();
+    let enterprise: Enterprise = $state()
+    let errorsEnterprise: any = $state([]);
+    let cityOptions: { label: string; value: number }[] = $state([]);
+    let selectedCity: any = $state()
+    let cityFromEnterprise: any = $state([])
 
     
     let prepareAndVerifyIfValid = async () => {

@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: end is out of bounds -->
 <script lang="ts">
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -334,16 +335,10 @@
         </div>
     </form>
 
-    <style scoped>
-        .container {
-            padding-bottom: 10%;
-        }
-    </style>
+    <style scoped>/*$$__STYLE_CONTENT__$$*/</style>
     {#if popupEnabled}
         <Popup approbationMessage="Le captcha à échoué." handleApproveClick={closePopup}></Popup>
     {/if}
 </div>
 
-<style scoped>
-    @import "../../styles/register.css";
-</style>
+<style scoped>/*$$__STYLE_CONTENT__$$*/</style>

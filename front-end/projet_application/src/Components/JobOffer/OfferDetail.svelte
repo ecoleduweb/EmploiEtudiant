@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { onMount } from "svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte";
     import fetchCity from "../../Service/CityService"
@@ -7,14 +9,18 @@
     import { copy } from 'svelte-copy';
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
     
-    export let offer: JobOfferDetails
+    interface Props {
+        offer: JobOfferDetails;
+    }
+
+    let { offer }: Props = $props();
 
     let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://";
-    let cityOptions: any;
-    let selectedCity: any;
-    let loaded = false;
-    let formattedPhone: string;
-    let url = '';
+    let cityOptions: any = $state();
+    let selectedCity: any = $state();
+    let loaded = $state(false);
+    let formattedPhone: string = $state();
+    let url = $state('');
 
     onMount(async () => {
         cityOptions = await fetchCity()
@@ -30,15 +36,17 @@
     })
 
 
-    $: if (cityOptions) {
-        const city = cityOptions.find(
-            (ville: any) => ville.value === offer?.enterprise?.cityId,
-        )
+    run(() => {
+        if (cityOptions) {
+            const city = cityOptions.find(
+                (ville: any) => ville.value === offer?.enterprise?.cityId,
+            )
 
-        if (city) {
-            selectedCity = [city]
+            if (city) {
+                selectedCity = [city]
+            }
         }
-    }
+    });
 </script>
 
 

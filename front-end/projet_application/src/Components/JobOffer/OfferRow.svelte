@@ -4,16 +4,28 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails";
     import type { Enterprise } from "../../Models/Enterprise";
     import { removeHtmlTags } from "../../ts/utils";
-    export let isModerator: boolean;
-    export let offer:  JobOfferDetails;
-    export let enterprise: Enterprise | null = null; 
 
-    export let handleEditModalClick: (id: number) => void;
-    export let handleApproveModalClick: (id: number) => void;
-    export let handleArchiveModalClick: (id: number) => void;
-    export let handleDeleteModalClick: (id: number) => void
+    interface Props {
+        isModerator: boolean;
+        offer: JobOfferDetails;
+        enterprise?: Enterprise | null;
+        handleEditModalClick: (id: number) => void;
+        handleApproveModalClick: (id: number) => void;
+        handleArchiveModalClick: (id: number) => void;
+        handleDeleteModalClick: (id: number) => void;
+    }
 
-    let enterpriseName = "Entreprise inconnue";
+    let {
+        isModerator,
+        offer,
+        enterprise = null,
+        handleEditModalClick,
+        handleApproveModalClick,
+        handleArchiveModalClick,
+        handleDeleteModalClick
+    }: Props = $props();
+
+    let enterpriseName = $state("Entreprise inconnue");
 
     onMount(() => {
         if (offer.enterprise) {
@@ -32,19 +44,19 @@
     <td>{offer.offerDebut}</td>
     <td>
         {#if isModerator}
-            <button class="button" on:click={() => handleApproveModalClick(offer.id)}>
+            <button class="button" onclick={() => handleApproveModalClick(offer.id)}>
                 <img class="image" src="check.svg" alt="approve" />
             </button>
         {/if}
-        <button class="button" on:click={()=> handleDeleteModalClick(offer.id)}>
+        <button class="button" onclick={()=> handleDeleteModalClick(offer.id)}>
             <img class="image" src="delete.svg" alt="supprimer" />
         </button>
         
-        <button class="button edit" on:click={() => handleEditModalClick(offer.id)}>
+        <button class="button edit" onclick={() => handleEditModalClick(offer.id)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
         {#if offer.isApproved && ((new Date().toISOString().split("T")[0]) <= (new Date(offer.deadlineApply).toISOString().split("T")[0]))}
-            <button class="button" on:click={() => handleArchiveModalClick(offer.id)}>
+            <button class="button" onclick={() => handleArchiveModalClick(offer.id)}>
                 <img class="image" src="archive.svg" alt="supprimer" />
             </button>
         {/if}

@@ -4,7 +4,7 @@
     import { env } from "$env/dynamic/public"
     import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
-    let accepted = false
+    let accepted = $state(false)
     const measurementId = env.PUBLIC_PUBLIC_MEASUREMENT_ID;
 
     function acceptCookies() {
@@ -33,7 +33,7 @@
                 >En savoir plus</a
             >.
         </p>
-        <button id="cookieBannerOk" on:click={acceptCookies}>J'ai compris</button>
+        <button id="cookieBannerOk" onclick={acceptCookies}>J'ai compris</button>
     </div>
 {/if}
 

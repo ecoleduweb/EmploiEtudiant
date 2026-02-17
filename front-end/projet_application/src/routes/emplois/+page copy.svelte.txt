@@ -62,9 +62,8 @@
     }
 
     const confirmModalFilter = () => {
-        // On ferme la modal AVANT de traiter pour s'assurer qu'elle disparaisse
         showFilterOffer = false;
-
+        // En attente de la tache qui va ajouter une colonne a la bd pour tous les programmes
         const allProgramsId = selectedPrograms.find(x => x.label === "Tous les programmes")?.value || 0;
 
         filteredOffers = jobOffers.filter(offer => {
@@ -72,16 +71,15 @@
                 return true;
             }
 
-            // Utilisation du chainage optionnel ?. pour éviter les erreurs undefined
-            const progToFilterId = selectedPrograms[0]?.value;
+            const progToFilterId = selectedPrograms.at(0)?.value
             const matchesPrograms = selectedPrograms.length === 0 || 
-                offer.studyPrograms?.some(prog => prog.id === progToFilterId || prog.id === allProgramsId);
+            offer.studyPrograms?.some(prog => prog.id === progToFilterId || prog.id === allProgramsId);
 
-            const schedulesToFilterId = selectedSchedule[0]?.value;
+            const schedulesToFilterId = selectedSchedule.at(0)?.value
             const matchesSchedules = selectedSchedule.length === 0 ||
-                offer.schedules?.some(schedule => parseInt(schedule.id) === schedulesToFilterId);
+            offer.schedules?.some(schedule => parseInt(schedule.id) === schedulesToFilterId);
         
-            return (matchesPrograms ?? true) && (matchesSchedules ?? true);
+            return matchesPrograms && matchesSchedules;
         });
     };
 
@@ -97,7 +95,7 @@
 
     onMount(async () => {
         try {
-            await getSchedule()
+            getSchedule()
             const response = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
             jobOffers = response
             filteredOffers = jobOffers
@@ -114,7 +112,7 @@
 
             const id = $page.url.searchParams.get('id')
 
-            if (id) {
+            if (id !== '') {
                 let jobOffer = jobOffers.find((offer) => offer.id.toString() == id)
                 
                 if (jobOffer) {
@@ -191,6 +189,7 @@
                     maxSelect={1}
                     placeholder="Choisir un programme visé..."
                     bind:selected={selectedPrograms}
+                    bind:value={selectedPrograms}
                 />
                 <p class="text-filtre">Type d'emploi:</p>
                 <MultiSelect
@@ -200,6 +199,7 @@
                     maxSelect={1}
                     placeholder="Choisir un type d'emploi..."
                     bind:selected={selectedSchedule}
+                    bind:value={selectedSchedule}
                 />
                 <Button
                     onClick={confirmModalFilter}

@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { User } from "../../Models/User"
-    export let user: User
-    export let handleModalClick: (id: number) => void
+    interface Props {
+        user: User;
+        handleModalClick: (id: number) => void;
+    }
+
+    let { user, handleModalClick }: Props = $props();
 </script>
 
 <div class="userTitre">
@@ -15,7 +19,7 @@
             <p class="text">{user.email}</p>
             <p class="text">{user.firstName}</p>
         </div>
-        <button class="button" on:click={() => handleModalClick(user.id)}>
+        <button class="button" onclick={() => handleModalClick(user.id)}>
             <img class="image" src="check.svg" alt="approve" />
         </button>
     </div>

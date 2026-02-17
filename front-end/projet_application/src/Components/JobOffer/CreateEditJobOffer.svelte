@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run, preventDefault } from 'svelte/legacy';
+
     import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import RichTextEditor from "../Inputs/RichTextEditor.svelte"
@@ -17,11 +19,19 @@
     import { writable } from "svelte/store"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     import { InvalidDataError } from "../../CustomError/invalidDataError"
-    export let onFinished: () => Promise<void>
-    export let isJobOfferEdit: boolean
 
     // valeur par défaut de l'offer utilisée pour le create.
-    export let jobOffer: JobOffer = {
+    interface Props {
+        onFinished: () => Promise<void>;
+        isJobOfferEdit: boolean;
+        jobOffer?: JobOffer;
+        enterprise?: Enterprise;
+    }
+
+    let {
+        onFinished,
+        isJobOfferEdit,
+        jobOffer = $bindable({
         id: 0,
         title: "",
         address: "",
@@ -41,8 +51,8 @@
         approbationMessage: "",
         acceptCondition: false,
         approvedDate: "",
-    }
-    export let enterprise: Enterprise = {
+    }),
+        enterprise = $bindable({
         id: 0,
         name: "",
         address: "",
@@ -50,24 +60,27 @@
         phone: "",
         cityId: 0,
         isTemporary: false,
-    }
+    })
+    }: Props = $props();
 
-    let jobOfferErrors: any = {}
-    let enterpriseErrors: any = {}
+    let jobOfferErrors: any = $state({})
+    let enterpriseErrors: any = $state({})
     let invalidDataError: any = {}
-    let isModerator: boolean = false
-    let enterpriseSelected: { label: string; value: number }[] = []
-    let enterpriseFromSelectedEnterprise: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let enterpriseOption: { label: string; value: number }[] = []
-    let isEnterpriseSelected: boolean = false
-    let selectedCity: { label: string; value: number }[] = []
+    let isModerator: boolean = $state(false)
+    let enterpriseSelected: { label: string; value: number }[] = $state([])
+    let enterpriseFromSelectedEnterprise: [] = $state([]) // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+    let enterpriseOption: { label: string; value: number }[] = $state([])
+    let isEnterpriseSelected: boolean = $state(false)
+    let selectedCity: { label: string; value: number }[] = $state([])
     let cityFromEnterprise: [] = []
-    let cityOptions: { label: string; value: number }[] = []
+    let cityOptions: { label: string; value: number }[] = $state([])
     let scheduleIds: number[] = []
     let selectedCityWritable = writable<any>()
-    let loading = false
+    let loading = $state(false)
 
-    $: selectedCity = $selectedCityWritable
+    run(() => {
+        selectedCity = $selectedCityWritable
+    });
 
     const fetchEnterprise = async () => {
         let response = undefined
@@ -163,8 +176,8 @@
 
     //--------------------------------------------------
 
-    let selectedPrograms = [{ label: "", value: 0 }]
-    let programmeFromSelectedOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+    let selectedPrograms = $state([{ label: "", value: 0 }])
+    let programmeFromSelectedOffer: [] = $state([]) // valeur de l'offre actuel (lorsque l'on editera une offre existante)
     let programOptions: { label: string; value: number; }[] = $studyPrograms
     .map((x: any) => ({ "label": x.name, "value": x.id }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' }));
@@ -189,12 +202,12 @@
         }))
     }
 
-    let scheduleSelected: { label: string; value: number }[] = [{
+    let scheduleSelected: { label: string; value: number }[] = $state([{
         label: "",
         value: 0,
-    }]
-    let scheduleFromExistingOffer: [] = [] // valeur de l'offre actuel (lorsque l'on editera une offre existante)
-    let scheduleOption: { label: string; value: number }[] = []
+    }])
+    let scheduleFromExistingOffer: [] = $state([]) // valeur de l'offre actuel (lorsque l'on editera une offre existante)
+    let scheduleOption: { label: string; value: number }[] = $state([])
 
     //--------------------------------------------------
 
@@ -317,18 +330,18 @@
         }
     }
 
-    let maxDateString: any
-    $: {
+    let maxDateString: any = $state()
+    run(() => {
         let offerDebut = new Date(jobOffer.offerDebut)
         let maxDate = new Date(
             offerDebut.setDate(offerDebut.getDate() + 15 * 7),
         )
         maxDateString = toFormattedDateString(maxDate)
-    }
+    });
     let minDateString = toFormattedDateString(new Date())
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="form-offre">
+<form onsubmit={preventDefault(handleSubmit)} class="form-offre">
     <div class="content-form">
         {#if jobOffer.id !== 0}
             {#if jobOffer.isApproved === true}

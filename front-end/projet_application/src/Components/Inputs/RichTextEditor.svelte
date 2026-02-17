@@ -6,10 +6,14 @@
 
     const dispatch = createEventDispatcher();
 
-    export let description: string | null = null 
-    export let element: any = null
+    interface Props {
+        description?: string | null;
+        element?: any;
+    }
 
-    let editor: any = null
+    let { description = $bindable(null), element = $bindable(null) }: Props = $props();
+
+    let editor: any = $state(null)
 
     onMount(() => {
         editor = new Editor({
@@ -48,7 +52,7 @@
     {#if editor}
         <div class="rich-text-toolbar">
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleBold().run()
                 }}
@@ -58,7 +62,7 @@
                 <strong>G</strong>
             </button>
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleItalic().run()
                 }}
@@ -68,7 +72,7 @@
                 <i>I</i>
             </button>
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleUnderline().run()
                 }} 
@@ -79,7 +83,7 @@
             </button>
             <div class="toolbar-divider"></div> 
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
@@ -89,7 +93,7 @@
                 Titre
             </button>
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleBulletList().run()
                 }}
@@ -103,7 +107,7 @@
                 </div>
             </button>
             <button
-                on:click={(e) => {
+                onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleOrderedList().run()
                 }}
@@ -118,7 +122,7 @@
             </button>
             <div class="undo-redo">
                 <button
-                    on:click={(e) => {
+                    onclick={(e) => {
                         e.preventDefault()
                         editor.chain().focus().undo().run()
                     }}
@@ -129,7 +133,7 @@
                     ↶
                 </button>
                 <button
-                    on:click={(e) => {
+                    onclick={(e) => {
                         e.preventDefault()
                         editor.chain().focus().redo().run()
                     }}

@@ -2,10 +2,14 @@
     import type { JobOffer } from "../../Models/Offre"
     import Button from "../Inputs/Button.svelte"
     import { DELETE } from "../../ts/server"
-    export let offer: JobOffer
     export const isDeleted = false;
-    export let deleteOfferAndCloseModal: (idJobOffer: number | null) => void
-    export let closeModalDelete: () => void
+    interface Props {
+        offer: JobOffer;
+        deleteOfferAndCloseModal: (idJobOffer: number | null) => void;
+        closeModalDelete: () => void;
+    }
+
+    let { offer, deleteOfferAndCloseModal, closeModalDelete }: Props = $props();
 
     const deleteOffer = async () => {
         try {
