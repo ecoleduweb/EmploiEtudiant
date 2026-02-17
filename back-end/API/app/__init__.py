@@ -1,7 +1,6 @@
 import locale
 import sys
 from flask_sqlalchemy import SQLAlchemy
-from flask_swagger_ui import get_swaggerui_blueprint
 from dotenv import load_dotenv
 import os
 from flask_migrate import Migrate
@@ -47,16 +46,6 @@ dictConfig({
     },
     "root": {"level": "INFO", "handlers": ["wsgi", "custom_handler"]},
 })
-
-SWAGGER_URL_PREFIX = "/swagger"
-SWAGGER_LOCATION = "/static/swagger.json"
-
-swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL_PREFIX,
-    SWAGGER_LOCATION,
-    config={"app_name": "Gestion de demandes d'emplois"},
-)
-
 db = SQLAlchemy()
 
 load_dotenv()
@@ -74,7 +63,7 @@ def create_app():
     FlaskInstrumentor().instrument_app(app)
 
     try:
-        # base de données pour tests ou dev
+         # port 5001 is used for playwright tests
         if any("pytest" in arg for arg in sys.argv):
             app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_TEST_URL')
             app.config['TESTING'] = True
@@ -124,8 +113,6 @@ def create_app():
     from app.controllers.study_program_controller import study_program_blueprint
     from app.controllers.offer_program_controller import offer_program_blueprint
     from app.controllers.employmentSchedule_controller import employment_schedule_blueprint
-
-    # Enregistrement des blueprints
     app.register_blueprint(ping_blueprint)
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(job_offer_blueprint, url_prefix='/jobOffer')
@@ -135,8 +122,4 @@ def create_app():
     app.register_blueprint(study_program_blueprint, url_prefix='/studyProgram')
     app.register_blueprint(offer_program_blueprint, url_prefix='/offerProgram')
     app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
-
-    # Swagger UI
-    app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL_PREFIX)
-
     return app
