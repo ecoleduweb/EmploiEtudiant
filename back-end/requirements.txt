@@ -4,8 +4,8 @@ Flask-Bcrypt==1.0.1
 Flask-Cors==5.0.0
 Flask-Migrate==4.0.7
 Flask-Script==2.0.6
-flask-swagger-ui==4.11.1
-gunicorn==22.0.0
+gunicorn==24.1.1
+mariadb==1.1.14
 node==1.2.2
 PyJWT==2.8.0
 PyMySQL==1.1.1
