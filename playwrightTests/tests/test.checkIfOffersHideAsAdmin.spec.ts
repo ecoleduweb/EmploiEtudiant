@@ -4,6 +4,7 @@ import { ApiMocker } from '.././Helper/mockApi';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { jobOfferMocks } from '../Helper/Mocks/jobOffer.mock';
 import { userMocks } from '../Helper/Mocks/user.mock';
+import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 
 
 
@@ -15,7 +16,8 @@ test.describe('checkIfOffersHide', () => {
         await apiMocker.addMocks([
             studyProgramMocks.success,
             loginMocks.successModerator,
-            userMocks.meModerator
+            userMocks.meModerator,
+            enterpriseMocks.success
         ])
             .apply();
         await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
