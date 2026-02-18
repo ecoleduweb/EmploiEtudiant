@@ -3,7 +3,6 @@ Flask-Argon2==0.3.0.0
 Flask-Bcrypt==1.0.1
 flask-cors==6.0.2
 Flask-Migrate==4.1.0
-flask-swagger-ui==4.11.1
 gunicorn==24.1.1
 mariadb==1.1.14
 node==1.2.2
