@@ -1,48 +1,32 @@
 <script lang="ts">
     import type { Enterprise } from "../../Models/Enterprise"
     export let enterprise: Enterprise
-    import type { City } from "../../Models/City"
-    import { GET } from "../../ts/server"
-    import { onMount } from "svelte"
-    export let handleModalClick: (id: number) => void
+    export let handleModalClick: () => void
     import { formatPhoneNumber } from "../../ts/utils"
-    let ville: City
-    let nomVille: string
-    let formattedPhone: string
+    import { getCityName } from "../../Service/CityService"
 
-    const getCity = async (id: number) => {
-        try {
-            ville = await GET<any>(`/city/${id}`)
-            nomVille = ville.city
-        } catch (error) {
-            console.error("Error fetching city:", error)
-        }
-    }
-
-    onMount(async () => {
-        formattedPhone = formatPhoneNumber(enterprise.phone);
-        await getCity(enterprise.cityId);
-        
-    });
-    
+    $: formattedPhone = formatPhoneNumber(enterprise.phone)
+    $: cityName = getCityName(enterprise.cityId)
 </script>
 
-
-
-<button class="enterprise" on:click={() => handleModalClick(enterprise.id)}>
+<button class="enterprise" on:click={() => handleModalClick()}>
     <div class="emploi">
         <div class="info">
-            <p class="textTitre">{enterprise.name}</p>
+            <p class="text">{enterprise.name}</p>
+        </div>
+        <div class="info">
             <p class="text">{enterprise.email}</p>
+        </div>
+        <div class="info">
             <p class="text">{formattedPhone}</p>
+        </div>
+        <div class="info">
             <p class="text">{enterprise.address}</p>
-            <p class="text">{nomVille}</p>
         </div>
-        <div class="info-mobile">
-            <p class="textTitre">{enterprise.name}</p>
-            <p class="text">{enterprise.email}</p>
+        <div class="info">
+            <p class="text">{cityName}</p>
         </div>
-        <img class="image" src="searchBar.svg" alt="ajouter" />
+        <img class="image" src="edit.svg" alt="modifier" />
     </div>
 </button>
 
@@ -56,6 +40,8 @@
         border-bottom: 1px solid #00ad9a;
         margin-left: 5.2%;
         background-color: transparent;
+        height: 6%;
+        border-radius: 4px;
     }
     .info {
         display: flex;
@@ -63,16 +49,17 @@
         font-size: 1.2rem;
         flex-direction: row;
         justify-content: space-around;
-        align-items: center;
     }
     .text {
-        width: 20%;
+        width: 100%;
+        text-align: left;
+        margin-left: 0.2vw;
     }
-    .textTitre {
+    /* .textTitre {
         width: 20%;
         font-weight: bold;
         font-size: 1.8rem;
-    }
+    } */
     .emploi {
         display: flex;
         flex-direction: row;
@@ -94,24 +81,24 @@
         height: 30px;
     }
 
-    .info-mobile {
+    /* .info-mobile {
         display: none;
-    }
+    } */
 
     @media (max-width: 768px) {
-        .info {
+        /* .info {
             display: none;
-        }
-        .info-mobile {
+        } */
+        /* .info-mobile {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
             width: 60%;
-        }
+        } */
 
-        .text {
+        /* .text {
             font-size: 3.5vw;
-        }
+        } */
     }
 </style>

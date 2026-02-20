@@ -10,8 +10,9 @@
     import Facebook from "../Common/Facebook.svelte"
     import Email from "../Common/Email.svelte"
     import X from "../Common/X.svelte"
-    import WhatsApp from "../Common/WhatsApp.svelte"
+    // import WhatsApp from "../Common/WhatsApp.svelte"
     import Messenger from "../Common/Messenger.svelte"
+    // import { WhatsApp } from "svelte-share-buttons-component"
     export let offer: JobOfferDetails
 
     let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://"
@@ -186,10 +187,10 @@
                         subject={title}
                         body={`${desc}\n\nLien: ${fullUrl}`}
                     />
-                    <WhatsApp
+                    <!-- <WhatsApp
                         class="share-button"
                         text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}
-                    />
+                    /> -->
                     <X
                         class="share-button"
                         text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}

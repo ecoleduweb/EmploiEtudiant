@@ -2,6 +2,7 @@ import type { City } from "$lib/interfaces";
 import { GET } from "../ts/server";
 
 let city: City;
+let citiesMap: Map<number, string> = new Map()
 
 const getCityData = async (): Promise<City> => {
   const response = await GET<any>("/city/all")
@@ -9,6 +10,9 @@ const getCityData = async (): Promise<City> => {
   let cities = response.map((c: any) => {
     return { label: c.city, value: c.id }
   })
+
+
+  citiesMap = new Map(cities.map((c: any) => [c.value, c.label]))
 
   return {
     cities: cities,
@@ -26,6 +30,8 @@ const cacheCity = async () => {
     }
     else if (savedData) {
       cityData = JSON.parse(savedData)
+
+      citiesMap = new Map(cityData.cities.map((c: any) => [c.value, c.label]))
     }
   }
   catch {
@@ -41,6 +47,10 @@ const cacheCity = async () => {
 
 const fetchCity = async () => {
   return cacheCity()
+}
+
+export const getCityName = (cityId: number): string => {
+  return citiesMap.get(cityId) || ""
 }
 
 export default fetchCity;

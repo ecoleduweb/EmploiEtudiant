@@ -2,42 +2,91 @@
     import "../../styles/global.css"
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
-    import { GET } from "../../ts/server"
+    import { GET, PATCH, POST, PUT } from "../../ts/server"
     import type { Enterprise } from "../../Models/Enterprise"
     import EnterpriseRow from "../../Components/Enterprise/EnterpriseRow.svelte"
-    import Enterprises from "../../Components/Enterprise/Enterprises.svelte"
+    import CreateAndEditEnterprise from "../../Components/Enterprise/CreateAndEditEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import AddEnterprise from "../../Components/Enterprise/AddEnterprise.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
+    import { enterprises } from "$lib"
+    import Modal from "../../Components/Common/Modal.svelte"
+    import fetchCity from "../../Service/CityService"
+    import { getCityName } from "../../Service/CityService"
 
-    const modal = writable(false)
-    const modalAdd = writable(false)
-    const selectedEnterpriseId = writable(0)
+    // const modal = writable(false)
+    // const modalAdd = writable(false)
+    // const selectedEnterpriseId = writable(0)
+    let createEnterprise = false
+    let modalOpened = false
+    let selectedEnterprise: Enterprise | undefined = undefined
+    let searchTerm = ""
 
-    let loaded = false
-
-    const openModal = (id: number) => {
-        modal.set(true)
-        selectedEnterpriseId.set(id)
+    const openModal = () => {
+        modalOpened = true
     }
     const closeModal = () => {
-        modal.set(false)
+        modalOpened = false
+        refresh()
     }
-    const handleEnterpriseClick = (offreId: number) => {
-        openModal(offreId)
+    const handleEnterpriseClick = (enterprise: Enterprise) => {
+        selectedEnterprise = enterprise
+        openModal()
+        refresh()
     }
-    const openModalAdd = () => {
-        modalAdd.set(true)
-    }
-    const closeModalAdd = () => {
-        modalAdd.set(false)
-        getEnterprises()
-    }
-    const handleEnterprise = () => {
-        openModalAdd()
+    const openCreateEnterprise = () => {
+        selectedEnterprise = undefined
+        modalOpened = true
     }
 
-    const enterprises = writable<Enterprise[]>([])
+    const addEnterprise = async (newEnterprise: Enterprise) => {
+        try {
+            const reponse = await POST<any, any>(`/enterprise/new`, {
+                name: newEnterprise.name,
+                address: newEnterprise.address,
+                phone: newEnterprise.phone,
+                email: newEnterprise.email,
+                cityId: newEnterprise.cityId,
+            })
+        } catch (error) {
+            console.error("Error creating enterprise:", error)
+        }
+    }
+    const editEnterprise = async (enterprise: Enterprise) => {
+        try {
+            const response = await PUT<any, any>(
+                `/enterprise/${enterprise.id}`,
+                {
+                    id: enterprise.id,
+                    name: enterprise.name,
+                    email: enterprise.email,
+                    phone: enterprise.phone,
+                    address: enterprise.address,
+                    cityId: enterprise.cityId,
+                },
+            )
+        } catch (error) {
+            console.error("Error editing enterprise:", error)
+        }
+    }
+    const upsertEnterprise = async (enterprise: Enterprise | void) => {
+        if (enterprise !== undefined) {
+            if (enterprise.id >= 0) {
+                //Existant
+                await editEnterprise(enterprise)
+                closeModal()
+            } //Nouveau
+            else {
+                await addEnterprise(enterprise)
+                closeModal()
+            }
+        } else {
+            closeModal()
+        }
+        //Si offer.id >= 0, veut dire existant
+        //Si offer.id = -1, veut dire nouveau
+        //Si offer = undefined, veut dire annuler
+    }
+
     const getEnterprises = async () => {
         try {
             const response = await GET<any>("/enterprise/all")
@@ -46,24 +95,25 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    onMount(async () => 
-    {
-        try 
-        {
-            await getEnterprises()
-        }
-
-        catch (error) 
-        {
-            console.error("Error while loading:", error)
-        }
-
-        finally 
-        {
-            loaded = true
-        }
-
+    async function refresh() {
+        await getEnterprises()
+    }
+    onMount(async () => {
+        await fetchCity()
+        await refresh()
     })
+    $: filteredEnterprises = $enterprises.filter(
+        (enterprise) =>
+            enterprise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            enterprise.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            enterprise.address
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            enterprise.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            getCityName(enterprise.cityId)
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()),
+    )
 </script>
 
 <main>
@@ -71,7 +121,7 @@
         <div class="haut-gauche">
             <div class="divFlex">
                 <Button
-                    onClick={handleEnterprise}
+                    onClick={openCreateEnterprise}
                     text="Créer une nouvelle entreprise"
                 />
             </div>
@@ -84,44 +134,42 @@
                 <span class="text"> ENTREPRISES</span>
             </h1>
         </div>
+        <div class="haut-droite">
+            <div class="search-container">
+                <svg
+                    class="search-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                    type="text"
+                    bind:value={searchTerm}
+                    placeholder="Rechercher une entreprise..."
+                    class="search-input"
+                />
+            </div>
+        </div>
     </section>
 
-    {#if !loaded}
-        <section class="Loading">
-            <LoadingSpinner />
-        </section>
-    {:else}
-        <section class="offres">
-            {#each $enterprises as enterprise}
-                <EnterpriseRow
-                    {enterprise}
-                    handleModalClick={handleEnterpriseClick}
-                />
-            {/each}
-        </section>
-    {/if}
-
-    <style scoped>
-        .Loading 
-        {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-        }
-    </style>
-
-    {#if $modal}
-        {#each $enterprises as enterprise}
-            {#if enterprise.id === $selectedEnterpriseId}
-                <Enterprises {enterprise} handleEnterpriseClick={closeModal} />
-            {/if}
+    <section class="Enterprises">
+        {#each filteredEnterprises as enterprise}
+            <EnterpriseRow
+                {enterprise}
+                handleModalClick={() => handleEnterpriseClick(enterprise)}
+            />
         {/each}
-    {/if}
-    {#if $modalAdd}
-        <AddEnterprise handleEnterpriseClick={closeModalAdd} />
+    </section>
+    {#if modalOpened}
+        <Modal handleCloseClick={closeModal}>
+            <CreateAndEditEnterprise
+                enterprise={selectedEnterprise}
+                handleApproveClick={(offer) => upsertEnterprise(offer)}
+            />
+        </Modal>
     {/if}
 </main>
 
@@ -151,7 +199,7 @@
     }
     .haut {
         display: flex;
-        width: 85%;
+        width: 100%;
         margin-bottom: 30px;
     }
     .haut-gauche {
@@ -160,9 +208,59 @@
         width: 50%;
         margin-left: 5.2%;
     }
+    .haut-droite {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        width: 40%;
+    }
     .divFlex {
         display: flex;
         margin-top: 20px;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        background-color: rgba(0, 173, 154, 0.1);
+        border: 2px solid #00ad9a;
+        border-radius: 8px;
+        padding: 0.5vw 1vw;
+        width: 300px;
+        transition: all 0.3s ease;
+    }
+
+    .search-container:hover {
+        background-color: rgba(0, 173, 154, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 173, 154, 0.2);
+    }
+
+    .search-container:focus-within {
+        background-color: rgba(0, 173, 154, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 173, 154, 0.3);
+        border-color: #00ad9a;
+    }
+
+    .search-icon {
+        width: 20px;
+        height: 20px;
+        color: #00ad9a;
+        margin-right: 0.8vw;
+        flex-shrink: 0;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        background-color: transparent;
+        color: white;
+        font-size: 1rem;
+        outline: none;
+        padding: 0;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
     }
 
     @media (max-width: 768px) {
@@ -181,6 +279,14 @@
         }
         .haut {
             margin-left: 4vw;
+            flex-direction: column;
+        }
+        .haut-droite {
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+        .search-container {
+            width: 100%;
         }
     }
 </style>

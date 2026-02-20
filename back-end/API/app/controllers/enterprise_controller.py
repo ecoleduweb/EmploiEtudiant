@@ -38,17 +38,23 @@ def getEnterpriseByEmployer(id):
 @token_required
 def updateEnterprise(current_user, id):
     try:
-        employer = employer_service.getEmployerByUserId(current_user.id)
-        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
-
         data = request.get_json()
 
-        if current_user.isModerator and data["id"] != None:
+        if current_user.isModerator and data.get("id") is not None:
             enterprise = enterprise_service.getEnterprise(data["id"])
             if enterprise:
                 enterprise_service.updateEnterprise(data)
                 return jsonify({'message': 'enterprise updated'})
+            else:
+                logger.warn(f'Enterprise not found with id : {data["id"]}')
+                return jsonify({'message': 'enterprise not found'}), 404
         else:
+            employer = employer_service.getEmployerByUserId(current_user.id)
+            if not employer:
+                logger.warn("User has no associated employer")
+                return jsonify({'message': 'User has no associated employer'}), 403
+                
+            enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
             data["id"] = enterprise.id
             if enterprise and enterprise.id == data["id"]:
                 enterprise_service.updateEnterprise(data)
@@ -56,14 +62,9 @@ def updateEnterprise(current_user, id):
             else:
                 logger.warn("An user tried to modify an entreprise don't have permission")
                 return jsonify({'message': 'User cannot modify enterprise'}), 401
-
-        
-        logger.warn(f'Enterprise not found with id : {id}')
-        return jsonify({'message': 'enterprise not found'}), 404
     except Exception as e:
-        logger.error(f'There was an error updating the enterprise')
+        logger.error(f'There was an error updating the enterprise: {str(e)}')
         return jsonify({'message': 'There was an error updating the enterprise'}), 500
-
 
 @enterprise_blueprint.route('/<int:id>', methods=['GET'])
 @token_required

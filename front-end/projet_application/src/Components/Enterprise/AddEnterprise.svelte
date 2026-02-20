@@ -10,7 +10,7 @@
     import { onMount } from "svelte"
     import fetchCity from "../../Service/CityService"
     export let handleEnterpriseClick: () => void
-    
+
     const schema = yup.object().shape({
         name: yup.string().required("Le nome de l'entreprise est requis."),
         address: yup
@@ -87,10 +87,7 @@
                 isTemporary: true,
             }
             updateCityId()
-            const response = await POST<any, any>(
-                "/enterprise/new",
-                enterprise,
-            )
+            const response = await POST<any, any>("/enterprise/new", enterprise)
             handleEnterpriseClick()
         } catch (err) {
             if (err instanceof yup.ValidationError) {
@@ -102,7 +99,7 @@
 
 <Modal handleCloseClick={handleEnterpriseClick}>
     <form on:submit|preventDefault={handleSubmit} class="form-offre">
-        <h1 class="title">Créer une nouvelle entreprise</h1>
+        <h1 class="title">Créer une nouvelle entreprises</h1>
         <div class="form-group-vertical">
             <label for="title">Nom de l'entreprise*</label>
             <input

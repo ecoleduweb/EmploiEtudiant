@@ -13,7 +13,6 @@
     let modalOpened = false
     let selectedProgram: StudyProgram | undefined = undefined
 
-
     const openModal = () => {
         modalOpened = true
     }
@@ -34,13 +33,10 @@
         modalOpened = true
     }
 
-
-
     const addStudy = async (offer: StudyProgram) => {
         try {
-            const response = await POST<any, any>(`/studyProgram/new`, 
-            {
-                name: offer.name
+            const response = await POST<any, any>(`/studyProgram/new`, {
+                name: offer.name,
             })
 
             //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
@@ -53,10 +49,12 @@
 
     const editStudy = async (offer: StudyProgram) => {
         try {
-            const response = await PUT<any, any>(`/studyProgram/studyProgram/${offer.id}`, 
-            {
-                name: offer.name
-            })
+            const response = await PUT<any, any>(
+                `/studyProgram/studyProgram/${offer.id}`,
+                {
+                    name: offer.name,
+                },
+            )
 
             //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
         } catch (error) {
@@ -66,25 +64,18 @@
         await refresh()
     }
 
-
-
-    const upsertStudyProgram = async (studyProgram: StudyProgram | void) => 
-    {
-        if (studyProgram !== undefined)
-        {
-            if (studyProgram.id >= 0) //Existant
-            {
+    const upsertStudyProgram = async (studyProgram: StudyProgram | void) => {
+        if (studyProgram !== undefined) {
+            if (studyProgram.id >= 0) {
+                //Existant
                 await editStudy(studyProgram)
                 closeModal()
-            }
-            else //Nouveau 
-            {
+            } //Nouveau
+            else {
                 await addStudy(studyProgram)
                 closeModal()
             }
-        }
-        else 
-        {
+        } else {
             closeModal()
         }
         //Si offer.id >= 0, veut dire existant
@@ -94,12 +85,9 @@
 
     const getStudyPrograms = async () => {
         try {
-            let response = await GET<any>(
-            `/studyProgram/studyPrograms`
-            )
+            let response = await GET<any>(`/studyProgram/studyPrograms`)
 
-            if (response)
-            studyPrograms.set(response) 
+            if (response) studyPrograms.set(response)
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -134,15 +122,20 @@
     </section>
     <section class="StudyPrograms">
         {#each $studyPrograms as studyProgram}
-            <StudyProgramRow {studyProgram} handleModalClick={() => handleStudyProgramClick(studyProgram)}/>
+            <StudyProgramRow
+                {studyProgram}
+                handleModalClick={() => handleStudyProgramClick(studyProgram)}
+            />
         {/each}
     </section>
     {#if modalOpened}
         <Modal handleCloseClick={closeModal}>
-            <CreateAndEditStudy studyProgram={selectedProgram} handleApproveClick={(offer) => upsertStudyProgram(offer)} />
+            <CreateAndEditStudy
+                studyProgram={selectedProgram}
+                handleApproveClick={(offer) => upsertStudyProgram(offer)}
+            />
         </Modal>
     {/if}
-
 </main>
 
 <style scoped>
@@ -200,19 +193,15 @@
     }
 
     @media (max-width: 768px) {
-        .text 
-        {
+        .text {
             font-size: 6vw;
             margin-left: 2vw !important;
         }
-        .title 
-        {
+        .title {
             display: flex;
             justify-content: space-between;
             flex-direction: row;
             width: 100%;
-            
         }
     }
-
 </style>

@@ -37,7 +37,7 @@ export async function POST<T, T1>(url: string, body: T, redirectToLoginOn401?: b
 
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
         return { data: data as T1 }
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error posting:", error)
         error.name = response?.status
         throw error
@@ -54,7 +54,7 @@ export async function DELETE(url: string): Promise<void> {
             },
         })
         await handleResponse(response)
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error deleting:", error)
         throw error
     }
@@ -77,7 +77,7 @@ export async function PUT<T, T1>(url: string, body: T, redirectToLoginOn401?: bo
         const data = await handleResponse<T1>(response, redirectToLoginOn401)
         return { data: data as T1 }
         //await handleResponse(response);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error putting:", error)
         throw error
     }
@@ -89,12 +89,13 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `${localStorage.getItem("token")}`,
             },
             body: JSON.stringify(body),
         })
 
         await handleResponse(response)
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error patching:", error)
         throw error
     }
