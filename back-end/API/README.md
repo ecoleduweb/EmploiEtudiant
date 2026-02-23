@@ -12,6 +12,7 @@ Dans le dossier back-end
 pip install -r requirements.txt
 ```
 
+
 ### Setting up the environment variables
 
 Voir les variables dans le fichier .env.template et y mettre les bonnes valeurs.
@@ -33,6 +34,7 @@ GRANT ALL PRIVILEGES ON H2024TEST.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
+
 Finalement, rouler les migrations
 `flask db upgrade`
 
@@ -42,6 +44,8 @@ note : Si flaks n'est pas installé en global, tu peux utiliser
 ### Demarre l'app
 
 `flask run --debug` debug permet de redémarrer l'application quand on modifie le code.
+
+
 
 Pour se connecter, utiliser les identifiants `test@gmail.com` et le mot de passe `phil123`
 

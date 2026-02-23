@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { employerMocks } from '.././Helper/Mocks/employer.mock';
 import { cityMocks } from '.././Helper/Mocks/city.mock';
@@ -22,7 +22,6 @@ test.describe('createNewJobOffer', () => {
       jobOfferMocks.jobOfferEmployer,
       enterpriseMocks.notFound])
       .apply();
-    await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
 
     // se connecte au site (ADDRESSE A CHANGER LORSQUE LE SITE SERA DÉPLOYÉ)
     await page.goto('http://localhost:5002/dashboard');
@@ -52,7 +51,8 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
     await page.locator('#address').nth(1).fill('Addresse Lieu 123');
-    await page.getByLabel('Date limite pour postuler*').fill('2016-03-01');
+    //Il est important que cela se produise après la date que nous avons définie comme donnée mondiale universelle
+    await page.getByLabel('Date limite pour postuler*').fill('2024-05-05');
     await page.getByPlaceholder('Choisir programme(s)').click();
     await page.getByRole('option', { name: 'Arts visuels' }).click();
     await page.getByLabel('Salaire Horaire').click();
@@ -182,7 +182,7 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
     await page.locator('#address').nth(1).fill('Addresse Lieu 123');
-    await page.getByLabel('Date limite pour postuler*').fill('2016-03-01');
+    await page.getByLabel('Date limite pour postuler*').fill('2024-05-05');
     await page.getByPlaceholder('Choisir programme(s)').click();
     await page.getByRole('option', { name: 'Arts visuels' }).click();
     await page.getByLabel('Salaire Horaire').click();
@@ -221,7 +221,7 @@ test.describe('createNewJobOffer', () => {
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
     await page.locator('#address').nth(1).fill('Addresse Lieu 123');
-    await page.getByLabel('Date limite pour postuler*').fill('2016-03-01');
+    await page.getByLabel('Date limite pour postuler*').fill('2024-05-05');
     await page.getByPlaceholder('Choisir programme(s)').click();
     await page.getByRole('option', { name: 'Arts visuels' }).click();
     await page.getByLabel('Salaire Horaire').click();

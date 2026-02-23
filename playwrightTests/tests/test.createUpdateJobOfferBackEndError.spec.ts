@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { employerMocks } from '.././Helper/Mocks/employer.mock';
 import { cityMocks } from '.././Helper/Mocks/city.mock';
@@ -24,7 +24,6 @@ test.describe('createUpdateJobOfferBackEndError', () => {
       jobOfferMocks.jobOfferNew,
       enterpriseMocks.success])
       .apply();
-    await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
   });
 
   test('Nouvelle offre invalide', async ({ page }) => {
