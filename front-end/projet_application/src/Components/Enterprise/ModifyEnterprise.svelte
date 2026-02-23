@@ -79,7 +79,7 @@
                     type="text"
                     bind:value={enterprise.name}
                     class="form-control"
-                    id="titre"
+                    id="title"
                     readonly={false}
                 />
             </div>

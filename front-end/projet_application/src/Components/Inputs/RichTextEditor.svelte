@@ -1,17 +1,20 @@
 <script lang="ts">
-    import { onMount, onDestroy, createEventDispatcher } from "svelte"
-    import { Editor } from '@tiptap/core';
-    import StarterKit from '@tiptap/starter-kit';
-    import Underline from '@tiptap/extension-underline'
-
-    const dispatch = createEventDispatcher();
+    import { onMount, onDestroy } from "svelte"
+    import { Editor } from "@tiptap/core"
+    import StarterKit from "@tiptap/starter-kit"
+    import Underline from "@tiptap/extension-underline"
 
     interface Props {
-        description?: string | null;
-        element?: any;
+        description?: string | null
+        element?: any
+        onchange?: (content: string) => void
     }
 
-    let { description = $bindable(null), element = $bindable(null) }: Props = $props();
+    let {
+        description = $bindable(null),
+        element = $bindable(null),
+        onchange,
+    }: Props = $props()
 
     let editor: any = $state(null)
 
@@ -19,33 +22,34 @@
         editor = new Editor({
             element: element,
             extensions: [StarterKit, Underline],
-            content: description || '',
+            content: description || "",
             onTransaction: () => {
-                // force re-render so `editor.isActive` works as expected
-                editor = editor;
-            }
+                editor = editor
+            },
         })
-        const editorElement = element.querySelector('.ProseMirror');
+
+        const editorElement = element.querySelector(".ProseMirror")
         if (editorElement) {
-            editorElement.style.textAlign = 'left';
-            editorElement.style.minHeight = '200px';
-            editorElement.style.padding = '10px';
-            editorElement.style.fontSize = '16px';
-            editorElement.style.lineHeight = '1.5';
-            editorElement.style.color = '#333';
-        }    
-        editor.on('update', ({ editor }) => {
-            const content = editor.getHTML();
-            description = content;
-            dispatch('change', content);
-        });
-    })
-    
-    onDestroy(() => {
-            if (editor) {
-                editor.destroy()
-            }
+            editorElement.style.textAlign = "left"
+            editorElement.style.minHeight = "200px"
+            editorElement.style.padding = "10px"
+            editorElement.style.fontSize = "16px"
+            editorElement.style.lineHeight = "1.5"
+            editorElement.style.color = "#333"
+        }
+
+        editor.on("update", ({ editor }: any) => {
+            const content = editor.getHTML()
+            description = content
+            onchange?.(content)
         })
+    })
+
+    onDestroy(() => {
+        if (editor) {
+            editor.destroy()
+        }
+    })
 </script>
 
 <div class="editor-wrapper">
@@ -56,7 +60,7 @@
                     e.preventDefault()
                     editor.chain().focus().toggleBold().run()
                 }}
-                class:active={editor.isActive('bold')}
+                class:active={editor.isActive("bold")}
                 title="Gras"
             >
                 <strong>G</strong>
@@ -66,7 +70,7 @@
                     e.preventDefault()
                     editor.chain().focus().toggleItalic().run()
                 }}
-                class:active={editor.isActive('italic')}
+                class:active={editor.isActive("italic")}
                 title="Italique"
             >
                 <i>I</i>
@@ -75,19 +79,19 @@
                 onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleUnderline().run()
-                }} 
-                class:active={editor.isActive('underline')}
+                }}
+                class:active={editor.isActive("underline")}
                 title="Souligné"
             >
-            <u>U</u>
+                <u>U</u>
             </button>
-            <div class="toolbar-divider"></div> 
+            <div class="toolbar-divider"></div>
             <button
                 onclick={(e) => {
                     e.preventDefault()
                     editor.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
-                class:active={editor.isActive('heading', { level: 2 })}
+                class:active={editor.isActive("heading", { level: 2 })}
                 title="Titre"
             >
                 Titre
@@ -155,7 +159,6 @@
         border-radius: 4px;
         transition: border-color 0.3s ease;
     }
-
     .rich-text-toolbar {
         display: flex;
         align-items: center;
@@ -163,7 +166,6 @@
         background-color: #f0f0f0;
         border-bottom: 1px solid #ddd;
     }
-
     .rich-text-toolbar button {
         background: none;
         border: none;
@@ -174,58 +176,48 @@
         border-radius: 3px;
         transition: background-color 0.3s ease;
     }
-
     .rich-text-toolbar button:hover:not(:disabled) {
         background-color: #e0e0e0;
     }
-
     .rich-text-toolbar button.active {
         background-color: #e0e0e0;
         color: black;
     }
-
     .rich-text-toolbar button:disabled {
         color: #ccc;
     }
-
     .toolbar-divider {
         width: 1px;
         height: 20px;
         background-color: #ccc;
         margin: 0 10px;
     }
-
     .bullet-list {
         display: flex;
         flex-direction: column;
         line-height: 0.5;
         font-size: 0.7rem;
     }
-
     .ordered-list {
         display: flex;
         flex-direction: column;
         line-height: 0.7;
         font-size: 0.7rem;
     }
-
     .undo-redo {
         margin-left: auto;
         display: flex;
     }
-    
     .undo-redo button {
         border-radius: 0;
         margin: 0;
         padding: 5px 8px;
         border: 1px solid #ccc;
     }
-    
     .undo-redo button:first-child {
         border-radius: 3px 0 0 3px;
         border-right: none;
     }
-    
     .undo-redo button:last-child {
         border-radius: 0 3px 3px 0;
     }

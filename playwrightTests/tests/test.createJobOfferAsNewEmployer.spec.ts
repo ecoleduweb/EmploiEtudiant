@@ -11,8 +11,6 @@ import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 
 test.describe('createNewJobOffer', () => {
   var apiMocker;
-  const nextWeekDateFormatted = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
   test.beforeEach(async ({ page }) => {
     apiMocker = new ApiMocker(page);
     await apiMocker.addMocks([
@@ -38,8 +36,8 @@ test.describe('createNewJobOffer', () => {
 
     await apiMocker.addMocks([jobOfferMocks.jobOfferVerifyURL]).apply();
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Offre 1');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Offre 1');
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('Addresse 1');
     await page.locator('#email').first().click();
@@ -48,8 +46,8 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#phone').fill('4188886666');
     await page.getByPlaceholder('Choisir ville...').click();
     await page.getByRole('option', { name: 'Abercorn' }).click();
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Poste');
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
@@ -88,8 +86,8 @@ test.describe('createNewJobOffer', () => {
     await expect(page.getByText('Vous devez mettre un numéro de téléphone à votre entreprise')).toBeVisible();
     await expect(page.getByText('Vous devez mettre une ville à votre entreprise')).toBeVisible();
 
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Test entreprise');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Test entreprise');
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('123');
@@ -120,8 +118,8 @@ test.describe('createNewJobOffer', () => {
     await expect(page.getByText('La description de l\'offre est requise')).toBeVisible()
     await expect(page.getByText('Vous devez accepter les conditions')).toBeVisible()
 
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Test poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Test poste');
 
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
@@ -168,8 +166,8 @@ test.describe('createNewJobOffer', () => {
 
     apiMocker.addMocks([jobOfferMocks.jobOfferVerifyURL]).apply();
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Offre 1');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Offre 1');
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('Addresse 1');
     await page.locator('#email').first().click();
@@ -178,8 +176,8 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#phone').fill('4188886666');
     await page.getByPlaceholder('Choisir ville...').click();
     await page.getByRole('option', { name: 'Abercorn' }).click();
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Poste');
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
@@ -207,8 +205,8 @@ test.describe('createNewJobOffer', () => {
 
     await apiMocker.addMocks([jobOfferMocks.jobOfferVerifyURLWITHBADLINK]).apply();
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Offre 1');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Offre 1');
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('Addresse 1');
     await page.locator('#email').first().click();
@@ -217,8 +215,8 @@ test.describe('createNewJobOffer', () => {
     await page.locator('#phone').fill('4188886666');
     await page.getByPlaceholder('Choisir ville...').click();
     await page.getByRole('option', { name: 'Abercorn' }).click();
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Poste');
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
     await page.locator('#address').nth(1).click();
