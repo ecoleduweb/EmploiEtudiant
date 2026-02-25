@@ -6,12 +6,7 @@
     import Button from "../Inputs/Button.svelte"
     import { copy } from "svelte-copy"
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
-    import Telegram from "../Common/Telegram.svelte"
-    import Facebook from "../Common/Facebook.svelte"
-    import Email from "../Common/Email.svelte"
-    import X from "../Common/X.svelte"
-    // import WhatsApp from "../Common/WhatsApp.svelte"
-    import Messenger from "../Common/Messenger.svelte"
+
     // import { WhatsApp } from "svelte-share-buttons-component"
     export let offer: JobOfferDetails
 
@@ -173,35 +168,10 @@
                     aria-label="Fermer">&times;</button
                 >
             </div>
-            <div class="modal-body">
-                <p>Partagez cette offre sur:</p>
-                <div class="share-buttons">
-                    <Telegram class="share-button" text={title} url={fullUrl} />
-                    <Facebook
-                        class="share-button"
-                        quote={title}
-                        url={fullUrl}
-                    />
-                    <Email
-                        class="share-button"
-                        subject={title}
-                        body={`${desc}\n\nLien: ${fullUrl}`}
-                    />
-                    <!-- <WhatsApp
-                        class="share-button"
-                        text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}
-                    /> -->
-                    <X
-                        class="share-button"
-                        text={`${title}\n\n${desc}\n\nLien: ${fullUrl}`}
-                        url={fullUrl}
-                    />
-
-                    <Messenger class="share-button" url={fullUrl} />
-                </div>
+          
             </div>
         </div>
-    </div>
+
 {/if}
 
 <style scoped>
@@ -350,22 +320,11 @@
         color: #00ad9a;
     }
 
-    .modal-body {
-        color: black;
-    }
+ 
 
-    .modal-body p {
-        margin-bottom: 1rem;
-        font-size: 1.1rem;
-    }
+   
 
-    .share-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        padding: 1rem 0;
-    }
+
 
     @media (max-width: 768px) {
         .row {
@@ -390,13 +349,7 @@
         .modal-header h3 {
             font-size: 1.2rem;
         }
-        .modal-body p {
-            font-size: 1rem;
-        }
-        .share-buttons {
-            flex-direction: column;
-            align-items: stretch;
-        }
+     
         .share-button-wrapper :global(.button) {
             padding: 8px 12px;
             font-size: 14px;

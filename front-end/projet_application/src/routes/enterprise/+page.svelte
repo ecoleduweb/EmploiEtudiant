@@ -13,9 +13,7 @@
     import fetchCity from "../../Service/CityService"
     import { getCityName } from "../../Service/CityService"
 
-    // const modal = writable(false)
-    // const modalAdd = writable(false)
-    // const selectedEnterpriseId = writable(0)
+    
     let createEnterprise = false
     let modalOpened = false
     let selectedEnterprise: Enterprise | undefined = undefined
@@ -26,12 +24,12 @@
     }
     const closeModal = () => {
         modalOpened = false
-        refresh()
+       
     }
     const handleEnterpriseClick = (enterprise: Enterprise) => {
         selectedEnterprise = enterprise
         openModal()
-        refresh()
+      
     }
     const openCreateEnterprise = () => {
         selectedEnterprise = undefined
@@ -40,13 +38,15 @@
 
     const addEnterprise = async (newEnterprise: Enterprise) => {
         try {
-            const reponse = await POST<any, any>(`/enterprise/new`, {
+            const response = await POST<any, any>(`/enterprise/new`, {
                 name: newEnterprise.name,
                 address: newEnterprise.address,
                 phone: newEnterprise.phone,
                 email: newEnterprise.email,
                 cityId: newEnterprise.cityId,
             })
+           
+            enterprises.update(list => [...list, response.data])
         } catch (error) {
             console.error("Error creating enterprise:", error)
         }
@@ -64,13 +64,18 @@
                     cityId: enterprise.cityId,
                 },
             )
+            
+         
+            enterprises.update(list => 
+                list.map(ent => ent.id === enterprise.id ? enterprise : ent)
+            )
         } catch (error) {
             console.error("Error editing enterprise:", error)
         }
     }
     const upsertEnterprise = async (enterprise: Enterprise | void) => {
         if (enterprise !== undefined) {
-            if (enterprise.id >= 0) {
+            if (enterprise.id !== undefined && enterprise.id >= 0) {
                 //Existant
                 await editEnterprise(enterprise)
                 closeModal()
@@ -82,9 +87,7 @@
         } else {
             closeModal()
         }
-        //Si offer.id >= 0, veut dire existant
-        //Si offer.id = -1, veut dire nouveau
-        //Si offer = undefined, veut dire annuler
+   
     }
 
     const getEnterprises = async () => {
@@ -95,12 +98,10 @@
             console.error("Error fetching job offers:", error)
         }
     }
-    async function refresh() {
-        await getEnterprises()
-    }
+  
     onMount(async () => {
         await fetchCity()
-        await refresh()
+        await getEnterprises()
     })
     $: filteredEnterprises = $enterprises.filter(
         (enterprise) =>
@@ -117,9 +118,9 @@
 </script>
 
 <main>
-    <section class="haut">
-        <div class="haut-gauche">
-            <div class="divFlex">
+    <section class="top">
+        <div class="top-left">
+            <div class="flex-container">
                 <Button
                     onClick={openCreateEnterprise}
                     text="Créer une nouvelle entreprise"
@@ -127,14 +128,14 @@
             </div>
         </div>
     </section>
-    <section class="haut">
-        <div class="haut-gauche">
+    <section class="top">
+        <div class="top-left">
             <h1 class="title">
                 <span class="text">MES </span>
                 <span class="text"> ENTREPRISES</span>
             </h1>
         </div>
-        <div class="haut-droite">
+        <div class="top-right">
             <div class="search-container">
                 <svg
                     class="search-icon"
@@ -155,7 +156,7 @@
         </div>
     </section>
 
-    <section class="Enterprises">
+    <section class="enterprises">
         {#each filteredEnterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
@@ -197,24 +198,24 @@
         width: 100%;
         height: 100%;
     }
-    .haut {
+    .top {
         display: flex;
         width: 100%;
         margin-bottom: 30px;
     }
-    .haut-gauche {
+    .top-left {
         display: flex;
         flex-direction: column;
         width: 50%;
         margin-left: 5.2%;
     }
-    .haut-droite {
+    .top-right {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         width: 40%;
     }
-    .divFlex {
+    .flex-container {
         display: flex;
         margin-top: 20px;
     }
@@ -273,15 +274,15 @@
             justify-content: left;
             flex-direction: row;
         }
-        .haut-gauche {
+        .top-left {
             width: 100%;
             margin-left: 1vw;
         }
-        .haut {
+        .top {
             margin-left: 4vw;
             flex-direction: column;
         }
-        .haut-droite {
+        .top-right {
             width: 100%;
             margin-top: 1.5rem;
         }

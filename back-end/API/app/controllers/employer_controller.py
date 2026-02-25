@@ -1,10 +1,12 @@
 from flask import jsonify, request, Blueprint
 from app.services.employer_service import EmployerService
+from app.services.enterprise_service import EnterpriseService
 from app.services.user_service import UserService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 employer_service = EmployerService()
+enterprise_service = EnterpriseService()
 user_service = UserService()
 
 logger = getLogger(__name__)
@@ -59,3 +61,19 @@ def getUserFromTemporaryEnterprise(id):
         print(e)
         logger.warning("Employer not found")
         return jsonify({'message': 'Employer not found'}), 400
+    
+@employer_blueprint.route('/getEmployersByEnterpriseId/<int:enterpriseId>', methods=['GET'])
+@token_admin_required
+def getEmployersByEnterpriseId(current_user, enterpriseId):
+    try:
+        enterprise = enterprise_service.getEnterprise(enterpriseId)
+        if not enterprise:
+            logger.warning(f'Enterprise not found with id : {enterpriseId}')
+            return jsonify({'message': 'Enterprise not found'}), 404
+        
+        employers = employer_service.getEmployersByEnterpriseId(enterpriseId)
+        return jsonify([employer.to_json_string() for employer in employers]), 200
+    except Exception as e:
+        logger.error(f'Error getting employers for enterprise {enterpriseId}: {str(e)}')
+        return jsonify({'message': 'Error retrieving employers'}), 500
+    

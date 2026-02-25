@@ -54,7 +54,7 @@
         if (enterprise !== null) {
             try {
                 enterprise.cityId =
-                    selectedCity?.value != undefined ? selectedCity?.value : -1
+                    selectedCity?.value !== undefined ? selectedCity?.value : -1
                 await entrepriseSchema.validate(enterprise, {
                     abortEarly: false,
                 })

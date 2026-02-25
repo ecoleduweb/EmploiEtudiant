@@ -55,11 +55,7 @@
         text-align: left;
         margin-left: 0.2vw;
     }
-    /* .textTitre {
-        width: 20%;
-        font-weight: bold;
-        font-size: 1.8rem;
-    } */
+   
     .emploi {
         display: flex;
         flex-direction: row;
@@ -81,24 +77,7 @@
         height: 30px;
     }
 
-    /* .info-mobile {
-        display: none;
-    } */
 
-    @media (max-width: 768px) {
-        /* .info {
-            display: none;
-        } */
-        /* .info-mobile {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            width: 60%;
-        } */
 
-        /* .text {
-            font-size: 3.5vw;
-        } */
-    }
+   
 </style>

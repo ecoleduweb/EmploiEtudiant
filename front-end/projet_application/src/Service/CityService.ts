@@ -2,17 +2,14 @@ import type { City } from "$lib/interfaces";
 import { GET } from "../ts/server";
 
 let city: City;
-let citiesMap: Map<number, string> = new Map()
+let cities: any[] = []
 
 const getCityData = async (): Promise<City> => {
   const response = await GET<any>("/city/all")
 
-  let cities = response.map((c: any) => {
+  cities = response.map((c: any) => {
     return { label: c.city, value: c.id }
   })
-
-
-  citiesMap = new Map(cities.map((c: any) => [c.value, c.label]))
 
   return {
     cities: cities,
@@ -25,13 +22,13 @@ const cacheCity = async () => {
   let cityData: any;
 
   try {
-    if (city.cachingDate !== 0) {
+    if (city && city.cachingDate !== 0) {
       cityData = city
+      cities = cityData.cities
     }
     else if (savedData) {
       cityData = JSON.parse(savedData)
-
-      citiesMap = new Map(cityData.cities.map((c: any) => [c.value, c.label]))
+      cities = cityData.cities
     }
   }
   catch {
@@ -50,7 +47,8 @@ const fetchCity = async () => {
 }
 
 export const getCityName = (cityId: number): string => {
-  return citiesMap.get(cityId) || ""
+  const foundCity = cities.find((c: any) => c.value === cityId)
+  return foundCity ? foundCity.label : "Unknown"
 }
 
 export default fetchCity;

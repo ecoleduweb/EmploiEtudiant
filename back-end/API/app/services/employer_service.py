@@ -36,3 +36,28 @@ class EmployerService:
         else:
             logger.warning("Employer not found from enterprise")
             return None
+
+    def getEmployersByEnterpriseId(self, enterpriseId):
+        employers = employer_repo.getEmployersByEnterpriseId(enterpriseId)
+        all_users = user_service.getAllUsers()
+        users_dict = {user.id: user for user in all_users}
+        
+        enriched_employers = []
+        for employer in employers:
+            employer_data = employer.to_json_string()
+            
+            if employer.userId and employer.userId in users_dict:
+                user = users_dict[employer.userId]
+                employer_data['firstName'] = user.firstName
+                employer_data['lastName'] = user.lastName
+                employer_data['email'] = user.email
+                employer_data['active'] = user.active
+            else:
+                employer_data['firstName'] = None
+                employer_data['lastName'] = None
+                employer_data['email'] = None
+                employer_data['active'] = None
+            
+            enriched_employers.append(employer_data)
+        
+        return enriched_employers
