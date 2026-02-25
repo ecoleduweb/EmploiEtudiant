@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { page } from '$app/stores'
   import { env } from "$env/dynamic/public"
   
@@ -7,7 +9,7 @@
 
   console.log("Measurement ID:", measurementId); 
 
-  $: {
+  run(() => {
     if (typeof gtag !== 'undefined') {
       if (measurementId) {
       gtag('config', measurementId, {
@@ -20,7 +22,7 @@
     } else {
       console.warn('gtag is not defined')
     }
-  }
+  });
 </script>
 
 <svelte:head>

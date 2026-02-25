@@ -8,10 +8,10 @@
     import { PUT } from "../../ts/server"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
-    let lastname: string
-    let firstname: string
-    let password: string
-    let showEnterpriseEditModal = false
+    let lastname: string = $state()
+    let firstname: string = $state()
+    let password: string = $state()
+    let showEnterpriseEditModal = $state(false)
 
     const handleShow = () => {
         showEnterpriseEditModal = true
@@ -53,7 +53,7 @@
         }
     };
 
-    let userHaveEnterprise = false
+    let userHaveEnterprise = $state(false)
 
     onMount(async () => {
         userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)

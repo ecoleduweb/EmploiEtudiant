@@ -4,11 +4,15 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import type { City } from "../../Models/City"
-    export let enterprise: Enterprise
-    export let handleEnterpriseClick: () => void
+    interface Props {
+        enterprise: Enterprise;
+        handleEnterpriseClick: () => void;
+    }
+
+    let { enterprise, handleEnterpriseClick }: Props = $props();
 
     let ville: City
-    let nomVille: string
+    let nomVille: string = $state()
 
     const getCity = async (id: number) => {
         try {

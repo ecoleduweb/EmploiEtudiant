@@ -9,11 +9,9 @@
     import { Hamburger } from 'svelte-hamburgers';
     import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
+    let open = false;  
 
-    let open: boolean;
-
-    const fetchStudyPrograms = async () => 
-    {
+    const fetchStudyPrograms = async () => {
         try {
             let response = await GET<any>(
                 `/studyProgram/studyPrograms`,
@@ -21,31 +19,26 @@
             )
 
             if (response)
-            return response
+                return response
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
     }
 
     onMount(async () => {
-        try 
-        {
+        try {
             isLoggedIn.set(!isTokenExpired())
 
-            if ($isLoggedIn)
-            {
+            if ($isLoggedIn) {
                 const decoded = decodeToken()
                 setInfoFromDecoded(decoded)
             }
-            else
-            {
+            else {
                 disconnectUser()
             }
         }
-        catch (err) 
-        {}
-        finally 
-        {
+        catch (err) {}
+        finally {
             studyPrograms.set(await fetchStudyPrograms())
         }
     })
@@ -54,31 +47,37 @@
         open = false
         goto("/emplois")
     }
+
     const handleEnterprise = () => {
         open = false
         goto("/enterprise")
     }
+
     const handleDashboard = () => {
         open = false
         goto("/dashboard")
     }
+
     const handleUtilisateur = () => {
         open = false
         goto("/users")
     }
+
     const handleProgrammes = () => {
         open = false
         goto("/programmes")
     }
-    const handleProfile = () => 
-    {
+
+    const handleProfile = () => {
         open = false
         goto("/profile")
     }
+
     const handleLogin = () => {
         open = false
         goto("/login")
     }
+
     const handleRegister = () => {
         open = false
         goto("/register")
@@ -101,65 +100,65 @@
     <div class={$isLoggedIn ? "burger" : "burger-disconnected"}>
         <Hamburger bind:open --color="white"/>
         {#if open}
-        <div class="menu-dropdown">
-            {#if $currentUser?.isModerator}
-            <div class="option">
-                <button class="button" on:click={handleEnterprise}>
-                    <p class="textSearch">Entreprises</p>
-                </button>
-                <button class="button" on:click={handleUtilisateur}>
-                    <p class="textSearch">Utilisateurs</p>
-                </button>
-                <button class="button" on:click={handleProgrammes}>
-                    <p class="textSearch">Programmes d'études</p>
-                    <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
-                </button>
-                <button class="button" on:click={handleEmploi}>
-                    <p class="textSearch">Trouver un emploi</p>
-                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
-                </button>
-                <button class="button" on:click={handleDashboard}>
-                    <p class="textSearch">Tableau de bord</p>
-                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
-                </button>
-                <button class="button" on:click={handleProfile}>
-                    <p class="textSearch">Connecté en tant que : {$currentUser?.firstName} {$currentUser?.lastName} </p>
-                </button>
-                <button class="button" on:click={handleLogout}>
-                    <p class="textSearch">Déconnexion</p>
-                    <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
-                </button>
+            <div class="menu-dropdown">
+                {#if $currentUser?.isModerator}
+                    <div class="option">
+                        <button class="button" on:click={handleEnterprise}>
+                            <p class="textSearch">Entreprises</p>
+                        </button>
+                        <button class="button" on:click={handleUtilisateur}>
+                            <p class="textSearch">Utilisateurs</p>
+                        </button>
+                        <button class="button" on:click={handleProgrammes}>
+                            <p class="textSearch">Programmes d'études</p>
+                            <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
+                        </button>
+                        <button class="button" on:click={handleEmploi}>
+                            <p class="textSearch">Trouver un emploi</p>
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                        </button>
+                        <button class="button" on:click={handleDashboard}>
+                            <p class="textSearch">Tableau de bord</p>
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                        </button>
+                        <button class="button" on:click={handleProfile}>
+                            <p class="textSearch">Connecté en tant que : {$currentUser?.firstName} {$currentUser?.lastName} </p>
+                        </button>
+                        <button class="button" on:click={handleLogout}>
+                            <p class="textSearch">Déconnexion</p>
+                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
+                        </button>
+                    </div>
+                {/if}
+                {#if !($currentUser?.isModerator) && $isLoggedIn}
+                    <div class="option">
+                        <button class="button" on:click={handleDashboard}>
+                            <p class="textSearch">Tableau de bord</p>
+                            <img class="iconeSearch" src="searchBar.svg" alt="Search icon" />
+                        </button>
+                        <button class="button" on:click={handleLogout}>
+                            <p class="textSearch">Déconnexion</p>
+                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
+                        </button>
+                    </div>
+                {/if}
+                {#if !$isLoggedIn}
+                    <div class="option">
+                        <button class="button" on:click={handleEmploi}>
+                            <p class="textSearch">Trouver un emploi</p>
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                        </button>
+                        <button class="button" on:click={handleLogin}>
+                            <p class="textSearch">Connexion entreprise</p>
+                            <img class="iconeLogout" src="business.svg" alt="Business icon" />
+                        </button>
+                        <button class="button" on:click={handleRegister}>
+                            <p class="textSearch">Créer un compte entreprise</p>
+                            <img class="iconeLogout" src="add.svg" alt="Add icon" />
+                        </button>
+                    </div>
+                {/if}
             </div>
-            {/if}
-            {#if !($currentUser?.isModerator) && $isLoggedIn}
-            <div class="option">
-                <button class="button" on:click={handleDashboard}>
-                    <p class="textSearch">Tableau de bord</p>
-                    <img class="iconeSearch" src="searchBar.svg" alt="Search icon" />
-                </button>
-                <button class="button" on:click={handleLogout}>
-                    <p class="textSearch">Déconnexion</p>
-                    <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
-                </button>
-            </div>
-            {/if}
-            {#if !$isLoggedIn}
-            <div class="option">
-                <button class="button" on:click={handleEmploi}>
-                    <p class="textSearch">Trouver un emploi</p>
-                    <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
-                </button>
-                <button class="button" on:click={handleLogin}>
-                    <p class="textSearch">Connexion entreprise</p>
-                    <img class="iconeLogout" src="business.svg" alt="Business icon" />
-                </button>
-                <button class="button" on:click={handleRegister}>
-                    <p class="textSearch">Créer un compte entreprise</p>
-                    <img class="iconeLogout" src="add.svg" alt="Add icon" />
-                </button>
-            </div>
-            {/if}
-        </div>
         {/if}
     </div>
     <!--MENU MOBILE FIN --------------------------- -->
@@ -167,12 +166,11 @@
     <div class="ul-group">
         <ul class="ul-menu">
             {#if $currentUser?.isModerator}
-                <style scoped>
+              <style scoped>
                     .logo-img {
                         width: 40% !important;
                     }
                 </style>
-                
                 <div class="option">
                     <button
                         class="button logout-button"
@@ -204,7 +202,6 @@
                         />
                     </button>
                 </div>
-
             {/if}
 
             <div class="option">
@@ -219,15 +216,6 @@
             </div>
 
             {#if $isLoggedIn}
-
-                {#if $currentUser?.isModerator}
-                    <style scoped>
-                        .logo-img {
-                            width: 45% !important;
-                        }
-                    </style>
-                {/if}
-
                 <div class="option">
                     <button
                         class="button logout-button"
@@ -255,9 +243,7 @@
                         <a href="/" on:click={handleLogout}>Déconnexion</a>
                     </div>
                 </div>
-
             {:else}
-
                 <div class="option dropdown">
                     <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
                         <p class="textBusiness">Offrir un emploi</p>
@@ -278,7 +264,7 @@
     </div>
 </header>
 
-<style scoped>
+<style>
     header {
         display: flex;
         flex-direction: row;
@@ -298,7 +284,6 @@
     .image {
         position: relative;
         left: 5vw;
-        /* left: 140px; */
         width: 13vw;
         height: fit-content;
     }
@@ -351,11 +336,9 @@
         width: 15vw;
     }
 
-
     .option {
         width: 25%;
     }
-
 
     button:hover {
         background-color: #555b66;
@@ -375,14 +358,10 @@
         font-size: 1.1vw;
     }
 
-    /* Existing CSS styles */
-
-    /* Dropdown Button */
     .dropbtn {
         position: relative;
     }
 
-    /* Dropdown Content (Hidden by Default) */
     .dropdown-content {
         display: none;
         position: absolute;
@@ -400,7 +379,7 @@
         width: 16.5%;
         box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
         z-index: 1;
-        right : 10vw;
+        right: 10vw;
     }
 
     .dropdown-content-profile-admin {
@@ -410,10 +389,9 @@
         width: 16.5%;
         box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
         z-index: 1;
-        right : 2vw;
+        right: 2vw;
     }
 
-        /* Show the dropdown menu on hover */
     .dropdown:hover .dropdown-content,
     .dropdown:hover .dropdown-content-profile,
     .dropdown:hover .dropdown-content-profile-admin {
@@ -421,7 +399,6 @@
         flex-direction: column;
     }
 
-    /* Links inside the dropdown */
     .dropdown-content a,
     .dropdown-content-profile a,
     .dropdown-content-profile-admin a {
@@ -442,7 +419,6 @@
             var(--x, 0) / 200%;
     }
 
-    /* Change color of dropdown links on hover */
     .dropdown-content a:hover,
     .dropdown-content-profile a:hover,
     .dropdown-content-profile-admin a:hover {
@@ -469,7 +445,7 @@
     .menu-dropdown {
         display: none;
         position: absolute;
-        top: 60px; /* Ajustez cette valeur en fonction de la hauteur de votre header */
+        top: 60px;
         left: 0;
         width: 100%;
         background-color: white;
@@ -514,7 +490,6 @@
         width: 15%;
         height: 100%;
     }
-   
 
     .logout-button {
         background-color: transparent;
@@ -523,7 +498,6 @@
         display: flex;
         align-items: center;
     }
-
 
     .textLogout {
         margin-right: 8px;
@@ -535,7 +509,7 @@
 
     @media (max-width: 768px) {
         header {
-        height: 15vw;
+            height: 15vw;
         }
         .image img {
             height: 8vW;
@@ -560,14 +534,13 @@
             padding-right: 2vw;
         }
         .textSearch {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        margin-right: 8px;
-        font-size: 20px;
-        
-    }
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            margin-right: 8px;
+            font-size: 20px;
+        }
         .menu-dropdown {
             display: block;
             margin-top: 1vh;
@@ -576,7 +549,5 @@
         .ul-group {
             display: none;
         }
-
     }
-
 </style>

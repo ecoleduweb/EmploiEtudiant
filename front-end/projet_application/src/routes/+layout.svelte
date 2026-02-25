@@ -5,6 +5,7 @@
     import Footer from "../Components/Common/Footer.svelte"
     import { ClientTelemetry } from "$lib/tracer"
     import { env } from "$env/dynamic/public"
+    let { children } = $props();
 
     const ENABLED_TELEMETRY = env.PUBLIC_ENABLED_TELEMETRY
 
@@ -19,7 +20,7 @@
     <CookieBanner />
 
     <main class="content">
-        <slot />
+        {@render children?.()}
     </main>
 
     <div class="footer-spacer"></div>

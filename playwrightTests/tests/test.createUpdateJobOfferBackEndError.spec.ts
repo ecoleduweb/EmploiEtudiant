@@ -40,8 +40,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
 
     // Enterprise
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Test entreprise');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Test entreprise');
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('123');
@@ -57,8 +57,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
     // JobOffer
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Poste');
 
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
@@ -114,11 +114,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.locator('button.button.edit').first().click();
 
     // JobOffer
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('poste');
-
-    await page.locator('#schedule.svelte-1r2hsto').click();
-    await page.getByRole('option', { name: 'temps plein' }).click();
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('poste');
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('Addresse 123');

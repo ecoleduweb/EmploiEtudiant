@@ -1,14 +1,23 @@
 <script lang="ts">
-    export let text: string
-    export let submit: boolean = false
-    export let onClick: (() => void) = () => {}
-    export let cssId: string = ""
+    interface Props {
+        text: string;
+        submit?: boolean;
+        onClick?: (() => void);
+        cssId?: string;
+    }
+
+    let {
+        text,
+        submit = false,
+        onClick = () => {},
+        cssId = ""
+    }: Props = $props();
 </script>
 
 {#if submit}
     <input id={cssId} type="submit" class="submit" value={text} />
 {:else}
-    <button id={cssId} class="button" on:click={onClick}>{text}</button>
+    <button id={cssId} class="button" onclick={onClick}>{text}</button>
 {/if}
 
 <style scoped>

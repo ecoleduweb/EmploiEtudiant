@@ -1,11 +1,13 @@
 <script lang="ts">
+    import { preventDefault } from 'svelte/legacy';
+
     import "../../styles/global.css";
     import Button from "../../Components/Inputs/Button.svelte";
     import type { ResetPassword } from "../../Models/ResetPassword";
     import * as yup from "yup";
     import { extractErrors } from "../../ts/utils";
     import { POST } from "../../ts/server";
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { goto } from "$app/navigation";
     import Popup from "../../Components/Common/Popup.svelte";
     import { writable } from "svelte/store";
@@ -54,23 +56,23 @@
         }));
     }
 
-    let errors: ResetPassword = {
+    let errors: ResetPassword = $state({
         token: "",
         password: "",
         confirmPassword: "",
-    };
+    });
 
-    let resetPassword: ResetPassword = {
-        token: $page.url.searchParams.get('token'),
+    let resetPassword: ResetPassword = $state({
+        token: page.url.searchParams.get('token'),
         password: "",
         confirmPassword: "",
-    };
+    });
 
     let successPopupMessage = "Le mot de passe a été défini avec succès.";
     let failedPopupMessage = "Impossible de changer le mot de passe, lien invalide ou expiré?";
 
-    let popupMessage = "";
-    let showPopup = false;
+    let popupMessage = $state("");
+    let showPopup = $state(false);
 
     const handlePopupClose = async () => {
         showPopup = false;
@@ -112,7 +114,7 @@
 <section>
     <div class="forgotPassword">
         <h1>Mot de passe oublié</h1>
-        <form class="forgotPassword-form" on:submit|preventDefault={handleSubmit}>
+        <form class="forgotPassword-form" onsubmit={preventDefault(handleSubmit)}>
             <label for="password">Entrer un nouveau mot de passe </label>
             <input
                 type="password"
@@ -120,7 +122,7 @@
                 id="password"
                 name="password"
                 bind:value={resetPassword.password}
-                on:input={validatePassword}
+                oninput={validatePassword}
             />
             <p class="errors-input">
                 {#if errors.password}{errors.password}{/if}
@@ -132,7 +134,7 @@
                 id="confirmPassword"
                 name="confirmPassword"
                 bind:value={resetPassword.confirmPassword}
-                on:input={validatePassword}
+                oninput={validatePassword}
             />
             <p class="errors-input">
                 {#if errors.confirmPassword}{errors.confirmPassword}{/if}

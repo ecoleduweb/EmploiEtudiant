@@ -2,10 +2,14 @@
     import Button from "../Inputs/Button.svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
     import { onMount } from "svelte"
-    export let studyProgram: StudyProgram = {name: "", id: -1}
-    export let handleApproveClick: (studyProgram: StudyProgram | void) => void
+    interface Props {
+        studyProgram?: StudyProgram;
+        handleApproveClick: (studyProgram: StudyProgram | void) => void;
+    }
 
-    let savedName = studyProgram.name
+    let { studyProgram = $bindable({name: "", id: -1}), handleApproveClick }: Props = $props();
+
+    let savedName = $state(studyProgram.name)
 
 </script>
 
