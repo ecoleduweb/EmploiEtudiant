@@ -81,7 +81,7 @@
             const matchesSchedules = selectedSchedule.length === 0 ||
                 offer.schedules?.some(schedule => parseInt(schedule.id) === schedulesToFilterId);
         
-            return (matchesPrograms ?? true) && (matchesSchedules ?? true);
+            return (matchesPrograms  ) && (matchesSchedules  );
         });
     };
 

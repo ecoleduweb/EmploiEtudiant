@@ -9,9 +9,9 @@
     import AddEnterprise from "../../Components/Enterprise/AddEnterprise.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
-    let modal = false
-    let modalAdd = false
-    let selectedEnterpriseId = 0
+   let modal = $state(false)
+   let modalAdd = $state(false)
+   let selectedEnterpriseId = $state(0)
 
     let loaded = false
 

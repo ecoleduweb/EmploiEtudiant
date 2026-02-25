@@ -63,7 +63,9 @@ flask db upgrade
 
 ## Comment fonctionne les tests?
 
-Simplement écrire la commande `pytest`.
+Simplement naviguer vers le dossier backend\API et ensuite écrire la commande `pytest`.
+
+Pour une documentation détaillée, navigue vers le fichier documentationPyTest.md
 
 ## Logging
 
@@ -104,16 +106,16 @@ flask run
 ```bash
   python -m venv myenv
 ```
-  Ensuite activer naviguer vers Scripts :
+  Ensuite activer naviguer vers Scripts(c'est mieux de se placer manuellement ) :
 
 ```bash
   cd myenv\Scripts\
 ```
    Activer l'environnement
 ```bash
-  .\Activate.ps1
+  source activate
 ```
-  Reinstaller les packages requirements.txt :
+  Naviguer vers le dossier backend et ensuite Reinstaller les packages requirements.txt  :
 ```bash
   pip install -r requirements.txt
 ```
