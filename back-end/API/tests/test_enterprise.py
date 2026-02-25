@@ -63,16 +63,18 @@ def app():
 
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        dataLogin = {
+            "email": "test@test.com",
+            "password": "test",
+        }
+        res= client.post('/user/login', json=dataLogin)
+        print(res.json)
+        yield client
+  
 
 def test_getEnterprises(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/enterprise/all', headers={"Authorization": token})
+    response = client.get('/enterprise/all')
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -84,13 +86,7 @@ def test_createEnterprise(client):
         "address": "123 rue de la",
         "cityId": 1,
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.post('/enterprise/new', json=data, headers={"Authorization": token})
+    response = client.post('/enterprise/new', json=data)
     assert response.status_code == 200
     assert response.json == {
         "id": 3,
@@ -103,27 +99,34 @@ def test_createEnterprise(client):
     }
 
 def test_getEnterprise(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/enterprise/1', headers={"Authorization": token})
+    response = client.get('/enterprise/1')
     assert response.status_code == 200
     assert len(response.json) == 7
 
 def test_checkIfUserHaveEnterprise(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/enterprise/currentEnterprise', headers={"Authorization": token})
+    response = client.get('/enterprise/currentEnterprise')
     assert response.status_code == 200
     assert len(response.json) == 7
 
+
+
+def test_updateEnterprise(client):
+    data = {
+        "id": 3,
+        "name": "Développeur modifié",
+        "email": "test@test.com",
+        "phone": "123-123-1234",
+        "address": "123 rue de la",
+        "cityId": 1,
+    }
+    response = client.put('/enterprise/3', json=data)
+    assert response.status_code == 200
+    assert response.json == {
+        "message": 'enterprise updated'
+    }
+#Il faut laisser ce test à la fin parce qu'il crée un nouvel utilisateur et se connecte 
+# (le cookie de l'utilisateur du module n'est plus valide).
+ 
 def test_checkIfUserHaveEnterprise_NewUser(client):
     data = {
         "id": 2,
@@ -136,31 +139,10 @@ def test_checkIfUserHaveEnterprise_NewUser(client):
     }
     response = client.post('/user/register', json=data)
     dataLogin = {
-        "email": "test3@gmail.com",
-        "password": "test123",
+       "email": "test3@gmail.com",
+       "password": "test123",
     }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/enterprise/currentEnterprise', headers={"Authorization": token})
+    res=client.post('/user/login', json=dataLogin)
+    print(res.json)
+    response = client.get('/enterprise/currentEnterprise')
     assert response.status_code == 404
-
-def test_updateEnterprise(client):
-    data = {
-        "id": 3,
-        "name": "Développeur modifié",
-        "email": "test@test.com",
-        "phone": "123-123-1234",
-        "address": "123 rue de la",
-        "cityId": 1,
-    }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.put('/enterprise/3', json=data, headers={"Authorization": token})
-    assert response.status_code == 200
-    assert response.json == {
-        "message": 'enterprise updated'
-    }

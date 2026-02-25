@@ -34,25 +34,20 @@ def app():
 
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        dataLogin = {
+            "email": "test@gmail.com",
+            "password": "test123"
+        }
+        res = client.post('/user/login', json=dataLogin)
+        print(res.json)
+        yield client
 
 def test_employmentSchedules(client):
-    dataLogin = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/employmentSchedule/all', headers={"Authorization": token})
+    response = client.get('/employmentSchedule/all')
     assert response.status_code == 200
     assert len(response.json) == 2
 
 def test_employmentSchedule(client):
-    dataLogin = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/employmentSchedule/1', headers={"Authorization": token})
+    response = client.get('/employmentSchedule/1')
     assert response.status_code == 200

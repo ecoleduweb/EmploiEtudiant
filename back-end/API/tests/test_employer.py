@@ -56,20 +56,21 @@ def app():
         
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        dataLogin = {
+            "email": "test@test.com",
+            "password": "test",
+        }
+        res = client.post('/user/login', json=dataLogin)
+        print(res.json)
+        yield client
 
 def test_createEmployer(client):
     data = {
         "enterpriseId": 1,
         "userId": 1,
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.post('/employer/new', json=data, headers={'Authorization': token})
+    response = client.post('/employer/new', json=data)
     assert response.status_code == 200
 
 
@@ -79,13 +80,8 @@ def test_updateEmployer(client):
         "userId": 1,
         "enterpriseId": 1,
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.put('/employer/1', json=data,  headers={'Authorization': token})
+    
+    response = client.put('/employer/1', json=data)
     assert response.status_code == 200
     assert response.json == {
         "message": "employer updated"

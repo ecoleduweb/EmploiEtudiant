@@ -35,14 +35,15 @@ def app():
 
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        dataLogin = {
+            "email": "test@test.com",
+            "password": "test",
+        }
+        res = client.post('/user/login', json=dataLogin)
+        print(res.json)
+        yield client
 
 def test_getProgramIdByOfferId(client):
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/offerProgram/1', headers={"Authorization": token})
+    response = client.get('/offerProgram/1')
     assert response.status_code == 200
