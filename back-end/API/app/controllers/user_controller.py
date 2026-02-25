@@ -37,7 +37,7 @@ def login():
         user=user_service.getUser(data["email"])
         resp=jsonify({"isModerator": user.isModerator, "email": user.email,
         "firstName": user.firstName, "lastName": user.lastName})
-        secure_cookie = os.environ.get("COOKIE_SECURE", "False") == "True"
+        secure_cookie = os.environ.get("COOKIE_SECURE", "True") == "False"
         resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=secure_cookie,max_age=60 * 30,path='/')
         return resp
     except LoginException as e:
@@ -77,9 +77,7 @@ def register():
 @user_blueprint.route("/me", methods=['GET'])
 @token_required
 def me(current_user):
-    return jsonify({"isModerator": current_user.isModerator,"email": current_user.email,
-        "firstName": current_user.firstName,
-        "lastName": current_user.lastName}),200
+    return jsonify(current_user.minimal_information_to_json_string()), 200
 
 @user_blueprint.route('/updatePassword', methods=['PUT'])
 @token_required

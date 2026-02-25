@@ -13,7 +13,7 @@ test.describe('checkIfUserHaveEnterprise', () => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             studyProgramMocks.success,
-            loginMocks.success,
+            loginMocks.successModerator,
             userMocks.meModerator])
             .apply();
 

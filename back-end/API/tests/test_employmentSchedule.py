@@ -40,7 +40,7 @@ def client(app):
             "password": "test123"
         }
         res = client.post('/user/login', json=dataLogin)
-        print(res.json)
+        assert res.status_code == 200
         yield client
 
 def test_employmentSchedules(client):

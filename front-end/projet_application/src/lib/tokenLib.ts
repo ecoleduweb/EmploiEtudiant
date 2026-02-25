@@ -4,10 +4,10 @@ import type { User } from "../Models/User";
 
 
 
-export const logIn = (user: User) => {
+export const logIn = async (user: User) => {
   currentUser.set(user)
   isLoggedIn.set(true)
-  goto("/dashboard")
+  await goto("/dashboard")
 
 }
 

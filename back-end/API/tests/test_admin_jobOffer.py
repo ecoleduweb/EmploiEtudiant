@@ -33,7 +33,7 @@ job_offer1_data = {
 
 def VerifyData(jobOfferData):
     for data in job_offer1_data:
-        if (data not in jobOfferData) and (type(jobOfferData[data]) != type(job_offer1_data[data])):
+        if data not in jobOfferData or not isinstance(jobOfferData[data], type(job_offer1_data[data])):
             return False
     return True
 

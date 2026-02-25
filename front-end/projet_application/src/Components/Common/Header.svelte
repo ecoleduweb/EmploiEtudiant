@@ -34,7 +34,7 @@
     }
     onMount(async () => {
             await checkSession()
-            studyPrograms.set(await fetchStudyPrograms())
+            studyPrograms.set(await fetchStudyPrograms()??[])
     })
 
     const handleEmploi = () => {

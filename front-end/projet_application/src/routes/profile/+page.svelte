@@ -21,8 +21,8 @@
         showEnterpriseEditModal = false
     }
 
-    const ChangePassword = () => {
-        PUT<any, any>("/user/updatePassword", {
+    const ChangePassword = async () => {
+        await PUT<any, any>("/user/updatePassword", {
             email: ($currentUser as User).email,
             password: password,
         })
@@ -31,7 +31,7 @@
         goto("/")
     }
 
-    const ChangeUser = (lastName: string, firstName: string) => {
+    const ChangeUser = async (lastName: string, firstName: string) => {
         try {
             const updatedUser = {
                 lastname: lastName || $currentUser?.lastName,
@@ -39,7 +39,7 @@
                 email: ($currentUser as User).email,
             }
 
-            PUT<any, any>("/user/user", updatedUser)
+             await PUT<any, any>("/user/user", updatedUser)
 
             if ($currentUser?.firstName !== firstName && firstName) {
                 currentUser.set({ ...$currentUser!, firstName: firstName })
@@ -126,7 +126,7 @@
             <div class="editInfo">
                 <h5 class="infoModify">Mot de passe:</h5>
                 <input
-                    type="text_content"
+                    type="password"
                     bind:value={password}
                     placeholder="Nouveau mot de passe"
                     class="input"

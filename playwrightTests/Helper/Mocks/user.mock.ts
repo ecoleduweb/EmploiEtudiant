@@ -4,7 +4,7 @@ export const userMocks = {
     meUnauthorized: {
         url: '*/**/user/me',
         response: {
-            status: 404,
+            status: 401,
             json: { message: "Token is invalid or expired" }
         }
     },
