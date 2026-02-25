@@ -10,7 +10,6 @@
     import { logIn } from "../../lib/tokenLib"
     import Popup from "../../Components/Common/Popup.svelte"
 
-    // Validation schema
     const schema = yup.object({
         user: yup.object({
             firstName: yup.string().required("Prénom requis"),
@@ -28,31 +27,16 @@
             .oneOf([yup.ref("user.password")], "Les mots de passes ne correspondent pas"),
     })
 
-    // State
     let errors = $state({
-        user: {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            role: "",
-        },
-        validatePassword: "",
-        token: "",
+        user: { id:0, firstName:"", lastName:"", email:"", password:"", role:"" },
+        validatePassword:"",
+        token:"",
     })
 
     let register: Register = $state({
-        user: {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            role: "",
-        },
-        validatePassword: "",
-        token: "",
+        user: { id:0, firstName:"", lastName:"", email:"", password:"", role:"" },
+        validatePassword:"",
+        token:"",
     })
 
     let validations = $state({
@@ -67,9 +51,7 @@
     let popupEnabled = $state(false)
     let showPasswordValidations = $state(false)
 
-    const closePopup = () => {
-        popupEnabled = false
-    }
+    const closePopup = () => { popupEnabled = false }
 
     const lowercaseRegex = /^(?=.*[a-z])/
     const uppercaseRegex = /^(?=.*[A-Z])/
@@ -89,24 +71,17 @@
         }
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event:any) => {
+        event.prevenDefault();
         try {
             validatePassword()
             showPasswordValidations = true
-
             await schema.validate(register, { abortEarly: false })
 
             errors = {
-                user: {
-                    id: 0,
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    password: "",
-                    role: "",
-                },
-                validatePassword: "",
-                token: "",
+                user: { id:0, firstName:"", lastName:"", email:"", password:"", role:"" },
+                validatePassword:"",
+                token:"",
             }
 
             const captchaToken = await doRecaptcha()
@@ -120,7 +95,6 @@
                     role: "user",
                     captchaToken,
                 })
-
                 logIn(response.data.token)
             } else {
                 popupEnabled = true
@@ -152,36 +126,19 @@
 
 <div class="container">
     <h1>Créer un compte</h1>
-    <form onsubmit|preventDefault={handleSubmit} class="form-register">
+    <form onsubmit={handleSubmit} class="form-register">
         <div class="info-block">
             <h2>Informations <span class="hightlight">personnelles</span></h2>
             <div class="form-fields">
                 <div class="form-inputs">
                     <label for="firstName">Prénom</label>
-                    <input
-                        type="text"
-                        id="firstName"
-                        bind:value={register.user.firstName}
-                    />
-                    <p class="errors-input">
-                        {#if errors["user.firstName"]}
-                            {errors["user.firstName"]}
-                        {/if}
-                    </p>
+                    <input type="text" id="firstName" bind:value={register.user.firstName} />
+                    <p class="errors-input">{#if errors["user.firstName"]}{errors["user.firstName"]}{/if}</p>
                 </div>
                 <div class="form-inputs">
                     <label for="lastName">Nom de famille</label>
-                    <input
-                        class="input-lastName"
-                        id="lastName"
-                        name="lastName"
-                        bind:value={register.user.lastName}
-                    />
-                    <p class="errors-input">
-                        {#if errors["user.lastName"]}
-                            {errors["user.lastName"]}
-                        {/if}
-                    </p>
+                    <input id="lastName" name="lastName" bind:value={register.user.lastName} />
+                    <p class="errors-input">{#if errors["user.lastName"]}{errors["user.lastName"]}{/if}</p>
                 </div>
             </div>
         </div>
@@ -192,85 +149,32 @@
                 <div class="form-inputs">
                     <label for="email">Courriel</label>
                     <input id="email" bind:value={register.user.email} class="input-basic" />
-                    <p class="errors-input">
-                        {#if errors["user.email"]}
-                            {errors["user.email"]}
-                        {/if}
-                    </p>
+                    <p class="errors-input">{#if errors["user.email"]}{errors["user.email"]}{/if}</p>
                 </div>
 
                 <div class="form-inputs">
                     <label for="password">Mot de passe</label>
-                    <input
-                        class="input-basic"
-                        type="password"
-                        id="password"
-                        bind:value={register.user.password}
-                        oninput={validatePassword}
-                    />
-                    <p>
-                        <span class="password-requirements">Mot de passe complexe (12 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial)</span>
-                    </p>
-                    <p class="errors-input">
-                        {#if errors["user.password"]}
-                            {errors["user.password"]}
-                        {/if}
-                    </p>
+                    <input class="input-basic" type="password" id="password" bind:value={register.user.password} oninput={validatePassword} />
+                    <p><span class="password-requirements">Mot de passe complexe (12 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial)</span></p>
+                    <p class="errors-input">{#if errors["user.password"]}{errors["user.password"]}{/if}</p>
                 </div>
 
                 <div class="form-inputs">
-                    <label for="password">Valider Mot de passe</label>
-                    <input
-                        class="input-basic"
-                        type="password"
-                        id="confirm_password"
-                        bind:value={register.validatePassword}
-                        oninput={validatePassword}
-                    />
-                    <p class="errors-input">
-                        {#if errors.validatePassword}{errors.validatePassword}{/if}
-                    </p>
+                    <label for="confirm_password">Valider Mot de passe</label>
+                    <input class="input-basic" type="password" id="confirm_password" bind:value={register.validatePassword} oninput={validatePassword} />
+                    <p class="errors-input">{#if errors.validatePassword}{errors.validatePassword}{/if}</p>
                 </div>
 
                 <div class="password-validation-showcase">
                     {#if showPasswordValidations}
                         <ul class="list-requirements">
-                            {#if validations.lowercase}
-                                <li><span class="text-password-good">✔</span> Contient une lettre minuscule</li>
-                            {:else}
-                                <li><span class="text-password-error">X</span> Ne contient pas de lettre minuscule</li>
-                            {/if}
-
-                            {#if validations.uppercase}
-                                <li><span class="text-password-good">✔</span> Contient une lettre majuscule</li>
-                            {:else}
-                                <li><span class="text-password-error">X</span> Ne contient pas de lettre majuscule</li>
-                            {/if}
-
-                            {#if validations.digit}
-                                <li><span class="text-password-good">✔</span> Contient un chiffre</li>
-                            {:else}
-                                <li><span class="text-password-error">X</span> Ne contient pas de chiffre</li>
-                            {/if}
-
-                            {#if validations.specialChar}
-                                <li><span class="text-password-good">✔</span> Contient un caractère spécial</li>
-                            {:else}
-                                <li><span class="text-password-error">X</span> Ne contient pas de caractère spécial</li>
-                            {/if}
-
-                            {#if validations.length}
-                                <li><span class="text-password-good">✔</span> Mot de passe long</li>
-                            {:else}
-                                <li><span class="text-password-error">X</span> Mot de passe trop court</li>
-                            {/if}
-
+                            {#if validations.lowercase}<li><span class="text-password-good">✔</span> Contient une lettre minuscule</li>{:else}<li><span class="text-password-error">X</span> Ne contient pas de lettre minuscule</li>{/if}
+                            {#if validations.uppercase}<li><span class="text-password-good">✔</span> Contient une lettre majuscule</li>{:else}<li><span class="text-password-error">X</span> Ne contient pas de lettre majuscule</li>{/if}
+                            {#if validations.digit}<li><span class="text-password-good">✔</span> Contient un chiffre</li>{:else}<li><span class="text-password-error">X</span> Ne contient pas de chiffre</li>{/if}
+                            {#if validations.specialChar}<li><span class="text-password-good">✔</span> Contient un caractère spécial</li>{:else}<li><span class="text-password-error">X</span> Ne contient pas de caractère spécial</li>{/if}
+                            {#if validations.length}<li><span class="text-password-good">✔</span> Mot de passe long</li>{:else}<li><span class="text-password-error">X</span> Mot de passe trop court</li>{/if}
                             {#if register.validatePassword != ""}
-                                {#if validations.corresponds}
-                                    <li><span class="text-password-good">✔</span> Mot de passe correspondent</li>
-                                {:else}
-                                    <li><span class="text-password-error">X</span> Mot de passe ne correspondent pas</li>
-                                {/if}
+                                {#if validations.corresponds}<li><span class="text-password-good">✔</span> Mot de passe correspondent</li>{:else}<li><span class="text-password-error">X</span> Mot de passe ne correspondent pas</li>{/if}
                             {/if}
                         </ul>
                     {/if}
@@ -458,5 +362,4 @@ Reste à mettre ça responsive :wink:
         min-width: 20%;
     }
 }
-
 </style>
