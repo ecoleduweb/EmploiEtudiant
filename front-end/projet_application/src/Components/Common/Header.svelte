@@ -9,7 +9,7 @@
     import { Hamburger } from 'svelte-hamburgers';
     import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
 
-    let open = false;  // ✅ Initialisé à false au lieu de undefined
+    let open = false;  
 
     const fetchStudyPrograms = async () => {
         try {
@@ -166,6 +166,11 @@
     <div class="ul-group">
         <ul class="ul-menu">
             {#if $currentUser?.isModerator}
+              <style scoped>
+                    .logo-img {
+                        width: 40% !important;
+                    }
+                </style>
                 <div class="option">
                     <button
                         class="button logout-button"
