@@ -18,4 +18,4 @@ Suivez le README du frontend pour démarrer l’interface utilisateur.
 
 Pour exécuter les tests Playwright, placez-vous dans le dossier TestPlaywright.
 
-Le README présent dans ce dossier contient la documentation pour lancer les tests.
+Le README présent dans ce dossier contient la documentation pour lancer les tests et vérifier le fonctionnement global de l'application. 
