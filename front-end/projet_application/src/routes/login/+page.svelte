@@ -5,13 +5,11 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
     import type { Login } from "../../Models/Login"
-    import { POST } from "../../ts/server"
+    import { GET, POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
-    import { isLoggedIn } from "$lib"
-    import { onMount } from "svelte"
-    import { disconnectUser, isTokenExpired, logIn } from "../../lib/tokenLib"
-
+    import { logIn } from "../../lib/tokenLib"
+    import type { User } from "../../Models/User"
 
     const schema = yup.object().shape({
         email: yup
@@ -41,23 +39,21 @@
             }
             try {
                 try {
-                    const response = await POST<Login, any>("/user/login", form, false)
-                    logIn(response.data.token)
-                }
-                catch (err) 
-                {
-                    if (err.name == 403) 
-                    {
+                    const response = await POST<Login, User>(
+                        "/user/login",
+                        form,
+                        false,
+                    )
+                    logIn(response.data)
+                } catch (err) {
+                    if (err.name == 403) {
                         errors = {
                             email: "",
                             password: "Compte désactivé",
                         }
-                    }
-                    else 
-                    {
+                    } else {
                         throw err
                     }
-
                 }
             } catch (error) {
                 errors = {
@@ -69,15 +65,6 @@
             errors = extractErrors(err)
         }
     }
-
-
-    onMount(async () => 
-    {
-        if ($isLoggedIn && isTokenExpired())
-        {
-            disconnectUser()
-        }
-    })
 </script>
 
 <section>

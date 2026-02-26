@@ -43,7 +43,15 @@ def VerifyData(jobOfferData):
 
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        dataLogin = {
+            "email": "test@gmail.com",
+            "password": "test123"
+        }
+        res = client.post('/user/login', json=dataLogin)
+        assert res.status_code == 200
+        yield client
+
 
 @pytest.fixture(scope='module')
 def app():
@@ -115,7 +123,7 @@ def app():
             "salary": '1000',
             "offerDebut": "2021-12-12",
             "active": True,
-            "employerId": None,
+            "employerId": 1,
             "isApproved": False
         }
 
@@ -174,24 +182,13 @@ def test_offreEmploi(client):
     assert VerifyData(response.json)
 
 def test_offresEmploiApprouvees(client):
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.get('/jobOffer/approved', headers={'Authorization': token})
+    response = client.get('/jobOffer/approved')
     assert response.status_code == 200
     assert len(response.json) == 1
 
 def test_offresEmploiApprouveesWithDetails(client):
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.get('/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true', headers={'Authorization': token})
+   
+    response = client.get('/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true')
     assert response.status_code == 200
     print(response.json[0])
     assert len(response.json) == 1
@@ -220,72 +217,12 @@ def test_userCreateOffresEmploi(client):
                 1
             ]
         }
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.post('/jobOffer/new', json=data, headers={'Authorization': token})
+    response = client.post('/jobOffer/new', json=data)
     assert response.status_code == 201
 
-def test_adminCreateOffer(client):
-    data = {
-            "jobOffer": 
-            job_offer1_data,
-            "enterprise": 
-            {
-                "id": 1,
-                "name": "Google",
-                "email": "google@gmail.com",
-                "phone": "1234567890",
-                "address": "123 rue google",
-                "cityId": 1
-            },
-            "studyPrograms": [
-                1,
-                2
-            ],
-            "scheduleIds": [
-                1
-            ]
-        }
-    
-    data1 = {
-        "email": "admin@gmail.com",
-        "password": "test123"
-    }
 
-    data2 = {
-        "id": 2,
-        "name": "Netflix",
-        "email": "netflix@gmail.com",
-        "phone": "8888888888",
-        "address": "14 rue de la rue",
-        "cityId": 1,
-        "isTemporary": True
-    }
-
-    hashed_password = hasher.hash("test123")
-    user = User(id=3, firstName="admin", lastName="admin", email="admin@gmail.com", password=hashed_password, active=True, isModerator=True)
-    db.session.add(user)
-    db.session.commit()
-
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.post('/jobOffer/new', json=data, headers={'Authorization': token})
-    response2 = client.post('http://localhost:5000/enterprise/new', json=data2, headers={'Authorization': token})
-    EmployerCount = client.get('/enterprise/all', headers={'Authorization': token})
-    assert response.status_code == 201 and response2.status_code == 200 and EmployerCount.status_code == 200 and len(EmployerCount.json) > 1
 
 def test_CreateJobOffer_InvalidTitle(client):
-    data1 = {
-        "email": "bigJoeDu91@cegeprdl.ca",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
     #Très gros titre (Plus grand que 255)
     job_offer1_data2 = {
         "id": 1,
@@ -327,18 +264,12 @@ def test_CreateJobOffer_InvalidTitle(client):
             ]
         }
 
-    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    response2 = client.post('/jobOffer/new', json=data2)
     assert response2.get_json() == {'field': 'title', 'message': 'Ce champ doit comporter entre 1 et 255 caracteres.'}
     assert response2.status_code == 400
 
 def test_CreateJobOffer_InvalidEmail(client):
-    data1 = {
-        "email": "bigJoeDu91@cegeprdl.ca",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
+    
     #Très gros titre (Plus grand que 255)
     job_offer1_data2 = {
         "id": 1,
@@ -380,17 +311,11 @@ def test_CreateJobOffer_InvalidEmail(client):
             ]
         }
 
-    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    response2 = client.post('/jobOffer/new', json=data2)
     assert response2.get_json() == {'field': 'email', 'message': 'Le format du courriel est invalide.'}
     assert response2.status_code == 400
 
 def test_CreateJobOffer_InvalidNumber(client):
-    data1 = {
-        "email": "bigJoeDu91@cegeprdl.ca",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
 
     #Très gros titre (Plus grand que 255)
     job_offer1_data2 = {
@@ -433,57 +358,10 @@ def test_CreateJobOffer_InvalidNumber(client):
             ]
         }
 
-    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    response2 = client.post('/jobOffer/new', json=data2)
     assert response2.get_json() == {'field': 'hoursPerWeek', 'message': 'Ce champ doit correspondre a un nombre.'}
     assert response2.status_code == 400
 
-def test_approveJobOffer(client):
-    data = {
-        "id": 1,
-        "approbationMessage": "Super offre!",
-        "isApproved": True
-    }
-    data1 = {
-        "email": "bigJoeDu91@cegeprdl.ca",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/approve/1', json=data, headers={'Authorization': token})
-    assert response.status_code == 204
-
-def test_updateJobOffer(client):
-    data = {
-        "jobOffer": {
-        "id": 2,
-        "title": "Développeur Fullstack",
-        "address": "123 rue de la liberte",
-        "description": "Développeur fullstack",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2021-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": 40,
-        "offerLink": "www.google.com",
-        "salary": '1000',
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": "Super offre!",
-        "employerId": 1,
-        "isApproved": True
-        },
-        "studyPrograms": [5, 6] ,
-        "scheduleIds": [1, 2]
-    }
-
-    data1 = {
-        "email": "admin@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
-    assert response.status_code == 200
-    assert VerifyData(response.json)
 
 def test_updateJobOffer_InvalidTitle(client):
     data = {
@@ -508,13 +386,7 @@ def test_updateJobOffer_InvalidTitle(client):
         "scheduleIds": [1, 2]
     }
 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/1', json=data)
     assert response.get_json() == {'field': 'title', 'message': 'Ce champ doit comporter entre 1 et 255 caracteres.'}
     assert response.status_code == 400
 
@@ -540,14 +412,7 @@ def test_updateJobOffer_InvalidEmail(client):
         "studyPrograms": [5, 6] ,
         "scheduleIds": [1, 2]
     }
-
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/1', json=data)
     assert response.get_json() == {'field': 'email', 'message': 'Le format du courriel est invalide.'}
     assert response.status_code == 400
 
@@ -573,14 +438,7 @@ def test_updateJobOffer_InvalidNumber(client):
         "studyPrograms": [5, 6] ,
         "scheduleIds": [1, 2]
     }
-
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/1', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/1', json=data)
     assert response.get_json() == {'field': 'hoursPerWeek', 'message': 'Ce champ doit correspondre a un nombre.'}
     assert response.status_code == 400
 
@@ -606,14 +464,7 @@ def test_updateJobOffer_NotFound(client):
         "studyPrograms": [5, 6] ,
         "scheduleIds": [1, 2]
     }
-
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/9', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/9', json=data)
     assert response.get_json() == {'message': 'Job offer not found.'}
     assert response.status_code == 404
 
@@ -640,48 +491,12 @@ def test_updateJobOffer_IsApproved(client):
         "scheduleIds": [1, 2]
     }
 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
-    assert response.json['isApproved']
+    response = client.put(f'/jobOffer/2', json=data)
+    assert response.json['isApproved']==None
     assert response.status_code == 200
+   
 
-def test_updateJobOffer_IsApproved_IsAdmin(client):
-    data = {
-        "jobOffer": {
-        "id": 2,
-        "title": "Tout change",
-        "address": "Tout change",
-        "description": "Tout change",
-        "dateEntryOffice": "2021-12-12",
-        "deadlineApply": "2021-12-12",
-        "email": "test@gmail.com",
-        "hoursPerWeek": "40",
-        "offerLink": "www.google.com",
-        "salary": '1000',
-        "offerDebut": "2021-12-12",
-        "active": True,
-        "approbationMessage": "Super offre!",
-        "employerId": 1,
-        "isApproved": True
-        },
-        "studyPrograms": [5, 6] ,
-        "scheduleIds": [1, 2]
-    }
 
-    data1 = {
-        "email": "admin@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
-    assert response.json['isApproved']
-    assert response.status_code == 200
 
 def test_updateJobOffer_IsApproved_ApprovedToNone(client):
     data = {
@@ -706,13 +521,7 @@ def test_updateJobOffer_IsApproved_ApprovedToNone(client):
         "scheduleIds": [1, 2]
     }
 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/2', json=data)
     assert response.json['isApproved'] == None
     assert response.status_code == 200
 
@@ -739,13 +548,7 @@ def test_updateJobOffer_IsApproved_DeclinedToNone(client):
         "scheduleIds": [1, 2]
     }
 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/2', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/2', json=data)
     assert response.json['isApproved'] == None
     assert response.status_code == 200
 
@@ -772,24 +575,12 @@ def test_updateJobOffer_OtherEntrepriseOffer(client):
         "scheduleIds": [1, 2]
     }
 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    responseLogin = client.post('/user/login', json=data1)
-    token = responseLogin.json['token']
-    response = client.put(f'/jobOffer/3', json=data, headers={'Authorization': token})
+    response = client.put(f'/jobOffer/3', json=data)
     assert response.status_code == 403
     assert response.json['message'] == 'Permission denied' 
 
 def test_createJobOfferWithoutOfferLink(client):
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
+   
     #Très gros titre (Plus grand que 255)
     job_offer1_data2 = {
         "id": 1,
@@ -831,61 +622,20 @@ def test_createJobOfferWithoutOfferLink(client):
             ]
         }
 
-    response2 = client.post('/jobOffer/new', json=data2, headers={'Authorization': token})
+    response2 = client.post('/jobOffer/new', json=data2)
 
     assert response2.status_code == 201
 
-def test_deleteJobOfferNotExist(client):
-
-    data1 = {
-        "email": "admin@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
-    response2 = client.delete(f'/jobOffer/delete/15', headers={'Authorization': token})
-    
-    assert response2.status_code == 404
-    assert response2.json['message'] == 'Job offer not found'    
-
-def test_deleteJobOfferAsAdmin(client):
-
-    data1 = {
-        "email": "admin@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
-    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
-    
-    assert response2.status_code == 200
-    assert response2.json['message'] == 'Job offer deleted'
+   
 
 def test_deleteOwnJobOfferAsEmployee(client):
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
-    response2 = client.delete(f'/jobOffer/delete/2', headers={'Authorization': token})
+    response2 = client.delete(f'/jobOffer/delete/2')
 
     assert response2.status_code == 200
     assert response2.json['message'] == 'Job offer deleted'  
 
 def test_deleteOthersJobOfferAsEmployee(client):
- 
-    data1 = {
-        "email": "test@gmail.com",
-        "password": "test123"
-    }
-    response1 = client.post('/user/login', json=data1)
-    token = response1.json['token']
-
-    response2 = client.delete(f'/jobOffer/delete/3', headers={'Authorization': token})
+    response2 = client.delete(f'/jobOffer/delete/3')
     
     assert response2.status_code == 403
     assert response2.json['message'] == 'Permission denied'

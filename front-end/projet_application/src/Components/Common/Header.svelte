@@ -4,45 +4,38 @@
     import { jwtDecode } from "jwt-decode"
     import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
-    import { GET } from "../../ts/server"
-    import { decodeToken, disconnectUser, isTokenExpired, logIn, setInfoFromDecoded } from "../../lib/tokenLib"
-    import { Hamburger } from 'svelte-hamburgers';
-    import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
+    import { GET, POST } from "../../ts/server"
+    import { Hamburger } from "svelte-hamburgers"
+    import type { User } from "../../Models/User"
 
     let open = false;  
 
     const fetchStudyPrograms = async () => {
         try {
-            let response = await GET<any>(
-                `/studyProgram/studyPrograms`,
-                false
-            )
+            let response = await GET<any>(`/studyProgram/studyPrograms`, false)
 
-            if (response)
-                return response
+            if (response) return response
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
     }
 
-    onMount(async () => {
+    const checkSession = async () => {
         try {
-            isLoggedIn.set(!isTokenExpired())
-
-            if ($isLoggedIn) {
-                const decoded = decodeToken()
-                setInfoFromDecoded(decoded)
-            }
-            else {
-                disconnectUser()
-            }
+            const me = await GET<{ user:User}>("/user/me", false)
+            currentUser.set(me as any)
+            isLoggedIn.set(true)
+        } catch {
+            currentUser.set(undefined)
+            isLoggedIn.set(false)
+            
         }
-        catch (err) {}
-        finally {
-            studyPrograms.set(await fetchStudyPrograms())
-        }
+    }
+    onMount(async () => {
+            await checkSession()
+            studyPrograms.set(await fetchStudyPrograms()??[])
     })
-    
+
     const handleEmploi = () => {
         open = false
         goto("/emplois")
@@ -67,7 +60,7 @@
         open = false
         goto("/programmes")
     }
-
+    
     const handleProfile = () => {
         open = false
         goto("/profile")
@@ -83,12 +76,16 @@
         goto("/register")
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         open = false
+        try {
+            await POST("/user/logout", {}, false)
+        } catch (error) {
+            console.error("Error during logout:", error)
+        }
         isLoggedIn.set(false)
         currentUser.set(undefined)
-        goto("/")
-        localStorage.removeItem("token")
+        goto("/login")
     }
 </script>
 
@@ -98,7 +95,7 @@
     </div>
     <!--MENU MOBILE --------------------------- -->
     <div class={$isLoggedIn ? "burger" : "burger-disconnected"}>
-        <Hamburger bind:open --color="white"/>
+        <Hamburger bind:open --color="white" />
         {#if open}
             <div class="menu-dropdown">
                 {#if $currentUser?.isModerator}
@@ -162,7 +159,7 @@
         {/if}
     </div>
     <!--MENU MOBILE FIN --------------------------- -->
-    
+
     <div class="ul-group">
         <ul class="ul-menu">
             {#if $currentUser?.isModerator}
@@ -205,7 +202,10 @@
             {/if}
 
             <div class="option">
-                <button class={$isLoggedIn ? "button" : "button-disconnected"} on:click={handleEmploi}>
+                <button
+                    class={$isLoggedIn ? "button" : "button-disconnected"}
+                    on:click={handleEmploi}
+                >
                     <p class="textSearch">Trouver un emploi</p>
                     <img
                         class="iconeSearch"
@@ -231,21 +231,35 @@
                 </div>
 
                 <div class="option dropdown">
-                    <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
+                    <button
+                        class="button {$isLoggedIn
+                            ? 'dropbtn'
+                            : 'dropbtn-disconnected'}"
+                        id="loginDropDown"
+                    >
                         <img
                             class="iconeProfile"
                             src="profile.svg"
                             alt="Business icon"
                         />
                     </button>
-                    <div class="{$currentUser?.isModerator ? "dropdown-content-profile-admin" : "dropdown-content-profile"}">
+                    <div
+                        class={$currentUser?.isModerator
+                            ? "dropdown-content-profile-admin"
+                            : "dropdown-content-profile"}
+                    >
                         <a href="/profile">Modifier mon profil </a>
                         <a href="/" on:click={handleLogout}>Déconnexion</a>
                     </div>
                 </div>
             {:else}
                 <div class="option dropdown">
-                    <button class="button {$isLoggedIn ? "dropbtn" : "dropbtn-disconnected"}" id="loginDropDown">
+                    <button
+                        class="button {$isLoggedIn
+                            ? 'dropbtn'
+                            : 'dropbtn-disconnected'}"
+                        id="loginDropDown"
+                    >
                         <p class="textBusiness">Offrir un emploi</p>
                         <img
                             class="iconeBusiness"
@@ -330,7 +344,7 @@
         margin-left: 15px;
         margin-right: 15px;
         width: 15vw;
-    }	
+    }
 
     .dropbtn-disconnected {
         width: 15vw;
@@ -392,6 +406,7 @@
         right: 2vw;
     }
 
+    /* Show the dropdown menu on hover */
     .dropdown:hover .dropdown-content,
     .dropdown:hover .dropdown-content-profile,
     .dropdown:hover .dropdown-content-profile-admin {
@@ -512,7 +527,7 @@
             height: 15vw;
         }
         .image img {
-            height: 8vW;
+            height: 8vw;
             width: 40vw;
         }
         .burger {

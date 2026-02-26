@@ -42,16 +42,18 @@ def app():
 
 @pytest.fixture(scope='module')
 def client(app):
-    return app.test_client()
+       with app.test_client() as client:
+        dataLogin = {
+        "email": "test@test.com",
+        "password": "test",
+        }
+        res = client.post('/user/login', json=dataLogin)
+        assert res.status_code == 200
+        yield client
+        
   
 def test_studyPrograms(client):
-    dataLogin = {
-    "email": "test@test.com",
-    "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.get('/studyProgram/studyPrograms', headers={'Authorization' : token})
+    response = client.get('/studyProgram/studyPrograms')
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -59,38 +61,20 @@ def test_addStudyProgram(client):
     data = {
         "name": "Genie logiciel"
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.post('/studyProgram/new', json=data, headers={'Authorization' : token})
+    response = client.post('/studyProgram/new', json=data)
     assert response.status_code == 200
 
 def test_editStudyProgram(client):
     data = {
         "name": "Informatiques"
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    response = client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
+    response = client.put('/studyProgram/studyProgram/1', json=data)
     assert response.status_code == 200
 
 def test_editStudyProgram_sameName(client):
     data = {
         "name": "Informatique"
     }
-    dataLogin = {
-        "email": "test@test.com",
-        "password": "test",
-    }
-    responseLogin = client.post('/user/login', json=dataLogin)
-    token = responseLogin.json['token']
-    client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
-    response = client.put('/studyProgram/studyProgram/1', json=data, headers={'Authorization' : token})
+    client.put('/studyProgram/studyProgram/1', json=data)
+    response = client.put('/studyProgram/studyProgram/1', json=data)
     assert response.status_code == 200
