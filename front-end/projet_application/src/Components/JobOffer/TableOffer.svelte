@@ -2,8 +2,12 @@
         import type { JobOfferDetails } from "../../Models/JobOfferDetails";
         import DetailOfferRow from "./DetailOfferRow.svelte";
 
-        export let offers: JobOfferDetails[] = [];
-        export let handleOfferClick: (offer : JobOfferDetails) => void;
+    interface Props {
+        offers?: JobOfferDetails[];
+        handleOfferClick: (offer : JobOfferDetails) => void;
+    }
+
+    let { offers = [], handleOfferClick }: Props = $props();
     </script>
 
     <div class="table-container">

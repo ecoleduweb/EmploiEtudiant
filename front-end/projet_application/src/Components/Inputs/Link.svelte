@@ -1,6 +1,10 @@
 <script lang="ts">
-    export let text: string
-    export let href: string = text.toLowerCase()
+    interface Props {
+        text: string;
+        href?: string;
+    }
+
+    let { text, href = text.toLowerCase() }: Props = $props();
 </script>
 
 <a {href}>{text}</a>

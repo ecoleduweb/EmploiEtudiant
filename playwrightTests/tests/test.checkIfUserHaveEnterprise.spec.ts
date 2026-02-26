@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';

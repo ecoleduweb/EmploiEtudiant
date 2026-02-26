@@ -1,14 +1,18 @@
 <script lang="ts">
     import type { Enterprise } from "../../Models/Enterprise"
-    export let enterprise: Enterprise
     import type { City } from "../../Models/City"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
-    export let handleModalClick: (id: number) => void
     import { formatPhoneNumber } from "../../ts/utils"
+    interface Props {
+        enterprise: Enterprise;
+        handleModalClick: (id: number) => void;
+    }
+
+    let { enterprise, handleModalClick }: Props = $props();
     let ville: City
-    let nomVille: string
-    let formattedPhone: string
+    let nomVille: string = $state()
+    let formattedPhone: string = $state()
 
     const getCity = async (id: number) => {
         try {
@@ -29,7 +33,7 @@
 
 
 
-<button class="enterprise" on:click={() => handleModalClick(enterprise.id)}>
+<button class="enterprise" onclick={() => handleModalClick(enterprise.id)}>
     <div class="emploi">
         <div class="info">
             <p class="textTitre">{enterprise.name}</p>

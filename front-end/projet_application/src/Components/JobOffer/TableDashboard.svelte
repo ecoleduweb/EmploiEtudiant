@@ -3,12 +3,23 @@
   import type { JobOfferDetails } from "../../Models/JobOfferDetails";
   import OfferRow from "./OfferRow.svelte";
 
-  export let offers: JobOfferDetails[] = [];
-  export let isModerator: boolean = false;
-  export let handleEditModalClick: (offer: JobOfferDetails) => void;
-  export let handleApproveModalClick: (offer: JobOfferDetails) => void;
-  export let handleArchiveModalClick: (offer: JobOfferDetails) => void;
-  export let handleDeleteModalClick: (offer: JobOfferDetails) => void;
+  interface Props {
+    offers?: JobOfferDetails[];
+    isModerator?: boolean;
+    handleEditModalClick: (offer: JobOfferDetails) => void;
+    handleApproveModalClick: (offer: JobOfferDetails) => void;
+    handleArchiveModalClick: (offer: JobOfferDetails) => void;
+    handleDeleteModalClick: (offer: JobOfferDetails) => void;
+  }
+
+  let {
+    offers = [],
+    isModerator = false,
+    handleEditModalClick,
+    handleApproveModalClick,
+    handleArchiveModalClick,
+    handleDeleteModalClick
+  }: Props = $props();
 
 </script>
 

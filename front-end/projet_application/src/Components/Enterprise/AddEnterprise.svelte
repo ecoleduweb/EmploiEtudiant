@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { preventDefault } from 'svelte/legacy';
+
     import "../../styles/global.css"
     import Button from "../Inputs/Button.svelte"
     import MultiSelect from "svelte-multiselect"
@@ -9,7 +11,11 @@
     import Modal from "../Common/Modal.svelte"
     import { onMount } from "svelte"
     import fetchCity from "../../Service/CityService"
-    export let handleEnterpriseClick: () => void
+    interface Props {
+        handleEnterpriseClick: () => void;
+    }
+
+    let { handleEnterpriseClick }: Props = $props();
     
     const schema = yup.object().shape({
         name: yup.string().required("Le nome de l'entreprise est requis."),
@@ -34,7 +40,7 @@
         cityId: yup.number().required("La ville est requise"),
     })
 
-    let enterprise: Enterprise = {
+    let enterprise: Enterprise = $state({
         id: 0,
         name: "",
         email: "",
@@ -42,14 +48,14 @@
         address: "",
         cityId: 0,
         isTemporary: true,
-    }
+    })
 
-    let villeSelected: { label: string; value: number } = {
+    let villeSelected: { label: string; value: number } = $state({
         label: "",
         value: 0,
-    }
-    let cityFromSelectedEnterprise: [] = []
-    let cityOptions: { label: string; value: number }[] = []
+    })
+    let cityFromSelectedEnterprise: [] = $state([])
+    let cityOptions: { label: string; value: number }[] = $state([])
 
     const getAllCities = async () => {
         try {
@@ -60,7 +66,7 @@
     }
     onMount(getAllCities)
 
-    let errors: Enterprise = {
+    let errors: Enterprise = $state({
         id: 0,
         name: "",
         email: "",
@@ -68,7 +74,7 @@
         address: "",
         cityId: 0,
         isTemporary: true,
-    }
+    })
 
     const updateCityId = () => {
         enterprise.cityId = villeSelected.value
@@ -101,7 +107,7 @@
 </script>
 
 <Modal handleCloseClick={handleEnterpriseClick}>
-    <form on:submit|preventDefault={handleSubmit} class="form-offre">
+    <form onsubmit={preventDefault(handleSubmit)} class="form-offre">
         <h1 class="title">Créer une nouvelle entreprise</h1>
         <div class="form-group-vertical">
             <label for="title">Nom de l'entreprise*</label>

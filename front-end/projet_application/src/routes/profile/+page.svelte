@@ -8,10 +8,10 @@
     import { GET, PUT } from "../../ts/server"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
 
-    let lastname: string
-    let firstname: string
-    let password: string
-    let showEnterpriseEditModal = false
+    let lastname: string = $state("")
+    let firstname: string = $state("")
+    let password: string = $state("")
+    let showEnterpriseEditModal = $state(false)
 
     const handleShow = () => {
         showEnterpriseEditModal = true
@@ -39,7 +39,7 @@
                 email: ($currentUser as User).email,
             }
 
-             await PUT<any, any>("/user/user", updatedUser)
+            await PUT<any, any>("/user/user", updatedUser)
 
             if ($currentUser?.firstName !== firstName && firstName) {
                 currentUser.set({ ...$currentUser!, firstName: firstName })
@@ -52,11 +52,11 @@
         }
     }
 
-    let userHaveEnterprise = false
+    let userHaveEnterprise = $state(false)
+
     onMount(async () => {
         userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
     })
-  
 </script>
 
 {#if $currentUser}

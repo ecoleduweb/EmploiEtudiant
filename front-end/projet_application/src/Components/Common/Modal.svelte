@@ -1,6 +1,11 @@
 <script lang="ts">
-    export let handleCloseClick: () => void
-    export let widthFix: boolean | undefined = false
+    interface Props {
+        handleCloseClick: () => void;
+        widthFix?: boolean | undefined;
+        children?: import('svelte').Snippet;
+    }
+
+    let { handleCloseClick, widthFix = false, children }: Props = $props();
 
     const handleButtonClick = (event: MouseEvent) => {
         event.preventDefault()
@@ -10,8 +15,8 @@
 
 <div class="overlay">
     <div class={widthFix ? "modal removeWidth" : "modal"}>
-        <slot />
-        <button class="close" on:click={handleButtonClick}>
+        {@render children?.()}
+        <button class="close" onclick={handleButtonClick}>
             <img src="cancel.svg" class="image" alt="close" />
         </button>
     </div>

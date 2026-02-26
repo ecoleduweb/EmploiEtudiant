@@ -12,6 +12,7 @@ Dans le dossier back-end
 pip install -r requirements.txt
 ```
 
+
 ### Setting up the environment variables
 
 Voir les variables dans le fichier .env.template et y mettre les bonnes valeurs.
@@ -33,6 +34,7 @@ GRANT ALL PRIVILEGES ON H2024TEST.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
+
 Finalement, rouler les migrations
 `flask db upgrade`
 
@@ -42,6 +44,8 @@ note : Si flaks n'est pas installé en global, tu peux utiliser
 ### Demarre l'app
 
 `flask run --debug` debug permet de redémarrer l'application quand on modifie le code.
+
+
 
 Pour se connecter, utiliser les identifiants `test@gmail.com` et le mot de passe `phil123`
 
@@ -59,7 +63,9 @@ flask db upgrade
 
 ## Comment fonctionne les tests?
 
-Simplement écrire la commande `pytest`.
+Simplement naviguer vers le dossier backend\API et ensuite écrire la commande `pytest`.
+
+Pour une documentation détaillée, navigue vers le fichier documentationPyTest.md
 
 ## Logging
 
@@ -100,16 +106,16 @@ flask run
 ```bash
   python -m venv myenv
 ```
-  Ensuite activer naviguer vers Scripts :
+  Ensuite activer naviguer vers Scripts(c'est mieux de se placer manuellement ) :
 
 ```bash
   cd myenv\Scripts\
 ```
    Activer l'environnement
 ```bash
-  .\Activate.ps1
+  source activate
 ```
-  Reinstaller les packages requirements.txt :
+  Naviguer vers le dossier backend et ensuite Reinstaller les packages requirements.txt  :
 ```bash
   pip install -r requirements.txt
 ```

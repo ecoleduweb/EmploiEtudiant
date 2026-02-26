@@ -6,10 +6,9 @@
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET, POST } from "../../ts/server"
     import { Hamburger } from "svelte-hamburgers"
-    import { GoogleAnalytics } from "@beyonk/svelte-google-analytics"
     import type { User } from "../../Models/User"
 
-    let open: boolean
+    let open = false;  
 
     const fetchStudyPrograms = async () => {
         try {
@@ -41,30 +40,37 @@
         open = false
         goto("/emplois")
     }
+
     const handleEnterprise = () => {
         open = false
         goto("/enterprise")
     }
+
     const handleDashboard = () => {
         open = false
         goto("/dashboard")
     }
+
     const handleUtilisateur = () => {
         open = false
         goto("/users")
     }
+
     const handleProgrammes = () => {
         open = false
         goto("/programmes")
     }
+    
     const handleProfile = () => {
         open = false
         goto("/profile")
     }
+
     const handleLogin = () => {
         open = false
         goto("/login")
     }
+
     const handleRegister = () => {
         open = false
         goto("/register")
@@ -102,61 +108,34 @@
                         </button>
                         <button class="button" on:click={handleProgrammes}>
                             <p class="textSearch">Programmes d'études</p>
-                            <img
-                                class="iconeLogout"
-                                src="edit.svg"
-                                alt="Edit icon"
-                            />
+                            <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
                         </button>
                         <button class="button" on:click={handleEmploi}>
                             <p class="textSearch">Trouver un emploi</p>
-                            <img
-                                class="iconeLogout"
-                                src="searchBar.svg"
-                                alt="Search icon"
-                            />
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
                         </button>
                         <button class="button" on:click={handleDashboard}>
                             <p class="textSearch">Tableau de bord</p>
-                            <img
-                                class="iconeLogout"
-                                src="searchBar.svg"
-                                alt="Search icon"
-                            />
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
                         </button>
                         <button class="button" on:click={handleProfile}>
-                            <p class="textSearch">
-                                Connecté en tant que : {$currentUser?.firstName}
-                                {$currentUser?.lastName}
-                            </p>
+                            <p class="textSearch">Connecté en tant que : {$currentUser?.firstName} {$currentUser?.lastName} </p>
                         </button>
                         <button class="button" on:click={handleLogout}>
                             <p class="textSearch">Déconnexion</p>
-                            <img
-                                class="iconeLogout"
-                                src="logout.svg"
-                                alt="Logout icon"
-                            />
+                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
                         </button>
                     </div>
                 {/if}
-                {#if !$currentUser?.isModerator && $isLoggedIn}
+                {#if !($currentUser?.isModerator) && $isLoggedIn}
                     <div class="option">
                         <button class="button" on:click={handleDashboard}>
                             <p class="textSearch">Tableau de bord</p>
-                            <img
-                                class="iconeSearch"
-                                src="searchBar.svg"
-                                alt="Search icon"
-                            />
+                            <img class="iconeSearch" src="searchBar.svg" alt="Search icon" />
                         </button>
                         <button class="button" on:click={handleLogout}>
                             <p class="textSearch">Déconnexion</p>
-                            <img
-                                class="iconeLogout"
-                                src="logout.svg"
-                                alt="Logout icon"
-                            />
+                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
                         </button>
                     </div>
                 {/if}
@@ -164,27 +143,15 @@
                     <div class="option">
                         <button class="button" on:click={handleEmploi}>
                             <p class="textSearch">Trouver un emploi</p>
-                            <img
-                                class="iconeLogout"
-                                src="searchBar.svg"
-                                alt="Search icon"
-                            />
+                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
                         </button>
                         <button class="button" on:click={handleLogin}>
                             <p class="textSearch">Connexion entreprise</p>
-                            <img
-                                class="iconeLogout"
-                                src="business.svg"
-                                alt="Business icon"
-                            />
+                            <img class="iconeLogout" src="business.svg" alt="Business icon" />
                         </button>
                         <button class="button" on:click={handleRegister}>
                             <p class="textSearch">Créer un compte entreprise</p>
-                            <img
-                                class="iconeLogout"
-                                src="add.svg"
-                                alt="Add icon"
-                            />
+                            <img class="iconeLogout" src="add.svg" alt="Add icon" />
                         </button>
                     </div>
                 {/if}
@@ -196,12 +163,11 @@
     <div class="ul-group">
         <ul class="ul-menu">
             {#if $currentUser?.isModerator}
-                <style scoped>
+              <style scoped>
                     .logo-img {
                         width: 40% !important;
                     }
                 </style>
-
                 <div class="option">
                     <button
                         class="button logout-button"
@@ -250,14 +216,6 @@
             </div>
 
             {#if $isLoggedIn}
-                {#if $currentUser?.isModerator}
-                    <style scoped>
-                        .logo-img {
-                            width: 45% !important;
-                        }
-                    </style>
-                {/if}
-
                 <div class="option">
                     <button
                         class="button logout-button"
@@ -320,7 +278,7 @@
     </div>
 </header>
 
-<style scoped>
+<style>
     header {
         display: flex;
         flex-direction: row;
@@ -340,7 +298,6 @@
     .image {
         position: relative;
         left: 5vw;
-        /* left: 140px; */
         width: 13vw;
         height: fit-content;
     }
@@ -415,14 +372,10 @@
         font-size: 1.1vw;
     }
 
-    /* Existing CSS styles */
-
-    /* Dropdown Button */
     .dropbtn {
         position: relative;
     }
 
-    /* Dropdown Content (Hidden by Default) */
     .dropdown-content {
         display: none;
         position: absolute;
@@ -461,7 +414,6 @@
         flex-direction: column;
     }
 
-    /* Links inside the dropdown */
     .dropdown-content a,
     .dropdown-content-profile a,
     .dropdown-content-profile-admin a {
@@ -482,7 +434,6 @@
             var(--x, 0) / 200%;
     }
 
-    /* Change color of dropdown links on hover */
     .dropdown-content a:hover,
     .dropdown-content-profile a:hover,
     .dropdown-content-profile-admin a:hover {
@@ -509,7 +460,7 @@
     .menu-dropdown {
         display: none;
         position: absolute;
-        top: 60px; /* Ajustez cette valeur en fonction de la hauteur de votre header */
+        top: 60px;
         left: 0;
         width: 100%;
         background-color: white;
