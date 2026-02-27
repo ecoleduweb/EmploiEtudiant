@@ -67,7 +67,7 @@ def updateEnterprise(current_user, id):
                 return jsonify({'message': 'User cannot modify enterprise'}), 401
             
     except Exception as e:
-        logger.error(f'There was an error updating the enterprise: {str(e)}')
+        logger.exception(f'There was an error updating the enterprise: {str(e)}')
         return jsonify({'message': 'There was an error updating the enterprise'}), 500
 
 @enterprise_blueprint.route('/<int:id>', methods=['GET'])
@@ -96,5 +96,5 @@ def getCurrentUserEnterprise(current_user):
             logger.warning("No enterprise found the current user")
             return jsonify({'message': 'No enterprise found on the current user'}), 404
     except Exception as e:
-        logger.error("Error getting the user to get the enterprise", e)
+        logger.exception("Error getting the user to get the enterprise" + str(e))
         return jsonify({'message': 'Error when getting the user'}), 500
