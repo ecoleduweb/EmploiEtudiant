@@ -13,7 +13,6 @@
     import fetchCity from "../../Service/CityService"
     import { getCityName } from "../../Service/CityService"
 
-    
     let createEnterprise = false
     let modalOpened = false
     let selectedEnterprise: Enterprise | undefined = undefined
@@ -24,12 +23,10 @@
     }
     const closeModal = () => {
         modalOpened = false
-       
     }
     const handleEnterpriseClick = (enterprise: Enterprise) => {
         selectedEnterprise = enterprise
         openModal()
-      
     }
     const openCreateEnterprise = () => {
         selectedEnterprise = undefined
@@ -45,8 +42,8 @@
                 email: newEnterprise.email,
                 cityId: newEnterprise.cityId,
             })
-           
-            enterprises.update(list => [...list, response.data])
+
+            enterprises.update((list) => [...list, response.data])
         } catch (error) {
             console.error("Error creating enterprise:", error)
         }
@@ -64,10 +61,11 @@
                     cityId: enterprise.cityId,
                 },
             )
-            
-         
-            enterprises.update(list => 
-                list.map(ent => ent.id === enterprise.id ? enterprise : ent)
+
+            enterprises.update((list) =>
+                list.map((ent) =>
+                    ent.id === enterprise.id ? enterprise : ent,
+                ),
             )
         } catch (error) {
             console.error("Error editing enterprise:", error)
@@ -87,7 +85,6 @@
         } else {
             closeModal()
         }
-   
     }
 
     const getEnterprises = async () => {
@@ -98,23 +95,36 @@
             console.error("Error fetching job offers:", error)
         }
     }
-  
+
     onMount(async () => {
         await fetchCity()
         await getEnterprises()
     })
-    $: filteredEnterprises = $enterprises.filter(
-        (enterprise) =>
-            enterprise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            enterprise.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            enterprise.address
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            enterprise.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            getCityName(enterprise.cityId)
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()),
-    )
+
+    type EnterpriseWithCity = Enterprise & { cityName: string }
+    let filteredEnterprises: EnterpriseWithCity[] = []
+
+    $: if ($enterprises) {
+        ;(async () => {
+            const search = searchTerm.toLowerCase()
+
+            const enterprisesWithCity: EnterpriseWithCity[] = await Promise.all(
+                $enterprises.map(async (enterprise) => {
+                    const cityName = await getCityName(enterprise.cityId)
+                    return { ...enterprise, cityName }
+                }),
+            )
+
+            filteredEnterprises = enterprisesWithCity.filter(
+                (enterprise) =>
+                    enterprise.name.toLowerCase().includes(search) ||
+                    enterprise.email.toLowerCase().includes(search) ||
+                    enterprise.address.toLowerCase().includes(search) ||
+                    enterprise.phone.toLowerCase().includes(search) ||
+                    enterprise.cityName.toLowerCase().includes(search),
+            )
+        })()
+    }
 </script>
 
 <main>
@@ -160,6 +170,7 @@
         {#each filteredEnterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
+                cityName={enterprise.cityName}
                 handleModalClick={() => handleEnterpriseClick(enterprise)}
             />
         {/each}

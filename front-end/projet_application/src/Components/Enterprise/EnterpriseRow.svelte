@@ -2,11 +2,10 @@
     import type { Enterprise } from "../../Models/Enterprise"
     export let enterprise: Enterprise
     export let handleModalClick: () => void
+    export let cityName: string = ""
     import { formatPhoneNumber } from "../../ts/utils"
-    import { getCityName } from "../../Service/CityService"
 
     $: formattedPhone = formatPhoneNumber(enterprise.phone)
-    $: cityName = getCityName(enterprise.cityId)
 </script>
 
 <button class="enterprise" on:click={() => handleModalClick()}>
@@ -55,7 +54,7 @@
         text-align: left;
         margin-left: 0.2vw;
     }
-   
+
     .emploi {
         display: flex;
         flex-direction: row;
@@ -76,8 +75,4 @@
         width: 30px;
         height: 30px;
     }
-
-
-
-   
 </style>

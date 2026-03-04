@@ -38,9 +38,3 @@ class EmployerRepo:
                 employer.userId = None
         db.session.commit()
 
-    def getEmployersByEnterpriseId(self, enterpriseId):
-        employers = Employers.query \
-            .outerjoin(User, Employers.userId == User.id) \
-            .filter(Employers.enterpriseId == enterpriseId) \
-            .all()
-        return employers
