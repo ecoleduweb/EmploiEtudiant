@@ -32,7 +32,9 @@
         selectedEnterprise = undefined
         modalOpened = true
     }
-
+    const normalize = (str: string) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    }
     const addEnterprise = async (newEnterprise: Enterprise) => {
         try {
             const response = await POST<any, any>(`/enterprise/new`, {
@@ -117,11 +119,19 @@
 
             filteredEnterprises = enterprisesWithCity.filter(
                 (enterprise) =>
-                    enterprise.name.toLowerCase().includes(search) ||
-                    enterprise.email.toLowerCase().includes(search) ||
-                    enterprise.address.toLowerCase().includes(search) ||
-                    enterprise.phone.toLowerCase().includes(search) ||
-                    enterprise.cityName.toLowerCase().includes(search),
+                    normalize(enterprise.name).toLowerCase().includes(search) ||
+                    normalize(enterprise.email)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.address)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.phone)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.cityName)
+                        .toLowerCase()
+                        .includes(search),
             )
         })()
     }

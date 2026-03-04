@@ -1,13 +1,12 @@
 import type { City } from "$lib/interfaces";
 import { GET } from "../ts/server";
 
-let city: City | null = null;
-
+let city: City;
 
 const getCityData = async (): Promise<City> => {
   const response = await GET<any>("/city/all")
 
-  const cities = response.map((c: any) => {
+  let cities = response.map((c: any) => {
     return { label: c.city, value: c.id }
   })
 
@@ -19,33 +18,25 @@ const getCityData = async (): Promise<City> => {
 
 const cacheCity = async () => {
   let savedData = localStorage.getItem("City")
-  let cityData: any = { cities: [] };
+  let cityData: any;
 
   try {
-    if (city && city.cachingDate !== 0) {
+    if (city.cachingDate !== 0) {
       cityData = city
     }
     else if (savedData) {
-      try {
-        cityData = JSON.parse(savedData)
-      } catch {
-        cityData = await getCityData()
-        city = cityData
-        localStorage.setItem("City", JSON.stringify(cityData))
-      }
-    }
-    else {
-      cityData = await getCityData()
-      city = cityData
-      localStorage.setItem("City", JSON.stringify(cityData))
+      cityData = JSON.parse(savedData)
     }
   }
-  catch (error) {
-    console.error("Error fetching cities:", error)
-    cityData = { cities: [] }
+  catch {
+    cityData = await getCityData()
+    city = cityData
+    localStorage.setItem("City", JSON.stringify(cityData))
   }
 
-  return cityData?.cities || []
+  finally {
+    return cityData.cities
+  }
 }
 
 const fetchCity = async () => {
