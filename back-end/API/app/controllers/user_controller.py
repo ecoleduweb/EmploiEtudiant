@@ -37,7 +37,7 @@ def login():
         user=user_service.getUser(data["email"])
         resp=jsonify({"isModerator": user.isModerator, "email": user.email,
         "firstName": user.firstName, "lastName": user.lastName})
-        secure_cookie = os.environ.get("COOKIE_SECURE", "True") == "False"
+        secure_cookie = os.environ.get("COOKIE_SECURE", "True") != "False"
         resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=secure_cookie,max_age=60 * 30,path='/')
         return resp
     except LoginException as e:
