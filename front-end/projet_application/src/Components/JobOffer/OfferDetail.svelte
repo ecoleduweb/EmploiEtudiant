@@ -7,7 +7,6 @@
     import { copy } from "svelte-copy"
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
 
-    // import { WhatsApp } from "svelte-share-buttons-component"
     export let offer: JobOfferDetails
 
     let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://"
@@ -15,20 +14,7 @@
     let selectedCity: any
     let loaded = false
     let formattedPhone: string
-
     let url = ""
-    let fullUrl = ""
-    let title = ""
-    let desc = ""
-    let showShareModal = false
-
-    const openShareModal = async () => {
-        showShareModal = true
-    }
-
-    const closeShareModal = async () => {
-        showShareModal = false
-    }
 
     onMount(async () => {
         cityOptions = await fetchCity()
@@ -36,11 +22,8 @@
             formattedPhone = formatPhoneNumber(offer.enterprise.phone)
         }
         if (offer && offer.offerLink) {
-            fullUrl = offer.offerLink
             url = getShortURL(offer.offerLink)
         }
-        title = offer.title
-        desc = offer.description
         loaded = true
     })
 
@@ -144,35 +127,10 @@
                 <a href="mailto:{offer.email}">
                     <Button text="Postuler par courriel" />
                 </a>
-                <div class="share-button-wrapper">
-                    <Button text="Partager" onClick={openShareModal} />
-                </div>
             </div>
         </div>
     {/if}
 </div>
-
-<!-- Modal de partage -->
-{#if showShareModal}
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="modal-overlay" on:click={closeShareModal}>
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="modal-content" on:click|stopPropagation>
-            <div class="modal-header">
-                <h3>Partager l'offre</h3>
-                <button
-                    class="close-btn"
-                    on:click={closeShareModal}
-                    aria-label="Fermer">&times;</button
-                >
-            </div>
-          
-            </div>
-        </div>
-
-{/if}
 
 <style scoped>
     .CanBeHidden {
@@ -266,66 +224,6 @@
         filter: invert(0.05);
     }
 
-    /* Styles de la modale */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        background-color: white;
-        border-radius: 8px;
-        padding: 2rem;
-        max-width: 500px;
-        width: 90%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        color: #00ad9a;
-    }
-
-    .modal-header h3 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    .close-btn {
-        background: none;
-        border: none;
-        font-size: 2rem;
-        cursor: pointer;
-        color: #555;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .close-btn:hover {
-        color: #00ad9a;
-    }
-
- 
-
-   
-
-
-
     @media (max-width: 768px) {
         .row {
             flex-direction: column;
@@ -341,18 +239,6 @@
         .row-copy {
             flex-direction: row;
             height: 4vh;
-        }
-        .modal-content {
-            padding: 1.5rem;
-            width: 95%;
-        }
-        .modal-header h3 {
-            font-size: 1.2rem;
-        }
-     
-        .share-button-wrapper :global(.button) {
-            padding: 8px 12px;
-            font-size: 14px;
         }
     }
 </style>
