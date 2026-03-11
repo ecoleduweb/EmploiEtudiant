@@ -13,7 +13,7 @@
    let modalAdd = $state(false)
    let selectedEnterpriseId = $state(0)
 
-    let loaded = false
+ let loaded = $state(false)
 
     const openModal = (id: number) => {
         modal = true
@@ -69,10 +69,10 @@
     <section class="haut">
         <div class="haut-gauche">
             <div class="divFlex">
-                <Button
-                    onClick={handleEnterprise}
-                    text="Créer une nouvelle entreprise"
-                />
+        <Button
+    onClick={handleEnterprise}
+    text="Créer une nouvelle entreprise"
+/>
             </div>
         </div>
     </section>

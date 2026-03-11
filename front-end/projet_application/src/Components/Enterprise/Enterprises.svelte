@@ -4,27 +4,67 @@
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import type { City } from "../../Models/City"
+    import { assignUserToEnterprise } from "../../Service/EnterpriseService"
+    import type { User } from "../../Models/User"
     interface Props {
         enterprise: Enterprise;
         handleEnterpriseClick: () => void;
     }
 
     let { enterprise, handleEnterpriseClick }: Props = $props();
-
-    let ville: City
-    let nomVille: string = $state()
+// Initialisation avec des tableaux vides pour éviter les erreurs de rendu
+    let Users: any[] = $state([]);
+    let selectedUserId: number | undefined = $state();
+    let ville: City | undefined = $state();
+    let nomVille: string  | undefined = $state();
 
     const getCity = async (id: number) => {
         try {
             ville = await GET<any>(`/city/${id}`)
-            nomVille = ville.city
+            nomVille = ville?.city
         } catch (error) {
             console.error("Error fetching city:", error)
         }
     }
+const getAllUsers = async () => {
+    try {
+        const data = await GET<any>("/user/all");
+        
+        // Comme ta console montre {users: Array(2)}, on pointe sur .users
+        if (data && data.users) {
+            Users = data.users.map((u: any) => {
+                const fullName = `${u.firstName} ${u.lastName}`.trim();
+                return { 
+                    label: fullName.length > 0 ? fullName : u.email, 
+                    value: u.id 
+                };
+            });
+        }
+    } catch (err) {
+        console.error("Erreur utilisateurs:", err);
+    }
+}
 
+const handleAssign = async () => {
+    // En ajoutant cette condition, TypeScript comprend que selectedUserId 
+    // NE PEUT PAS être undefined à l'intérieur du bloc if.
+    if (selectedUserId !== undefined && enterprise?.id) {
+        try {
+            const response = await assignUserToEnterprise(
+                selectedUserId, // Ici, TypeScript est content car il est sûr que c'est un number
+                enterprise.id
+            );
+            // ... reste du code
+        } catch (error) {
+            console.error("Erreur:", error);
+        }
+    } else {
+        alert("Veuillez sélectionner un utilisateur.");
+    }
+};
     onMount(() => {
-        getCity(enterprise.cityId)
+        getCity(enterprise.cityId);
+        getAllUsers();
     })
 </script>
 
@@ -42,6 +82,27 @@
             <p class="text">{enterprise.address}</p>
             <h5 class="infoTitle">Ville</h5>
             <p class="text">{nomVille}</p>
+            
+            <hr style="border: 0.5px solid #00ad9a; margin: 1vw 0;" />
+            
+            <h5 class="infoTitle">Assigner un administrateur</h5>
+           <div class="assign-action">
+                <select bind:value={selectedUserId} class="form-control" style="margin-bottom: 10px;">
+                    <option value={undefined}>Choisir un utilisateur...</option>
+                    {#each Users as user}
+                        <option value={user.value}>{user.label}</option>
+                    {/each}
+                </select>
+
+                <button 
+                    type="button"
+                    class="btn-assign"
+                    onclick={handleAssign}
+                    style="background-color: #00ad9a; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%;"
+                >
+                    Confirmer l'assignation
+                </button>
+            </div>
         </div>
     </div>
 </Modal>
@@ -76,6 +137,15 @@
         margin: 0px;
         margin-bottom: 1.75vw;
         color: black;
+    }
+    .btn-assign:hover {
+        background-color: #008a7b !important; /* Un vert un peu plus foncé */
+        transform: scale(1.02);
+        transition: all 0.2s ease;
+    }
+    
+    .btn-assign:active {
+        transform: scale(0.98);
     }
     .container {
         width: 95%;

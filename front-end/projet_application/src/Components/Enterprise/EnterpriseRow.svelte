@@ -8,11 +8,21 @@
         enterprise: Enterprise;
         handleModalClick: (id: number) => void;
     }
+/*oici l'explication du bug en 5 lignes :
 
+La règle : En HTML, un <button> ne peut jamais contenir un autre bouton ou un <select> ; c'est une structure interdite.
+
+Le conflit : Ta modale étant techniquement dans le bouton de la ligne, elle y injecte tes nouveaux éléments interactifs.
+
+Le crash : Svelte 5 détecte cette structure invalide lors du rendu et bloque immédiatement l'exécution du JavaScript (erreur d'hydratation).
+
+Le blocage : Comme le code plante, ta variable loaded ne devient jamais true, laissant le logo de chargement tourner à l'infini.
+
+La solution : Utiliser une <div> cliquable pour la ligne permet d'accepter tous les éléments enfants */
     let { enterprise, handleModalClick }: Props = $props();
     let ville: City
-    let nomVille: string = $state()
-    let formattedPhone: string = $state()
+    let nomVille: string | undefined = $state()
+    let formattedPhone: string | undefined = $state()
 
     const getCity = async (id: number) => {
         try {
@@ -24,8 +34,12 @@
     }
 
     onMount(async () => {
-        formattedPhone = formatPhoneNumber(enterprise.phone);
+ formattedPhone = formatPhoneNumber(enterprise.phone);
+    
+    // On vérifie que l'ID existe avant d'appeler getCity
+    if (enterprise.cityId !== undefined) {
         await getCity(enterprise.cityId);
+    }
         
     });
     
@@ -33,7 +47,14 @@
 
 
 
-<button class="enterprise" onclick={() => handleModalClick(enterprise.id)}>
+<div 
+    class="enterprise-container" 
+    onclick={() => handleModalClick(enterprise.id!)} 
+    onkeydown={(e) => e.key === 'Enter' && handleModalClick(enterprise.id!)}
+    role="button"
+    tabindex="0"
+    style="cursor: pointer;"
+>
     <div class="emploi">
         <div class="info">
             <p class="textTitre">{enterprise.name}</p>
@@ -48,7 +69,7 @@
         </div>
         <img class="image" src="searchBar.svg" alt="ajouter" />
     </div>
-</button>
+</div>
 
 <style scoped>
     .enterprise {

@@ -1,6 +1,6 @@
 import type { Enterprise } from "../Models/Enterprise"
 import type { User } from "../Models/User"
-import { GET } from "../ts/server"
+import { GET,POST } from "../ts/server"
 
 const fetchAllEnterprises = async () => {
   const response = await GET<any>("/enterprise/all")
@@ -25,5 +25,11 @@ export const fetchEnterpriseWithId = async (employerId: number) => {
     `/enterprise/employer/${employerId}`
   )
 }
-
+//Méthode que j'ai ajouté que ça permet d'assigner un utilisateur à une entrerpise
+export const assignUserToEnterprise = async (userId: number, enterpriseId: number) => {
+    return await POST<any, any>("/employer/new", {
+        userId: userId,
+        enterpriseId: enterpriseId
+    });
+}
 export default fetchAllEnterprises
