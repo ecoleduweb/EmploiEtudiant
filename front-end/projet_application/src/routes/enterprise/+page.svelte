@@ -1,26 +1,25 @@
 <script lang="ts">
     import "../../styles/global.css"
     import { onMount } from "svelte"
-    import { writable } from "svelte/store"
     import { GET, PATCH, POST, PUT } from "../../ts/server"
     import type { Enterprise } from "../../Models/Enterprise"
     import EnterpriseRow from "../../Components/Enterprise/EnterpriseRow.svelte"
     import CreateAndEditEnterprise from "../../Components/Enterprise/CreateAndEditEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import { enterprises } from "$lib"
     import Modal from "../../Components/Common/Modal.svelte"
     import fetchCity from "../../Service/CityService"
     import { getCityName } from "../../Service/CityService"
 
     let createEnterprise = false
-    let modalOpened = false
-    let selectedEnterprise: Enterprise | undefined = undefined
-    let searchTerm = ""
+    let modalOpened = $state(false)
+    let selectedEnterprise: Enterprise | undefined = $state(undefined)
+    let searchTerm = $state("")
 
     const openModal = () => {
         modalOpened = true
     }
+
     const closeModal = () => {
         modalOpened = false
     }
@@ -104,37 +103,44 @@
     })
 
     type EnterpriseWithCity = Enterprise & { cityName: string }
-    let filteredEnterprises: EnterpriseWithCity[] = []
+    let filteredEnterprises: EnterpriseWithCity[] = $state([])
 
-    $: if ($enterprises) {
-        ;(async () => {
-            const search = searchTerm.toLowerCase()
+    $effect(() => {
+        if ($enterprises) {
+            ;(async () => {
+                const search = searchTerm.toLowerCase()
 
-            const enterprisesWithCity: EnterpriseWithCity[] = await Promise.all(
-                $enterprises.map(async (enterprise) => {
-                    const cityName = await getCityName(enterprise.cityId)
-                    return { ...enterprise, cityName }
-                }),
-            )
+                const enterprisesWithCity: EnterpriseWithCity[] =
+                    await Promise.all(
+                        $enterprises.map(async (enterprise) => {
+                            const cityName = await getCityName(
+                                enterprise.cityId,
+                            )
+                            return { ...enterprise, cityName }
+                        }),
+                    )
 
-            filteredEnterprises = enterprisesWithCity.filter(
-                (enterprise) =>
-                    normalize(enterprise.name).toLowerCase().includes(search) ||
-                    normalize(enterprise.email)
-                        .toLowerCase()
-                        .includes(search) ||
-                    normalize(enterprise.address)
-                        .toLowerCase()
-                        .includes(search) ||
-                    normalize(enterprise.phone)
-                        .toLowerCase()
-                        .includes(search) ||
-                    normalize(enterprise.cityName)
-                        .toLowerCase()
-                        .includes(search),
-            )
-        })()
-    }
+                filteredEnterprises = enterprisesWithCity.filter(
+                    (enterprise) =>
+                        normalize(enterprise.name)
+                            .toLowerCase()
+                            .includes(search) ||
+                        normalize(enterprise.email)
+                            .toLowerCase()
+                            .includes(search) ||
+                        normalize(enterprise.address)
+                            .toLowerCase()
+                            .includes(search) ||
+                        normalize(enterprise.phone)
+                            .toLowerCase()
+                            .includes(search) ||
+                        normalize(enterprise.cityName)
+                            .toLowerCase()
+                            .includes(search),
+                )
+            })()
+        }
+    })
 </script>
 
 <main>
@@ -195,30 +201,35 @@
     {/if}
 </main>
 
-<style scoped>
+<style>
     .title {
         left: 7.2%;
         margin: 0;
         margin-top: 30px;
     }
+
     .title span:first-child {
         color: white;
         margin: 0;
     }
+
     .title span:last-child {
         color: #00ad9a;
         margin: 0;
     }
+
     .text {
         font-size: 2.5vw;
         margin: 0;
     }
+
     main {
         display: flex;
         flex-direction: column;
         width: 100%;
         height: 100%;
     }
+
     .top {
         display: flex;
         width: 100%;
@@ -230,6 +241,7 @@
         width: 50%;
         margin-left: 5.2%;
     }
+
     .top-right {
         display: flex;
         justify-content: flex-end;

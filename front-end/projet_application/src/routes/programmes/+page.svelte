@@ -10,8 +10,8 @@
     import type { StudyProgram } from "../../Models/StudyProgram"
 
     let createStudyProgram = false
-    let modalOpened = false
-    let selectedProgram: StudyProgram | undefined = undefined
+    let modalOpened = $state(false)
+    let selectedProgram: StudyProgram | undefined = $state(undefined)
 
     const openModal = () => {
         modalOpened = true

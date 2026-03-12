@@ -9,15 +9,19 @@
     import type { Option } from "$lib/interfaces"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import fetchCity from "../../Service/CityService"
-    export let handleApproveClick: () => void
-    export let offer: JobOfferDetails
-    let approbationMessage: string = ""
+    interface Props {
+        handleApproveClick: () => void;
+        offer: JobOfferDetails;
+    }
 
-    let enterprises: { label: string; value: number; }[]
-    let enterprise: Enterprise 
+    let { handleApproveClick, offer }: Props = $props();
+    let approbationMessage: string = $state("")
 
-    let linkingEnterprise: boolean = false
-    let selectedEnterprise: number | undefined;
+    let enterprises: { label: string; value: number; }[] = $state()
+    let enterprise: Enterprise = $state() 
+
+    let linkingEnterprise: boolean = $state(false)
+    let selectedEnterprise: number | undefined = $state();
 
     const getEnterprises = async () => {
         try {
@@ -56,7 +60,7 @@
         }
         handleApproveClick()
     }
-    let cities: Option[] | null = null
+    let cities: Option[] | null = $state(null)
     onMount(async () => 
     {
         cities = await fetchCity() 
@@ -76,7 +80,7 @@
                     bind:value={approbationMessage}
                     placeholder="Message d'approbation"
                     class="input"
-                />
+></textarea>
             </div>
             {#if enterprise && enterprise.isTemporary && cities}
                 <div class="detail-enterprise">

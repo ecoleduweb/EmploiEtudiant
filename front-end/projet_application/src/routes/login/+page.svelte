@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { preventDefault } from 'svelte/legacy';
+
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
@@ -19,15 +21,15 @@
         password: yup.string().required("Le mot de passe est requis"),
     })
 
-    let errors: Login = {
+    let errors: Login = $state({
         email: "",
         password: "",
-    }
+    })
 
-    let form: Login = {
+    let form: Login = $state({
         email: "",
         password: "",
-    }
+    })
 
     const handleSubmit = async () => {
         try {
@@ -81,7 +83,7 @@
 <section>
     <div class="login">
         <h1>Authentification</h1>
-        <form on:submit|preventDefault={handleSubmit} class="login-form">
+        <form onsubmit={preventDefault(handleSubmit)} class="login-form">
             <label for="email">Nom d'utilisateur</label>
             <input
                 type="text"

@@ -5,8 +5,12 @@
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
 
-    export let offer: JobOfferDetails
-    export let handleModalClick: (offer: JobOfferDetails) => void
+    interface Props {
+        offer: JobOfferDetails;
+        handleModalClick: (offer: JobOfferDetails) => void;
+    }
+
+    let { offer, handleModalClick }: Props = $props();
 
     const enterprise = writable<string>()
     const getEnterprises = async () => {
@@ -28,7 +32,7 @@
     })
 </script>
 
-<tr class="offreEmploi" on:click={() => handleModalClick(offer)}>
+<tr class="offreEmploi" onclick={() => handleModalClick(offer)}>
     <td>{offer.title}</td>
     <td class="desktop-only">{offer.schedules?.map(x => x.description).join(', ')}</td>
     <td class="desktop-only">{offer.deadlineApply}</td>

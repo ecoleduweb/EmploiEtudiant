@@ -8,7 +8,7 @@
     import UtilisateurRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
-    let loaded = false
+    let loaded = $state(false)
     const modal = writable(false)
     const selectedUserId = writable(0)
 
@@ -24,7 +24,7 @@
         await getUsers()
     }
 
-    let users: User[]
+    let users: User[] = $state()
 
     const getUsers = async () => {
         try {

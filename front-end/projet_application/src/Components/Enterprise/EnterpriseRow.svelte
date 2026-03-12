@@ -1,14 +1,19 @@
 <script lang="ts">
     import type { Enterprise } from "../../Models/Enterprise"
-    export let enterprise: Enterprise
-    export let handleModalClick: () => void
-    export let cityName: string = ""
     import { formatPhoneNumber } from "../../ts/utils"
 
-    $: formattedPhone = formatPhoneNumber(enterprise.phone)
+    type Props = {
+        enterprise: Enterprise
+        handleModalClick: () => void
+        cityName?: string
+    }
+
+    let { enterprise, handleModalClick, cityName = "" }: Props = $props()
+
+    let formattedPhone = $derived(formatPhoneNumber(enterprise.phone))
 </script>
 
-<button class="enterprise" on:click={() => handleModalClick()}>
+<button class="enterprise" onclick={() => handleModalClick()}>
     <div class="emploi">
         <div class="info">
             <p class="text">{enterprise.name}</p>

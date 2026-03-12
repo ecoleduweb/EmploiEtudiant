@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
 import { employerMocks } from '.././Helper/Mocks/employer.mock';
 import { cityMocks } from '.././Helper/Mocks/city.mock';
@@ -24,7 +24,6 @@ test.describe('createUpdateJobOfferBackEndError', () => {
       jobOfferMocks.jobOfferNew,
       enterpriseMocks.success])
       .apply();
-    await page.clock.install({ time: new Date('2016-02-25T08:00:00-04:00') });
   });
 
   test('Nouvelle offre invalide', async ({ page }) => {
@@ -41,8 +40,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.getByRole('button', { name: 'Créer une nouvelle offre' }).click();
 
     // Enterprise
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('Test entreprise');
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('Test entreprise');
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('123');
@@ -58,8 +57,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.getByRole('button', { name: 'Envoyer' }).click();
 
     // JobOffer
-    await page.locator('#titre').nth(1).click();
-    await page.locator('#titre').nth(1).fill('Poste');
+    await page.locator('#title').nth(1).click();
+    await page.locator('#title').nth(1).fill('Poste');
 
     await page.getByPlaceholder('Choisir période(s)').click();
     await page.getByRole('option', { name: 'temps plein' }).click();
@@ -115,11 +114,8 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await page.locator('button.button.edit').first().click();
 
     // JobOffer
-    await page.locator('#titre').first().click();
-    await page.locator('#titre').first().fill('poste');
-
-    await page.locator('#schedule.svelte-1r2hsto').click();
-    await page.getByRole('option', { name: 'temps plein' }).click();
+    await page.locator('#title').first().click();
+    await page.locator('#title').first().fill('poste');
 
     await page.locator('#address').first().click();
     await page.locator('#address').first().fill('Addresse 123');

@@ -1,8 +1,12 @@
 <script lang="ts">
     import Modal from "./Modal.svelte"
     import Button from "../Inputs/Button.svelte"
-    export let handleApproveClick: () => void
-    export let approbationMessage: string
+    interface Props {
+        handleApproveClick: () => void;
+        approbationMessage: string;
+    }
+
+    let { handleApproveClick, approbationMessage }: Props = $props();
 
 </script>
 
