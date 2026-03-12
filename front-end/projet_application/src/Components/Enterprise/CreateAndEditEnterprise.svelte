@@ -2,31 +2,40 @@
     import Button from "../Inputs/Button.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
     import MultiSelect from "svelte-multiselect"
-    import { onMount } from "svelte"
+    import { onMount, untrack } from "svelte"
     import fetchCity from "../../Service/CityService"
     import { entrepriseSchema } from "../../FormValidations/JobOffer"
     import { ValidationError } from "yup"
     import { extractErrors } from "../../ts/utils"
 
-    export let enterprise: Enterprise = {
-        name: "",
-        id: -1,
-        email: "",
-        phone: "",
-        address: "",
-        cityId: 0,
-        isTemporary: false,
+    type Props = {
+        enterprise?: Enterprise
+        handleApproveClick: (enterprise: Enterprise | void) => void
     }
-    let errorsEnterprise: any = []
 
-    export let handleApproveClick: (enterprise: Enterprise | void) => void
+    let {
+        enterprise: enterpriseProp = {
+            name: "",
+            id: -1,
+            email: "",
+            phone: "",
+            address: "",
+            cityId: 0,
+            isTemporary: false,
+        },
+        handleApproveClick,
+    }: Props = $props()
 
-    let savedName = enterprise.name
-    $: isNewEnterprise = (enterprise.id ?? -1) <= 0
+    let enterprise = $state(untrack(() => ({ ...enterpriseProp })))
+    let errorsEnterprise: any = $state([])
+    let savedName = $state(untrack(() => enterpriseProp.name))
+    let isNewEnterprise = $derived((enterprise.id ?? -1) <= 0)
 
-    let selectedCity: { label: string; value: number } | null = null
-    let cityFromSelectedEnterprise: { label: string; value: number }[] = []
-    let cityOptions: { label: string; value: number }[] = []
+    let selectedCity: { label: string; value: number } | null = $state(null)
+    let cityFromSelectedEnterprise: { label: string; value: number }[] = $state(
+        [],
+    )
+    let cityOptions: { label: string; value: number }[] = $state([])
 
     const getAllCities = async () => {
         try {
@@ -46,19 +55,20 @@
         }
     }
 
-    $: if (selectedCity) {
-        enterprise.cityId = selectedCity.value
-    }
+    $effect(() => {
+        if (selectedCity) {
+            enterprise.cityId = selectedCity.value
+        }
+    })
 
-    let prepareAndVerifyIfValid = async () => {
+    const prepareAndVerifyIfValid = async () => {
         if (enterprise !== null) {
             try {
                 enterprise.cityId =
-                    selectedCity?.value !== undefined ? selectedCity?.value : -1
+                    selectedCity?.value !== undefined ? selectedCity.value : -1
                 await entrepriseSchema.validate(enterprise, {
                     abortEarly: false,
                 })
-
                 return enterprise
             } catch (err) {
                 if (err instanceof ValidationError) {
