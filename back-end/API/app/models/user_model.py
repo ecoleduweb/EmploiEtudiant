@@ -14,3 +14,5 @@ class User(db.Model):
     
     def to_json_string(self):
         return {'id': self.id, 'firstName':self.firstName, 'lastName':self.lastName, 'email': self.email, "active": self.active, 'isModerator': self.isModerator}
+    def minimal_information_to_json_string(self):
+        return {'firstName':self.firstName, 'lastName':self.lastName, 'isModerator': self.isModerator}
