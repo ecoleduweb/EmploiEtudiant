@@ -84,22 +84,35 @@ test.describe('Enterprise Management', () => {
     });
 
     test('Création d\'une nouvelle entreprise', async ({ page }) => {
-        await apiMocker.addMocks([enterpriseMocks.createNew]).apply();
+        // Mock pour la création
+        await apiMocker.addMocks([
+            enterpriseMocks.createNew
+        ]).apply();
 
+        // Cliquer sur le bouton de création
         await page.getByRole('button', { name: 'Créer une nouvelle entreprise' }).click();
+
+        // Attendre que la modale s'ouvre
         await expect(page.locator('.modal')).toBeVisible();
 
+        // Remplir le formulaire
         await page.locator('#enterprise-name').fill('Nouvelle Entreprise');
         await page.locator('#enterprise-email').fill('nouvelle@example.com');
         await page.locator('#enterprise-phone').fill('4185554444');
         await page.locator('#enterprise-address').fill('321 Rue Nouvelle');
 
+        // Sélectionner une ville
         await page.locator('#enterprise-city').click();
         await page.getByRole('option', { name: 'Abercorn' }).click();
 
+        // Soumettre
         await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
 
+        // Vérifier que la modale se ferme
         await expect(page.locator('.modal')).not.toBeVisible();
+
+        // Vérifier que la nouvelle entreprise apparaît dans la liste
+        await expect(page.getByText('Nouvelle Entreprise')).toBeVisible();
     });
 
     test('Validation du formulaire - champs vides', async ({ page }) => {

@@ -20,7 +20,9 @@ class EnterpriseService:
     
     def updateEnterprise(self, data):
         return enterprise_repo.updateEnterprise(data)
+    
     def deleteEnterprise(self, id):
         return enterprise_repo.deleteEnterprise(id)
+    
     def getEnterpriseId(self, name):
         return enterprise_repo.getEnterpriseId(name)

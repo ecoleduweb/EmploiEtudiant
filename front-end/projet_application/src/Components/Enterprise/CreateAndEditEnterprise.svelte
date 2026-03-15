@@ -82,7 +82,6 @@
         const validatedData = await prepareAndVerifyIfValid()
         if (validatedData) {
             handleApproveClick(validatedData)
-            savedName = validatedData.name
         }
     }
 

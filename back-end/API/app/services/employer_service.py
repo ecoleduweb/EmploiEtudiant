@@ -36,5 +36,3 @@ class EmployerService:
         else:
             logger.warning("Employer not found from enterprise")
             return None
-
-   

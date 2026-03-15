@@ -1,12 +1,10 @@
 from flask import jsonify, request, Blueprint
 from app.services.employer_service import EmployerService
-from app.services.enterprise_service import EnterpriseService
 from app.services.user_service import UserService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 employer_service = EmployerService()
-
 user_service = UserService()
 
 logger = getLogger(__name__)
