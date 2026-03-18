@@ -101,7 +101,7 @@
             <div class="modalContent">
                 <div class="form-group-vertical">
                     <label for="enterprise-name">
-                        {isNewEnterprise ? "Nom" : "Nom*"}
+                        {isNewEnterprise ? "Nom*" : "Nom*"}
                     </label>
                     <input
                         id="enterprise-name"
@@ -116,7 +116,7 @@
 
                 <div class="form-group-vertical">
                     <label for="enterprise-address">
-                        {isNewEnterprise ? "Adresse" : "Adresse*"}
+                        {isNewEnterprise ? "Adresse*" : "Adresse*"}
                     </label>
                     <input
                         id="enterprise-address"
@@ -131,7 +131,7 @@
 
                 <div class="form-group-vertical">
                     <label for="enterprise-email">
-                        {isNewEnterprise ? "Courriel" : "Courriel*"}
+                        {isNewEnterprise ? "Courriel*" : "Courriel*"}
                     </label>
                     <input
                         id="enterprise-email"
@@ -146,7 +146,7 @@
 
                 <div class="form-group-vertical">
                     <label for="enterprise-phone">
-                        {isNewEnterprise ? "Telephone" : "Telephone*"}
+                        {isNewEnterprise ? "Telephone*" : "Telephone*"}
                     </label>
                     <input
                         id="enterprise-phone"
@@ -161,7 +161,7 @@
 
                 <div class="form-group-vertical">
                     <label for="enterprise-city">
-                        {isNewEnterprise ? "Ville" : "Ville*"}
+                        {isNewEnterprise ? "Ville*" : "Ville*"}
                     </label>
 
                     {#if cityOptions.length === 0}
