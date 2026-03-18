@@ -23,7 +23,7 @@ La solution : Utiliser une <div> cliquable pour la ligne permet d'accepter tous 
     let ville: City
     let nomVille: string | undefined = $state()
     let formattedPhone: string | undefined = $state()
-
+    let Users: any[] = $state([]);
     const getCity = async (id: number) => {
         try {
             ville = await GET<any>(`/city/${id}`)
@@ -40,9 +40,26 @@ La solution : Utiliser une <div> cliquable pour la ligne permet d'accepter tous 
     if (enterprise.cityId !== undefined) {
         await getCity(enterprise.cityId);
     }
-        
+           if (enterprise.id !== undefined) {
+        await getAllUsersAssignedToEntreprise(enterprise.id);
+    } 
     });
-    
+    const getAllUsersAssignedToEntreprise = async (enterpriseId: number) => {
+        try {
+            const data = await GET<any>(`/enterprise/${enterpriseId}/users`);
+            if (data) {
+                Users = data.map((u: any) => {
+                    const fullName = `${u.firstName} ${u.lastName}`.trim();
+                    return { 
+                        label: fullName.length > 0 ? fullName : u.email, 
+                        value: u.id 
+                    };
+                });
+            }
+        } catch (err) {
+            console.error("Erreur utilisateurs:", err);
+        }
+    }
 </script>
 
 
@@ -62,6 +79,16 @@ La solution : Utiliser une <div> cliquable pour la ligne permet d'accepter tous 
             <p class="text">{formattedPhone}</p>
             <p class="text">{enterprise.address}</p>
             <p class="text">{nomVille}</p>
+<select
+    class="form-control"
+    style="margin-bottom: 10px;"
+    onclick={(e) => e.stopPropagation()}
+>
+    <option value={undefined}>Choisir un utilisateur...</option>
+    {#each Users as user}
+        <option value={user.value}>{user.label}</option>
+    {/each}
+</select>
         </div>
         <div class="info-mobile">
             <p class="textTitre">{enterprise.name}</p>

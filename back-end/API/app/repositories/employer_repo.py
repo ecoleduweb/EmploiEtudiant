@@ -37,3 +37,9 @@ class EmployerRepo:
         for employer in employers:
                 employer.userId = None
         db.session.commit()
+    def getEmployersByEnterpriseId(self, enterpriseId):
+        try:
+            return Employers.query.filter_by(enterpriseId=enterpriseId).all()
+        except Exception as e:
+            print(e)
+            return []

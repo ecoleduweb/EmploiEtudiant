@@ -93,3 +93,12 @@ def getCurrentUserEnterprise(current_user):
     except Exception as e:
         logger.error("Error getting the user to get the enterprise", e)
         return jsonify({'message': 'Error when getting the user'}), 500
+@enterprise_blueprint.route('/<int:id>/users', methods=['GET'])
+@token_required
+def getUsersFromEnterprise(current_user, id):
+    try:
+        users = employer_service.getUsersFromEnterprise(id)
+        return jsonify([user.to_json_string() for user in users]), 200
+    except Exception as e:
+        logger.error(f"Error getting users from enterprise {id}: {e}")
+        return jsonify({'message': 'Error retrieving users'}), 500

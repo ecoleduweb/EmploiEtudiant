@@ -12,7 +12,6 @@
     }
 
     let { enterprise, handleEnterpriseClick }: Props = $props();
-// Initialisation avec des tableaux vides pour éviter les erreurs de rendu
     let Users: any[] = $state([]);
     let selectedUserId: number | undefined = $state();
     let ville: City | undefined = $state();
@@ -30,7 +29,6 @@ const getAllUsers = async () => {
     try {
         const data = await GET<any>("/user/all");
         
-        // Comme ta console montre {users: Array(2)}, on pointe sur .users
         if (data && data.users) {
             Users = data.users.map((u: any) => {
                 const fullName = `${u.firstName} ${u.lastName}`.trim();
@@ -46,15 +44,13 @@ const getAllUsers = async () => {
 }
 
 const handleAssign = async () => {
-    // En ajoutant cette condition, TypeScript comprend que selectedUserId 
-    // NE PEUT PAS être undefined à l'intérieur du bloc if.
+
     if (selectedUserId !== undefined && enterprise?.id) {
         try {
             const response = await assignUserToEnterprise(
-                selectedUserId, // Ici, TypeScript est content car il est sûr que c'est un number
+                selectedUserId, 
                 enterprise.id
             );
-            // ... reste du code
         } catch (error) {
             console.error("Erreur:", error);
         }
