@@ -100,7 +100,7 @@
         {#if enterprise && cityOptions}
             <div class="modalContent">
                 <div class="form-group-vertical">
-                    <label for="enterprise-name"> "Nom*" </label>
+                    <label for="enterprise-name"> Nom* </label>
                     <input
                         id="enterprise-name"
                         type="text"
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-address"> "Adresse*" </label>
+                    <label for="enterprise-address"> Adresse* </label>
                     <input
                         id="enterprise-address"
                         type="text"
@@ -126,7 +126,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-email"> "Courriel*" </label>
+                    <label for="enterprise-email"> Courriel* </label>
                     <input
                         id="enterprise-email"
                         type="text"
@@ -139,7 +139,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-phone"> "Téléphone*" </label>
+                    <label for="enterprise-phone"> Téléphone* </label>
                     <input
                         id="enterprise-phone"
                         type="text"
@@ -152,7 +152,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-city"> "Ville*" </label>
+                    <label for="enterprise-city"> Ville* </label>
 
                     {#if cityOptions.length === 0}
                         <p>Chargement des villes...</p>
