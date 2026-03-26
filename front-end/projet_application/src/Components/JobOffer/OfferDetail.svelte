@@ -438,11 +438,22 @@
     @media (max-width: 768px) {
         .row {
             flex-direction: column;
-            height: 9vh;
+            height: auto;
+            width: 100%;
+            gap: 0.75rem;
+            align-items: flex-start;
         }
 
         .container {
             max-height: 60vh;
+        }
+
+        .infoTitle {
+            margin-bottom: 0.5rem;
+        }
+
+        .text {
+            margin-bottom: 0.75rem;
         }
 
         .iconeCopy {
@@ -452,7 +463,19 @@
 
         .row-copy {
             flex-direction: row;
-            height: 4vh;
+            height: auto;
+            width: 100%;
+            align-items: center;
+        }
+
+        .shareInlineBlock {
+            width: 100%;
+            margin-top: 1.25rem;
+        }
+
+        .shareGrid {
+            grid-template-columns: repeat(3, 4em);
+            justify-content: start;
         }
     }
 </style>
