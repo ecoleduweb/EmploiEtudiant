@@ -9,5 +9,13 @@ declare global {
         // interface Platform {}
     }
 }
+declare module 'svelte-share-buttons-component' {
+    import type { Component } from 'svelte';
+    export class WhatsApp extends Component { }
+    export class LinkedIn extends Component { }
+    export class X extends Component { }
+    export class Email extends Component { }
+    export class SMS extends Component { }
 
-export {}
+}
+export { }
