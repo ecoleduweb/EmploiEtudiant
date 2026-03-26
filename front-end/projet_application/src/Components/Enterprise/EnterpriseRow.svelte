@@ -84,7 +84,7 @@ La solution : Utiliser une <div> cliquable pour la ligne permet d'accepter tous 
     style="margin-bottom: 10px;"
     onclick={(e) => e.stopPropagation()}
 >
-    <option value={undefined}>Choisir un utilisateur...</option>
+    <option value={undefined}>Utilisateurs non assignés</option>
     {#each Users as user}
         <option value={user.value}>{user.label}</option>
     {/each}
