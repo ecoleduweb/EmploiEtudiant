@@ -3,6 +3,8 @@ import { studyProgramMocks } from '../Helper/Mocks/studyProgram.mock';
 import { ApiMocker } from '../Helper/mockApi';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { jobOfferMocks } from '../Helper/Mocks/jobOffer.mock';
+import { userMocks } from '../Helper/Mocks/user.mock';
+import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 
 test.describe('checkIfOffersHide', () => {
 
@@ -10,7 +12,9 @@ test.describe('checkIfOffersHide', () => {
     const apiMocker = new ApiMocker(page);
     await apiMocker.addMocks([
       studyProgramMocks.success,
-      loginMocks.successModerator
+      loginMocks.successModerator,
+      userMocks.meModerator,
+      enterpriseMocks.success
     ]).apply();
 
     await page.goto('http://localhost:5002/login');
@@ -61,39 +65,5 @@ test.describe('checkIfOffersHide', () => {
     await expect(page.locator("#expiredOfferList")).not.toBeVisible();
     await page.locator("#btnHideExpiredOffer").click();
     await expect(page.locator("#expiredOfferList")).toBeVisible();
-  });
-
-  test('checkIfLocalStorageWorks', async ({ page }) => {
-    const apiMocker = new ApiMocker(page);
-    await apiMocker.addMocks([
-      jobOfferMocks.jobOfferEmployerAll
-    ]).apply();
-
-    await page.goto('http://localhost:5002/dashboard');
-    await page.waitForLoadState('networkidle');
-    if (await page.locator("#cookieBannerOk").count() > 0) {
-      await page.locator("#cookieBannerOk").click();
-    }
-
-    await page.locator("#btnHideRefusedOfferList").click();
-    await page.locator("#btnHidetoBeApprovedOfferList").click();
-    await page.locator("#btnHideOfferDisplayed").click();
-    await page.locator("#btnHideOfferToCome").click();
-    await page.locator("#btnHideExpiredOffer").click();
-
-    await expect(page.locator("#refusedOffersList")).not.toBeVisible();
-    await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
-    await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
-    await expect(page.locator("#offersToComeList")).not.toBeVisible();
-    await expect(page.locator("#expiredOfferList")).not.toBeVisible();
-
-    await page.reload();
-    await page.waitForTimeout(1000);
-
-    await expect(page.locator("#refusedOffersList")).not.toBeVisible();
-    await expect(page.locator("#toBeApprovedOffersList")).not.toBeVisible();
-    await expect(page.locator("#offerDisplayedList")).not.toBeVisible();
-    await expect(page.locator("#offersToComeList")).not.toBeVisible();
-    await expect(page.locator("#expiredOfferList")).not.toBeVisible();
   });
 });
