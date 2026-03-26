@@ -1,52 +1,36 @@
 <script lang="ts">
     import type { Enterprise } from "../../Models/Enterprise"
-    import type { City } from "../../Models/City"
-    import { GET } from "../../ts/server"
-    import { onMount } from "svelte"
     import { formatPhoneNumber } from "../../ts/utils"
-    interface Props {
-        enterprise: Enterprise;
-        handleModalClick: (id: number) => void;
+
+    type Props = {
+        enterprise: Enterprise
+        handleModalClick: () => void
+        cityName?: string
     }
 
-    let { enterprise, handleModalClick }: Props = $props();
-    let ville: City
-    let nomVille: string = $state()
-    let formattedPhone: string = $state()
+    let { enterprise, handleModalClick, cityName = "" }: Props = $props()
 
-    const getCity = async (id: number) => {
-        try {
-            ville = await GET<any>(`/city/${id}`)
-            nomVille = ville.city
-        } catch (error) {
-            console.error("Error fetching city:", error)
-        }
-    }
-
-    onMount(async () => {
-        formattedPhone = formatPhoneNumber(enterprise.phone);
-        await getCity(enterprise.cityId);
-        
-    });
-    
+    let formattedPhone = $derived(formatPhoneNumber(enterprise.phone))
 </script>
 
-
-
-<button class="enterprise" onclick={() => handleModalClick(enterprise.id)}>
+<button class="enterprise" onclick={() => handleModalClick()}>
     <div class="emploi">
         <div class="info">
-            <p class="textTitre">{enterprise.name}</p>
+            <p class="text">{enterprise.name}</p>
+        </div>
+        <div class="info">
             <p class="text">{enterprise.email}</p>
+        </div>
+        <div class="info">
             <p class="text">{formattedPhone}</p>
+        </div>
+        <div class="info">
             <p class="text">{enterprise.address}</p>
-            <p class="text">{nomVille}</p>
         </div>
-        <div class="info-mobile">
-            <p class="textTitre">{enterprise.name}</p>
-            <p class="text">{enterprise.email}</p>
+        <div class="info">
+            <p class="text">{cityName}</p>
         </div>
-        <img class="image" src="searchBar.svg" alt="ajouter" />
+        <img class="image" src="edit.svg" alt="modifier" />
     </div>
 </button>
 
@@ -60,6 +44,8 @@
         border-bottom: 1px solid #00ad9a;
         margin-left: 5.2%;
         background-color: transparent;
+        height: 6%;
+        border-radius: 4px;
     }
     .info {
         display: flex;
@@ -67,16 +53,13 @@
         font-size: 1.2rem;
         flex-direction: row;
         justify-content: space-around;
-        align-items: center;
     }
     .text {
-        width: 20%;
+        width: 100%;
+        text-align: left;
+        margin-left: 0.2vw;
     }
-    .textTitre {
-        width: 20%;
-        font-weight: bold;
-        font-size: 1.8rem;
-    }
+
     .emploi {
         display: flex;
         flex-direction: row;
@@ -96,26 +79,5 @@
     .image {
         width: 30px;
         height: 30px;
-    }
-
-    .info-mobile {
-        display: none;
-    }
-
-    @media (max-width: 768px) {
-        .info {
-            display: none;
-        }
-        .info-mobile {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            width: 60%;
-        }
-
-        .text {
-            font-size: 3.5vw;
-        }
     }
 </style>

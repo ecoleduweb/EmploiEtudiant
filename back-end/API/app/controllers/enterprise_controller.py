@@ -38,32 +38,37 @@ def getEnterpriseByEmployer(id):
 @token_required
 def updateEnterprise(current_user, id):
     try:
-        employer = employer_service.getEmployerByUserId(current_user.id)
-        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
-
         data = request.get_json()
 
-        if current_user.isModerator and data["id"] != None:
+        if current_user.isModerator and data.get("id") is not None:
             enterprise = enterprise_service.getEnterprise(data["id"])
             if enterprise:
                 enterprise_service.updateEnterprise(data)
                 return jsonify({'message': 'enterprise updated'})
+            else:
+                logger.warning(f'Enterprise not found with id : {data["id"]}')
+                return jsonify({'message': 'enterprise not found'}), 404
         else:
+            employer = employer_service.getEmployerByUserId(current_user.id)
+            if not employer:
+                logger.warning("User has no associated employer")
+                return jsonify({'message': 'User has no associated employer'}), 403
+                
+            enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+            if not enterprise:
+                logger.warning(f'Enterprise not found for employer with enterpriseId: {employer.enterpriseId}')
+                return jsonify({'message': 'enterprise not found'}), 404
             data["id"] = enterprise.id
             if enterprise and enterprise.id == data["id"]:
                 enterprise_service.updateEnterprise(data)
                 return jsonify({'message': 'enterprise updated'})
             else:
-                logger.warn("An user tried to modify an entreprise don't have permission")
+                logger.warning("An user tried to modify an entreprise don't have permission")
                 return jsonify({'message': 'User cannot modify enterprise'}), 401
-
-        
-        logger.warn(f'Enterprise not found with id : {id}')
-        return jsonify({'message': 'enterprise not found'}), 404
+            
     except Exception as e:
-        logger.error(f'There was an error updating the enterprise')
+        logger.exception(f'There was an error updating the enterprise')
         return jsonify({'message': 'There was an error updating the enterprise'}), 500
-
 
 @enterprise_blueprint.route('/<int:id>', methods=['GET'])
 @token_required
@@ -72,7 +77,7 @@ def getEnterprise(current_user, id):
     if enterprise:
         return jsonify(enterprise.to_json_string()), 200
     else:
-        logger.warn(f'Enterprise not found with id : {id}')
+        logger.warning(f'Enterprise not found with id : {id}')
         return jsonify({'message': 'enterprise not found'}), 404
     
 @enterprise_blueprint.route('/currentEnterprise', methods=['GET'])
@@ -88,8 +93,8 @@ def getCurrentUserEnterprise(current_user):
         if enterprise:
             return jsonify(enterprise.to_json_string()), 200
         else:
-            logger.warn("No enterprise found the current user")
+            logger.warning("No enterprise found the current user")
             return jsonify({'message': 'No enterprise found on the current user'}), 404
     except Exception as e:
-        logger.error("Error getting the user to get the enterprise", e)
+        logger.exception("Error getting the user to get the enterprise")
         return jsonify({'message': 'Error when getting the user'}), 500

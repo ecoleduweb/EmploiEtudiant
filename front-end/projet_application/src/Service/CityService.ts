@@ -43,4 +43,10 @@ const fetchCity = async () => {
   return cacheCity()
 }
 
+export const getCityName = async (cityId: number): Promise<string> => {
+  const cities = await fetchCity();
+  const city = cities.find((c: any) => c.value === cityId);
+  return city ? city.label : "Unknown City";
+}
+
 export default fetchCity;

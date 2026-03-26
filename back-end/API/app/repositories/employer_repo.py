@@ -37,3 +37,4 @@ class EmployerRepo:
         for employer in employers:
                 employer.userId = None
         db.session.commit()
+

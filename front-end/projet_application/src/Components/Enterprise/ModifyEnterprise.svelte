@@ -1,6 +1,6 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
-    import { MultiSelect } from "svelte-multiselect";
+    import { MultiSelect } from "svelte-multiselect"
     import CreateEditEnterprise from "../JobOffer/CreateEditEnterprise.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
     import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
@@ -11,28 +11,29 @@
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
     import fetchCity from "../../Service/CityService"
-    
+
     interface Props {
-        handleCloseClick: () => void;
+        handleCloseClick: () => void
     }
 
-    let { handleCloseClick }: Props = $props();
-    let enterprise: Enterprise = $state()
-    let errorsEnterprise: any = $state([]);
-    let cityOptions: { label: string; value: number }[] = $state([]);
+    let { handleCloseClick }: Props = $props()
+    let enterprise: Enterprise | undefined = $state()
+    let errorsEnterprise: any = $state([])
+    let cityOptions: { label: string; value: number }[] = $state([])
     let selectedCity: any = $state()
     let cityFromEnterprise: any = $state([])
 
-    
     let prepareAndVerifyIfValid = async () => {
-        if (enterprise !== null) {
+        if (enterprise != null) {
             try {
-                enterprise.cityId = selectedCity?.value != undefined ? selectedCity?.value : -1
-                await entrepriseSchema.validate(enterprise, {abortEarly: false})
+                enterprise.cityId =
+                    selectedCity?.value != undefined ? selectedCity?.value : -1
+                await entrepriseSchema.validate(enterprise, {
+                    abortEarly: false,
+                })
 
                 return enterprise
-            }
-            catch (err) {
+            } catch (err) {
                 if (err instanceof ValidationError) {
                     errorsEnterprise = extractErrors(err)
                 }
@@ -40,28 +41,28 @@
         }
     }
 
-    let handleSubmit = async () => 
-    {
+    let handleSubmit = async () => {
         const validatedData = await prepareAndVerifyIfValid()
         if (validatedData != undefined) {
-            const response = await PUT<any, any>(`/enterprise/${validatedData?.id}`, {...enterprise, cityId: selectedCity.value})
+            const response = await PUT<any, any>(
+                `/enterprise/${validatedData?.id}`,
+                { ...enterprise, cityId: selectedCity.value },
+            )
 
             if (response) {
-                enterprise.cityId = selectedCity.value
+                if (enterprise) enterprise.cityId = selectedCity.value
                 handleCloseClick()
-            } 
+            }
         }
     }
 
     const setOwnEnterprise = async () => {
         selectedCity = cityOptions.find(
-            (ville) => ville.value === enterprise.cityId,
+            (ville) => ville.value === enterprise?.cityId,
         )
     }
-            
-     
-    onMount(async () => 
-    {
+
+    onMount(async () => {
         enterprise = await getCurrentUserEnterprise()
         cityOptions = await fetchCity()
 
@@ -74,7 +75,7 @@
         <div class="modalContent">
             <div class="form-group-vertical">
                 <label for="title">Nom*</label>
-                <br>
+                <br />
                 <input
                     type="text"
                     bind:value={enterprise.name}
@@ -88,7 +89,7 @@
             </p>
             <div class="form-group-vertical">
                 <label for="schedule">Adresse*</label>
-                <br>
+                <br />
                 <input
                     type="text"
                     bind:value={enterprise.address}
@@ -102,7 +103,7 @@
             </p>
             <div class="form-group-vertical">
                 <label for="lieu">Courriel*</label>
-                <br>
+                <br />
                 <input
                     type="text"
                     bind:value={enterprise.email}
@@ -116,7 +117,7 @@
             </p>
             <div class="form-group-vertical">
                 <label for="lieu">Téléphone*</label>
-                <br>
+                <br />
                 <input
                     type="text"
                     bind:value={enterprise.phone}
@@ -130,7 +131,7 @@
             </p>
             <div class="form-group-vertical">
                 <label for="lieu">Ville*</label>
-                <br>
+                <br />
                 {#if cityOptions.length === 0 && selectedCity}
                     <p>Chargement des villes...</p>
                 {:else}
@@ -148,16 +149,12 @@
 
             <div class="accept-Condition">
                 <div class="send">
-                    <Button
-                        text="Envoyer"
-                        onClick={handleSubmit}
-                    />
+                    <Button text="Envoyer" onClick={handleSubmit} />
                 </div>
             </div>
         </div>
     {/if}
 </Modal>
-
 
 <style>
     .modalContent {

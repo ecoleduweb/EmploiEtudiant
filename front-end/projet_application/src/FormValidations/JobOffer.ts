@@ -114,6 +114,7 @@ export const entrepriseSchema = yup.object().shape({
     email: yup
         .string()
         .required("Votre entreprise doit avoir un courriel")
+        .email("Le courriel doit être valide")
         .max(255, "Le courriel doit être 255 caractères maximum"),
     name: yup
         .string()

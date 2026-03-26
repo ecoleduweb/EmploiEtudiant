@@ -5,14 +5,14 @@
     import { onMount } from "svelte"
     import type { City } from "../../Models/City"
     interface Props {
-        enterprise: Enterprise;
-        handleEnterpriseClick: () => void;
+        enterprise: Enterprise
+        handleEnterpriseClick: () => void
     }
 
-    let { enterprise, handleEnterpriseClick }: Props = $props();
+    let { enterprise, handleEnterpriseClick }: Props = $props()
 
     let ville: City
-    let nomVille: string = $state()
+    let nomVille: string = $state("")
 
     const getCity = async (id: number) => {
         try {
