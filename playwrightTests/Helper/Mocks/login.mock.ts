@@ -1,7 +1,7 @@
 import { MockConfig } from "../types";
-import jwt from 'jsonwebtoken';
 
-const generateToken = (isModerator) => {
+
+/*const generateToken = (isModerator) => {
     const payload = {
         email: "test@gmail.com",
         exp: Math.floor((Date.now() + 30 * 60 * 1000) / 1000), // 30 minutes from now
@@ -15,7 +15,7 @@ const generateToken = (isModerator) => {
     const SECRET_KEY = 'cle-secrette-pour-les-tests';
 
     return jwt.sign(payload, SECRET_KEY);
-};
+};*/
 
 export const loginMocks = {
     notFound: {
@@ -30,7 +30,10 @@ export const loginMocks = {
         response: {
             status: 200,
             json: {
-                "token": generateToken(false)
+                isModerator: false,
+                email: "test@gmail.com",
+                firstname: "Test",
+                lastname: "User",
             }
         }
     },
@@ -39,7 +42,10 @@ export const loginMocks = {
         response: {
             status: 200,
             json: {
-                "token": generateToken(true)
+                isModerator: true,
+                email: "test@gmail.com",
+                firstname: "Test",
+                lastname: "Admin",
             }
         }
     }

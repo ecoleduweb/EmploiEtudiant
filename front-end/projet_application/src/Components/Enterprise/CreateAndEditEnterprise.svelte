@@ -26,9 +26,9 @@
         handleApproveClick,
     }: Props = $props()
 
-    let enterprise = $state(untrack(() => ({ ...enterpriseProp })))
+    let enterprise = $state({ ...enterpriseProp })
     let errorsEnterprise: any = $state([])
-    let savedName = $state(untrack(() => enterpriseProp.name))
+    let savedName = $state(enterpriseProp.name)
     let isNewEnterprise = $derived((enterprise.id ?? -1) <= 0)
 
     let selectedCity: { label: string; value: number } | null = $state(null)
@@ -100,9 +100,7 @@
         {#if enterprise && cityOptions}
             <div class="modalContent">
                 <div class="form-group-vertical">
-                    <label for="enterprise-name">
-                        {isNewEnterprise ? "Nom*" : "Nom*"}
-                    </label>
+                    <label for="enterprise-name"> Nom* </label>
                     <input
                         id="enterprise-name"
                         type="text"
@@ -115,9 +113,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-address">
-                        {isNewEnterprise ? "Adresse*" : "Adresse*"}
-                    </label>
+                    <label for="enterprise-address"> Adresse* </label>
                     <input
                         id="enterprise-address"
                         type="text"
@@ -130,9 +126,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-email">
-                        {isNewEnterprise ? "Courriel*" : "Courriel*"}
-                    </label>
+                    <label for="enterprise-email"> Courriel* </label>
                     <input
                         id="enterprise-email"
                         type="text"
@@ -145,9 +139,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-phone">
-                        {isNewEnterprise ? "Telephone*" : "Telephone*"}
-                    </label>
+                    <label for="enterprise-phone"> Téléphone* </label>
                     <input
                         id="enterprise-phone"
                         type="text"
@@ -160,9 +152,7 @@
                 </div>
 
                 <div class="form-group-vertical">
-                    <label for="enterprise-city">
-                        {isNewEnterprise ? "Ville*" : "Ville*"}
-                    </label>
+                    <label for="enterprise-city"> Ville* </label>
 
                     {#if cityOptions.length === 0}
                         <p>Chargement des villes...</p>

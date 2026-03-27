@@ -141,35 +141,23 @@
             <p class="text">
                 {offer.studyPrograms?.map((p) => p.name).join(", ")}
             </p>
-
             <h5 class="infoTitle">Poste visé</h5>
             <p class="text">
                 {offer.schedules?.map((s) => s.description).join(", ")}
             </p>
-
             <h5 class="infoTitle">Description du poste</h5>
             <div class="description">{@html offer.description}</div>
-
             <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>
                 Lien vers l'offre d'emploi détaillée
             </h5>
-
             <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
-                        <a
-                            href={offer.offerLink}
-                            class="text_link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {url || offer.offerLink}
-                        </a>
+                        <a href={offer.offerLink} class="text_link">{url}</a>
                     </div>
                 {:else}
                     <p class="text CanBeHidden">{url}</p>
                 {/if}
-
                 <div use:copy={offer.offerLink}>
                     <img
                         class="iconeCopy"
@@ -182,7 +170,7 @@
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <div class="row">
                 <p class="text">{offer.email}</p>
-                <a href={`mailto:${offer.email}`}>
+                <a href="mailto:{offer.email}">
                     <Button text="Postuler par courriel" />
                 </a>
             </div>
@@ -301,7 +289,6 @@
         border-left: 1px solid #555;
         padding-left: 1vw;
     }
-
     .text_link {
         font-size: 1.1rem;
         bottom: 2vh;

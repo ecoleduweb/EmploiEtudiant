@@ -13,7 +13,7 @@
     "devDependencies": {
         "@beyonk/svelte-google-analytics": "^2.6.4",
         "@sveltejs/adapter-auto": "^7.0.0",
-        "@sveltejs/adapter-node": "^5.5.2",
+        "@sveltejs/adapter-node": "^5.5.3",
         "@sveltejs/kit": "^2.50.2",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
         "@types/gtag.js": "^0.0.20",
@@ -36,7 +36,6 @@
         "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
         "@opentelemetry/instrumentation": "^0.211.0",
         "@opentelemetry/sdk-trace-web": "^2.5.0",
-        "@sveltejs/adapter-node": "^5.5.2",
         "@tiptap/core": "^2.11.5",
         "@tiptap/extension-underline": "^2.11.5",
         "@tiptap/starter-kit": "^2.11.5",
