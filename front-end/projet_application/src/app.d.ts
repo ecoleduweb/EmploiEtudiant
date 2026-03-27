@@ -11,11 +11,20 @@ declare global {
 }
 declare module 'svelte-share-buttons-component' {
     import type { Component } from 'svelte';
-    export class WhatsApp extends Component { }
-    export class LinkedIn extends Component { }
-    export class X extends Component { }
-    export class Email extends Component { }
-    export class SMS extends Component { }
+    interface ShareButtonsProps {
+        url?: string;
+        title?: string;
+        text?: string;
+        subject?: string;
+        body?: string;
+    }
+
+
+    export const WhatsApp: Component<ShareButtonsProps>;
+    export const LinkedIn: Component<ShareButtonsProps>;
+    export const X: Component<ShareButtonsProps>;
+    export const Email: Component<ShareButtonsProps>;
+
 
 }
 export { }

@@ -22,7 +22,9 @@
     let { offer }: Props = $props()
 
     let hideURL = $derived(
-        offer.offerLink === "https://" || offer.offerLink === "http://",
+        !offer.offerLink ||
+            offer.offerLink === "https://" ||
+            offer.offerLink === "http://",
     )
 
     let cityOptions: any = $state()
@@ -36,6 +38,15 @@
     let shareUrl = $derived((offer?.offerLink ?? "").trim())
     let title = $derived(offer?.title ?? "Offre d’emploi")
     let shareText = $derived(`${title} ${shareUrl}`.trim())
+    let isIOS = $derived(
+        typeof navigator !== "undefined" &&
+            /iPad|iPhone|iPod/.test(navigator.userAgent),
+    )
+    let smsHref = $derived(
+        isIOS
+            ? `sms:&body=${encodeURIComponent(shareText)}`
+            : `sms:?body=${encodeURIComponent(shareText)}`,
+    )
     let messengerShare = $derived(
         `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`,
     )
@@ -216,7 +227,7 @@
 
                         <a
                             class="shareCell smsItem"
-                            href={`sms:?body=${encodeURIComponent(shareText)}`}
+                            href={smsHref}
                             aria-label="Partager par SMS"
                         >
                             <svg
