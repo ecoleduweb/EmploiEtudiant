@@ -44,7 +44,15 @@ class UserService:
         if not current_app.config.get('TESTING'):
             if not captcha_service.verify_captcha(data['captchaToken']):
                 return jsonify({'message': 'Captcha verification failed'}), 400
-        return auth_repo.register(data)
+        try:
+            new_user = auth_repo.register(data) 
+            token = self._generateToken(new_user)  
+            return token,new_user 
+        except Exception as e:
+            logger.warning("Registration error for " + data.get('email') + ": " + str(e))
+            return jsonify({'message': "Could not verify"}), 401
+
+        
 
     def getAllUsers(self):
         return auth_repo.getAllUsers()
@@ -119,3 +127,15 @@ class UserService:
                 employer_repo.linkEmployerEnterprise(user.id, selectedEnterpriseId)
             else:
                 raise Exception("trying to delete a non temporary enterprise.")
+            
+    
+    def _generateToken(self, user):
+        payload = {
+            'email': user.email,
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=30),
+            'active': user.active,
+            'isModerator': user.isModerator,
+            'firstName': user.firstName,
+            'lastName': user.lastName
+        }
+        return encode(payload, os.environ.get('SECRET_KEY'))
