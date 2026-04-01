@@ -8,7 +8,7 @@
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import TableEmplois from "../../Components/JobOffer/TableOffer.svelte"
     import { pushState } from "$app/navigation"
-    import { page } from '$app/stores'
+    import { page } from "$app/stores"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import { studyPrograms } from "$lib"
     import MultiSelect from "svelte-multiselect"
@@ -32,7 +32,7 @@
         selectedOffer = offer
         pushState("?id=" + offer.id, {})
     }
-    
+
     const closeModal = () => {
         showModal = false
         pushState("/emplois", {})
@@ -41,21 +41,21 @@
     let jobOffers: JobOfferDetails[] = []
     let filteredOffers: JobOfferDetails[] = []
 
-    let programOptions: { label: string; value: number; }[] = []
-    let selectedPrograms: { label: string; value: number; }[] = []
+    let programOptions: { label: string; value: number }[] = []
+    let selectedPrograms: { label: string; value: number }[] = []
 
     let scheduleOption: { label: string; value: number }[] = []
     let selectedSchedule: { label: string; value: number }[] = []
 
     const getSchedule = async () => {
         try {
-            const response = await GET<any>(
-                `/employmentSchedule/all`,
+            const response = await GET<any>(`/employmentSchedule/all`)
+            scheduleOption = response.map(
+                (schedule: { id: number; description: string }) => ({
+                    label: schedule.description,
+                    value: schedule.id,
+                }),
             )
-            scheduleOption = response.map((schedule: { id: number; description: string }) => ({
-                label: schedule.description,
-                value: schedule.id,
-            })) 
         } catch (error) {
             console.error("Error fetching schedules:", error)
         }
@@ -63,60 +63,88 @@
 
     const confirmModalFilter = () => {
         // On ferme la modal AVANT de traiter pour s'assurer qu'elle disparaisse
-        showFilterOffer = false;
+        showFilterOffer = false
 
-        const allProgramsId = selectedPrograms.find(x => x.label === "Tous les programmes")?.value || 0;
+        const allProgramsId =
+            selectedPrograms.find((x) => x.label === "Tous les programmes")
+                ?.value || 0
 
-        filteredOffers = jobOffers.filter(offer => {
-            if (selectedPrograms.length === 0 && selectedSchedule.length === 0) {
-                return true;
+        filteredOffers = jobOffers.filter((offer) => {
+            if (
+                selectedPrograms.length === 0 &&
+                selectedSchedule.length === 0
+            ) {
+                return true
             }
 
             // Utilisation du chainage optionnel ?. pour éviter les erreurs undefined
-            const progToFilterId = selectedPrograms[0]?.value;
-            const matchesPrograms = selectedPrograms.length === 0 || 
-                offer.studyPrograms?.some(prog => prog.id === progToFilterId || prog.id === allProgramsId);
+            const progToFilterId = selectedPrograms[0]?.value
+            const matchesPrograms =
+                selectedPrograms.length === 0 ||
+                offer.studyPrograms?.some(
+                    (prog) =>
+                        prog.id === progToFilterId || prog.id === allProgramsId,
+                )
 
-            const schedulesToFilterId = selectedSchedule[0]?.value;
-            const matchesSchedules = selectedSchedule.length === 0 ||
-                offer.schedules?.some(schedule => parseInt(schedule.id) === schedulesToFilterId);
-        
-            return (matchesPrograms  ) && (matchesSchedules  );
-        });
-    };
+            const schedulesToFilterId = selectedSchedule[0]?.value
+            const matchesSchedules =
+                selectedSchedule.length === 0 ||
+                offer.schedules?.some(
+                    (schedule) => parseInt(schedule.id) === schedulesToFilterId,
+                )
 
-    const onRemoveProgramFilterClick = (program: { label: string; value: number }) => {
-        selectedPrograms = selectedPrograms.filter((x) => x.value !== program.value)
+            return matchesPrograms && matchesSchedules
+        })
+    }
+
+    const onRemoveProgramFilterClick = (program: {
+        label: string
+        value: number
+    }) => {
+        selectedPrograms = selectedPrograms.filter(
+            (x) => x.value !== program.value,
+        )
         confirmModalFilter()
     }
 
-    const onRemoveScheduleFilterClick = (schedule: { label: string; value: number }) => {
-        selectedSchedule = selectedSchedule.filter((x) => x.value !== schedule.value)
+    const onRemoveScheduleFilterClick = (schedule: {
+        label: string
+        value: number
+    }) => {
+        selectedSchedule = selectedSchedule.filter(
+            (x) => x.value !== schedule.value,
+        )
         confirmModalFilter()
     }
 
     onMount(async () => {
         try {
             await getSchedule()
-            const response = await GET<JobOfferDetails[]>("/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true")
+            const response = await GET<JobOfferDetails[]>(
+                "/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
+            )
             jobOffers = response
             filteredOffers = jobOffers
 
             programOptions = $studyPrograms
-                .map((x: any) => ({ "label": x.name, "value": x.id }))
-                .sort((a, b) => a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' }));
-            
+                .map((x: any) => ({ label: x.name, value: x.id }))
+                .sort((a, b) =>
+                    a.label.localeCompare(b.label, "fr", {
+                        sensitivity: "base",
+                    }),
+                )
         } catch (error) {
             console.error("Error fetching job offers:", error)
-        }
-        finally {
+        } finally {
             loaded = true
 
-            const id = $page.url.searchParams.get('id')
+            const id = $page.url.searchParams.get("id")
 
             if (id) {
-                let jobOffer = jobOffers.find((offer) => offer.id.toString() == id)
-                
+                let jobOffer = jobOffers.find(
+                    (offer) => offer.id.toString() == id,
+                )
+
                 if (jobOffer) {
                     showModal = true
                     selectedOffer = jobOffer
@@ -130,14 +158,13 @@
     <section class="haut">
         <div class="haut-gauche">
             <h1 class="title">
-                <span class="text">OFFRES D'EMPLOI </span><span class="text"> DISPONIBLES</span>
+                <span class="text">OFFRES D'EMPLOI </span><span class="text">
+                    DISPONIBLES</span
+                >
             </h1>
             {#if loaded}
                 <div class="filtre">
-                    <Button
-                        onClick={handleFilterOffer}
-                        text="Filtrer"
-                    />
+                    <Button onClick={handleFilterOffer} text="Filtrer" />
                 </div>
                 <div>
                     {#if selectedPrograms.length > 0 || selectedSchedule.length > 0}
@@ -145,20 +172,34 @@
                             {#if selectedPrograms.length > 0}
                                 <div class="badge">
                                     {selectedPrograms[0].label}
-                                    <button type="button" class="badge-close" on:click={() => onRemoveProgramFilterClick(selectedPrograms[0])}>x</button>
+                                    <button
+                                        type="button"
+                                        class="badge-close"
+                                        on:click={() =>
+                                            onRemoveProgramFilterClick(
+                                                selectedPrograms[0],
+                                            )}>x</button
+                                    >
                                 </div>
                             {/if}
                             {#if selectedSchedule.length > 0}
                                 <div class="badge">
                                     {selectedSchedule[0].label}
-                                    <button type="button" class="badge-close" on:click={() => onRemoveScheduleFilterClick(selectedSchedule[0])}>x</button>
+                                    <button
+                                        type="button"
+                                        class="badge-close"
+                                        on:click={() =>
+                                            onRemoveScheduleFilterClick(
+                                                selectedSchedule[0],
+                                            )}>x</button
+                                    >
                                 </div>
                             {/if}
                         </div>
                     {/if}
                 </div>
             {:else}
-                <div />
+                <div></div>
             {/if}
         </div>
     </section>
@@ -169,8 +210,11 @@
                 <div class="text">
                     <p>Aucune offre trouvée</p>
                 </div>
-            {:else}          
-                <TableEmplois offers={filteredOffers} handleOfferClick={handleAddJobOfferClick}/>
+            {:else}
+                <TableEmplois
+                    offers={filteredOffers}
+                    handleOfferClick={handleAddJobOfferClick}
+                />
             {/if}
         {:else}
             <div class="loading">
@@ -180,7 +224,7 @@
     </section>
 
     {#if showFilterOffer}
-        <Modal handleCloseClick={closeFilterModal}>               
+        <Modal handleCloseClick={closeFilterModal}>
             <div class="filtre-modal">
                 <h1 class="title-filtre">Filtrer les offres</h1>
                 <p class="text-filtre">Programme visé:</p>
@@ -201,17 +245,14 @@
                     placeholder="Choisir un type d'emploi..."
                     bind:selected={selectedSchedule}
                 />
-                <Button
-                    onClick={confirmModalFilter}
-                    text="Confirmer"
-                />
+                <Button onClick={confirmModalFilter} text="Confirmer" />
             </div>
         </Modal>
     {/if}
 
     {#if showModal}
         <Modal handleCloseClick={closeModal}>
-            <OfferDetail offer={selectedOffer} />
+            <OfferDetail offer={selectedOffer} showShareButtons={true} />
         </Modal>
     {/if}
 </main>
@@ -310,7 +351,7 @@
         line-height: 1;
         transition: background-color 0.2s;
     }
-    
+
     .badge-close:hover {
         background-color: #1a1e26;
     }

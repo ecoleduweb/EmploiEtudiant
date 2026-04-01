@@ -71,7 +71,7 @@
 </script>
 
 <div class="main-div">
-    <OfferDetail {offer} />
+    <OfferDetail {offer} showShareButtons={false} />
     <div class="container">
         <div class="horitonzal">
             <div>

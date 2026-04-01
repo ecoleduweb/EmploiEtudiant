@@ -35,11 +35,7 @@ def login():
         data = request.get_json()
         token = user_service.login(data["email"], data["password"])
         user=user_service.getUser(data["email"])
-        resp=jsonify({"isModerator": user.isModerator, "email": user.email,
-        "firstName": user.firstName, "lastName": user.lastName})
-        secure_cookie = os.environ.get("COOKIE_SECURE", "True") != "False"
-        resp.set_cookie('token', token, httponly=True, samesite='Lax', secure=secure_cookie,max_age=60 * 30,path='/')
-        return resp
+        return _generate_auth_response(user, token)
     except LoginException as e:
         if data["email"] != "" and data["email"] != None:
             if len(data["email"]) <= 255:
@@ -68,11 +64,15 @@ def register():
         logger.warning('Invalid JSON data format in /register : ' + str(data))
         return jsonify({'message': 'Invalid JSON data format'}), 400
 
-    if user_service.getUser(data['email']) == "<Response 29 bytes [200 OK]>" or user_service.getUser(data['email']) is not None:
-        logger.warning('User already exists')
+    if user_service.getUser(data['email']) is not None:
+        logger.warning(f"User already exists: {data['email']}")
         return jsonify({'message': 'User already exists'}), 400
-
-    return user_service.register(data)
+    try:
+        token, new_user = user_service.register(data)
+        return _generate_auth_response(new_user, token)
+    except Exception as e:
+        logger.warning(f"Registration failed for {data.get('email')}: {str(e)}")
+        return jsonify({'message': "Could not verify"}), 401
 
 @user_blueprint.route("/me", methods=['GET'])
 @token_required
@@ -235,3 +235,24 @@ def resetPassword():
                 return jsonify({'message': 'Error while trying to reset the password'}), 401
     except Exception as e:
         return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403
+    
+def _generate_auth_response(user, token):
+    response = jsonify({
+        "isModerator": user.isModerator,
+        "email": user.email,
+        "firstName": user.firstName,
+        "lastName": user.lastName
+    })
+
+    secure_cookie = os.environ.get("COOKIE_SECURE", "True") != "False"
+    response.set_cookie(
+        'token', 
+        token, 
+        httponly=True, 
+        samesite='Lax', 
+        secure=secure_cookie, 
+        max_age=60 * 30, 
+        path='/'
+    )
+    
+    return response, 200

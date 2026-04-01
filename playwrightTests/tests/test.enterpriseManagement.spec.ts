@@ -18,16 +18,15 @@ const openCreateEnterpriseModal = async (page: any) => {
         name: 'Créer une nouvelle entreprise',
     });
     const modal = page.locator('.modal');
-
     await expect(openButton).toBeVisible();
     await openButton.click();
-
     if (!(await modal.isVisible())) {
         await openButton.click();
     }
-
     await expect(modal).toBeVisible();
 };
+
+
 
 test.describe('Enterprise Management', () => {
     let apiMocker: ApiMocker;
