@@ -116,7 +116,7 @@ class UserService:
         employer = employer_repo.getEmployer(offer.employerId)
         enterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
     
-        #admins do not have enterprises
+        #L'admin n'est pas lié à une entreprise, on ne fait rien
         if not enterprise:
             return
         # si l'entreprise n'est pas temporaire, on ne fait rien
