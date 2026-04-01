@@ -6,20 +6,15 @@
     import Button from "../Inputs/Button.svelte"
     import { copy } from "svelte-copy"
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
-    // @ts-ignore
-    import { WhatsApp } from "svelte-share-buttons-component"
-    // @ts-ignore
-    import { LinkedIn } from "svelte-share-buttons-component"
-    // @ts-ignore
-    import { X } from "svelte-share-buttons-component"
-    // @ts-ignore
-    import { Email } from "svelte-share-buttons-component"
+    import { page } from "$app/state"
+    import ShareButtons from "../Common/ShareButtons.svelte"
 
     interface Props {
         offer: JobOfferDetails
+        showShareButtons?: boolean
     }
 
-    let { offer }: Props = $props()
+    let { offer, showShareButtons = false }: Props = $props()
 
     let hideURL = $derived(
         !offer.offerLink ||
@@ -32,35 +27,20 @@
     let loaded = $state(false)
 
     let formattedPhone: string = $state("")
-
     let url = $state("")
 
-    let shareUrl = $derived((offer?.offerLink ?? "").trim())
-    let title = $derived(offer?.title ?? "Offre d’emploi")
-    let shareText = $derived(`${title} ${shareUrl}`.trim())
-    let isIOS = $derived(
-        typeof navigator !== "undefined" &&
-            /iPad|iPhone|iPod/.test(navigator.userAgent),
-    )
-    let smsHref = $derived(
-        isIOS
-            ? `sms:&body=${encodeURIComponent(shareText)}`
-            : `sms:?body=${encodeURIComponent(shareText)}`,
-    )
-    let messengerShare = $derived(
-        `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`,
-    )
+    let shareUrl = page.url.href
+
+    let title = $derived(offer.title)
+    let shareText = $derived(` ${shareUrl} ${title}`.trim())
 
     onMount(async () => {
         cityOptions = await fetchCity()
 
-        if (offer?.enterprise?.phone) {
+        if (offer.enterprise?.phone) {
             formattedPhone = formatPhoneNumber(offer.enterprise.phone)
         }
-
-        if (offer?.offerLink) {
-            url = getShortURL(offer.offerLink)
-        }
+        url = await getShortURL(offer.offerLink)
 
         loaded = true
     })
@@ -185,65 +165,8 @@
                     <Button text="Postuler par courriel" />
                 </a>
             </div>
-            {#if !hideURL}
-                <div class="shareInlineBlock">
-                    <h5 class="infoTitle">Partager cette offre</h5>
-                    <div class="shareGrid">
-                        <div class="shareCell">
-                            <WhatsApp url={shareUrl} text={shareText} />
-                        </div>
-
-                        <div class="shareCell">
-                            <LinkedIn url={shareUrl} />
-                        </div>
-
-                        <div class="shareCell">
-                            <X url={shareUrl} text={shareText} />
-                        </div>
-
-                        <div class="shareCell">
-                            <Email subject={title} body={shareText} />
-                        </div>
-
-                        <a
-                            class="shareCell messengerItem"
-                            href={messengerShare}
-                            aria-label="Partager sur Messenger"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="2em"
-                                height="2em"
-                                viewBox="0 0 24 24"
-                                fill="white"
-                            >
-                                <path
-                                    d="M12 2C6.477 2 2 6.145 2 11.259c0 2.821 1.323 5.338 3.405 7.01V21l2.933-1.608C9.234 19.783 10.594 20 12 20c5.523 0 10-4.145 10-9.259S17.523 2 12 2zm1.006 12.57l-2.545-2.716-4.97 2.716 5.472-5.81 2.602 2.716 4.913-2.716-5.472 5.81z"
-                                />
-                            </svg>
-                        </a>
-
-                        <a
-                            class="shareCell smsItem"
-                            href={smsHref}
-                            aria-label="Partager par SMS"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="2em"
-                                height="2em"
-                                viewBox="0 0 24 24"
-                                fill="white"
-                            >
-                                <path
-                                    d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"
-                                />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+            {#if showShareButtons && !hideURL}
+                <ShareButtons {shareUrl} {shareText} {title} />
             {/if}
         </div>
     {/if}
@@ -355,41 +278,6 @@
         filter: invert(0.05);
     }
 
-    .shareInlineBlock {
-        margin-top: 1rem;
-        width: fit-content;
-    }
-
-    .shareGrid {
-        display: grid;
-        grid-template-columns: repeat(3, 4em);
-        gap: 10px;
-    }
-
-    .shareCell {
-        width: 4em;
-        height: 4em;
-        border-radius: 10px;
-        overflow: hidden;
-        transition: transform 0.15s ease;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-decoration: none;
-        flex-shrink: 0;
-    }
-
-    .shareCell:hover {
-        transform: scale(1.05);
-    }
-
-    .messengerItem {
-        background: linear-gradient(135deg, #c026d3, #7c3aed, #2563eb);
-    }
-    .smsItem {
-        background: #4caf50;
-    }
-
     :global(.shareCell .ssbc-button__link),
     :global(.shareCell .ssbc-button__icon) {
         display: inline-block;
@@ -464,16 +352,6 @@
             height: auto;
             width: 100%;
             align-items: center;
-        }
-
-        .shareInlineBlock {
-            width: 100%;
-            margin-top: 1.25rem;
-        }
-
-        .shareGrid {
-            grid-template-columns: repeat(3, 4em);
-            justify-content: start;
         }
     }
 </style>
