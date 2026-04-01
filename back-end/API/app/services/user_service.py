@@ -103,19 +103,23 @@ class UserService:
             logger.warning("Admin (" + current_user.email + ") tried to desactivate itself")
 
     
-    def linkToExisting(self, offer, selectedEnterpriseId):
-        employer = employer_repo.getEmployer(offer.employerId)
+    def manageTemporaryEnterprise(self, offer, selectedEnterpriseId):
 
+        employer = employer_repo.getEmployer(offer.employerId)
+        enterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
+    
+        #admins do not have enterprises
+        if not enterprise:
+            return
+        # si l'entreprise n'est pas temporaire, on ne fait rien
+        if not enterprise.isTemporary:
+            return
+
+        # On lie l'employeur à l'entreprise qu'il a crée et on supprime l'entreprise temporaire
         if employer.enterpriseId == selectedEnterpriseId:
-            # cas 1 : on utilise l'entreprise créée par l'utilisateur
-            enterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
             enterprise_repo.endEnterpriseTemporary(enterprise)
-        else :
-            # cas 2 : l'utilisateur a créé un doublon, on va le relier à l'entreprise existante.
+        # On lie l'employeur à l'entreprise ciblée et on supprime l'entreprise temporaire
+        else:
             user = auth_repo.getUserById(employer.userId)
-            duplicatedEnterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
-            if (not duplicatedEnterprise.isTemporary):
-                enterprise_repo.deleteEnterprise(duplicatedEnterprise.id)
-                employer_repo.linkEmployerEnterprise(user.id, selectedEnterpriseId)
-            else:
-                raise Exception("trying to delete a non temporary enterprise.")
+            employer_repo.linkEmployerEnterprise(user.id, selectedEnterpriseId)
+            enterprise_repo.deleteEnterprise(enterprise.id)

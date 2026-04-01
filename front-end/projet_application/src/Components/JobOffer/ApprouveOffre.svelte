@@ -4,29 +4,33 @@
     import { PUT } from "../../ts/server"
     import OfferDetail from "./OfferDetail.svelte"
     import { onMount } from "svelte"
-    import fetchAllEnterprises, { fetchEnterpriseWithId } from "../../Service/EnterpriseService"
+    import fetchAllEnterprises, {
+        fetchEnterpriseWithId,
+    } from "../../Service/EnterpriseService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import type { Option } from "$lib/interfaces"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import fetchCity from "../../Service/CityService"
+
     interface Props {
-        handleApproveClick: () => void;
-        offer: JobOfferDetails;
+        handleApproveClick: () => void
+        offer: JobOfferDetails
     }
 
-    let { handleApproveClick, offer }: Props = $props();
+    let { handleApproveClick, offer }: Props = $props()
     let approbationMessage: string = $state("")
 
-    let enterprises: { label: string; value: number; }[] = $state()
-    let enterprise: Enterprise = $state() 
+    let enterprises: { label: string; value: number }[] = $state([])
+    let enterprise: Enterprise | undefined = $state()
 
-    let linkingEnterprise: boolean = $state(false)
-    let selectedEnterprise: number | undefined = $state();
+    let selectedEnterpriseId: number | undefined = $state()
+    let cities: Option[] | null = $state(null)
 
     const getEnterprises = async () => {
         try {
             enterprises = await fetchAllEnterprises()
         } catch (error) {
+            console.error(error)
         }
     }
 
@@ -34,39 +38,35 @@
         try {
             enterprise = await fetchEnterpriseWithId(employerId)
         } catch (error) {
+            console.error(error)
         }
     }
 
     const approveOffer = async (isApproved: boolean) => {
         try {
-            if (!linkingEnterprise) {
-                const response = await PUT<any, any>(`/jobOffer/approve/${offer.id}`, 
-                {
-                    id: offer.id,
-                    approbationMessage: approbationMessage,
-                    isApproved: isApproved,
-                })
-            } else {
-                await PUT<any, any>(`/jobOffer/approve/${offer.id}?linking=true`,
-                {
-                    selectedEnterpriseId: selectedEnterprise,
-                    approbationMessage: approbationMessage,
-                    isApproved: isApproved,
-                })
+            const payload = {
+                id: offer.id,
+                selectedEnterpriseId: isApproved ? selectedEnterpriseId : null,
+                approbationMessage: approbationMessage,
+                isApproved: isApproved,
             }
+
+            await PUT<any, any>(`/jobOffer/approve/${offer.id}`, payload)
 
             window.location.reload()
         } catch (error) {
+            console.error("Erreur lors de l'approbation", error)
         }
         handleApproveClick()
     }
-    let cities: Option[] | null = $state(null)
-    onMount(async () => 
-    {
-        cities = await fetchCity() 
+
+    onMount(async () => {
+        cities = await fetchCity()
         await getEnterprise(offer.employerId)
         await getEnterprises()
-        selectedEnterprise = enterprises.find((o) => o.label === enterprise.name)?.value;
+        if (enterprise) {
+            selectedEnterpriseId = enterprise.id
+        }
     })
 </script>
 
@@ -80,36 +80,42 @@
                     bind:value={approbationMessage}
                     placeholder="Message d'approbation"
                     class="input"
-></textarea>
+                ></textarea>
             </div>
             {#if enterprise && enterprise.isTemporary && cities}
                 <div class="detail-enterprise">
                     <h3>Détails de l'entreprise de l'utilisateur</h3>
-                    <EntrepriseDetails {enterprise} selectedCity={cities.filter(x => x.value == enterprise.cityId)}/>
-                        <hr>
-                    <input id="LierEmployer" type="checkbox" bind:checked={linkingEnterprise}/>
-                    <label class="infoChbk" for="LierEmployer">Confirmer l'entreprise </label>
-                    <br>
+                    <EntrepriseDetails
+                        {enterprise}
+                        selectedCity={cities.filter(
+                            (x) => x.value == enterprise!.cityId,
+                        )}
+                    />
+                    <hr />
+                    <br />
                     {#if enterprises}
-                        <select id="ville" bind:value={selectedEnterprise} class="form-control">
+                        <select
+                            id="entreprise-select"
+                            bind:value={selectedEnterpriseId}
+                            class="form-control"
+                        >
                             {#each enterprises as { label, value }}
-                                <option value={value}>
+                                <option {value}>
                                     {#if value == enterprise.id}
-                                        <b>*Ajouter*</b>
+                                        *Ajouter*
                                     {/if}
                                     {label}
                                 </option>
                             {/each}
                         </select>
-                        <br>
-                        <br>
+                        <br />
+                        <br />
                     {/if}
                 </div>
             {/if}
         </div>
         <div class="button">
             <Button text="Approuver" onClick={() => approveOffer(true)} />
-
             <Button text="Refuser" onClick={() => approveOffer(false)} />
         </div>
     </div>
@@ -127,13 +133,13 @@
         transition: background-color 0.3s ease;
     }
 
-    .horitonzal{
+    .horitonzal {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
     }
 
-    .detail-enterprise{
+    .detail-enterprise {
         margin-top: 5vh;
     }
 
@@ -141,7 +147,8 @@
         font-size: 1.6vw;
     }
 
-    h3, .infoTitle {
+    h3,
+    .infoTitle {
         color: black;
     }
 
@@ -170,8 +177,8 @@
     }
 
     @media (max-width: 768px) {
-       .button {
-        margin-bottom: 10vw;
-       }
+        .button {
+            margin-bottom: 10vw;
+        }
     }
 </style>
