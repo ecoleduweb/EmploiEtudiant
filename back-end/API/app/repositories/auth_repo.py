@@ -18,12 +18,7 @@ class AuthRepo:
         new_user = User(firstName=data['firstName'], lastName=data['lastName'], email=data['email'], password=hashed_password, active=True, isModerator = False)
         db.session.add(new_user)
         db.session.commit()
-        try:
-            token = encode({'email': data['email'], 'exp' : datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=30),'active': True,'isModerator': new_user.isModerator,'firstName': new_user.firstName,'lastName': new_user.lastName}, os.environ.get('SECRET_KEY'))
-            return jsonify({'token' : token})
-        except Exception as e:
-            logger.warning("Register failed on email: " + data['email'] + " could not verify : " + str(e))
-            return jsonify({'message': "could not verify"}), 401
+        return new_user
 
     def updatePassword(self, email, password):
         user = User.query.filter_by(email=email).first()
