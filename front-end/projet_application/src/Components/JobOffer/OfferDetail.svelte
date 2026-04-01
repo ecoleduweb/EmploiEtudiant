@@ -1,42 +1,39 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import { onMount } from "svelte"
-    import LoadingSpinner from "../Common/LoadingSpinner.svelte";
+    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     import fetchCity from "../../Service/CityService"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
-    import { copy } from 'svelte-copy';
+    import { copy } from "svelte-copy"
     import { formatPhoneNumber, getShortURL } from "../../ts/utils"
-    
+
     interface Props {
-        offer: JobOfferDetails;
+        offer: JobOfferDetails
     }
 
-    let { offer }: Props = $props();
+    let { offer }: Props = $props()
 
-    let hideURL = offer.offerLink == "https://" || offer.offerLink == "http://";
-    let cityOptions: any = $state();
-    let selectedCity: any = $state();
-    let loaded = $state(false);
-    let formattedPhone: string = $state();
-    let url = $state('');
+    let hideURL = $derived(
+        offer.offerLink == "https://" || offer.offerLink == "http://",
+    )
+    let cityOptions: any = $state()
+    let selectedCity: any = $state()
+    let loaded = $state(false)
+    let formattedPhone: string = $state("")
+    let url = $state("")
 
     onMount(async () => {
         cityOptions = await fetchCity()
         if (offer && offer.enterprise && offer.enterprise.phone) {
-            formattedPhone = formatPhoneNumber(offer.enterprise.phone);
+            formattedPhone = formatPhoneNumber(offer.enterprise.phone)
         }
         if (offer && offer.offerLink) {
-                url = getShortURL(offer.offerLink);
+            url = getShortURL(offer.offerLink)
         }
-        loaded = true;
-        
-
+        loaded = true
     })
 
-
-    run(() => {
+    $effect(() => {
         if (cityOptions) {
             const city = cityOptions.find(
                 (ville: any) => ville.value === offer?.enterprise?.cityId,
@@ -46,12 +43,10 @@
                 selectedCity = [city]
             }
         }
-    });
+    })
 </script>
 
-
 <div class="container">
-
     {#if !loaded}
         <div class="Loading2">
             <LoadingSpinner />
@@ -68,7 +63,7 @@
             <div class="info">
                 <h2 class="infoTitle separator">Entreprise:</h2>
                 <div class="form-group-vertical">
-                    <h5 class="infoTitle" >Nom*</h5>
+                    <h5 class="infoTitle">Nom*</h5>
                     <p>{offer.enterprise.name}</p>
                 </div>
                 <div class="form-group-vertical">
@@ -88,9 +83,9 @@
                     <p>{selectedCity[0].label}</p>
                 </div>
             </div>
-            <br>
-            {/if}
-            
+            <br />
+        {/if}
+
         <div class="info">
             <h2 class="infoTitle separator">Offre:</h2>
             <h5 class="infoTitle">Nom du poste</h5>
@@ -110,43 +105,47 @@
             <h5 class="infoTitle">Heure par semaine</h5>
             <p class="text">{offer.hoursPerWeek}</p>
             <h5 class="infoTitle">Programme</h5>
-            <p class="text">{offer.studyPrograms?.map((p) => p.name).join(", ")}</p>
+            <p class="text">
+                {offer.studyPrograms?.map((p) => p.name).join(", ")}
+            </p>
             <h5 class="infoTitle">Poste visé</h5>
-            <p class="text">{offer.schedules?.map((s) => s.description).join(", ")}</p>
+            <p class="text">
+                {offer.schedules?.map((s) => s.description).join(", ")}
+            </p>
             <h5 class="infoTitle">Description du poste</h5>
             <div class="description">{@html offer.description}</div>
-            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>Lien vers l'offre d'emploi détaillée</h5>
+            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>
+                Lien vers l'offre d'emploi détaillée
+            </h5>
             <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
-                        <a href="{offer.offerLink}" class="text_link">{url}</a>
+                        <a href={offer.offerLink} class="text_link">{url}</a>
                     </div>
                 {:else}
                     <p class="text CanBeHidden">{url}</p>
-                {/if} 
+                {/if}
                 <div use:copy={offer.offerLink}>
                     <img class="iconeCopy" src="copy.svg" alt="Edit icon" />
                 </div>
             </div>
             <h5 class="infoTitle">Où envoyer votre candidature</h5>
             <div class="row">
-                <p class="text">{offer.email}</p> 
-                    <a href="mailto:{offer.email}">
-                        <Button text="Postuler par courriel" />
-                    </a>
+                <p class="text">{offer.email}</p>
+                <a href="mailto:{offer.email}">
+                    <Button text="Postuler par courriel" />
+                </a>
             </div>
         </div>
     {/if}
 </div>
 
 <style scoped>
-    .CanBeHidden 
-    {
+    .CanBeHidden {
         display: none;
     }
 
-    .container > .Loading2 
-    {
+    .container > .Loading2 {
         display: flex !important;
         justify-content: center !important;
     }
@@ -185,8 +184,7 @@
         border-left: 1px solid #555;
         padding-left: 1vw;
     }
-    .text_link
-    {
+    .text_link {
         font-size: 1.1rem;
         bottom: 2vh;
         color: #00ad9a;

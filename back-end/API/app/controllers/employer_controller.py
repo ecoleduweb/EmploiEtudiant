@@ -59,3 +59,6 @@ def getUserFromTemporaryEnterprise(id):
         print(e)
         logger.warning("Employer not found")
         return jsonify({'message': 'Employer not found'}), 400
+    
+
+    

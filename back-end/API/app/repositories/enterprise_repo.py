@@ -53,15 +53,21 @@ class EnterpriseRepo:
             logger.error("Error : could not get enterprise" + str(e))
     
     def updateEnterprise(self, data):
-        enterprise = Enterprise.query.filter_by(id=data['id']).first()
-        enterprise.name = data['name']
-        enterprise.email = data['email']
-        enterprise.phone = data['phone']
-        enterprise.address = data['address']
-        enterprise.cityId = data['cityId']
-        db.session.commit()
-        logger.warning('enterprise updated')
-        return enterprise
+        try:
+            enterprise = Enterprise.query.filter_by(id=data['id']).first()
+            if enterprise:
+                enterprise.name = data['name']
+                enterprise.email = data['email']
+                enterprise.phone = data['phone']
+                enterprise.address = data['address']
+                enterprise.cityId = data['cityId']
+                db.session.commit()
+                return enterprise
+            else:
+                raise NotFoundException("Enterprise not found")
+        except Exception as e:
+            logger.error("Error : could not update enterprise" + str(e))
+            raise NotFoundException("Enterprise not found")
     
     def deleteEnterprise(self, id):
         enterprise = Enterprise.query.filter_by(id=id).first()
