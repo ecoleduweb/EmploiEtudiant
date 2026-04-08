@@ -154,23 +154,25 @@ def offresEmploiApproved():
 @job_offer_blueprint.route('/approve/<int:id>', methods=['PUT'])
 @token_admin_required
 def approveJobOffer(current_user, id):
-    linking = request.args.get("linking") == "true"
+    data = request.get_json()
     jobOfferToUpdate = jobOffer_service.findById(id)
     if jobOfferToUpdate:
-        data = request.get_json()
-        if linking:
-            user_service.linkToExisting(jobOfferToUpdate, data['selectedEnterpriseId'])
+        selectedEnterpriseId = data.get('selectedEnterpriseId')
+        ## Si on approuve l'offre, on approuve aussi l'entreprise (au besoin: si l'entreprise n'est pas déja approuvée dans une autre offre d'emploi antérieure)
+        if data.get('isApproved'):
+            user_service.manageTemporaryEnterprise(jobOfferToUpdate, selectedEnterpriseId)
+
         jobOffer_service.approveJobOffer(id, data['isApproved'], data['approbationMessage'])
-        
-        print(jobOfferToUpdate)
-        current_user_job = User.query.filter_by(id=jobOfferToUpdate.last_modified_by_id ).first()
-        print(current_user_job)
+
+        current_user_job = User.query.filter_by(id=jobOfferToUpdate.last_modified_by_id).first()
 
         if data['isApproved'] == True:
             sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été approuvée.")
         else:
             sendMail(current_user_job.email, "Approbation d'une offre d'emploi", "L'offre d'emploi au nom de <b>" + jobOfferToUpdate.title + "</b> a été refusée.<br>Raison: " + jobOfferToUpdate.approbationMessage)
+
         return ('', 204)
+
     logger.warning('Job offer not found with data : ' + str(data))
     return jsonify({'message': 'Job offer not found'}), 404
 

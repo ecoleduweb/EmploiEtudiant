@@ -19,7 +19,7 @@ class EmployerRepo:
     
     def linkEmployerEnterprise(self, userId, enterpriseId):
         employer = Employers.query.filter_by(userId=userId).first()
-        employer.enterprise_id = enterpriseId
+        employer.enterpriseId = enterpriseId
         db.session.commit()
 
     def updateEmployer(self, data, idEmployer):
