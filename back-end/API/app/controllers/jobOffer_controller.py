@@ -158,7 +158,7 @@ def approveJobOffer(current_user, id):
     jobOfferToUpdate = jobOffer_service.findById(id)
     if jobOfferToUpdate:
         selectedEnterpriseId = data.get('selectedEnterpriseId')
-
+        ## Si on approuve l'offre, on approuve aussi l'entreprise (au besoin: si l'entreprise n'est pas déja approuvée dans une autre offre d'emploi antérieure)
         if data.get('isApproved'):
             user_service.manageTemporaryEnterprise(jobOfferToUpdate, selectedEnterpriseId)
 

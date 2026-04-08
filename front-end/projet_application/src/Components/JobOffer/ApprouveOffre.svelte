@@ -56,6 +56,9 @@
             window.location.reload()
         } catch (error) {
             console.error("Erreur lors de l'approbation", error)
+            alert(
+                "Une erreur est survenue lors de l'approbation de l'offre.Veuillez réessayer.",
+            )
         }
         handleApproveClick()
     }
