@@ -77,7 +77,7 @@
     <OfferDetail {offer} showShareButtons={false} />
     <div class="container">
         <div class="horitonzal">
-            <div>
+            <div class="approval-section">
                 <h5 class="infoTitle">Message d'approbation</h5>
                 <textarea
                     bind:value={approbationMessage}
@@ -95,19 +95,28 @@
                         )}
                     />
                     <hr />
-                    <br />
+
                     {#if enterprises}
                         <select
                             id="entreprise-select"
                             bind:value={selectedEnterpriseId}
-                            class="form-control"
+                            class="form-control enterprise-select"
                         >
                             {#each enterprises as { label, value }}
-                                <option {value}>
+                                <option
+                                    {value}
+                                    class={value == enterprise.id
+                                        ? "option-new"
+                                        : "option-existing"}
+                                    style={value == enterprise.id
+                                        ? "color: #00ad9a; font-weight: bold;"
+                                        : "color: #555;"}
+                                >
                                     {#if value == enterprise.id}
-                                        *Ajouter*
+                                        + [Nouvelle entreprise] {label}
+                                    {:else}
+                                        {label}
                                     {/if}
-                                    {label}
                                 </option>
                             {/each}
                         </select>
@@ -141,9 +150,13 @@
         flex-direction: row;
         justify-content: space-between;
     }
-
+    .approval-section,
     .detail-enterprise {
-        margin-top: 5vh;
+        flex: 1;
+        text-align: left;
+    }
+    .detail-enterprise {
+        margin-top: 3vh;
     }
 
     .infoTitle {
@@ -177,6 +190,32 @@
     .main-div {
         flex-direction: column;
         margin: auto;
+    }
+
+    .enterprise-select {
+        width: 100%;
+        border: 2px solid #00ad9a;
+        border-radius: 6px;
+        background-color: white;
+        color: #333;
+        font-size: 0.875rem;
+        cursor: pointer;
+        outline: none;
+        transition: box-shadow 0.2s;
+    }
+
+    .enterprise-select:focus {
+        box-shadow: 0 0 8px rgba(0, 173, 154, 0.3);
+    }
+
+    .option-new {
+        background-color: #e6f7f5;
+        color: #00ad9a;
+        font-weight: bold;
+    }
+
+    .option-existing {
+        color: #444;
     }
 
     @media (max-width: 768px) {
