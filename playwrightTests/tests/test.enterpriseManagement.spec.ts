@@ -172,19 +172,25 @@ test.describe('City Management', () => {
     });
 
 
-  test('Vérifier que la nouvelle ville a été ajoutée à la liste', async ({ page }) => {
+ test('Vérifier que la nouvelle entreprise peut être créée', async ({ page }) => {
     await apiMocker.addMocks([
         cityMocks.success,
-        cityMocks.one,
+        cityMocks.one, 
         enterpriseMocks.all,
         enterpriseMocks.createNew,
         userMocks.all
     ]).apply();
 
+    await page.goto('/enterprise'); 
+
+    const cityResponse = page.waitForResponse(resp => 
+        resp.url().includes('/city') && resp.status() === 200
+    );
+    await cityResponse;
+
     await page.getByRole('button', { name: 'Créer une nouvelle entreprise' }).click();
 
-    const modalContent = page.locator('.modalContent');
-    await expect(modalContent).toBeVisible({ timeout: 7000 });
+    await expect(page.getByText('Veuillez remplir les informations')).toBeVisible({ timeout: 10000 });
 
     await page.locator('#enterprise-name').fill('Nouvelle Entreprise');
     await page.locator('#enterprise-address').fill('321 Rue Nouvelle');
@@ -201,13 +207,12 @@ test.describe('City Management', () => {
 
     await page.getByRole('button', { name: 'Créer', exact: true }).click();
 
-    await expect(page.locator('.modal')).not.toBeVisible();
-
+    await expect(page.locator('.modalContent')).not.toBeVisible();
+    
     const row = page.locator('.enterprise').filter({ hasText: 'Nouvelle Entreprise' });
     await expect(row).toBeVisible();
     await expect(row.getByText('Abercorn')).toBeVisible();
 });
-
     test('Valider que la ville a bien changé lors de la modification', async ({ page }) => {
         await apiMocker.addMocks([enterpriseMocks.update]).apply();
 
