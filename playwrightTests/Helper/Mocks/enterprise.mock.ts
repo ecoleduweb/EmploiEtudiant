@@ -49,7 +49,8 @@ export const enterpriseMocks = {
                     phone: '4185551111',
                     address: '123 Rue Test',
                     cityId: 1,
-                    isTemporary: false
+                    isTemporary: false,
+                    users: []
                 },
                 {
                     id: 2,
@@ -58,7 +59,8 @@ export const enterpriseMocks = {
                     phone: '4185552222',
                     address: '456 Avenue Test',
                     cityId: 2,
-                    isTemporary: false
+                    isTemporary: false,
+                    users: []
                 },
                 {
                     id: 3,
@@ -67,7 +69,8 @@ export const enterpriseMocks = {
                     phone: '5145553333',
                     address: '789 Blvd Montreal',
                     cityId: 3,
-                    isTemporary: false
+                    isTemporary: false,
+                    users: []
                 }
             ]
         }
@@ -83,7 +86,8 @@ export const enterpriseMocks = {
                 phone: '4185554444',
                 address: '321 Rue Nouvelle',
                 cityId: 1,
-                isTemporary: false
+                isTemporary: false,
+                users: [{ id: 10, firstName: "Jean", lastName: "Employé", email: "jean@test.com" }]
             }
         }
     },
@@ -91,7 +95,12 @@ export const enterpriseMocks = {
         url: '*/**/enterprise/1',
         response: {
             status: 200,
-            json: { message: 'enterprise updated' }
+            json: {
+                id: 1,
+                name: 'Entreprise Modifiée',
+                email: 'modifie@example.com',
+                users: [{ id: 11, firstName: "Marc", lastName: "Admin", email: "marc@test.com" }]
+            }
         }
     }
 } satisfies Record<string, MockConfig>;

@@ -7,7 +7,6 @@ logger = getLogger(__name__)
 
 class EmployerRepo:
     def createEmployer(self, enterpriseId, userId):
-        # employer = Employers(data)
         employer = Employers(verified=False, userId=userId, enterpriseId=enterpriseId)
         db.session.add(employer)
         db.session.commit()
@@ -37,4 +36,9 @@ class EmployerRepo:
         for employer in employers:
                 employer.userId = None
         db.session.commit()
-
+    def getEmployersByEnterpriseId(self, enterpriseId):
+        try:
+            return Employers.query.filter_by(enterpriseId=enterpriseId).all()
+        except Exception as e:
+            print(e)
+            return []

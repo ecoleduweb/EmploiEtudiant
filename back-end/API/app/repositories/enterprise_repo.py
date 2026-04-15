@@ -4,6 +4,7 @@ from app.models.enterprise_model import Enterprise
 from app.models.employers_model import Employers
 from app.customexception.CustomException import NotFoundException
 from logging import getLogger
+from app.models.user_model import User
 logger = getLogger(__name__)
 
 class EnterpriseRepo:
@@ -18,22 +19,62 @@ class EnterpriseRepo:
             
     def getEnterprises(self):
         enterprises = Enterprise.query.all()
-        enterprises_sorted = sorted(enterprises, key=lambda e: locale.strxfrm(e.name))
-        return enterprises_sorted
+        result = []
+        
+        for e in enterprises:
+            users_obj = User.query \
+                .join(Employers, Employers.userId == User.id) \
+                .filter(Employers.enterpriseId == e.id) \
+                .all()
+            
+            e_data = e.to_json_string() 
+            
+            e_data['users'] = [u.to_json_string() for u in users_obj]
+            
+            result.append(e_data)
+            
+        enterprises_sorted = sorted(result, key=lambda x: locale.strxfrm(x['name']))
+        
+        return enterprises_sorted   
     
-    def createEnterprise(self, data, isTemporary):
-        enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
-        db.session.add(enterprise)
-        db.session.commit()
-        return enterprise
-    
+    def createEnterprise(self, data, isTemporary): 
+        try:
+            enterprise = Enterprise(
+                name=data.get('name'), 
+                email=data.get('email'), 
+                phone=data.get('phone'), 
+                address=data.get('address'), 
+                cityId=data.get('cityId'), 
+                isTemporary=isTemporary
+            )
+            db.session.add(enterprise)
+            db.session.commit()
+
+            users_list = data.get('users', [])
+            if isinstance(users_list, list):
+                for u in users_list:
+                    u_id = u.get('id') if isinstance(u, dict) else u
+                    if u_id:
+                        new_employer = Employers(
+                            userId=u_id, 
+                            enterpriseId=enterprise.id, 
+                            verified=False
+                        )
+                        db.session.add(new_employer)
+                db.session.commit()
+
+         
+            return enterprise 
+            
+        except Exception as e:
+            db.session.rollback()
+            raise e
     def getEnterpriseByEmployer(self, employerId):
         employer = Employers.query.filter_by(id=employerId).first()
-        if(employer == None):
+        if employer is None:
             return None
-        else: 
-            enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
-            return enterprise
+        enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
+        return enterprise
 
     def getEmployerFromEntreprise(self, id):
         employer = Employers.query.filter_by(entrepriseId=id).first()
@@ -46,29 +87,50 @@ class EnterpriseRepo:
         try:
             enterprise = Enterprise.query.filter_by(id=id).first()
             if enterprise:
-                return enterprise
-            else:
-                return None
+                enterprise.users = User.query \
+                    .join(Employers, Employers.userId == User.id) \
+                    .filter(Employers.enterpriseId == id) \
+                    .all()
+            return enterprise
         except Exception as e:
             logger.error("Error : could not get enterprise" + str(e))
+            return None
     
     def updateEnterprise(self, data):
         try:
-            enterprise = Enterprise.query.filter_by(id=data['id']).first()
-            if enterprise:
-                enterprise.name = data['name']
-                enterprise.email = data['email']
-                enterprise.phone = data['phone']
-                enterprise.address = data['address']
-                enterprise.cityId = data['cityId']
-                db.session.commit()
-                return enterprise
-            else:
-                raise NotFoundException("Enterprise not found")
+            enterprise = Enterprise.query.get(data['id'])
+            if not enterprise:
+                return None
+
+            enterprise.name = data.get('name')
+            enterprise.email = data.get('email')
+            enterprise.phone = data.get('phone')
+            enterprise.address = data.get('address')
+            enterprise.cityId = data.get('cityId')
+
+            users_list = data.get('users')
+            if isinstance(users_list, list):
+                Employers.query.filter_by(enterpriseId=enterprise.id).delete()
+                
+                for u in users_list:
+                    u_id = u.get('id') if isinstance(u, dict) else u
+                    
+                    if u_id:
+                        new_employer = Employers(
+                            userId=u_id, 
+                            enterpriseId=enterprise.id, 
+                            verified=False
+                        )
+                        db.session.add(new_employer)
+
+            db.session.commit()
+            return enterprise
+            
         except Exception as e:
-            logger.error("Error : could not update enterprise" + str(e))
-            raise NotFoundException("Enterprise not found")
-    
+            db.session.rollback()
+            import traceback
+            traceback.print_exc()
+            raise e
     def deleteEnterprise(self, id):
         enterprise = Enterprise.query.filter_by(id=id).first()
         if enterprise.isTemporary == True:

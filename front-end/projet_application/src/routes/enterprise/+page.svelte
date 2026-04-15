@@ -42,6 +42,7 @@
                 phone: newEnterprise.phone,
                 email: newEnterprise.email,
                 cityId: newEnterprise.cityId,
+                 users: newEnterprise.users,
             })
 
             enterprises.update((list) => [...list, response.data])
@@ -60,6 +61,7 @@
                     phone: enterprise.phone,
                     address: enterprise.address,
                     cityId: enterprise.cityId,
+                    users: enterprise.users
                 },
             )
 
@@ -136,7 +138,14 @@
                             .includes(search) ||
                         normalize(enterprise.cityName)
                             .toLowerCase()
-                            .includes(search),
+                            .includes(search)||
+                        (enterprise.users?.some((user) =>
+                        normalize(
+                            `${user.email ?? ""}`
+                        )
+                            .toLowerCase()
+                            .includes(search)
+                        ) ?? false)
                 )
             })()
         }

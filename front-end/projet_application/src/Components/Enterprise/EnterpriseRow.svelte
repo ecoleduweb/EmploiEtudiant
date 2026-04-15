@@ -1,6 +1,8 @@
 <script lang="ts">
     import type { Enterprise } from "../../Models/Enterprise"
     import { formatPhoneNumber } from "../../ts/utils"
+    import { GET } from "../../ts/server"
+    import { onMount } from "svelte"
 
     type Props = {
         enterprise: Enterprise
@@ -9,8 +11,34 @@
     }
 
     let { enterprise, handleModalClick, cityName = "" }: Props = $props()
-
     let formattedPhone = $derived(formatPhoneNumber(enterprise.phone))
+
+    let Users = $derived(
+        enterprise.users?.map((u: any) => {
+            const fullName = `${u.firstName} ${u.lastName}`.trim();
+            return {
+                label: fullName.length > 0 ? fullName : u.email,
+                value: u.id
+            };
+        }) ?? []
+    );
+
+    onMount(async () => {
+        console.log("EnterpriseRow mounted with enterprise:", enterprise);
+        console.log("Liste utilisateurs", Users);
+        if (enterprise.cityId !== undefined && !cityName) {
+            await getCity(enterprise.cityId);
+        }
+    });
+
+    const getCity = async (id: number) => {
+        try {
+            const ville = await GET<any>(`/city/${id}`)
+            cityName = ville.city
+        } catch (error) {
+            console.error(error)
+        }
+    }
 </script>
 
 <button class="enterprise" onclick={() => handleModalClick()}>
@@ -30,11 +58,34 @@
         <div class="info">
             <p class="text">{cityName}</p>
         </div>
+
+        <div class="assigned-users-list">
+            <span class="list-label">Admins :</span>
+            {#if Users.length > 0}
+                <div class="users-vertical-stack">
+                    {#each Users as user}
+                        <div class="user-item" title={user.label}>
+                            {user.label}
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <p class="no-user">Aucun admin</p>
+            {/if}
+        </div>
+        
         <img class="image" src="edit.svg" alt="modifier" />
     </div>
 </button>
 
 <style scoped>
+    .assigned-users-list {
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 5px;
+    }
     .enterprise {
         display: flex;
         flex-direction: row;
@@ -44,7 +95,7 @@
         border-bottom: 1px solid #00ad9a;
         margin-left: 5.2%;
         background-color: transparent;
-        height: 6%;
+        height: auto;
         border-radius: 4px;
     }
     .info {
@@ -59,7 +110,34 @@
         text-align: left;
         margin-left: 0.2vw;
     }
-
+    .list-label {
+        font-size: 0.8rem;
+        color: #00ad9a;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .users-vertical-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .user-item {
+        background-color: rgba(0, 173, 154, 0.1);
+        border: 1px solid #00ad9a;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 0.85rem;
+        color: white;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .no-user {
+        font-size: 0.9rem;
+        color: #888;
+        margin: 0;
+    }
     .emploi {
         display: flex;
         flex-direction: row;
@@ -70,8 +148,8 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
         width: 100%;
-        height: 100%;
-        padding: 5px 0px 5px 0px;
+        height: auto;
+        padding: 10px 0px;
     }
     .emploi:hover {
         background-color: #555b66;

@@ -31,5 +31,17 @@ export const userMocks = {
                 lastname: "Admin",
             }
         }
+    },
+    all: {
+        url: '*/**/user/all',
+        response: {
+            status: 200,
+            json: {
+                users: [
+                    { id: 10, firstName: "Jean", lastName: "Employé", email: "jean@test.com" },
+                    { id: 11, firstName: "Marc", lastName: "Admin", email: "marc@test.com" }
+                ]
+            }
+        }
     }
 } satisfies Record<string, MockConfig>;

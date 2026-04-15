@@ -1,3 +1,5 @@
+import type { User } from "./User"
+
 export type Enterprise = {
     id?: number
     name: string
@@ -6,4 +8,5 @@ export type Enterprise = {
     address: string
     cityId: number
     isTemporary: boolean
+    users?:User[] 
 }

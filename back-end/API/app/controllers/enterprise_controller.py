@@ -16,7 +16,7 @@ enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, h
 @token_admin_required
 def getEnterprises(current_user):
     enterprises = enterprise_service.getEnterprises()
-    return jsonify([enterprise.to_json_string() for enterprise in enterprises])
+    return jsonify(enterprises)
 
 @enterprise_blueprint.route('/new', methods=['POST'])
 @token_admin_required
@@ -98,3 +98,12 @@ def getCurrentUserEnterprise(current_user):
     except Exception as e:
         logger.exception("Error getting the user to get the enterprise")
         return jsonify({'message': 'Error when getting the user'}), 500
+@enterprise_blueprint.route('/<int:id>/users', methods=['GET'])
+@token_required
+def getUsersFromEnterprise(current_user, id):
+    try:
+        users = employer_service.getUsersFromEnterprise(id)
+        return jsonify([user.to_json_string() for user in users]), 200
+    except Exception as e:
+        logger.error(f"Error getting users from enterprise {id}: {e}")
+        return jsonify({'message': 'Error retrieving users'}), 500

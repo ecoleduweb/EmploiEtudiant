@@ -36,3 +36,11 @@ class EmployerService:
         else:
             logger.warning("Employer not found from enterprise")
             return None
+    def getUsersFromEnterprise(self, enterpriseId):
+        employers = employer_repo.getEmployersByEnterpriseId(enterpriseId)
+        users = []
+        for employer in employers:
+            user = user_service.getUserById(employer.userId)
+            if user:
+                users.append(user)
+        return users
