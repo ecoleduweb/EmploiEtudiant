@@ -9,6 +9,7 @@
     import { env } from "$env/dynamic/public"
     import { logIn } from "../../lib/tokenLib"
     import Popup from "../../Components/Common/Popup.svelte"
+    import type { User } from "../../Models/User"
 
     const schema = yup.object({
         user: yup.object({
@@ -35,14 +36,12 @@
             ),
     })
 
-    let errors = $state({
+    let errors: Register = $state({
         user: {
-            id: 0,
             firstName: "",
             lastName: "",
             email: "",
             password: "",
-            role: "",
         },
         validatePassword: "",
         token: "",
@@ -50,12 +49,10 @@
 
     let register: Register = $state({
         user: {
-            id: 0,
             firstName: "",
             lastName: "",
             email: "",
             password: "",
-            role: "",
         },
         validatePassword: "",
         token: "",
@@ -104,12 +101,10 @@
 
             errors = {
                 user: {
-                    id: 0,
                     firstName: "",
                     lastName: "",
                     email: "",
                     password: "",
-                    role: "",
                 },
                 validatePassword: "",
                 token: "",
@@ -118,15 +113,14 @@
             const captchaToken = await doRecaptcha()
 
             if (captchaToken) {
-                const response: Register = await POST("/user/register", {
+                const response = await POST<any, User>("/user/register", {
                     email: register.user.email,
                     password: register.user.password,
                     firstName: register.user.firstName,
                     lastName: register.user.lastName,
-                    role: "user",
                     captchaToken,
                 })
-                logIn(response.data.token)
+                logIn(response.data)
             } else {
                 popupEnabled = true
             }
@@ -171,9 +165,9 @@
                         bind:value={register.user.firstName}
                     />
                     <p class="errors-input">
-                        {#if errors["user.firstName"]}{errors[
-                                "user.firstName"
-                            ]}{/if}
+                        {#if errors.user.firstName}
+                            {errors.user.firstName}
+                        {/if}
                     </p>
                 </div>
                 <div class="form-inputs">
@@ -184,9 +178,9 @@
                         bind:value={register.user.lastName}
                     />
                     <p class="errors-input">
-                        {#if errors["user.lastName"]}{errors[
-                                "user.lastName"
-                            ]}{/if}
+                        {#if errors.user.lastName}
+                            {errors.user.lastName}
+                        {/if}
                     </p>
                 </div>
             </div>
@@ -205,7 +199,9 @@
                         class="input-basic"
                     />
                     <p class="errors-input">
-                        {#if errors["user.email"]}{errors["user.email"]}{/if}
+                        {#if errors.user.email}
+                            {errors.user.email}
+                        {/if}
                     </p>
                 </div>
 
@@ -225,9 +221,7 @@
                         >
                     </p>
                     <p class="errors-input">
-                        {#if errors["user.password"]}{errors[
-                                "user.password"
-                            ]}{/if}
+                        {#if errors.user.password}{errors.user.password}{/if}
                     </p>
                 </div>
 

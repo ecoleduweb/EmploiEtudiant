@@ -1,7 +1,7 @@
-import type User from "./User"
+import type { RegisterUser } from "./User"
 
 export interface Register {
-    user: User
-    validatePassword: string
-    token: string
+    user: RegisterUser;
+    validatePassword: string;
+    token: string;
 }
