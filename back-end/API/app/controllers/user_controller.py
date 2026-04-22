@@ -33,8 +33,7 @@ user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask
 def login():
     try:
         data = request.get_json()
-        token = user_service.login(data["email"], data["password"])
-        user=user_service.getUser(data["email"])
+        token, user = user_service.login(data["email"], data["password"])
         return _generate_auth_response(user, token)
     except LoginException as e:
         if data["email"] != "" and data["email"] != None:
