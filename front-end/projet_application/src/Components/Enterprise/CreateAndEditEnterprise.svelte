@@ -1,7 +1,8 @@
 <script lang="ts">
     import Button from "../Inputs/Button.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
-    import type { User } from "../../Models/User"
+    import type { User } from "../../Models/User"  
+    import type { UserOption } from "../../Models/UserOptions"
     import MultiSelect from "svelte-multiselect"
     import { onMount } from "svelte"
     import fetchCity from "../../Service/CityService"
@@ -9,6 +10,7 @@
     import { ValidationError } from "yup"
     import { extractErrors } from "../../ts/utils"
     import { GET } from "../../ts/server"
+    import { fetchAllUsers } from "../../Service/UserService"
 
     type Props = {
         enterprise?: Enterprise
@@ -34,35 +36,36 @@
     let savedName = $state(enterpriseProp.name)
     let isNewEnterprise = $derived((enterprise.id ?? -1) <= 0)
 
-    let villeSelected: { label: string; value: number } | null = $state(null)
+    let selectedCity: { label: string; value: number } | null = $state(null)
     let cityFromSelectedEnterprise: { label: string; value: number }[] = $state([])
     let cityOptions: { label: string; value: number }[] = $state([])
 
-    let userOptions: { label: string; value: number; originalUser: any }[] = $state([])
-    let selectedUserObjects: any[] = $state([])
-    let Users: any[] = $state([])
+    let userOptions:UserOption[] = $state([])
+    let selectedUserObjects: UserOption[] = $state([])
     const getAllUsers = async () => {
         try {
-            const data = await GET<any>("/user/all")
-            if (data && data.users) {
-                userOptions = data.users.map((u: any) => {
-                    const fullName = `${u.firstName} ${u.lastName}`.trim()
+            const users = await fetchAllUsers();
+            
+            if (users) {
+                userOptions = users.map((u: User) => {
+                    const fullName = `${u.firstName} ${u.lastName}`.trim();
                     return { 
                         label: fullName.length > 0 ? fullName : u.email, 
                         value: u.id,
                         originalUser: u
-                    }
-                })
+                    };
+                });
+
                 if (enterprise.users && enterprise.users.length > 0) {
                     selectedUserObjects = userOptions.filter(opt => 
                         enterprise.users?.some(u => u.id === opt.value)
-                    )
+                    );
                 }
             }
         } catch (err) {
-            console.error(err)
+            console.error("Error fetching users:", err);
         }
-    }
+    };
 
     const getAllCities = async () => {
         try {
@@ -70,7 +73,7 @@
             if (enterprise.cityId) {
                 const found = cityOptions.find(c => c.value === enterprise.cityId)
                 if (found) {
-                    villeSelected = found
+                    selectedCity = found
                     cityFromSelectedEnterprise = [found]
                 }
             }
@@ -80,23 +83,20 @@
     }
 
     $effect(() => {
-        if (villeSelected) {
-            enterprise.cityId = villeSelected.value
+        if (selectedCity) {
+            enterprise.cityId = selectedCity.value
         }
     })
 
 const prepareAndVerifyIfValid = async () => {
         if (enterprise !== null) {
             try {
-                enterprise.cityId = villeSelected?.value ?? -1;
+                enterprise.cityId = selectedCity?.value ?? -1;
 
                 enterprise.users = selectedUserObjects.map(opt => opt.originalUser);
 
-                console.log("Enterprise data before validation:", enterprise);
-                
                 await entrepriseSchema.validate(enterprise, { abortEarly: false });
                 
-                console.log("Enterprise data after validation:", enterprise);
                 return enterprise; 
             } catch (err) {
                 if (err instanceof ValidationError) {
@@ -108,9 +108,7 @@ const prepareAndVerifyIfValid = async () => {
     };
 
     const handleSubmit = async () => {
-        console.log("on commence validation ", enterprise);
         const validatedData = await prepareAndVerifyIfValid();
-        console.log("Validated Enterprise Data:", validatedData);
         if (validatedData) {
             handleApproveClick(validatedData);
         }
@@ -161,7 +159,7 @@ const prepareAndVerifyIfValid = async () => {
                     <MultiSelect
                         id="enterprise-city"
                         options={cityOptions}
-                        bind:value={villeSelected}
+                        bind:value={selectedCity}
                         placeholder="Choisir une ville..."
                         bind:selected={cityFromSelectedEnterprise}
                         closeDropdownOnSelect={true}

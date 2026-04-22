@@ -23,22 +23,8 @@
         }) ?? []
     );
 
-    onMount(async () => {
-        console.log("EnterpriseRow mounted with enterprise:", enterprise);
-        console.log("Liste utilisateurs", Users);
-        if (enterprise.cityId !== undefined && !cityName) {
-            await getCity(enterprise.cityId);
-        }
-    });
-
-    const getCity = async (id: number) => {
-        try {
-            const ville = await GET<any>(`/city/${id}`)
-            cityName = ville.city
-        } catch (error) {
-            console.error(error)
-        }
-    }
+  
+  
 </script>
 
 <button class="enterprise" onclick={() => handleModalClick()}>
@@ -70,7 +56,7 @@
                     {/each}
                 </div>
             {:else}
-                <p class="no-user">Aucun admin</p>
+                <p class="no-user">Aucun utilisateur n'est séléctionné</p>
             {/if}
         </div>
         

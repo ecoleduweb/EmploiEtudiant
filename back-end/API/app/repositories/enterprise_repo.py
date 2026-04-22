@@ -48,27 +48,31 @@ class EnterpriseRepo:
                 isTemporary=isTemporary
             )
             db.session.add(enterprise)
-            db.session.commit()
+            db.session.flush() 
 
             users_list = data.get('users', [])
             if isinstance(users_list, list):
                 for u in users_list:
                     u_id = u.get('id') if isinstance(u, dict) else u
                     if u_id:
-                        new_employer = Employers(
-                            userId=u_id, 
-                            enterpriseId=enterprise.id, 
-                            verified=False
-                        )
-                        db.session.add(new_employer)
-                db.session.commit()
-
-         
+                        employer = Employers.query.filter_by(userId=u_id).first()
+                        
+                        if employer:
+                            employer.enterpriseId = enterprise.id
+                        else:
+                            employer = Employers(
+                                userId=u_id, 
+                                enterpriseId=enterprise.id, 
+                                verified=False
+                            )
+                            db.session.add(employer)
+            db.session.commit()
             return enterprise 
-            
         except Exception as e:
             db.session.rollback()
             raise e
+        
+
     def getEnterpriseByEmployer(self, employerId):
         employer = Employers.query.filter_by(id=employerId).first()
         if employer is None:
@@ -110,26 +114,30 @@ class EnterpriseRepo:
 
             users_list = data.get('users')
             if isinstance(users_list, list):
-                Employers.query.filter_by(enterpriseId=enterprise.id).delete()
-                
-                for u in users_list:
-                    u_id = u.get('id') if isinstance(u, dict) else u
-                    
-                    if u_id:
-                        new_employer = Employers(
-                            userId=u_id, 
-                            enterpriseId=enterprise.id, 
-                            verified=False
-                        )
-                        db.session.add(new_employer)
+                self.updateUserEnterprise(enterprise.id, users_list)
 
             db.session.commit()
             return enterprise
             
         except Exception as e:
             db.session.rollback()
-            import traceback
-            traceback.print_exc()
+            raise e
+
+    def updateUserEnterprise(self, enterprise_id, users_list):
+        try:
+            Employers.query.filter_by(enterpriseId=enterprise_id).delete()
+            
+            for u in users_list:
+                u_id = u.get('id') if isinstance(u, dict) else u
+                if u_id:
+                    new_employer = Employers(
+                        userId=u_id, 
+                        enterpriseId=enterprise_id, 
+                        verified=False
+                    )
+                    db.session.add(new_employer)
+            db.session.flush()
+        except Exception as e:
             raise e
     def deleteEnterprise(self, id):
         enterprise = Enterprise.query.filter_by(id=id).first()
