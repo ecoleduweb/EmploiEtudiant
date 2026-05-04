@@ -1,11 +1,12 @@
 from flask import jsonify, request, Blueprint
-from flask import Flask, jsonify, request, make_response
+from flask import jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
 from app.services.employer_service import EmployerService
 from app.services.user_service import UserService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from logging import getLogger
+from app.models.enterprise_model import Enterprise
 enterprise_service = EnterpriseService()
 employer_service = EmployerService()
 
@@ -16,13 +17,22 @@ enterprise_blueprint = Blueprint('enterprise', __name__) ## Représente l'app, h
 @token_admin_required
 def getEnterprises(current_user):
     enterprises = enterprise_service.getEnterprises()
-    return jsonify(enterprises)
+    return jsonify([enterprise.to_json_string() for enterprise in enterprises])
 
 @enterprise_blueprint.route('/new', methods=['POST'])
 @token_admin_required
 def createEnterprise(current_user):
     enterpriseToCreate = request.get_json()
-    createdEnterprise = enterprise_service.createEnterprise(enterpriseToCreate, False)
+    enterprise: Enterprise = Enterprise(
+            name=enterpriseToCreate.get("name"),
+            email=enterpriseToCreate.get("email"),
+            phone=enterpriseToCreate.get("phone"),
+            address=enterpriseToCreate.get("address"),
+            cityId=enterpriseToCreate.get("cityId"),
+            isTemporary=enterpriseToCreate.get("isTemporary")
+        )
+    enterprise.userIds = enterpriseToCreate.get("userIds", [])
+    createdEnterprise = enterprise_service.createEnterprise(enterprise, False)
     return jsonify(createdEnterprise.to_json_string())
 
 @enterprise_blueprint.route('/employer/<int:id>', methods=['GET'])
@@ -40,13 +50,24 @@ def updateEnterprise(current_user, id):
     try:
         data = request.get_json()
 
-        if current_user.isModerator and data.get("id") is not None:
-            enterprise = enterprise_service.getEnterprise(data["id"])
+        enterpriseToUpdate: Enterprise = Enterprise(
+            id=id,
+            name=data.get("name"),
+            email=data.get("email"),
+            phone=data.get("phone"),
+            address=data.get("address"),
+            cityId=data.get("cityId"),
+            isTemporary=data.get("isTemporary")
+        )
+        enterpriseToUpdate.userIds = data.get("userIds", [])
+
+        if current_user.isModerator:
+            enterprise = enterprise_service.getEnterprise(id)
             if enterprise:
-                enterprise_service.updateEnterprise(data)
+                enterprise_service.updateEnterprise(enterpriseToUpdate)
                 return jsonify({'message': 'enterprise updated'})
             else:
-                logger.warning(f'Enterprise not found with id : {data["id"]}')
+                logger.warning(f'Enterprise not found with id : {id}')
                 return jsonify({'message': 'enterprise not found'}), 404
         else:
             employer = employer_service.getEmployerByUserId(current_user.id)
@@ -59,8 +80,8 @@ def updateEnterprise(current_user, id):
                 logger.warning(f'Enterprise not found for employer with enterpriseId: {employer.enterpriseId}')
                 return jsonify({'message': 'enterprise not found'}), 404
             data["id"] = enterprise.id
-            if enterprise and enterprise.id == data["id"]:
-                enterprise_service.updateEnterprise(data)
+            if enterprise and enterprise.id == id:
+                enterprise_service.updateEnterprise(enterpriseToUpdate)
                 return jsonify({'message': 'enterprise updated'})
             else:
                 logger.warning("An user tried to modify an entreprise don't have permission")
@@ -98,12 +119,3 @@ def getCurrentUserEnterprise(current_user):
     except Exception as e:
         logger.exception("Error getting the user to get the enterprise")
         return jsonify({'message': 'Error when getting the user'}), 500
-@enterprise_blueprint.route('/<int:id>/users', methods=['GET'])
-@token_required
-def getUsersFromEnterprise(current_user, id):
-    try:
-        users = employer_service.getUsersFromEnterprise(id)
-        return jsonify([user.to_json_string() for user in users]), 200
-    except Exception as e:
-        logger.error(f"Error getting users from enterprise {id}: {e}")
-        return jsonify({'message': 'Error retrieving users'}), 500

@@ -45,7 +45,7 @@
     const getAllUsers = async () => {
         try {
             const users = await fetchAllUsers();
-            
+            console.log("DEBUG USERS:", users);
             if (users) {
                 userOptions = users.map((u: User) => {
                     const fullName = `${u.firstName} ${u.lastName}`.trim();

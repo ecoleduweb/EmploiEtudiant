@@ -1,7 +1,6 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
     import { MultiSelect } from "svelte-multiselect"
-    import CreateEditEnterprise from "../JobOffer/CreateEditEnterprise.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
     import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
     import { onMount } from "svelte"
@@ -15,19 +14,18 @@
     interface Props {
         handleCloseClick: () => void
     }
-
     let { handleCloseClick }: Props = $props()
     let enterprise: Enterprise | undefined = $state()
     let errorsEnterprise: any = $state([])
     let cityOptions: { label: string; value: number }[] = $state([])
-    let selectedCity: any = $state()
-    let cityFromEnterprise: any = $state([])
+    let selectedCity = $state<{ label: string; value: number } | null>(null)
 
     let prepareAndVerifyIfValid = async () => {
         if (enterprise != null) {
             try {
                 enterprise.cityId =
-                    selectedCity?.value != undefined ? selectedCity?.value : -1
+                    selectedCity?.value != undefined ? selectedCity.value : -1
+
                 await entrepriseSchema.validate(enterprise, {
                     abortEarly: false,
                 })
@@ -43,10 +41,11 @@
 
     let handleSubmit = async () => {
         const validatedData = await prepareAndVerifyIfValid()
-        if (validatedData != undefined) {
+
+        if (validatedData != undefined && selectedCity) {
             const response = await PUT<any, any>(
                 `/enterprise/${validatedData?.id}`,
-                { ...enterprise, cityId: selectedCity.value },
+                { ...enterprise, cityId: selectedCity?.value ?? -1 },
             )
 
             if (response) {
@@ -56,22 +55,23 @@
         }
     }
 
-    const setOwnEnterprise = async () => {
-        selectedCity = cityOptions.find(
+    const setOwnEnterprise = () => {
+        const found = cityOptions.find(
             (ville) => ville.value === enterprise?.cityId,
         )
+
+        selectedCity = found ?? null
     }
 
     onMount(async () => {
         enterprise = await getCurrentUserEnterprise()
         cityOptions = await fetchCity()
-
         setOwnEnterprise()
     })
 </script>
 
 <Modal widthFix={true} {handleCloseClick}>
-    {#if enterprise != undefined && cityOptions != undefined}
+    {#if enterprise && cityOptions.length > 0}
         <div class="modalContent">
             <div class="form-group-vertical">
                 <label for="title">Nom*</label>
@@ -81,58 +81,58 @@
                     bind:value={enterprise.name}
                     class="form-control"
                     id="title"
-                    readonly={false}
                 />
             </div>
             <p class="errors-input">
                 {#if errorsEnterprise.name}{errorsEnterprise.name}{/if}
             </p>
+
             <div class="form-group-vertical">
-                <label for="schedule">Adresse*</label>
+                <label for="address">Adresse*</label>
                 <br />
                 <input
                     type="text"
                     bind:value={enterprise.address}
                     class="form-control"
                     id="address"
-                    readonly={false}
                 />
             </div>
             <p class="errors-input">
                 {#if errorsEnterprise.address}{errorsEnterprise.address}{/if}
             </p>
+
             <div class="form-group-vertical">
-                <label for="lieu">Courriel*</label>
+                <label for="email">Courriel*</label>
                 <br />
                 <input
                     type="text"
                     bind:value={enterprise.email}
                     class="form-control"
                     id="email"
-                    readonly={false}
                 />
             </div>
             <p class="errors-input">
                 {#if errorsEnterprise.email}{errorsEnterprise.email}{/if}
             </p>
+
             <div class="form-group-vertical">
-                <label for="lieu">Téléphone*</label>
+                <label for="phone">Téléphone*</label>
                 <br />
                 <input
                     type="text"
                     bind:value={enterprise.phone}
                     class="form-control"
                     id="phone"
-                    readonly={false}
                 />
             </div>
             <p class="errors-input">
                 {#if errorsEnterprise.phone}{errorsEnterprise.phone}{/if}
             </p>
+
             <div class="form-group-vertical">
-                <label for="lieu">Ville*</label>
+                <label for="ville">Ville*</label>
                 <br />
-                {#if cityOptions.length === 0 && selectedCity}
+                {#if cityOptions.length === 0}
                     <p>Chargement des villes...</p>
                 {:else}
                     <MultiSelect
@@ -142,7 +142,6 @@
                         maxSelect={1}
                         placeholder="Choisir ville..."
                         bind:value={selectedCity}
-                        bind:selected={cityFromEnterprise}
                     />
                 {/if}
             </div>
@@ -167,10 +166,12 @@
         align-items: center;
         align-self: center;
     }
+
     label {
         display: block;
         margin-bottom: 0.26vw;
     }
+
     .form-group-vertical {
         display: flex;
         flex-direction: column;
@@ -178,10 +179,12 @@
         width: 80%;
         margin: 0.8vw;
     }
+
     .errors-input {
         color: red;
         font-size: 0.8em;
     }
+
     .accept-Condition {
         display: flex;
         flex-direction: row;

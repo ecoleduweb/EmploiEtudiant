@@ -9,4 +9,5 @@ export type Enterprise = {
     cityId: number
     isTemporary: boolean
     users?:User[] 
+    userIds?:number[] 
 }

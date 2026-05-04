@@ -316,7 +316,8 @@
         </Modal>
     {/if}
     {#if showEditEnterprise}
-        <ModifyEnterprise handleCloseClick={closeEditEnterprise} />
+      
+            <ModifyEnterprise handleCloseClick={closeEditEnterprise} />
     {/if}
     {#if showCreateEditOffer}    
         <Modal handleCloseClick={closeModalCreateEdit}>

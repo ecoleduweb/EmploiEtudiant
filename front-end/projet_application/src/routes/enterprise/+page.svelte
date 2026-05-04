@@ -10,6 +10,7 @@
     import Modal from "../../Components/Common/Modal.svelte"
     import fetchCity from "../../Service/CityService"
     import { getCityName } from "../../Service/CityService"
+    import { updateEnterprise,  createEnterprise as addEnterpriseToAPI } from "../../Service/EnterpriseService"
 
     let createEnterprise = false
     let modalOpened = $state(false)
@@ -36,34 +37,16 @@
     }
     const addEnterprise = async (newEnterprise: Enterprise) => {
         try {
-            const response = await POST<any, any>(`/enterprise/new`, {
-                name: newEnterprise.name,
-                address: newEnterprise.address,
-                phone: newEnterprise.phone,
-                email: newEnterprise.email,
-                cityId: newEnterprise.cityId,
-                 users: newEnterprise.users,
-            })
+           const createdEnterprise: any = await addEnterpriseToAPI(newEnterprise)
 
-            enterprises.update((list) => [...list, response.data])
+            enterprises.update((list) => [...list, createdEnterprise])
         } catch (error) {
             console.error("Error creating enterprise:", error)
         }
     }
     const editEnterprise = async (enterprise: Enterprise) => {
         try {
-            const response = await PUT<any, any>(
-                `/enterprise/${enterprise.id}`,
-                {
-                    id: enterprise.id,
-                    name: enterprise.name,
-                    email: enterprise.email,
-                    phone: enterprise.phone,
-                    address: enterprise.address,
-                    cityId: enterprise.cityId,
-                    users: enterprise.users
-                },
-            )
+            await updateEnterprise(enterprise, enterprise.id!)
 
             enterprises.update((list) =>
                 list.map((ent) =>
@@ -74,13 +57,13 @@
             console.error("Error editing enterprise:", error)
         }
     }
+
     const upsertEnterprise = async (enterprise: Enterprise | void) => {
         if (enterprise !== undefined) {
             if (enterprise.id !== undefined && enterprise.id >= 0) {
-                //Existant
                 await editEnterprise(enterprise)
                 closeModal()
-            } //Nouveau
+            }
             else {
                 await addEnterprise(enterprise)
                 closeModal()
@@ -204,7 +187,7 @@
         <Modal handleCloseClick={closeModal}>
             <CreateAndEditEnterprise
                 enterprise={selectedEnterprise}
-                handleApproveClick={(offer) => upsertEnterprise(offer)}
+                handleApproveClick={(enterprise) => upsertEnterprise(enterprise)}
             />
         </Modal>
     {/if}

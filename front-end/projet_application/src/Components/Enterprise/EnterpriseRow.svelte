@@ -22,7 +22,6 @@
             };
         }) ?? []
     );
-
   
   
 </script>
@@ -56,7 +55,7 @@
                     {/each}
                 </div>
             {:else}
-                <p class="no-user">Aucun utilisateur n'est séléctionné</p>
+                <p  class="no-user">Aucun utilisateur n'est séléctionné</p>
             {/if}
         </div>
         
