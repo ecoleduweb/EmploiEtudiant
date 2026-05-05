@@ -42,8 +42,7 @@ export const enterpriseMocks = {
             }
         }
     },
-
-    all: {
+ allWithNew: {
         url: '*/**/enterprise/all',
         response: {
             status: 200,
@@ -55,6 +54,44 @@ export const enterpriseMocks = {
                     phone: '4185551111',
                     address: '123 Rue Test',
                     cityId: 1,
+                    city: { id: 1, name: 'Abercorn' }, // ✅ OK
+                    isTemporary: false,
+                    users: []
+                },
+                {
+                    id: 4,
+                    name: 'Nouvelle Entreprise',
+                    email: 'nouvelle@example.com',
+                    phone: '4185554444',
+                    address: '321 Rue Nouvelle',
+                    cityId: 1,
+                    city: { id: 1, name: 'Abercorn' },
+                    isTemporary: false,
+                    users: [
+                        {
+                            id: 10,
+                            firstName: "Jean",
+                            lastName: "Employé",
+                            email: "jean@test.com"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+   all: {
+        url: '*/**/enterprise/all',
+        response: {
+            status: 200,
+            json: [
+                {
+                    id: 1,
+                    name: 'Entreprise Test 1',
+                    email: 'test1@example.com',
+                    phone: '4185551111',
+                    address: '123 Rue Test',
+                    cityId: 1,
+                    city: { id: 1, name: 'Abercorn' },
                     isTemporary: false,
                     users: []
                 },
@@ -65,6 +102,7 @@ export const enterpriseMocks = {
                     phone: '4185552222',
                     address: '456 Avenue Test',
                     cityId: 2,
+                    city: { id: 2, name: 'Ville Test 2' },
                     isTemporary: false,
                     users: []
                 },
@@ -75,6 +113,7 @@ export const enterpriseMocks = {
                     phone: '5145553333',
                     address: '789 Blvd Montreal',
                     cityId: 3,
+                    city: { id: 3, name: 'Montreal' },
                     isTemporary: false,
                     users: []
                 }
@@ -82,43 +121,7 @@ export const enterpriseMocks = {
         }
     },
 
-allWithNew: {
-    url: '*/**/enterprise/all',
-    response: {
-        status: 200,
-        json: [
-            {
-                id: 1,
-                name: 'Entreprise Test 1',
-                email: 'test1@example.com',
-                phone: '4185551111',
-                address: '123 Rue Test',
-                cityId: 1,
-                city: { id: 1, name: 'Abercorn' }, // ✅ OK
-                isTemporary: false,
-                users: []
-            },
-            {
-                id: 4,
-                name: 'Nouvelle Entreprise',
-                email: 'nouvelle@example.com',
-                phone: '4185554444',
-                address: '321 Rue Nouvelle',
-                cityId: 1,
-                city: { id: 1, name: 'Abercorn' },
-                isTemporary: false,
-                users: [
-                    {
-                        id: 10,
-                        firstName: "Jean",
-                        lastName: "Employé",
-                        email: "jean@test.com"
-                    }
-                ]
-            }
-        ]
-    }
-},
+   
 
     createNew: {
         url: '*/**/enterprise/new',
@@ -131,6 +134,7 @@ allWithNew: {
                 phone: '4185554444',
                 address: '321 Rue Nouvelle',
                 cityId: 1,
+                  city: { id: 1, name: 'Abercorn' },
                 isTemporary: false,
                 users: [
                     {
@@ -174,6 +178,17 @@ allWithNew: {
         response: {
             status: 200,
             json: [
+                 {
+                    id: 2,
+                    name: 'Entreprise Test 1',
+                    email: 'test1@example.com',
+                    phone: '4185551111',
+                    address: '123 Rue Test',
+                    cityId: 1,
+                    city: { id: 1, name: 'Abercorn' },
+                    isTemporary: false,
+                    users: []
+                },
                 {
                     id: 1,
                     name: 'Entreprise Modifiée',

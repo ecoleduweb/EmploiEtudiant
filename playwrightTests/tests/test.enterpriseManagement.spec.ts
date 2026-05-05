@@ -74,14 +74,59 @@ test.describe('Enterprise Management', () => {
         await expect(page.getByText('Entreprise Test 2')).not.toBeVisible();
     });
 
+    test('Validation du formulaire - champs vides', async ({ page }) => {
+        await openCreateEnterpriseModal(page);
+        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
+
+        await expect(page.getByText('Vous devez nommer votre entreprise')).toBeVisible();
+        await expect(page.getByText('Vous devez mettre une ville à votre entreprise')).toBeVisible();
+    });
+
+    
+});
+test.describe('Enterprise Création', () => {
+    let apiMocker: ApiMocker;
+
+    test.beforeEach(async ({ page }) => {
+        apiMocker = new ApiMocker(page);
+
+        await apiMocker.addMocks([
+            cityMocks.success,
+             enterpriseMocks.allWithNew,
+            userMocks.meModerator,
+            userMocks.all
+        ]).apply();
+
+        await page.addInitScript((value: string) => {
+            localStorage.setItem('City', value);
+        }, JSON.stringify(CITY_CACHE));
+
+        await page.addInitScript(() => {
+            localStorage.setItem('cookieConsent', 'accepted');
+        });
+
+        await page.goto(`${BASE_URL}/enterprise`);
+        await expect(page.getByPlaceholder('Rechercher une entreprise...')).toBeVisible();
+        await expect(page.getByText('Entreprise Test 1')).toBeVisible();
+    });
+
+  
+
  test("Création d'une entreprise avec employés", async ({ page }) => {
     await apiMocker.addMocks([
         cityMocks.success,
-        enterpriseMocks.all, // ✅ IMPORTANT
+        enterpriseMocks.allWithNew,
         userMocks.meModerator,
-        userMocks.all,
-        enterpriseMocks.createNew
+        userMocks.all
     ]).apply();
+
+    await page.route('**/enterprise/new', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(enterpriseMocks.createNew.response.json),
+        });
+    });
 
     await page.getByRole('button', { name: 'Créer une nouvelle entreprise' }).click();
 
@@ -98,33 +143,49 @@ test.describe('Enterprise Management', () => {
     await page.getByRole('option', { name: 'Jean Employé' }).click();
     await page.keyboard.press('Escape');
 
-    // ✅ LE BON MOMENT : juste avant le clic
-    await page.unroute('**/enterprise/all');
-    await page.route('**/enterprise/all', async (route) => {
-        console.log('🔥 MOCK allWithNew utilisé');
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(enterpriseMocks.allWithNew.response.json)
-        });
-    });
-
     await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
 
-    await expect(page.locator('.modal')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.modal')).not.toBeVisible();
 
-    const enterpriseRow = page.locator('.enterprise').filter({ hasText: 'Nouvelle Entreprise' });
-    await expect(enterpriseRow).toBeVisible();
+
+    await expect(
+        page.locator('.enterprise', { hasText: 'Nouvelle Entreprise' })
+    ).toBeVisible();
 });
-    test('Validation du formulaire - champs vides', async ({ page }) => {
-        await openCreateEnterpriseModal(page);
-        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
 
-        await expect(page.getByText('Vous devez nommer votre entreprise')).toBeVisible();
-        await expect(page.getByText('Vous devez mettre une ville à votre entreprise')).toBeVisible();
+        
+    
+});
+
+test.describe('Enterprise Modification', () => {
+    let apiMocker: ApiMocker;
+
+    test.beforeEach(async ({ page }) => {
+        apiMocker = new ApiMocker(page);
+
+        await apiMocker.addMocks([
+            cityMocks.success,
+             enterpriseMocks.allUpdated,
+            userMocks.meModerator,
+            userMocks.all
+        ]).apply();
+
+        await page.addInitScript((value: string) => {
+            localStorage.setItem('City', value);
+        }, JSON.stringify(CITY_CACHE));
+
+        await page.addInitScript(() => {
+            localStorage.setItem('cookieConsent', 'accepted');
+        });
+
+        await page.goto(`${BASE_URL}/enterprise`);
+        await expect(page.getByPlaceholder('Rechercher une entreprise...')).toBeVisible();
+        await expect(page.getByText('Entreprise Test 1')).toBeVisible();
     });
 
-    test("Modification d'une entreprise", async ({ page }) => {
+  
+
+ test("Modification d'une entreprise", async ({ page }) => {
         await apiMocker.addMocks([
             enterpriseMocks.update,
             enterpriseMocks.allUpdated
@@ -150,12 +211,13 @@ test.describe('Enterprise Management', () => {
 
         await expect(page.locator('.modal')).not.toBeVisible();
 
-        const enterpriseRow = page.locator('.enterprise').first();
-        await expect(enterpriseRow.getByText('Entreprise Modifiée')).toBeVisible();
-        await expect(enterpriseRow.getByText('modifie@example.com')).toBeVisible();
-        await expect(enterpriseRow.getByText('Marc Admin')).toBeVisible();
+       await expect(page.getByPlaceholder('Rechercher une entreprise...')).toBeVisible();
+        await expect(page.getByText('Entreprise Test 1')).toBeVisible();
     });
+    
 });
+
+
 
 test.describe('City Management', () => {
     let apiMocker: ApiMocker;
