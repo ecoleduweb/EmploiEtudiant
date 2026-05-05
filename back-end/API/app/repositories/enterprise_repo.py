@@ -99,15 +99,13 @@ class EnterpriseRepo:
             enterprise_entity.address = enterprise.address
             enterprise_entity.cityId = enterprise.cityId
 
+      
             if user_ids_to_remove:
                 Employers.query.filter(
                     Employers.userId.in_(user_ids_to_remove),
                     Employers.enterpriseId == enterprise_entity.id
-                ).update(
-                    {Employers.enterpriseId: None},
-                    synchronize_session=False
-                )
-
+                ).delete(synchronize_session=False)
+                #on fera pas un update mais un delete  parce que la base donnée n'est pas configuré pour faire un update dans ce cas là
             if enterprise.userIds:
                 for uid in enterprise.userIds:
                     employer = Employers.query.filter_by(userId=uid).first()
