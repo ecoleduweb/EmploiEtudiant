@@ -3,121 +3,22 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
     import type { Register } from "../../Models/Register.ts"
-    import { extractErrors } from "../../ts/utils"
-    import * as yup from "yup"
     import { POST } from "../../ts/server"
     import { env } from "$env/dynamic/public"
     import { logIn } from "../../lib/tokenLib"
     import Popup from "../../Components/Common/Popup.svelte"
     import type { User } from "../../Models/User"
-
-    const schema = yup.object({
-        user: yup.object({
-            firstName: yup.string().required("Prénom requis"),
-            lastName: yup.string().required("Nom de famille requis"),
-            email: yup
-                .string()
-                .email("Courriel invalide")
-                .required("Courriel requis"),
-            password: yup
-                .string()
-                .required("Mot de passe requis")
-                .matches(
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/,
-                    "Ne correspond pas aux critères de sécurité",
-                ),
-        }),
-        validatePassword: yup
-            .string()
-            .required("Confirmer le mot de passe")
-            .oneOf(
-                [yup.ref("user.password")],
-                "Les mots de passes ne correspondent pas",
-            ),
-    })
-
-    let errors: Register = $state({
-        user: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-        },
-        validatePassword: "",
-        token: "",
-    })
-
-    let register: Register = $state({
-        user: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-        },
-        validatePassword: "",
-        token: "",
-    })
-
-    let validations = $state({
-        lowercase: false,
-        uppercase: false,
-        digit: false,
-        specialChar: false,
-        length: false,
-        corresponds: false,
-    })
-
-    let popupEnabled = $state(false)
-    let showPasswordValidations = $state(false)
-
-    const closePopup = () => {
-        popupEnabled = false
-    }
-
-    const lowercaseRegex = /^(?=.*[a-z])/
-    const uppercaseRegex = /^(?=.*[A-Z])/
-    const digitRegex = /^(?=.*[0-9])/
-    const specialCharRegex = /^(?=.*[!@#$%^&*])/
-    const lengthRegex = /^(?=.{12,})/
-
-    function validatePassword() {
-        validations = {
-            ...validations,
-            lowercase: lowercaseRegex.test(register.user.password),
-            uppercase: uppercaseRegex.test(register.user.password),
-            digit: digitRegex.test(register.user.password),
-            specialChar: specialCharRegex.test(register.user.password),
-            length: lengthRegex.test(register.user.password),
-            corresponds: register.user.password === register.validatePassword,
-        }
-    }
-
-    const handleSubmit = async (event: any) => {
-        event.preventDefault()
+    import {
+        validateRegisterForm,
+        registerTemplate,
+    } from "../../FormValidations/Register"
+    const handleSubmit = async (values: Register) => {
         try {
-            validatePassword()
-            showPasswordValidations = true
-            await schema.validate(register, { abortEarly: false })
-
-            errors = {
-                user: {
-                    firstName: "",
-                    lastName: "",
-                    email: "",
-                    password: "",
-                },
-                validatePassword: "",
-                token: "",
-            }
-
             const captchaToken = await doRecaptcha()
 
             if (captchaToken) {
                 const response = await POST<any, User>("/user/register", {
-                    email: register.user.email,
-                    password: register.user.password,
-                    firstName: register.user.firstName,
-                    lastName: register.user.lastName,
+                    ...values.user,
                     captchaToken,
                 })
                 logIn(response.data)
@@ -126,8 +27,19 @@
             }
         } catch (error) {
             console.error("Registration error:", error)
-            errors = extractErrors(error)
+            alert("Une erreur est survenue.")
         }
+    }
+
+    const { form, errors } = validateRegisterForm(
+        handleSubmit,
+        registerTemplate.generate(),
+    )
+
+    let popupEnabled = $state(false)
+
+    const closePopup = () => {
+        popupEnabled = false
     }
 
     let key = env.PUBLIC_RECAPTCHA_KEY
@@ -153,35 +65,23 @@
 
 <div class="container">
     <h1>Créer un compte</h1>
-    <form onsubmit={handleSubmit} class="form-register">
+    <form use:form class="form-register">
         <div class="info-block">
             <h2>Informations <span class="hightlight">personnelles</span></h2>
             <div class="form-fields">
                 <div class="form-inputs">
                     <label for="firstName">Prénom</label>
-                    <input
-                        type="text"
-                        id="firstName"
-                        bind:value={register.user.firstName}
-                    />
-                    <p class="errors-input">
-                        {#if errors.user.firstName}
-                            {errors.user.firstName}
-                        {/if}
-                    </p>
+                    <input type="text" id="firstName" name="user.firstName" />
+                    {#if $errors.user?.firstName}
+                        <p class="errors-input">{$errors.user.firstName}</p>
+                    {/if}
                 </div>
                 <div class="form-inputs">
                     <label for="lastName">Nom de famille</label>
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        bind:value={register.user.lastName}
-                    />
-                    <p class="errors-input">
-                        {#if errors.user.lastName}
-                            {errors.user.lastName}
-                        {/if}
-                    </p>
+                    <input type="text" id="lastName" name="user.lastName" />
+                    {#if $errors.user?.lastName}
+                        <p class="errors-input">{$errors.user.lastName}</p>
+                    {/if}
                 </div>
             </div>
         </div>
@@ -193,14 +93,10 @@
             <div class="form-connexion">
                 <div class="form-inputs">
                     <label for="email">Courriel</label>
-                    <input
-                        id="email"
-                        bind:value={register.user.email}
-                        class="input-basic"
-                    />
+                    <input id="email" name="user.email" class="input-basic" />
                     <p class="errors-input">
-                        {#if errors.user.email}
-                            {errors.user.email}
+                        {#if $errors.user?.email}
+                            {$errors.user.email}
                         {/if}
                     </p>
                 </div>
@@ -211,8 +107,7 @@
                         class="input-basic"
                         type="password"
                         id="password"
-                        bind:value={register.user.password}
-                        oninput={validatePassword}
+                        name="user.password"
                     />
                     <p>
                         <span class="password-requirements"
@@ -221,7 +116,7 @@
                         >
                     </p>
                     <p class="errors-input">
-                        {#if errors.user.password}{errors.user.password}{/if}
+                        {#if $errors.user?.password}{$errors.user.password}{/if}
                     </p>
                 </div>
 
@@ -231,71 +126,20 @@
                         class="input-basic"
                         type="password"
                         id="confirm_password"
-                        bind:value={register.validatePassword}
-                        oninput={validatePassword}
+                        name="validatePassword"
                     />
                     <p class="errors-input">
-                        {#if errors.validatePassword}{errors.validatePassword}{/if}
+                        {#if $errors.validatePassword}
+                            {$errors.validatePassword}
+                        {/if}
                     </p>
-                </div>
-
-                <div class="password-validation-showcase">
-                    {#if showPasswordValidations}
-                        <ul class="list-requirements">
-                            {#if validations.lowercase}<li>
-                                    <span class="text-password-good">✔</span> Contient
-                                    une lettre minuscule
-                                </li>{:else}<li>
-                                    <span class="text-password-error">X</span> Ne
-                                    contient pas de lettre minuscule
-                                </li>{/if}
-                            {#if validations.uppercase}<li>
-                                    <span class="text-password-good">✔</span> Contient
-                                    une lettre majuscule
-                                </li>{:else}<li>
-                                    <span class="text-password-error">X</span> Ne
-                                    contient pas de lettre majuscule
-                                </li>{/if}
-                            {#if validations.digit}<li>
-                                    <span class="text-password-good">✔</span> Contient
-                                    un chiffre
-                                </li>{:else}<li>
-                                    <span class="text-password-error">X</span> Ne
-                                    contient pas de chiffre
-                                </li>{/if}
-                            {#if validations.specialChar}<li>
-                                    <span class="text-password-good">✔</span> Contient
-                                    un caractère spécial
-                                </li>{:else}<li>
-                                    <span class="text-password-error">X</span> Ne
-                                    contient pas de caractère spécial
-                                </li>{/if}
-                            {#if validations.length}<li>
-                                    <span class="text-password-good">✔</span> Mot
-                                    de passe long
-                                </li>{:else}<li>
-                                    <span class="text-password-error">X</span> Mot
-                                    de passe trop court
-                                </li>{/if}
-                            {#if register.validatePassword != ""}
-                                {#if validations.corresponds}<li>
-                                        <span class="text-password-good">✔</span
-                                        > Mot de passe correspondent
-                                    </li>{:else}<li>
-                                        <span class="text-password-error"
-                                            >X</span
-                                        > Mot de passe ne correspondent pas
-                                    </li>{/if}
-                            {/if}
-                        </ul>
-                    {/if}
                 </div>
             </div>
         </div>
 
-        <p class="errors-input">
-            {#if errors.token}{errors.token}{/if}
-        </p>
+        {#if $errors.token}
+            <p class="errors-input">{$errors.token}</p>
+        {/if}
 
         <div class="form-inputs form-submit">
             <div class="form-buttons">
@@ -392,37 +236,6 @@
         width: 100%;
     }
 
-    .text-password {
-        width: 100%;
-        text-align: left;
-        color: #878787;
-        font-size: 12px;
-        margin: 0px;
-    }
-
-    .text-password-error {
-        width: 100%;
-        text-align: left;
-        color: #ff0000;
-        font-size: 12px;
-        margin: 0px;
-    }
-
-    .text-password-good {
-        width: 100%;
-        text-align: left;
-        color: #31f500;
-        font-size: 12px;
-        margin: 0px;
-    }
-
-    .list-requirements {
-        width: 100%;
-        color: #878787;
-        margin-top: 0px;
-        margin-bottom: 20px;
-    }
-
     .form-connexion {
         flex-direction: column;
         margin: 10px 10px;
@@ -442,16 +255,6 @@ Reste à mettre ça responsive :wink:
 - W
 
 */
-    .password-validation-showcase {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-self: center;
-        gap: 25%;
-        left: 10%;
-        margin-top: 3%;
-        width: 100%;
-    }
 
     @media screen and (max-width: 900px) and (min-width: 300px) {
         .form-register {
@@ -476,11 +279,6 @@ Reste à mettre ça responsive :wink:
         .password-requirements {
             color: #878787;
             font-size: 0.7rem;
-        }
-
-        ul {
-            padding-left: 10%;
-            min-width: 20%;
         }
     }
 </style>
