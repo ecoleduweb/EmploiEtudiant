@@ -7,9 +7,9 @@ import { validator } from "@felte/validator-yup";
 
 export const schema = yup.object({
     user: yup.object<RegisterUser>({
-        firstName: yup.string().required("Prénom requis"),
-        lastName: yup.string().required("Nom de famille requis"),
-        email: yup.string().email("Courriel invalide").required("Courriel requis"),
+        firstName: yup.string().required("Prénom requis").max(255, "Le prénom ne peut pas dépasser 255 caractères"),
+        lastName: yup.string().required("Nom de famille requis").max(255, "Le nom de famille ne peut pas dépasser 255 caractères"),
+        email: yup.string().email("Courriel invalide").required("Courriel requis").max(255, "Le courriel ne peut pas dépasser 255 caractères"),
         password: yup.string()
             .required("Mot de passe requis")
             .min(12, "Le mot de passe doit comporter au moins 12 caractères")

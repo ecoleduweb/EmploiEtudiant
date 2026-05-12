@@ -282,7 +282,7 @@
 
     .title span:first-child {
         color: white;
-        margin: 0;
+        margin-right: 10px;
     }
 
     .title span:last-child {
