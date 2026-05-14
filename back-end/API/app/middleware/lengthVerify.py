@@ -1,4 +1,4 @@
-from app.customexception.CustomException import ValidationException
+from app.customexception.exception import ValidationException
 
 def verifyStringLen(field, string, expectedLen):
     length = len(string)

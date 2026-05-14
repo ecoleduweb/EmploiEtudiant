@@ -3,7 +3,7 @@ city_repo = CityRepo()
 
 class CityService:
     def oneCity(self, id):
-        return city_repo.oneCity(id)
+        return city_repo.find_by_id(id)
     
     def allCities(self):
-        return city_repo.allCities()
+        return city_repo.find_all()

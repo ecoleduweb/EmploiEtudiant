@@ -9,7 +9,7 @@ from app.services.enterprise_service import EnterpriseService
 from app.services.jobOffer_service import JobOfferService
 from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
-from app.customexception.CustomException import LoginException
+from app.customexception.exception import LoginException
 from app.services.email_service import sendMail
 from datetime import datetime
 from app.utils.Encryption import encrypt, decrypt

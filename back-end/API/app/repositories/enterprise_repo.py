@@ -2,7 +2,7 @@ from app import locale
 from app import db
 from app.models.enterprise_model import Enterprise
 from app.models.employers_model import Employers
-from app.customexception.CustomException import NotFoundException
+from app.customexception.exception import NotFoundException
 from logging import getLogger
 logger = getLogger(__name__)
 
@@ -14,7 +14,7 @@ class EnterpriseRepo:
             db.session.commit()
         except Exception as e:
             logger.warning("Error : could not get enterprise" + str(e))
-            raise NotFoundException("Enterprise not found")
+            raise NotFoundException("Enterprise not found", enterprise.id)
             
     def getEnterprises(self):
         enterprises = Enterprise.query.all()
@@ -64,10 +64,10 @@ class EnterpriseRepo:
                 db.session.commit()
                 return enterprise
             else:
-                raise NotFoundException("Enterprise not found")
+                raise NotFoundException("Enterprise not found", enterprise.id)
         except Exception as e:
             logger.error("Error : could not update enterprise" + str(e))
-            raise NotFoundException("Enterprise not found")
+            raise NotFoundException("Enterprise not found", enterprise.id)
     
     def deleteEnterprise(self, id):
         enterprise = Enterprise.query.filter_by(id=id).first()

@@ -1,5 +1,5 @@
 from app.repositories.study_program_repo import StudyProgramRepo
-from app.customexception.CustomException import DuplicateException, NotFoundException
+from app.customexception.exception import DuplicateException, NotFoundException
 
 from app.dtos.study_program_dto import (
     StudyProgramCreateDTO,
@@ -9,7 +9,7 @@ from app.dtos.study_program_dto import (
 
 study_program_repo = StudyProgramRepo()
 class StudyProgramService:
-    def study_programs(self) -> list[StudyProgramReadDTO]:
+    def find_all(self) -> list[StudyProgramReadDTO]:
         return study_program_repo.studyPrograms()
 
     def find_by_id(self, id) -> StudyProgramReadDTO:
@@ -18,7 +18,7 @@ class StudyProgramService:
     def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
         if study_program_repo.id_exists(dto.id):
             return study_program_repo.update(dto)
-        raise NotFoundException("Study program not found with id: " + str(dto.id))
+        raise NotFoundException("Study program not found with id: ", dto.id)
 
     def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
         if not study_program_repo.name_exists(dto):

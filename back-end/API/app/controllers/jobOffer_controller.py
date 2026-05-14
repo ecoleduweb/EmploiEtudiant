@@ -22,7 +22,7 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.services.email_service import sendMail
-from app.customexception.CustomException import NotFoundException, ValidationException , PermissionException
+from app.customexception.exception import ValidationException, PermissionException
 import requests
 import os
 from app.utils.SanitizeDOM import sanitize_html
@@ -41,7 +41,7 @@ def createJobOffer(current_user):
             if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
                 employer = employer_service.createEmployer(data["enterprise"]["id"], None)
             else:
-                return jsonify({'message', 'No enterprise selected.'}), 400
+                return jsonify({'message': 'No enterprise selected.'}), 400
         else:
             # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
             isApproved = None
@@ -112,15 +112,9 @@ def deleteJobOffer(current_user, id):
     try:
         jobOffer_service.deleteJobOffer(current_user,id)
         return jsonify({'message': 'Job offer deleted'}), 200
-    except NotFoundException as e:
-        logger.warning('Job offer not found' + str(e))
-        return jsonify({'message': e.message}), 404
     except PermissionException as e:
         logger.warning('Permission denied' + str(e))
         return jsonify({'message': e.message}), 403
-    except Exception as e:
-        logger.error('An error occurred while deleting the job offer : ' + str(e))
-        return jsonify({'message': 'An error occurred while deleting the job offer'}), 500
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
@@ -132,9 +126,6 @@ def updateJobOffer(current_user, id):
         jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
         return jsonify(jobOffer.to_json_string()), 200
        
-    except NotFoundException as e:
-        logger.warning('Job offer not found with data : ' + str(e))
-        return jsonify({'message': e.message}), 404
     except PermissionException as e:
         logger.warning('Permission denied' + str(e))
         return jsonify({'message': e.message}), 403
@@ -179,12 +170,8 @@ def approveJobOffer(current_user, id):
 @job_offer_blueprint.route('/archive/<int:id>', methods=['POST'])
 @token_required
 def archiveJobOffer(current_user, id):
-    try:
-        jobOffer_service.archiveJobOffer(id)
-        return ('', 204)
-    except NotFoundException as e:
-        logger.warning('Study Program not found with id : ' + str(id))
-        return jsonify({'message': e.message}), e.errorCode
+    jobOffer_service.archiveJobOffer(id)
+    return ('', 204)
     
 @job_offer_blueprint.route('/verifyURL', methods=['POST'])
 def verify_url():

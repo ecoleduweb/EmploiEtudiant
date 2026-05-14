@@ -54,6 +54,7 @@ logger = getLogger(__name__)
 
 def create_app():
     app = Flask(__name__)
+    
     # Set CORS origins
     CORS(app, supports_credentials=True, origins=[os.environ.get('CORS')])
     
@@ -112,6 +113,8 @@ def create_app():
     from app.controllers.study_program_controller import study_program_blueprint
     from app.controllers.offer_program_controller import offer_program_blueprint
     from app.controllers.employmentSchedule_controller import employment_schedule_blueprint
+    from app.customexception.register_error_handlers import register_error_handlers
+    register_error_handlers(app)
     app.register_blueprint(ping_blueprint)
     app.register_blueprint(user_blueprint, url_prefix='/user')
     app.register_blueprint(job_offer_blueprint, url_prefix='/jobOffer')

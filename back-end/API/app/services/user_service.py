@@ -9,7 +9,7 @@ import os
 from app.repositories.auth_repo import AuthRepo
 from app.repositories.employer_repo import EmployerRepo
 from app.services.captcha_service import CaptchaService
-from app.customexception.CustomException import LoginException
+from app.customexception.exception import LoginException
 from app.repositories.enterprise_repo import EnterpriseRepo
 auth_repo = AuthRepo()
 captcha_service = CaptchaService()
