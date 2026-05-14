@@ -24,6 +24,14 @@ class LoginException(Exception):
 class ValidationException(Exception):
     def __init__(self, field, message):
         super().__init__(field, message)
+        self.errorCode = 400
+        self.field = field
+        self.message = message
+
+class DuplicateException(Exception):
+    def __init__(self, field, message):
+        super().__init__(field, message)
+        self.errorCode = 400
         self.field = field
         self.message = message
 

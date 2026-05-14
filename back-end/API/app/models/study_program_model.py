@@ -7,6 +7,7 @@ class StudyProgram(db.Model):
     def __repr__(self):
         return f"Program('{self.id}', '{self.name}')"
     
+    # TODO remove to_json_string when the dto of jobOffer will be created
     def to_json_string(self):
         return {
             "id": self.id,

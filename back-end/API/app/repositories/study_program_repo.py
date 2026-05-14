@@ -2,29 +2,36 @@ from app import locale
 from app import db
 from app.models.study_program_model import StudyProgram
 
+from app.dtos.study_program_dto import (
+    StudyProgramReadDTO,
+    StudyProgramCreateDTO,
+    StudyProgramUpdateDTO
+)
 class StudyProgramRepo:
-    def studyPrograms(self):
+    def studyPrograms(self) -> list[StudyProgramReadDTO]:
         studyPrograms = StudyProgram.query.all()
-        studyProgramsJson = [studyProgram.to_json_string() for studyProgram in studyPrograms]
-        study_programs_sorted = sorted(studyProgramsJson, key=lambda e: locale.strxfrm(e['name']))
-        return study_programs_sorted
+        # Fix pas très élégant pour mettre "Tous les programmes" en premier
+        study_programs_sorted = sorted(studyPrograms, key=lambda e: (0 if e.name == "Tous les programmes" else 1, locale.strxfrm(e.name)))
+        dtos = [StudyProgramReadDTO.model_validate(sp) for sp in study_programs_sorted]
+        return dtos
 
-    def findById(self, id):
-        return StudyProgram.query.filter_by(id=id).first()
+    def findById(self, id) -> StudyProgramReadDTO:
+        return StudyProgramReadDTO.model_validate(StudyProgram.query.filter_by(id=id).first())
 
-    def editStudyProgram(self, id, name):
-        studyProgram = StudyProgram.query.filter_by(id=id).first()
-        studyProgram.name = name
+    def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
+        studyProgram = StudyProgram.query.filter_by(id=dto.id).first()
+        studyProgram.name = dto.name
         db.session.commit()
+        return StudyProgramReadDTO.model_validate(studyProgram)
 
-    def addStudyProgram(self, name):
-        new_study_program = StudyProgram(name=name)
+    def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
+        new_study_program = StudyProgram(**dto.model_dump())
         db.session.add(new_study_program)
         db.session.commit()
-        return new_study_program
+        return StudyProgramReadDTO.model_validate(new_study_program)
 
-    def studyProgramExist(self, id):
+    def id_exists(self, id) -> bool:
         return StudyProgram.query.filter_by(id=id).first() is not None
-    
-    def doesAlreadyExist(self, name):
-        return StudyProgram.query.filter_by(name=name).first() is not None
+
+    def name_exists(self, dto: StudyProgramCreateDTO) -> bool:
+        return StudyProgram.query.filter_by(name=dto.name).first() is not None
