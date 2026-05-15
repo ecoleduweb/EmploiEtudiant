@@ -1,6 +1,7 @@
 from app import locale
 from app import db
 from app.models.study_program_model import StudyProgram
+from app.customexception.exception import NotFoundException
 
 from app.dtos.study_program_dto import (
     StudyProgramReadDTO,
@@ -23,6 +24,8 @@ class StudyProgramRepo:
 
     def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
         studyProgram = StudyProgram.query.filter_by(id=dto.id).first()
+        if studyProgram is None:
+            raise NotFoundException(f"Study program not found with id: {dto.id}")
         studyProgram.name = dto.name
         db.session.commit()
         return StudyProgramReadDTO.model_validate(studyProgram)

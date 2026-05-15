@@ -26,8 +26,8 @@ def studyPrograms():
 @token_admin_required
 def editStudyProgram(current_user, id):
     try:
-        dto = StudyProgramUpdateDTO.model_validate(request.get_json())
         dto.id = id
+        dto = StudyProgramUpdateDTO.model_validate(request.get_json())
         updated = study_program_service.update(dto)
         return updated.model_dump(), 200
     except ValidationError as e:

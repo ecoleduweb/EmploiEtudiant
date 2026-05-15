@@ -16,9 +16,7 @@ class StudyProgramService:
         return study_program_repo.findById(id)
 
     def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
-        if study_program_repo.id_exists(dto.id):
-            return study_program_repo.update(dto)
-        raise NotFoundException("Study program not found with id: ", dto.id)
+        return study_program_repo.update(dto)
 
     def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
         if not study_program_repo.name_exists(dto):
