@@ -4,7 +4,6 @@ from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from pydantic import ValidationError
 
-from app.customexception.exception import DuplicateException
 from logging import getLogger
 from app.dtos.study_program_dto import (
     StudyProgramCreateDTO,
@@ -26,19 +25,13 @@ def studyPrograms():
 @token_admin_required
 def editStudyProgram(current_user, id):
     try:
-        dto.id = id
         dto = StudyProgramUpdateDTO.model_validate(request.get_json())
+        dto.id = id
         updated = study_program_service.update(dto)
         return updated.model_dump(), 200
     except ValidationError as e:
         logger.warning("Invalid data provided for study program with id: " + str(id))
         return {"errors": e.errors()}, 400
-    except DuplicateException as e:
-        logger.warning("Couldn't edit study with id: " + str(id) + " because of duplicate name")
-        return jsonify({'message': e.message}), e.errorCode
-    except Exception as e:
-        logger.error("Couldn't edit study with id: " + str(id), exc_info=e)
-        return jsonify({'message': 'An error occured.'}), 500
     
 
     
@@ -52,9 +45,3 @@ def addStudyProgram(current_user):
     except ValidationError as e:
         logger.warning("Invalid data provided for new study program")
         return {"errors": e.errors()}, 400
-    except DuplicateException as e:
-        logger.warning("Couldn't add study with name: " + str(dto.name) + " because it already exists")
-        return jsonify({'message': e.message}), e.errorCode
-    except Exception as e:
-        logger.error("Couldn't add study with name: " + str(dto.name), exc_info=e)
-        return jsonify({'message': 'An error occured.'}), 500

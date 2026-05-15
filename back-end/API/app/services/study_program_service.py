@@ -21,4 +21,4 @@ class StudyProgramService:
     def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
         if not study_program_repo.name_exists(dto):
             return study_program_repo.add(dto)
-        raise DuplicateException("Name", "Study program with this name already exists")
+        raise DuplicateException("Name", f"Study program with the name '{dto.name}' already exists")

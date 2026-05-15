@@ -22,7 +22,6 @@ from app.middleware.tokenVerify import token_required
 from app.middleware.adminTokenVerified import token_admin_required
 from logging import getLogger
 from app.services.email_service import sendMail
-from app.customexception.exception import ValidationException, PermissionException
 import requests
 import os
 from app.utils.SanitizeDOM import sanitize_html
@@ -33,44 +32,37 @@ job_offer_blueprint = Blueprint('jobOffer', __name__) ## Représente l'app, http
 @job_offer_blueprint.route('/new', methods=['POST'])
 @token_required
 def createJobOffer(current_user):
-    try:
-        data = request.get_json()
-        if current_user.isModerator:
-            isApproved = True
+    data = request.get_json()
+    if current_user.isModerator:
+        isApproved = True
 
-            if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
-                employer = employer_service.createEmployer(data["enterprise"]["id"], None)
-            else:
-                return jsonify({'message': 'No enterprise selected.'}), 400
+        if data["enterprise"]["id"] != None and data["enterprise"]["id"] != 0:
+            employer = employer_service.createEmployer(data["enterprise"]["id"], None)
         else:
-            # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
-            isApproved = None
-            employer = Employers.query.filter_by(userId=current_user.id).first()
-            # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
-            if employer is None:
-                enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
-                enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
-                employer = employer_service.createEmployer(enterpriseId, current_user.id)
+            return jsonify({'message': 'No enterprise selected.'}), 400
+    else:
+        # None implque qu'il n'est ni à False ni à True donc en attent d'approbation.
+        isApproved = None
+        employer = Employers.query.filter_by(userId=current_user.id).first()
+        # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
+        if employer is None:
+            enterprise = enterprise_service.createEnterprise(data["enterprise"], True)
+            enterpriseId = enterprise_service.getEnterpriseId(enterprise.name)
+            employer = employer_service.createEmployer(enterpriseId, current_user.id)
 
-        description = data["jobOffer"].get('description', '')
-        data["jobOffer"]['description'] = sanitize_html(description)
-        jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved, current_user.id)
-        for studyProgramId in data["studyPrograms"]:
-            offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
-        
-        employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
-        
-        enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+    description = data["jobOffer"].get('description', '')
+    data["jobOffer"]['description'] = sanitize_html(description)
+    jobOffer = jobOffer_service.createJobOffer(data["jobOffer"], employer.id, isApproved, current_user.id)
+    for studyProgramId in data["studyPrograms"]:
+        offer_program_service.linkOfferProgram(studyProgramId, jobOffer.id)
     
-        sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (<b>" + jobOffer.title + "</b>) a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
-        sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de <b>" + jobOffer.title + "</b> par <b>" + current_user.firstName + "</b> <b>" + current_user.lastName + "</b>, pour l'entreprise " + enterprise.name + ".")
-        return jobOffer.to_json_string(), 201
-    except ValidationException as e:
-        logger.warning("Could not create jobOffer, invalid data : " + str(e))
-        return jsonify({'field' : e.field,'message': e.message}), 400
-    except Exception as e:
-        logger.error("Could not create jobOffer, invalid data : " + str(e))
-        return jsonify({'message': 'Could not create jobOffer, invalid data'}), 400
+    employment_schedule_service.linkOfferSchedule(data["scheduleIds"], jobOffer.id)
+    
+    enterprise = enterprise_service.getEnterprise(employer.enterpriseId)
+
+    sendMail(current_user.email, "Accusé de réception - Création d'une nouvelle offre d'emploi", "Votre offre d'emploi (<b>" + jobOffer.title + "</b>) a bien été créée. Celle-ci sera affichée publiquement lorsqu'elle sera approuvée. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables. <br>Vous recevrez un courriel lorsque votre offre sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. <br><br>Merci d'avoir soumis votre offre!")
+    sendMail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Création d'une nouvelle offre d'emploi", "Une nouvelle offre d'emploi a été créée du nom de <b>" + jobOffer.title + "</b> par <b>" + current_user.firstName + "</b> <b>" + current_user.lastName + "</b>, pour l'entreprise " + enterprise.name + ".")
+    return jobOffer.to_json_string(), 201
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def offreEmploi(id):
@@ -109,29 +101,18 @@ def offresEmploiEmployeur(current_user):
 @token_required
 def deleteJobOffer(current_user, id):
     jobOfferToDelete = jobOffer_service.findById(id)
-    try:
-        jobOffer_service.deleteJobOffer(current_user,id)
-        return jsonify({'message': 'Job offer deleted'}), 200
-    except PermissionException as e:
-        logger.warning('Permission denied' + str(e))
-        return jsonify({'message': e.message}), 403
+    jobOffer_service.deleteJobOffer(current_user,id)
+    return jsonify({'message': 'Job offer deleted'}), 200
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])
 @token_required
 def updateJobOffer(current_user, id):
-    try:
-        data = request.get_json()            
-        description = data.get('jobOffer', {}).get('description', '')
-        data['jobOffer']['description'] = sanitize_html(description)
-        jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
-        return jsonify(jobOffer.to_json_string()), 200
+    data = request.get_json()            
+    description = data.get('jobOffer', {}).get('description', '')
+    data['jobOffer']['description'] = sanitize_html(description)
+    jobOffer = jobOffer_service.updateJobOffer(data, current_user, id)
+    return jsonify(jobOffer.to_json_string()), 200
        
-    except PermissionException as e:
-        logger.warning('Permission denied' + str(e))
-        return jsonify({'message': e.message}), 403
-    except ValidationException as e:
-        logger.warning("Could not create jobOffer, invalid data : " + str(e))
-        return jsonify({'field' : e.field,'message': e.message}), 400
 
 @job_offer_blueprint.route('/approved', methods=['GET'])
 def offresEmploiApproved():
