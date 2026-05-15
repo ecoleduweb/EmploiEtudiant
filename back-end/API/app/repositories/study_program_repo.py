@@ -16,7 +16,10 @@ class StudyProgramRepo:
         return dtos
 
     def findById(self, id) -> StudyProgramReadDTO:
-        return StudyProgramReadDTO.model_validate(StudyProgram.query.filter_by(id=id).first())
+        study_program = StudyProgram.query.filter_by(id=id).first()
+        if study_program is None:
+            raise NotFoundException(f"Study program not found with id: {id}")
+        return StudyProgramReadDTO.model_validate(study_program)
 
     def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
         studyProgram = StudyProgram.query.filter_by(id=dto.id).first()
