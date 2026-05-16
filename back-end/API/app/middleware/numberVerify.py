@@ -1,4 +1,4 @@
-from app.customexception.CustomException import ValidationException
+from app.customexception.exception import ValidationException
 
 def verifyNumber(field, data, formats):
     for format in formats:

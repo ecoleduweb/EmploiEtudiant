@@ -58,5 +58,6 @@ class JobOfferDetails:
             json['schedules'] = [schedule.to_json_string() for schedule in self.schedules]
         
         if self.studyPrograms != None : 
+            # TODO remove to_json_string in study program model when the dto of jobOffer will be created
             json['studyPrograms'] = [studyProgram.to_json_string() for studyProgram in self.studyPrograms]
         return json

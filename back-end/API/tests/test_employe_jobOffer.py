@@ -465,8 +465,8 @@ def test_updateJobOffer_NotFound(client):
         "scheduleIds": [1, 2]
     }
     response = client.put(f'/jobOffer/9', json=data)
-    assert response.get_json() == {'message': 'Job offer not found.'}
     assert response.status_code == 404
+    assert response.json['message'] == 'Job offer not found'
 
 def test_updateJobOffer_IsApproved(client):
     data = {

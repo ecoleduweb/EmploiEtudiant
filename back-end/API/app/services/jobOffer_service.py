@@ -7,7 +7,7 @@ from app.models.JobOffer_details import JobOfferDetails
 from datetime import datetime
 from app.middleware.lengthVerify import verifyStringLen
 from app.middleware.numberVerify import verifyNumber
-from app.customexception.CustomException import ValidationException, NotFoundException , PermissionException
+from app.customexception.exception import ValidationException, NotFoundException , PermissionException
 from app.services.offer_program_service import OfferProgramService
 from app.services.employmentSchedule_service import EmploymentScheduleService
 from app.services.email_service import sendMail
@@ -82,7 +82,7 @@ class JobOfferService:
     def deleteJobOffer(self, current_user, id):
         jobOfferToDelete = self.findById(id) 
         if not jobOfferToDelete:
-            raise NotFoundException("Job offer not found")
+            raise NotFoundException("Job offer not found", id)
 
         current_employer = employer_repo.getEmployerByUserId(current_user.id)
         employer = employer_repo.getEmployer(jobOfferToDelete.employerId)
@@ -94,10 +94,10 @@ class JobOfferService:
         jobOffer_repo.deleteJobOffer(id)
 
         if not employer:
-            raise NotFoundException("Employer not found for this job offer")
+            raise NotFoundException("Employer not found for this job offer", jobOfferToDelete.employerId)
 
         if not enterprise:
-            raise NotFoundException("Enterprise not found for this job offer")
+            raise NotFoundException("Enterprise not found for this job offer", employer.enterpriseId)
 
         # Envoyer un courriel quand le statut d'une offre d'emploi est en attente d'approbation
         if jobOfferToDelete.isApproved != True and current_user.isModerator == False:
@@ -111,8 +111,8 @@ class JobOfferService:
         jobOfferToUpdate = self.findById(id)
 
         if not jobOfferToUpdate:
-            raise NotFoundException("Job offer not found.")
-        
+            raise NotFoundException("Job offer not found", id)
+
         data["jobOffer"]["employerId"] = jobOfferToUpdate.employerId
         data["jobOffer"]["isApproved"] = jobOfferToUpdate.isApproved
         Employer = employer_repo.getEmployer(data["jobOffer"]["employerId"])
@@ -120,9 +120,9 @@ class JobOfferService:
         Current_Employer = employer_repo.getEmployerByUserId(current_user.id)
 
         if not Employer:
-            raise NotFoundException("Employer not found.")
+            raise NotFoundException("Employer not found", data["jobOffer"]["employerId"])
         if not Enterprise:
-            raise NotFoundException("Enterprise not found.")
+            raise NotFoundException("Enterprise not found", Employer.enterpriseId)
         if not current_user.isModerator and Current_Employer.enterpriseId != Enterprise.id:
             raise PermissionException("Permission denied")
         if(self.DidEmployerChangeTextOfJobOfferOrUpdateValueOfRejectedJobOffer(current_user, jobOfferToUpdate, data["jobOffer"])):

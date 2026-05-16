@@ -1,8 +1,9 @@
 class NotFoundException(Exception):
-    def __init__(self, message="Ressource non trouvée"):
+    def __init__(self, message, id):
         super().__init__(message)
         self.message = message
         self.errorCode = 404
+        self.id = id
 
     def __str__(self):
         return f"(Error {str(self.errorCode)}) {self.message}"
@@ -24,6 +25,14 @@ class LoginException(Exception):
 class ValidationException(Exception):
     def __init__(self, field, message):
         super().__init__(field, message)
+        self.errorCode = 400
+        self.field = field
+        self.message = message
+
+class DuplicateException(Exception):
+    def __init__(self, field, message):
+        super().__init__(field, message)
+        self.errorCode = 400
         self.field = field
         self.message = message
 

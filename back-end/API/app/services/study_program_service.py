@@ -1,20 +1,24 @@
 from app.repositories.study_program_repo import StudyProgramRepo
-from app.customexception.CustomException import NotFoundException
-study_program_repo = StudyProgramRepo()
+from app.customexception.exception import DuplicateException, NotFoundException
 
+from app.dtos.study_program_dto import (
+    StudyProgramCreateDTO,
+    StudyProgramUpdateDTO,
+    StudyProgramReadDTO,
+)
+
+study_program_repo = StudyProgramRepo()
 class StudyProgramService:
-    def studyPrograms(self):
+    def find_all(self) -> list[StudyProgramReadDTO]:
         return study_program_repo.studyPrograms()
 
-    def findById(self, id):
+    def find_by_id(self, id) -> StudyProgramReadDTO:
         return study_program_repo.findById(id)
 
-    def editStudyProgram(self, id, name):
-        if study_program_repo.studyProgramExist(id):
-            return study_program_repo.editStudyProgram(id, name)            
-        raise NotFoundException("Job not found")
+    def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
+        return study_program_repo.update(dto)
 
-    def addStudyProgram(self, name):
-        if not study_program_repo.doesAlreadyExist(name):
-            return study_program_repo.addStudyProgram(name)
-        raise Exception("Already created")
+    def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
+        if not study_program_repo.name_exists(dto):
+            return study_program_repo.add(dto)
+        raise DuplicateException("Name", f"Study program with the name '{dto.name}' already exists")

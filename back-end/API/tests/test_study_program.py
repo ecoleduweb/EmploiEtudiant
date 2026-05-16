@@ -62,10 +62,11 @@ def test_addStudyProgram(client):
         "name": "Genie logiciel"
     }
     response = client.post('/studyProgram/new', json=data)
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 def test_editStudyProgram(client):
     data = {
+        "id": 1,
         "name": "Informatiques"
     }
     response = client.put('/studyProgram/studyProgram/1', json=data)
@@ -73,6 +74,7 @@ def test_editStudyProgram(client):
 
 def test_editStudyProgram_sameName(client):
     data = {
+        "id": 1,
         "name": "Informatique"
     }
     client.put('/studyProgram/studyProgram/1', json=data)
