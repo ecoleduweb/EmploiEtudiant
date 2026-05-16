@@ -227,6 +227,7 @@ test.describe('City Management', () => {
         await apiMocker.addMocks([
             cityMocks.success,
             enterpriseMocks.all,
+            userMocks.meModerator,
             userMocks.all
         ]).apply();
 
@@ -234,40 +235,46 @@ test.describe('City Management', () => {
             localStorage.setItem('City', value);
         }, JSON.stringify(CITY_CACHE));
 
+
+     
         await page.goto(`${BASE_URL}/enterprise`);
     });
 
     test('Vérifier que la nouvelle entreprise peut être créée', async ({ page }) => {
-        await apiMocker.addMocks([
-            enterpriseMocks.createNew,
-            enterpriseMocks.allWithNew
-        ]).apply();
+    await apiMocker.addMocks([
+        cityMocks.success,
+        userMocks.meModerator,
+        userMocks.all,
+        enterpriseMocks.createNew,
+        enterpriseMocks.allWithNew
+    ]).apply();
 
-        await page.getByRole('button', { name: 'Créer une nouvelle entreprise' }).click();
+    await page.goto(`${BASE_URL}/enterprise`);
+    await expect(page.getByPlaceholder('Rechercher une entreprise...')).toBeVisible();
 
-        await expect(page.getByText('Veuillez remplir les informations')).toBeVisible({ timeout: 10000 });
+    await openCreateEnterpriseModal(page);
 
-        await page.locator('#enterprise-name').fill('Nouvelle Entreprise');
-        await page.locator('#enterprise-address').fill('321 Rue Nouvelle');
-        await page.locator('#enterprise-email').fill('nouvelle@example.com');
-        await page.locator('#enterprise-phone').fill('4185554444');
+    await page.locator('#enterprise-name').fill('Nouvelle Entreprise');
+    await page.locator('#enterprise-address').fill('321 Rue Nouvelle');
+    await page.locator('#enterprise-email').fill('nouvelle@example.com');
+    await page.locator('#enterprise-phone').fill('4185554444');
 
-        await page.locator('#enterprise-city').click();
-        await page.getByRole('option', { name: 'Abercorn' }).click();
-        await page.keyboard.press('Escape');
+    await page.locator('#enterprise-city').click();
+    await page.getByRole('option', { name: 'Abercorn' }).click();
+    await page.keyboard.press('Escape');
 
-        await page.locator('#enterprise-admin').click();
-        await page.getByRole('option', { name: 'Jean Employé' }).click();
-        await page.keyboard.press('Escape');
+    await page.locator('#enterprise-admin').click();
+    await page.getByRole('option', { name: 'Jean Employé' }).click();
+    await page.keyboard.press('Escape');
 
-        await page.getByRole('button', { name: 'Créer', exact: true }).click();
+    await page.getByRole('button', { name: 'Créer', exact: true }).click();
 
-        await expect(page.locator('.modal')).not.toBeVisible();
-        
-        const row = page.locator('.enterprise').filter({ hasText: 'Nouvelle Entreprise' });
-        await expect(row).toBeVisible();
-        await expect(row.getByText('Abercorn')).toBeVisible();
-    });
+    await expect(page.locator('.modal')).not.toBeVisible();
+    
+    const row = page.locator('.enterprise').filter({ hasText: 'Nouvelle Entreprise' });
+    await expect(row).toBeVisible();
+    await expect(row.getByText('Abercorn')).toBeVisible();
+});
 
     test('Valider que la ville a bien changé lors de la modification', async ({ page }) => {
         await apiMocker.addMocks([

@@ -33,7 +33,9 @@ class EnterpriseService:
             uid for uid in current_user_ids
             if uid not in new_user_ids
         ]
-        return enterprise_repo.updateEnterprise(enterprise, user_ids_to_remove)
+        if user_ids_to_remove:
+            raise Exception("La suppression d'employeurs n'est pas encore supportée.")
+        return enterprise_repo.updateEnterprise(enterprise)
     
     def deleteEnterprise(self, id):
         return enterprise_repo.deleteEnterprise(id)
