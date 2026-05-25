@@ -9,7 +9,8 @@ from app.utils.SanitizeDOM import sanitize_html
 from app.dtos.user_dto import (
     UserUpdateDTO,
     UserReadDTO,
-    UserUpdatePasswordDTO
+    UserUpdatePasswordDTO,
+    UpdatedUserReadDTO
 )
 user_repo = UserRepo()
 enterprise_repo = EnterpriseRepo()
@@ -23,9 +24,11 @@ class UserService:
         return user_repo.get_all()
 
     def find_by_id(self, id) -> UserReadDTO:
-        return user_repo.find_by_id(id)
-    
-    def find_by_email(self, email) -> UserReadDTO:
+        dto = user_repo.find_by_id(id)
+        del dto.password
+        return dto
+
+    def find_by_email(self, email) -> UpdatedUserReadDTO:
         return user_repo.find_by_email(email)
     
     def reset_password(self, email, new_password):
@@ -33,7 +36,7 @@ class UserService:
         user.password = hasher.hash(new_password)
         user_repo.update(user)
 
-    def update_password(self, current_user, dto: UserUpdatePasswordDTO) -> UserReadDTO:
+    def update_password(self, current_user, dto: UserUpdatePasswordDTO) -> UpdatedUserReadDTO:
         if not current_user.isModerator and current_user.id != dto.id:
             raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier le mot de passe de l'utilisateur {dto.id}")
         user = user_repo.find_by_id(dto.id)
@@ -41,7 +44,7 @@ class UserService:
         user = user_repo.update(user)
         return user
     
-    def update_name_and_email(self, current_user, dto: UserUpdateDTO) -> UserReadDTO:
+    def update_name_and_email(self, current_user, dto: UserUpdateDTO) -> UpdatedUserReadDTO:
         user = user_repo.find_by_id(dto.id)
         if not current_user.isModerator and  current_user.id != user.id:
             raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier les informations de l'utilisateur {user.id}")
@@ -52,7 +55,7 @@ class UserService:
 
         return user_repo.update(user)
 
-    def toggle_admin(self, current_user, id) -> UserReadDTO:
+    def toggle_admin(self, current_user, id) -> UpdatedUserReadDTO:
         user = user_repo.find_by_id(id)
         if current_user.id == user.id:
             raise PermissionException("Un administrateur ne peut pas changer son propre statut d'administrateur")
@@ -66,7 +69,7 @@ class UserService:
             raise PermissionException("Un utilisateur ne peut pas se supprimer lui même")
         user_repo.delete(user)
 
-    def toggle_active(self, current_user, id: int) -> UserReadDTO:
+    def toggle_active(self, current_user, id: int) -> UpdatedUserReadDTO:
         user = user_repo.find_by_id(id)
         if user.id == current_user.id:
             raise PermissionException("Un administrateur ne peut pas se désactiver lui même")
@@ -74,7 +77,7 @@ class UserService:
         user_repo.update(user)
         return user
     
-    def manage_temporary_enterprise(self, selected_enterprise_id, previous_enterprise_id) -> UserReadDTO:
+    def manage_temporary_enterprise(self, selected_enterprise_id, previous_enterprise_id) -> None:
         previous_enterprise = enterprise_repo.find_by_id(previous_enterprise_id)
         selected_enterprise = enterprise_repo.find_by_id(selected_enterprise_id)
         # si l'entreprise n'est pas temporaire, on ne fait rien

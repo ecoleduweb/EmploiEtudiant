@@ -168,7 +168,7 @@ def test_restPasswordWrongUser(client):
         "password": "test123_12caracters!!!"
     }
     response4 = client.put('/auth/updatePassword/2', json=data)
-    assert response4.status_code == 401
+    assert response4.status_code == 403
 
 def test_resetPasswordAdmin(client):
     #Administrateur

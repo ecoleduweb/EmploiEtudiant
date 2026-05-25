@@ -3,6 +3,7 @@ from app import db
 from app.models.user_model import User
 from logging import getLogger
 from app.dtos.user_dto import (
+    UpdatedUserReadDTO,
     UserLoginResponseDTO,
     UserUpdateDTO,
     UserRegisterDTO,
@@ -19,7 +20,7 @@ class UserRepo:
         db.session.commit()
         return UserReadDTO.model_validate(new_user)
 
-    def update(self, dto: UserUpdateDTO) -> UserReadDTO:
+    def update(self, dto: UserUpdateDTO) -> UpdatedUserReadDTO:
         user = User.query.filter_by(id=dto.id).first()
         if not user:
             raise NotFoundException("user not found", dto.id)
@@ -33,8 +34,7 @@ class UserRepo:
         if dto.password is not None and dto.password != "":
             user.password = dto.password
         db.session.commit()
-        dto =  UserReadDTO.model_validate(user)
-        dto.password = None
+        dto =  UpdatedUserReadDTO.model_validate(user)
         return dto
     
     def delete(self, dto: UserReadDTO):
@@ -46,7 +46,7 @@ class UserRepo:
         if user is None:
             raise NotFoundException("user not found", email)
         return UserLoginResponseDTO.model_validate(user)
-
+    
     def find_by_id(self, id) -> UserReadDTO:
         user = User.query.filter_by(id=id).first()
         if user is None:

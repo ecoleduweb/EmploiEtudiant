@@ -47,5 +47,5 @@ def toggle_active(current_user, id):
 @user_blueprint.route('/<int:id>', methods=['GET'])
 @token_admin_required
 def get_user(current_user, id):
-    user_service.find_by_id(id)
-    return 204
+    dto = user_service.find_by_id(id)
+    return dto.model_dump(), 200

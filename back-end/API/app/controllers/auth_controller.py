@@ -70,6 +70,7 @@ def resetPassword():
 
 def _generate_auth_response(user, token):
     response = jsonify({
+        'id': user.id,
         "isModerator": user.isModerator,
         "email": user.email,
         "firstName": user.firstName,

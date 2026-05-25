@@ -15,4 +15,4 @@ class User(db.Model):
     enterprise = db.relationship("Enterprise", back_populates="users")
 
     def __repr__(self):
-        return f"User('{self.firstName}','{self.lastName}','{self.email}', '{self.password}', '{self.active}',  '{self.isModerator}')"
+        return f"User('{self.firstName}','{self.lastName}','{self.email}', '{self.password}', '{self.active}',  '{self.isModerator}', '{self.verified}', '{self.enterpriseId}')"
