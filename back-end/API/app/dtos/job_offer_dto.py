@@ -24,9 +24,6 @@ class _JobOfferBase(BaseModel):
     lastModifiedDate: datetime | None = None
     deadlineApply: date
  
-from datetime import date, datetime
-from pydantic import BaseModel, ConfigDict, Field, EmailStr, field_validator
-
 class JobOfferCreateDTO(_JobOfferBase):
     deadlineApply: date
     offerDebut: date
@@ -35,13 +32,6 @@ class JobOfferCreateDTO(_JobOfferBase):
     employmentSchedules: list[EmploymentScheduleReadDTO] = []
     enterprise: EnterpriseCreateDTO | None
     enterpriseId: int | None
-
-    `@field_validator`('deadlineApply', 'offerDebut', 'dateEntryOffice')
-    `@classmethod`
-    def date_must_be_future(cls, v: date) -> date:
-        if v <= date.today():
-            raise ValueError('La date doit être dans le futur')
-        return v
 
 class JobOfferUpdateDTO(_JobOfferBase):
     id: int
