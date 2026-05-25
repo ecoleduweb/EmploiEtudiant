@@ -33,9 +33,8 @@
         internship: false,
         offerLink: "",
         offerStatus: 0,
-        active: true,
         salary: "",
-        employerId: 1,
+        userId: 1,
         isApproved: false,
         approbationMessage: "",
     }
@@ -44,7 +43,7 @@
 
     let enterprise: Enterprise = {
         id: 0,
-        name: "",
+     enterpriseIde: "",
         address: "",
         email: "",
         phone: "",
@@ -55,7 +54,7 @@
     const getEnterprise = async () => {
         try {
             const responseEnterprise = await GET<any>(
-                `/enterprise/employer/${jobOffer.employerId}`
+                `/enterprise/employer/${jobOffer.userId}`,
             )
             enterprise = responseEnterprise
         } catch (error) {
@@ -65,8 +64,7 @@
     onMount(getEnterprise)
 
     let enterpriseOptions: { label: string; value: number }[] = []
-    const enterprises = writable<Enterprise[]>([])
-    const getEnterprises = async () => {
+    const enterprises = writable<Enterprise[]>([])enterpriseIdconst getEnterprises = async () => {
         try {
             const response = await GET<any>("/enterprise/all")
             const data = await response.json()
@@ -88,7 +86,7 @@
         </h1>
     </div>
     <section class="haut">
-        <EnterpriseRow enterprise={enterprise} handleModalClick={handleEmploiClick} />
+        <EnterpriseRow {enterprise} handleModalClick={handleEmploiClick} />
     </section>
     <MultiSelect options={enterpriseOptions} placeholder="Select entreprise" />
 </main>

@@ -8,7 +8,7 @@
     import { Hamburger } from "svelte-hamburgers"
     import type { User } from "../../Models/User"
 
-    let open = false;  
+    let open = false
 
     const fetchStudyPrograms = async () => {
         try {
@@ -22,18 +22,17 @@
 
     const checkSession = async () => {
         try {
-            const me = await GET<{ user:User}>("/user/me", false)
+            const me = await GET<{ user: User }>("/user/me", false)
             currentUser.set(me as any)
             isLoggedIn.set(true)
         } catch {
             currentUser.set(undefined)
             isLoggedIn.set(false)
-            
         }
     }
     onMount(async () => {
-            await checkSession()
-            studyPrograms.set(await fetchStudyPrograms()??[])
+        await checkSession()
+        studyPrograms.set((await fetchStudyPrograms()) ?? [])
     })
 
     const handleEmploi = () => {
@@ -60,7 +59,7 @@
         open = false
         goto("/programmes")
     }
-    
+
     const handleProfile = () => {
         open = false
         goto("/profile")
@@ -79,7 +78,7 @@
     const handleLogout = async () => {
         open = false
         try {
-            await POST("/user/logout", {}, false)
+            await POST("/auth/logout", {}, false)
         } catch (error) {
             console.error("Error during logout:", error)
         }
@@ -108,34 +107,61 @@
                         </button>
                         <button class="button" on:click={handleProgrammes}>
                             <p class="textSearch">Programmes d'études</p>
-                            <img class="iconeLogout" src="edit.svg" alt="Edit icon" />
+                            <img
+                                class="iconeLogout"
+                                src="edit.svg"
+                                alt="Edit icon"
+                            />
                         </button>
                         <button class="button" on:click={handleEmploi}>
                             <p class="textSearch">Trouver un emploi</p>
-                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                            <img
+                                class="iconeLogout"
+                                src="searchBar.svg"
+                                alt="Search icon"
+                            />
                         </button>
                         <button class="button" on:click={handleDashboard}>
                             <p class="textSearch">Tableau de bord</p>
-                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                            <img
+                                class="iconeLogout"
+                                src="searchBar.svg"
+                                alt="Search icon"
+                            />
                         </button>
                         <button class="button" on:click={handleProfile}>
-                            <p class="textSearch">Connecté en tant que : {$currentUser?.firstName} {$currentUser?.lastName} </p>
+                            <p class="textSearch">
+                                Connecté en tant que : {$currentUser?.firstName}
+                                {$currentUser?.lastName}
+                            </p>
                         </button>
                         <button class="button" on:click={handleLogout}>
                             <p class="textSearch">Déconnexion</p>
-                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
+                            <img
+                                class="iconeLogout"
+                                src="logout.svg"
+                                alt="Logout icon"
+                            />
                         </button>
                     </div>
                 {/if}
-                {#if !($currentUser?.isModerator) && $isLoggedIn}
+                {#if !$currentUser?.isModerator && $isLoggedIn}
                     <div class="option">
                         <button class="button" on:click={handleDashboard}>
                             <p class="textSearch">Tableau de bord</p>
-                            <img class="iconeSearch" src="searchBar.svg" alt="Search icon" />
+                            <img
+                                class="iconeSearch"
+                                src="searchBar.svg"
+                                alt="Search icon"
+                            />
                         </button>
                         <button class="button" on:click={handleLogout}>
                             <p class="textSearch">Déconnexion</p>
-                            <img class="iconeLogout" src="logout.svg" alt="Logout icon" />
+                            <img
+                                class="iconeLogout"
+                                src="logout.svg"
+                                alt="Logout icon"
+                            />
                         </button>
                     </div>
                 {/if}
@@ -143,15 +169,27 @@
                     <div class="option">
                         <button class="button" on:click={handleEmploi}>
                             <p class="textSearch">Trouver un emploi</p>
-                            <img class="iconeLogout" src="searchBar.svg" alt="Search icon" />
+                            <img
+                                class="iconeLogout"
+                                src="searchBar.svg"
+                                alt="Search icon"
+                            />
                         </button>
                         <button class="button" on:click={handleLogin}>
                             <p class="textSearch">Connexion entreprise</p>
-                            <img class="iconeLogout" src="business.svg" alt="Business icon" />
+                            <img
+                                class="iconeLogout"
+                                src="business.svg"
+                                alt="Business icon"
+                            />
                         </button>
                         <button class="button" on:click={handleRegister}>
                             <p class="textSearch">Créer un compte entreprise</p>
-                            <img class="iconeLogout" src="add.svg" alt="Add icon" />
+                            <img
+                                class="iconeLogout"
+                                src="add.svg"
+                                alt="Add icon"
+                            />
                         </button>
                     </div>
                 {/if}
@@ -163,7 +201,7 @@
     <div class="ul-group">
         <ul class="ul-menu">
             {#if $currentUser?.isModerator}
-              <style scoped>
+                <style scoped>
                     .logo-img {
                         width: 40% !important;
                     }

@@ -11,9 +11,8 @@ export interface JobOffer {
     internship: boolean // si l'offre est un stage
     offerLink: string // lien vers l'offre ou site web de l'employeur
     offerStatus: number
-    active: boolean // si l'offre est active ou non
     salary: string // salaire de lheure                     ** A AJOUTER BD **
-    employerId: number // id de l'employeur
+    enterpriseId: number // id de l'employeur
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation
     acceptCondition: boolean | null | undefined

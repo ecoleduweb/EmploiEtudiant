@@ -20,10 +20,4 @@ export const checkIfUserHaveEnterprise = async (currentUser: User | undefined) =
   return false
 }
 
-export const fetchEnterpriseWithId = async (employerId: number) => {
-  return await GET<any>(
-    `/enterprise/employer/${employerId}`
-  )
-}
-
 export default fetchAllEnterprises

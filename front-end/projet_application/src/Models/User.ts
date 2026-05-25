@@ -1,8 +1,5 @@
-export interface User {
+export interface User extends RegisterUser {
     id: number
-    email: string
-    firstName: string
-    lastName: string
     isModerator: boolean
     active: boolean
 }

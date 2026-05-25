@@ -121,7 +121,7 @@
 
             <h5 class="infoTitle">Date limite pour postuler</h5>
             <p class="text">{offer.deadlineApply}</p>
-
+            employementSchedules
             <h5 class="infoTitle">Salaire</h5>
             <p class="text">{offer.salary}</p>
 

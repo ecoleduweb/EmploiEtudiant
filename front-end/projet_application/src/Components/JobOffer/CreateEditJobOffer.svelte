@@ -46,9 +46,8 @@
             internship: false,
             offerLink: "",
             offerStatus: 0,
-            active: true,
             salary: "",
-            employerId: -1,
+            userId: -1,
             isApproved: false,
             approbationMessage: "",
             acceptCondition: false,
@@ -73,7 +72,7 @@
     let enterpriseFromSelectedEnterprise: { label: string; value: number }[] =
         $state([])
     let enterpriseOption: { label: string; value: number }[] = $state([])
-    let isEnterpriseSelected: boolean = $state(false)
+    let createEnterprise: boolean = $state(false)
     let selectedCity: { label: string; value: number }[] = $state([])
     let cityFromEnterprise: { label: string; value: number }[] = $state([])
     let cityOptions: { label: string; value: number }[] = $state([])
@@ -99,16 +98,19 @@
     })
 
     const fetchEnterprise = async () => {
+        // TODO fix this, la route est morte
+        // si le user n'a pas d'entrerpise,on met  isEnterpriseSeenterpriseId = false
         let response = undefined
         if (isJobOfferEdit === true) {
-            response = await GET<any>(
-                `/enterprise/employer/${jobOffer.employerId}`,
-            )
+            // TODO fix this, la route est morte
+            // Permet d'aller chercher l'entreprise si on possède la dite entreprise.
+            response = await GET<any>(`/enterprise/employer/${jobOffer.userId}`)
         } else if (!isModerator) {
-            const employer = await GET<any>("/employer/currentEmployer")
-            jobOffer.employerId = employer?.id
-            if (employer)
-                response = await GET<any>(`/enterprise/employer/${employer.id}`)
+            // Permet d'aller chercher l'entreprise si on possède la dite entreprise.
+            // const employer = await GET<any>("/employer/currentEmployer")
+            // jobOffer.userd = employer?.id
+            // if (employer)
+            //     response = await GET<any>(`/enterprise/employer/${employer.id}`)
         }
         if (response !== undefined) {
             enterprise = response
@@ -116,13 +118,15 @@
                 (x) => x.value === enterprise.cityId,
             )
             cityFromEnterprise = selectedCity
-            isEnterpriseSelected = true
+            createEnterprise = true
         } else {
-            isEnterpriseSelected = false
+            // Permet de créer une nouvelle entreprise si aucune n'est associée à l'offre ou à l'employeur
+            createEnterprise = false
         }
     }
 
     const fetchEmploymentSchedule = async () => {
+        // TODO plus besoin sera intégéré au job offer
         const response = await GET<any>(
             `/employmentSchedule/getByOfferId/${jobOffer.id}`,
         )
@@ -157,6 +161,7 @@
                     value: schedule.value,
                 }))
             }
+            // TODO fix this, la route est morte
             const programs = await GET<any>(`/offerProgram/${jobOffer.id}`)
             selectedPrograms = programs
                 .map((programId: number) => {
@@ -174,6 +179,7 @@
         }
     })
 
+    // TODO prendre l'enterprise dans l'objet JobOffer quand on aura fix le DTO
     const setEnterpriseIfSelected = async (enterpriseId: number) => {
         const response = await GET<any>(`/enterprise/${enterpriseId}`)
         enterprise = response
@@ -184,7 +190,7 @@
             selectedCity = [city]
             cityFromEnterprise = [city]
         }
-        isEnterpriseSelected = enterprise !== undefined
+        createEnterprise = enterprise !== undefined
     }
 
     let selectedPrograms: { label: string; value: number }[] = $state([])
@@ -390,15 +396,15 @@
                         >entreprise</span
                     >
                 </h1>
-                {#if isEnterpriseSelected}
-                    <EntrepriseDetails {enterprise} {selectedCity} />
-                {:else}
+                {#if createEnterprise}
                     <CreateEditEnterprise
                         bind:enterprise
                         errorsEnterprise={enterpriseErrors}
                         {cityOptions}
                         bind:cityFromEnterprise
                     />
+                {:else}
+                    <EntrepriseDetails {enterprise} {selectedCity} />
                 {/if}
             {/if}
             <h1>

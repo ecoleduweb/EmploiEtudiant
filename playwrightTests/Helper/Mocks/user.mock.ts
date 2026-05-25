@@ -2,14 +2,14 @@ import { MockConfig } from "../types";
 
 export const userMocks = {
     meUnauthorized: {
-        url: '*/**/user/me',
+        url: '*/**/auth/me',
         response: {
             status: 401,
             json: { message: "Token is invalid or expired" }
         }
     },
     meUser: {
-        url: '*/**/user/me',
+        url: '*/**/auth/me',
         response: {
             status: 200,
             json: {
@@ -21,7 +21,7 @@ export const userMocks = {
         }
     },
     meModerator: {
-        url: '*/**/user/me',
+        url: '*/**/auth/me',
         response: {
             status: 200,
             json: {

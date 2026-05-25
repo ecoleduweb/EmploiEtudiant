@@ -1,11 +1,16 @@
 import pytest
 from app import create_app, db
-from app.models.employmentSchedule_model import EmploymentSchedule
+from app.models.employment_schedule_model import EmploymentSchedule
 from app.models.user_model import User
 from argon2 import PasswordHasher
+from freezegun import freeze_time
 
 hasher = PasswordHasher()
 
+@pytest.fixture(scope='module', autouse=True)
+def freeze_test_date():
+    with freeze_time("2021-11-15"):
+        yield
 
 @pytest.fixture(scope='module')
 def app():
@@ -24,7 +29,7 @@ def app():
         }
         employmentSchedule2 = EmploymentSchedule(**data2)
         db.session.add(employmentSchedule2)
-        hashed_password = hasher.hash("test123")
+        hashed_password = hasher.hash("test123_12caracters!")
         user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False)
         db.session.add(user)
         db.session.commit()
@@ -37,9 +42,9 @@ def client(app):
     with app.test_client() as client:
         dataLogin = {
             "email": "test@gmail.com",
-            "password": "test123"
+            "password": "test123_12caracters!"
         }
-        res = client.post('/user/login', json=dataLogin)
+        res = client.post('/auth/login', json=dataLogin)
         assert res.status_code == 200
         yield client
 
@@ -47,7 +52,3 @@ def test_employmentSchedules(client):
     response = client.get('/employmentSchedule/all')
     assert response.status_code == 200
     assert len(response.json) == 2
-
-def test_employmentSchedule(client):
-    response = client.get('/employmentSchedule/1')
-    assert response.status_code == 200

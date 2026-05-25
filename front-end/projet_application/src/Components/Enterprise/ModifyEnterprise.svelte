@@ -1,7 +1,6 @@
 <script lang="ts">
     import Modal from "../Common/Modal.svelte"
     import { MultiSelect } from "svelte-multiselect"
-    import CreateEditEnterprise from "../JobOffer/CreateEditEnterprise.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
     import { getCurrentUserEnterprise } from "../../Service/EnterpriseService"
     import { onMount } from "svelte"

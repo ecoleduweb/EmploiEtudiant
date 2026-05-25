@@ -38,7 +38,7 @@ def get_microsoft_graph_token():
         logger.error(f"Erreur lors de l'acquisition du token Microsoft Graph: {str(e)}")
         return {"error": "authentication_failed", "error_description": str(e)}
 
-def sendMail(receiver_mail, subject, content):
+def send_mail(receiver_mail, subject, content):
     """
     Envoie un email via l'API Microsoft Graph.
     

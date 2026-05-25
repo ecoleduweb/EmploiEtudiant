@@ -49,7 +49,6 @@ export const jobOfferMocks = {
     response: {
       status: 200,
       json: [{
-        "active": true,
         "address": "123 rue bacon",
         "approbationMessage": "\ud83e\udd96",
         "lastModifiedDate": '2024-02-25',
@@ -58,7 +57,7 @@ export const jobOfferMocks = {
         "deadlineApply": '2024-03-05',
         "description": "\ud83e\udd96",
         "email": "bob@cegeprdl.ca",
-        "employerId": 2,
+        "userId": 2,
         "enterprise": {
           "address": "123 rue bacon",
           "cityId": 637,
@@ -75,7 +74,7 @@ export const jobOfferMocks = {
         "offerDebut": '2024-02-26',
         "offerLink": "https://google.ca",
         "salary": "23456789",
-        "schedules": [
+        "employmentSchedules": [
           {
             "description": "Emploi d'été",
             "id": 2
@@ -117,7 +116,6 @@ export const jobOfferMocks = {
       json:
         [
           {
-            "active": true,
             "address": "maison",
             "approbationMessage": "sdsd",
             "approvedDate": "2024-02-10",
@@ -125,7 +123,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-02-20",
             "description": "Lorem ipsum dolor sit amet",
             "email": "vincent.bouch1@gmail.com",
-            "employerId": 2,
+            "userId": 2,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -142,12 +140,11 @@ export const jobOfferMocks = {
             "offerDebut": "2024-02-01",
             "offerLink": "https://nodejs.org/fr/blog/release/v20.11.1",
             "salary": "10",
-            "schedules": [{ "description": "Emploi d'été", "id": 2 }],
+            "employmentSchedules": [{ "description": "Emploi d'été", "id": 2 }],
             "studyPrograms": [{ "id": 1, "name": "Design d'intérieur" }],
             "title": "stagiaire"
           },
           {
-            "active": true,
             "address": "sda",
             "approbationMessage": "",
             "approvedDate": null,
@@ -155,7 +152,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-03-10",
             "description": "Lorem ipsum dolor sit amet",
             "email": "asdasd@asdasd.ca",
-            "employerId": 2,
+            "userId": 2,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -172,12 +169,11 @@ export const jobOfferMocks = {
             "offerDebut": "2024-02-26",
             "offerLink": "https://youtu.be",
             "salary": "44",
-            "schedules": [{ "description": "Emploi d'été", "id": 2 }],
+            "employmentSchedules": [{ "description": "Emploi d'été", "id": 2 }],
             "studyPrograms": [{ "id": 1, "name": "Design d'intérieur" }],
             "title": "skidi"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
             "approvedDate": "2024-02-24",
@@ -185,7 +181,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-03-20",
             "description": "Merci !",
             "email": "courriel@contact.com",
-            "employerId": 6,
+            "userId": 6,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -202,12 +198,11 @@ export const jobOfferMocks = {
             "offerDebut": "2024-02-24",
             "offerLink": "",
             "salary": "66",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
             "title": "toBeAnnounced"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
             "approvedDate": "2024-02-26",
@@ -215,7 +210,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-09-24",
             "description": "Merci !",
             "email": "courriel@contact.com",
-            "employerId": 6,
+            "userId": 6,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -232,12 +227,11 @@ export const jobOfferMocks = {
             "offerDebut": "2024-03-05",
             "offerLink": "",
             "salary": "66",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
             "title": "toBeApprovedPourVrai"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
             "approvedDate": null,
@@ -245,7 +239,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-03-15",
             "description": "dxfchkl",
             "email": "ll@cegeprdl.ca",
-            "employerId": 5,
+            "userId": 5,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -262,12 +256,11 @@ export const jobOfferMocks = {
             "offerDebut": "2024-03-01",
             "offerLink": "",
             "salary": "77",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
             "title": "papapapapa"
           },
           {
-            "active": false,
             "address": "quelque part",
             "approbationMessage": "Refusée par l’administrateur",
             "approvedDate": null,
@@ -275,7 +268,7 @@ export const jobOfferMocks = {
             "deadlineApply": "2024-02-15",
             "description": "Offre explicitement refusée",
             "email": "refuse@exemple.com",
-            "employerId": 9,
+            "userId": 9,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -292,7 +285,7 @@ export const jobOfferMocks = {
             "offerDebut": "2024-02-01",
             "offerLink": "",
             "salary": "20",
-            "schedules": [
+            "employmentSchedules": [
               { "description": "Temps partiel", "id": 3 }
             ],
             "studyPrograms": [

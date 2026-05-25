@@ -21,31 +21,28 @@
         showEnterpriseEditModal = false
     }
 
-    const ChangePassword = async () => {
-        await PUT<any, any>("/user/updatePassword", {
-            email: ($currentUser as User).email,
-            password: password,
-        })
+    const changePassword = async () => {
+        await PUT<any, any>(
+            `/user/updatePassword/${($currentUser as User).id}`,
+            {
+                email: ($currentUser as User).email,
+                password: password,
+            },
+        )
 
         isLoggedIn.set(false)
         goto("/")
     }
 
-    const ChangeUser = async (lastName: string, firstName: string) => {
+    const updatePersonnalInformations = async (user: User) => {
         try {
-            const updatedUser = {
-                lastname: lastName || $currentUser?.lastName,
-                firstname: firstName || $currentUser?.firstName,
-                email: ($currentUser as User).email,
-            }
+            await PUT<any, any>(`/user/${user.id}`, user)
 
-            await PUT<any, any>("/user/user", updatedUser)
-
-            if ($currentUser?.firstName !== firstName && firstName) {
-                currentUser.set({ ...$currentUser!, firstName: firstName })
+            if ($currentUser?.firstName !== user.firstName && user.firstName) {
+                currentUser.set({ ...$currentUser!, firstName: user.firstName })
             }
-            if ($currentUser?.lastName !== lastName && lastName) {
-                currentUser.set({ ...$currentUser!, lastName: lastName })
+            if ($currentUser?.lastName !== user.lastName && user.lastName) {
+                currentUser.set({ ...$currentUser!, lastName: user.lastName })
             }
         } catch {
             alert("Erreur lors de la modification de l'utilisateur")
@@ -101,7 +98,10 @@
                     <Button
                         text="Changer"
                         onClick={() =>
-                            ChangeUser($currentUser.lastName, firstname)}
+                            updatePersonnalInformations({
+                                ...$currentUser,
+                                firstName: firstname,
+                            })}
                     />
                 </div>
             </div>
@@ -119,7 +119,10 @@
                     <Button
                         text="Changer"
                         onClick={() =>
-                            ChangeUser(lastname, $currentUser.firstName)}
+                            updatePersonnalInformations({
+                                ...$currentUser,
+                                lastName: lastname,
+                            })}
                     />
                 </div>
             </div>
@@ -133,7 +136,7 @@
                 />
 
                 <div class="button">
-                    <Button text="Changer" onClick={() => ChangePassword()} />
+                    <Button text="Changer" onClick={() => changePassword()} />
                 </div>
             </div>
             <div>

@@ -1,6 +1,10 @@
 from app import db
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
+from app.models.associations import (
+    job_offer_study_program,
+    job_offer_employment_schedule
+)
 
 class JobOffer(db.Model):
 
@@ -17,13 +21,27 @@ class JobOffer(db.Model):
     hoursPerWeek = db.Column(db.Float, nullable=False)
     offerLink = db.Column(db.String(255))
     salary = db.Column(db.String(255), nullable=False)
-    active = db.Column(db.Boolean, nullable=False)
     approbationMessage = db.Column(db.String(6000))
-    employerId = db.Column(db.Integer, nullable=True)
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None) ## Date d'approbation de l'offre par l'administratrice
     last_modified_by_id = db.Column(db.Integer, nullable=True)
-    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) ## Date de la dernière modification de l'offre
+    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc)) ## Date de la dernière modification de l'offre
+
+    #Relations    
+    enterpriseId = db.Column(db.Integer, db.ForeignKey("enterprise.id"), nullable=False)
+    enterprise = db.relationship("Enterprise", back_populates="jobOffers")
+    studyPrograms = db.relationship(
+        "StudyProgram",
+        secondary=job_offer_study_program,
+        back_populates="jobOffers",
+    )
+    employmentSchedules = db.relationship(
+        "EmploymentSchedule",
+        secondary=job_offer_employment_schedule,
+        back_populates="jobOffers",
+    )
+
+
 
     def __repr__(self):
         return f'''JobOffer(id={self.id},
@@ -37,37 +55,8 @@ class JobOffer(db.Model):
         hoursPerWeek={self.hoursPerWeek},
         offerLink='{self.offerLink}',
         salary='{self.salary}',
-        active='{self.active}',
         approbationMessage='{self.approbationMessage}',
-        employerId='{self.employerId}',
+        enterpriseId='{self.enterpriseId}',
         isApproved='{self.isApproved}',
         approvedDate='{self.approvedDate}',
         last_modified_by_id='{self.last_modified_by_id}')'''
-
-    def to_json_string(self):
-        return {
-                'id': self.id,
-                'title': self.title,
-                'address': self.address,
-                'description': self.description,
-                'offerDebut': str(self.offerDebut),
-                'dateEntryOffice': str(self.dateEntryOffice),  # Convert datetime to string
-                'deadlineApply': str(self.deadlineApply),  # Convert date to string
-                'email': self.email,
-                'hoursPerWeek': self.hoursPerWeek,
-                'offerLink': self.offerLink,
-                'salary': self.salary,
-                'active': self.active,
-                'approbationMessage': self.approbationMessage,
-                'employerId': self.employerId,
-                'isApproved': self.isApproved,
-                'approvedDate': self.approvedDate,
-                'last_modified_by_id': self.last_modified_by_id,
-                'lastModifiedDate ':str(self.lastModifiedDate )  # Convert datetime to string
-            }
-        
-    def to_json_string_without_approbation_message(self):
-        result = self.to_json_string()
-
-        del result['approbationMessage']
-        return result

@@ -1,96 +1,69 @@
 from app import locale
 from app import db
 from app.models.enterprise_model import Enterprise
-from app.models.employers_model import Employers
+from app.models.user_model import User
 from app.customexception.exception import NotFoundException
+from app.dtos.enterprise_dto import (
+    EnterpriseCreateDTO,
+    EnterpriseUpdateDTO,
+    EnterpriseReadDTO
+)
+
 from logging import getLogger
 logger = getLogger(__name__)
 
 class EnterpriseRepo:
-    def endEnterpriseTemporary(self, enterprise):
-        try:
-            enterprise = Enterprise.query.filter_by(id=enterprise.id).first()
-            enterprise.isTemporary = False
-            db.session.commit()
-        except Exception as e:
-            logger.warning("Error : could not get enterprise" + str(e))
-            raise NotFoundException("Enterprise not found", enterprise.id)
+    def end_enterprise_temporary(self, dto: EnterpriseReadDTO):
+        enterprise = Enterprise.query.filter_by(id=dto.id).first()
+        if enterprise is None:
+            raise NotFoundException("Enterprise not found", dto.id)
+        enterprise.isTemporary = False
+        db.session.commit()
             
-    def getEnterprises(self):
-        enterprises = Enterprise.query.all()
+    def get_all(self) -> list[EnterpriseReadDTO]:
+        enterprises = Enterprise.query.options(db.joinedload(Enterprise.users)).all()
         enterprises_sorted = sorted(enterprises, key=lambda e: locale.strxfrm(e.name))
-        return enterprises_sorted
+        dtos = [EnterpriseReadDTO.model_validate(e) for e in enterprises_sorted]
+        return dtos
     
-    def createEnterprise(self, data, isTemporary):
-        enterprise = Enterprise(name=data['name'], email=data['email'], phone=data['phone'], address=data['address'], cityId=data['cityId'], isTemporary=isTemporary)
+    def create(self, dto: EnterpriseCreateDTO) -> EnterpriseReadDTO:
+        enterprise = Enterprise(**dto.model_dump())
         db.session.add(enterprise)
         db.session.commit()
-        return enterprise
-    
-    def getEnterpriseByEmployer(self, employerId):
-        employer = Employers.query.filter_by(id=employerId).first()
-        if(employer == None):
-            return None
-        else: 
-            enterprise = Enterprise.query.filter_by(id=employer.enterpriseId).first()
-            return enterprise
+        return EnterpriseReadDTO.model_validate(enterprise)
 
-    def getEmployerFromEntreprise(self, id):
-        employer = Employers.query.filter_by(entrepriseId=id).first()
-        if(employer == None):
-            return None
-        else:
-            return employer
-
-    def getEnterprise(self, id):
-        try:
-            enterprise = Enterprise.query.filter_by(id=id).first()
-            if enterprise:
-                return enterprise
-            else:
-                return None
-        except Exception as e:
-            logger.error("Error : could not get enterprise" + str(e))
-    
-    def updateEnterprise(self, data):
-        try:
-            enterprise = Enterprise.query.filter_by(id=data['id']).first()
-            if enterprise:
-                enterprise.name = data['name']
-                enterprise.email = data['email']
-                enterprise.phone = data['phone']
-                enterprise.address = data['address']
-                enterprise.cityId = data['cityId']
-                db.session.commit()
-                return enterprise
-            else:
-                raise NotFoundException("Enterprise not found", enterprise.id)
-        except Exception as e:
-            logger.error("Error : could not update enterprise" + str(e))
-            raise NotFoundException("Enterprise not found", enterprise.id)
-    
-    def deleteEnterprise(self, id):
+    def find_by_id(self, id) -> EnterpriseReadDTO:
         enterprise = Enterprise.query.filter_by(id=id).first()
-        if enterprise.isTemporary == True:
-            db.session.delete(enterprise)
-            db.session.commit()
-        else:
-            logger.error('enterprise is not temporary')
-            return False
-        logger.warning('enterprise deleted')
-        return True
-    
-    def getEnterpriseId(self, name):
-        enterprise = Enterprise.query.filter_by(name=name).first()
-        return enterprise.id
-    
-    def getEnterpriseByEmployerId(self, employerId):
-        employer = Employers.query \
-            .join(Enterprise, Employers.enterpriseId == Enterprise.id) \
-            .filter(Employers.id == employerId) \
-            .first()
-        print("************************************************************************")
-        print(employer)
-        print("************************************************************************")
+        if enterprise is None:
+            raise NotFoundException(f"Enterprise not found", id)
+        return EnterpriseReadDTO.model_validate(enterprise)
 
-        return employer.enterprise
+    def find_by_user_id(self, user_id) -> EnterpriseReadDTO:
+        enterprise = db.session.execute(
+            db.select(Enterprise)
+            .join(Enterprise.users)
+            .where(User.id == user_id)
+        ).scalar_one_or_none()
+        if enterprise is None:
+            raise NotFoundException(f"Enterprise not found with user id", user_id)
+        return EnterpriseReadDTO.model_validate(enterprise)
+
+    def update(self, dto: EnterpriseUpdateDTO) -> EnterpriseReadDTO:
+        enterprise = Enterprise.query.filter_by(id=dto.id).first()
+        if enterprise is None:
+            raise NotFoundException("Enterprise not found", dto.id)
+    
+        enterprise.name = dto.name
+        enterprise.email = dto.email
+        enterprise.phone = dto.phone
+        enterprise.address = dto.address
+        enterprise.cityId = dto.cityId
+        db.session.commit()
+        return EnterpriseReadDTO.model_validate(enterprise)
+    
+    def delete_by_id(self, id):
+        enterprise = Enterprise.query.filter_by(id=id).first()
+        if enterprise is None:
+            raise NotFoundException(f"Enterprise not found", id)
+        db.session.delete(enterprise)
+        db.session.commit()

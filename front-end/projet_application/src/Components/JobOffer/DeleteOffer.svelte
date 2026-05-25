@@ -2,21 +2,21 @@
     import type { JobOffer } from "../../Models/Offre"
     import Button from "../Inputs/Button.svelte"
     import { DELETE } from "../../ts/server"
-    export const isDeleted = false;
+    export const isDeleted = false
     interface Props {
-        offer: JobOffer;
-        deleteOfferAndCloseModal: (idJobOffer: number | null) => void;
-        closeModalDelete: () => void;
+        offer: JobOffer
+        deleteOfferAndCloseModal: (idJobOffer: number | null) => void
+        closeModalDelete: () => void
     }
 
-    let { offer, deleteOfferAndCloseModal, closeModalDelete }: Props = $props();
+    let { offer, deleteOfferAndCloseModal, closeModalDelete }: Props = $props()
 
     const deleteOffer = async () => {
         try {
-            await DELETE(`/jobOffer/delete/${offer.id}`)
+            await DELETE(`/jobOffer/${offer.id}`)
             deleteOfferAndCloseModal(offer.id)
         } catch (error) {
-            console.error("Erreur lors de la suppression :",error)
+            console.error("Erreur lors de la suppression :", error)
         }
     }
 </script>
@@ -24,7 +24,9 @@
 <div class="main-div">
     <div class="container">
         <div>
-            <h5 class="infoTitle">Voulez-vous vraiment supprimer cette offre?</h5>
+            <h5 class="infoTitle">
+                Voulez-vous vraiment supprimer cette offre?
+            </h5>
         </div>
         <div class="button">
             <Button text="Confirmer" onClick={() => deleteOffer()} />
@@ -50,7 +52,7 @@
         color: black;
         font-size: 1.6vw;
     }
-    
+
     .button {
         display: flex;
         flex-direction: row;
@@ -67,6 +69,4 @@
             font-size: 4vw;
         }
     }
-
-
 </style>

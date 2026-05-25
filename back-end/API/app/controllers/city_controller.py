@@ -11,9 +11,6 @@ city_service = CityService()
 
 @city_blueprint.route('/<int:id>', methods=['GET'])
 def oneCity(id):
-    if not id:
-        logger.warning('no city_id provided')
-        return jsonify({'message': 'no id provided'}), 400
     return city_service.oneCity(id).model_dump(), 200
 
 @city_blueprint.route('/all', methods=['GET'])

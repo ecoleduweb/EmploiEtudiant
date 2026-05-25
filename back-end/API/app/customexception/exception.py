@@ -16,8 +16,8 @@ class LoginException(Exception):
 
         if AccountDesactivated:
             errorCode = 403
-            errorMessage = message + ": compte désactiver"
-
+            errorMessage = message + ": compte désactivé"
+        print(errorMessage, errorCode)
         super().__init__(errorMessage)
         self.message = errorMessage
         self.errorCode = errorCode
@@ -35,6 +35,12 @@ class DuplicateException(Exception):
         self.errorCode = 400
         self.field = field
         self.message = message
+
+class RecaptchaException(Exception):
+    def __init__(self, message="Captcha verification failed"):
+        super().__init__(message)
+        self.message = message
+        self.errorCode = 400
 
 class PermissionException(Exception):
     def __init__(self, message="Vous n'avez pas la permission d'effectuer cette action"):

@@ -4,9 +4,7 @@
     import { PUT } from "../../ts/server"
     import OfferDetail from "./OfferDetail.svelte"
     import { onMount } from "svelte"
-    import fetchAllEnterprises, {
-        fetchEnterpriseWithId,
-    } from "../../Service/EnterpriseService"
+    import fetchAllEnterprises from "../../Service/EnterpriseService"
     import EntrepriseDetails from "./EntrepriseDetails.svelte"
     import type { Option } from "$lib/interfaces"
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
@@ -29,14 +27,6 @@
     const getEnterprises = async () => {
         try {
             enterprises = await fetchAllEnterprises()
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const getEnterprise = async (employerId: number) => {
-        try {
-            enterprise = await fetchEnterpriseWithId(employerId)
         } catch (error) {
             console.error(error)
         }
@@ -65,7 +55,7 @@
 
     onMount(async () => {
         cities = await fetchCity()
-        await getEnterprise(offer.employerId)
+        await getEnterprise(offer.userId)
         await getEnterprises()
         if (enterprise) {
             selectedEnterpriseId = enterprise.id
@@ -78,7 +68,7 @@
     <div class="container">
         <div class="horitonzal">
             <div class="approval-section">
-                <h5 class="infoTitle">Message d'approbation</h5>
+                <henterpriseIds="infoTitle">Message d'approbation</h5>
                 <textarea
                     bind:value={approbationMessage}
                     placeholder="Message d'approbation"

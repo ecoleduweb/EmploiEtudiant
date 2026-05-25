@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { preventDefault } from 'svelte/legacy';
+    import { preventDefault } from "svelte/legacy"
 
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -40,7 +40,7 @@
             try {
                 try {
                     const response = await POST<Login, User>(
-                        "/user/login",
+                        "/auth/login",
                         form,
                         false,
                     )

@@ -124,5 +124,4 @@ export const entrepriseSchema = yup.object().shape({
         .string()
         .required("Vous devez mettre un numéro de téléphone à votre entreprise")
         .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
-
 })

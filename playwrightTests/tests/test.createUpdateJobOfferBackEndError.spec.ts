@@ -1,6 +1,5 @@
 import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
-import { employerMocks } from '.././Helper/Mocks/employer.mock';
 import { cityMocks } from '.././Helper/Mocks/city.mock';
 import { employmentScheduleMocks } from '.././Helper/Mocks/employmentSchedule.mock';
 import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
@@ -8,7 +7,6 @@ import { ApiMocker } from '.././Helper/mockApi';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
 import { employementScheduleByOfferIdMocks } from '../Helper/Mocks/employementScheduleByOfferId.mock';
-import { offerProgramMocks } from '../Helper/Mocks/offerProgram.mock';
 import { userMocks } from '../Helper/Mocks/user.mock';
 
 
@@ -18,7 +16,6 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     apiMocker = new ApiMocker(page);
     await apiMocker.addMocks([
       studyProgramMocks.success,
-      employerMocks.notFound,
       cityMocks.success,
       employementScheduleByOfferIdMocks.success,
       employmentScheduleMocks.success,
@@ -99,7 +96,6 @@ test.describe('createUpdateJobOfferBackEndError', () => {
     await apiMocker.addMocks([loginMocks.success]).apply();
     await apiMocker.addMocks([userMocks.meUser]).apply();
     await apiMocker.addMocks([enterpriseMocks.enterpriseEmployer]).apply();
-    await apiMocker.addMocks([offerProgramMocks.success]).apply();
     await apiMocker.addMocks([jobOfferMocks.jobOfferVerifyURL]).apply();
 
     await page.goto('http://localhost:5002/login');

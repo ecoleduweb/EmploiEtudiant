@@ -15,25 +15,32 @@
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
     import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
-    import { getStatesFromStorage, updateState } from "../../Service/CollapsedOfferLists"
+    import {
+        getStatesFromStorage,
+        updateState,
+    } from "../../Service/CollapsedOfferLists"
     import type { CollapseListsStates } from "../../Service/CollapsedOfferLists"
     import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
-    
-    let showApproveModal = false;
-    let showCreateEditOffer = false;
-    let showEditEnterprise = false;
-    let showArchiveModal = false;
+
+    let showApproveModal = false
+    let showCreateEditOffer = false
+    let showEditEnterprise = false
+    let showArchiveModal = false
     let jobOfferSelected: JobOfferDetails = {} as any
     let isJobOfferEdit = false
     let isModerator = false
-    
+
     let iconeUp = "⮞"
     let iconeDown = "⮟"
-    
-    let hideListsStates = getStatesFromStorage();
+
+    let hideListsStates = getStatesFromStorage()
 
     function toggleList(nomListe: keyof CollapseListsStates) {
-        hideListsStates = updateState(hideListsStates, nomListe, !hideListsStates[nomListe]);
+        hideListsStates = updateState(
+            hideListsStates,
+            nomListe,
+            !hideListsStates[nomListe],
+        )
     }
 
     let showDeleteModal = false
@@ -55,25 +62,25 @@
             jobOffers = jobOffers.filter((x) => x.id !== idJobOffer)
         }
     }
-    
+
     const handleEditEnterprise = () => {
-        showEditEnterprise = true 
+        showEditEnterprise = true
     }
 
     const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
         isJobOfferEdit = true
-        jobOfferSelected = jobOffer;
+        jobOfferSelected = jobOffer
         showCreateEditOffer = true
     }
 
     const handleApproveClick = (jobOffer: JobOfferDetails) => {
-        jobOfferSelected = jobOffer;
-        showApproveModal = true;
+        jobOfferSelected = jobOffer
+        showApproveModal = true
     }
 
     const handleArchiveClick = (jobOffer: JobOfferDetails) => {
-        jobOfferSelected = jobOffer;
-        showArchiveModal = true;
+        jobOfferSelected = jobOffer
+        showArchiveModal = true
     }
 
     const closeEditEnterprise = () => {
@@ -81,7 +88,7 @@
     }
 
     const closeModalApprove = () => {
-        showApproveModal = false 
+        showApproveModal = false
     }
 
     const closeModalCreateEdit = () => {
@@ -115,7 +122,7 @@
         cityId: 0,
         isTemporary: false,
     }
-    
+
     let loaded = false
     let userHaveEnterprise = false
 
@@ -124,13 +131,11 @@
         try {
             if ($isLoggedIn) {
                 isModerator = ($currentUser as any).isModerator === true
-                await getJobOffersEmployer();    
+                await getJobOffersEmployer()
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Error while loading:", error)
-        }
-        finally {
+        } finally {
             loaded = true
         }
     })
@@ -140,6 +145,7 @@
     const getJobOffersEmployer = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
+            // TODO mettre cet appel dans le service.
             const response = await GET<JobOfferDetails[]>(
                 "/jobOffer/employer/all?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
             )
@@ -153,8 +159,13 @@
 
     let dateNow = new Date().toISOString().split("T")[0]
 
-    $: toBeApprovedOffer = jobOffers.filter((x) => x.isApproved === null)
-        .sort((a, b) => new Date(a.lastModifiedDate).getTime() - new Date(b.lastModifiedDate).getTime());
+    $: toBeApprovedOffer = jobOffers
+        .filter((x) => x.isApproved === null)
+        .sort(
+            (a, b) =>
+                new Date(a.lastModifiedDate).getTime() -
+                new Date(b.lastModifiedDate).getTime(),
+        )
     $: isRefusedOffer = jobOffers.filter((x) => x.isApproved === false)
     $: offerToCome = jobOffers.filter((x) => {
         if (!x.isApproved) return false
@@ -206,14 +217,23 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideRefusedOfferList" 
-                        text={hideListsStates.hideRefusedOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideRefusedOffer")}}
+                    <Button
+                        cssId="btnHideRefusedOfferList"
+                        text={hideListsStates.hideRefusedOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideRefusedOffer")
+                        }}
                     />
-                    <h2 class="textSections">Offres refusées</h2>  
+                    <h2 class="textSections">Offres refusées</h2>
                 </div>
-                <div id="refusedOffersList" style="display: {hideListsStates.hideRefusedOffer ? 'none' : 'block'}">
+                <div
+                    id="refusedOffersList"
+                    style="display: {hideListsStates.hideRefusedOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={isRefusedOffer}
                         {isModerator}
@@ -226,14 +246,25 @@
             {/if}
             {#if toBeApprovedOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHidetoBeApprovedOfferList" 
-                        text={hideListsStates.hideToBeApprovedOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideToBeApprovedOffer")}}
+                    <Button
+                        cssId="btnHidetoBeApprovedOfferList"
+                        text={hideListsStates.hideToBeApprovedOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideToBeApprovedOffer")
+                        }}
                     />
-                    <h2 class="textSections">Offres en attente d'approbation</h2>
+                    <h2 class="textSections">
+                        Offres en attente d'approbation
+                    </h2>
                 </div>
-                <div id="toBeApprovedOffersList" style="display: {hideListsStates.hideToBeApprovedOffer ? 'none' : 'block'}">
+                <div
+                    id="toBeApprovedOffersList"
+                    style="display: {hideListsStates.hideToBeApprovedOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={toBeApprovedOffer}
                         {isModerator}
@@ -246,14 +277,23 @@
             {/if}
             {#if offerToCome.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideOfferToCome" 
-                        text={hideListsStates.hideOfferToCome ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideOfferToCome")}}
+                    <Button
+                        cssId="btnHideOfferToCome"
+                        text={hideListsStates.hideOfferToCome
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideOfferToCome")
+                        }}
                     />
                     <h2 class="textSections">Offres bientôt affichées</h2>
                 </div>
-                <div id="offersToComeList" style="display: {hideListsStates.hideOfferToCome ? 'none' : 'block'}"> 
+                <div
+                    id="offersToComeList"
+                    style="display: {hideListsStates.hideOfferToCome
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={offerToCome}
                         {isModerator}
@@ -266,14 +306,23 @@
             {/if}
             {#if offerDisplayed.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideOfferDisplayed" 
-                        text={hideListsStates.hideOfferDisplayed ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideOfferDisplayed")}}
+                    <Button
+                        cssId="btnHideOfferDisplayed"
+                        text={hideListsStates.hideOfferDisplayed
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideOfferDisplayed")
+                        }}
                     />
                     <h2 class="textSections">Offres affichées</h2>
                 </div>
-                <div id="offerDisplayedList" style="display: {hideListsStates.hideOfferDisplayed ? 'none' : 'block'}">
+                <div
+                    id="offerDisplayedList"
+                    style="display: {hideListsStates.hideOfferDisplayed
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={offerDisplayed}
                         {isModerator}
@@ -286,14 +335,23 @@
             {/if}
             {#if expiredOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideExpiredOffer" 
-                        text={hideListsStates.hideExpiredOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideExpiredOffer")}}
+                    <Button
+                        cssId="btnHideExpiredOffer"
+                        text={hideListsStates.hideExpiredOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideExpiredOffer")
+                        }}
                     />
                     <h2 class="textSections">Offres expirées</h2>
                 </div>
-                <div id="expiredOfferList" style="display: {hideListsStates.hideExpiredOffer ? 'none' : 'block'}">
+                <div
+                    id="expiredOfferList"
+                    style="display: {hideListsStates.hideExpiredOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={expiredOffer}
                         {isModerator}
@@ -307,7 +365,7 @@
         </section>
     {/if}
 
-    {#if showApproveModal}    
+    {#if showApproveModal}
         <Modal handleCloseClick={onFinishedCallBack}>
             <ApprouveOffre
                 offer={jobOfferSelected}
@@ -318,7 +376,7 @@
     {#if showEditEnterprise}
         <ModifyEnterprise handleCloseClick={closeEditEnterprise} />
     {/if}
-    {#if showCreateEditOffer}    
+    {#if showCreateEditOffer}
         <Modal handleCloseClick={closeModalCreateEdit}>
             <CreateEditJobOffer
                 onFinished={onFinishedCallBack}
@@ -384,7 +442,7 @@
         display: flex;
         margin-bottom: 2vh;
     }
-    
+
     .offres {
         width: 100%;
         display: flex;
@@ -420,7 +478,7 @@
         font-size: 2.5vw;
         margin: 0;
     }
-    
+
     /* Section des tableaux*/
     table {
         width: 100%; /* Prend toute la largeur disponible */
@@ -446,7 +504,7 @@
         justify-content: flex-start;
         align-items: flex-end;
         width: 40%;
-        
+
         :global(.button) {
             margin: 40px 10px 0 10px;
         }
@@ -460,10 +518,10 @@
             font-size: 6vw;
         }
         table thead {
-            font-size: 3vw; 
+            font-size: 3vw;
         }
         table tbody {
-            font-size: 3vw; 
+            font-size: 3vw;
         }
     }
 </style>

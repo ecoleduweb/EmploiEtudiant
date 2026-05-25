@@ -19,14 +19,14 @@ import { MockConfig } from "../types";
 
 export const loginMocks = {
     notFound: {
-        url: '*/**/user/login',
+        url: '*/**/auth/login',
         response: {
             status: 404,
             json: { message: "User not found" }
         }
     },
     success: {
-        url: '*/**/user/login',
+        url: '*/**/auth/login',
         response: {
             status: 200,
             json: {
@@ -38,7 +38,7 @@ export const loginMocks = {
         }
     },
     successModerator: {
-        url: '*/**/user/login',
+        url: '*/**/auth/login',
         response: {
             status: 200,
             json: {

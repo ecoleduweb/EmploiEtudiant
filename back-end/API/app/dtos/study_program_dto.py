@@ -1,15 +1,15 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-class StudyProgramBase(BaseModel):
+class _StudyProgramBase(BaseModel):
     name: str = Field(min_length=3, max_length=255)
 
-class StudyProgramCreateDTO(StudyProgramBase):
+class StudyProgramCreateDTO(_StudyProgramBase):
     pass
 
-class StudyProgramUpdateDTO(StudyProgramBase):
+class StudyProgramUpdateDTO(_StudyProgramBase):
     id: int
 
-class StudyProgramReadDTO(StudyProgramBase):
+class StudyProgramReadDTO(_StudyProgramBase):
     id: int
 
     # Permet de convertir un objet SQLAlchemy en DTO en utilisant les attributs de l'objet au lieu des clés du dictionnaire.
