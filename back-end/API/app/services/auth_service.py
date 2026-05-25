@@ -1,6 +1,7 @@
 from logging import getLogger
 from flask import current_app
-from argon2 import PasswordHasher, VerifyMismatchError
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 import datetime
 from jwt import encode
 import os
