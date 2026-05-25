@@ -154,21 +154,21 @@ def test_resetPasswordNormal(client):
     response3 = client.post('/auth/login', json=data3)
     assert response3.status_code == 200
    
-    def test_restPasswordWrongUser(client):
-        # connexion initiale
-        data1 = {
-            "email": "test@gmail.com",
-            "password": "test123_12caracters!"
-        }
-        response1 = client.post('/auth/login', json=data1)
-        assert response1.status_code == 200
-        #Modification du mot de passe avec courriel d'un autre utilisateur/invalide
-        data = {
-            "email": "test2@gmail.com",
-            "password": "test123_12caracters!!!"
-        }
-        response4 = client.put('/auth/updatePassword/2', json=data)
-        assert response4.status_code == 401
+def test_restPasswordWrongUser(client):
+    # connexion initiale
+    data1 = {
+        "email": "test@gmail.com",
+        "password": "test123_12caracters!"
+    }
+    response1 = client.post('/auth/login', json=data1)
+    assert response1.status_code == 200
+    #Modification du mot de passe avec courriel d'un autre utilisateur/invalide
+    data = {
+        "email": "test2@gmail.com",
+        "password": "test123_12caracters!!!"
+    }
+    response4 = client.put('/auth/updatePassword/2', json=data)
+    assert response4.status_code == 401
 
 def test_resetPasswordAdmin(client):
     #Administrateur

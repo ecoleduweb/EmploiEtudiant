@@ -29,7 +29,7 @@ class EnterpriseService:
                 raise PermissionException("Un utilisateur ne peut modifier que son entreprise")
             # Setting the isTemporary field to the current value in the database to prevent a user from changing it when updating their enterprise
             enterprise = enterprise_repo.find_by_id(current_user.enterpriseId)
-            dto.IsTemporary = enterprise.isTemporary
+            dto.isTemporary = enterprise.isTemporary
         return enterprise_repo.update(dto)
     
     def delete_by_id(self, id) -> EnterpriseReadDTO:

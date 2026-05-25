@@ -35,6 +35,8 @@ class JobOfferRepo:
 
     def delete_by_id(self, id) -> None:
         job_offer = JobOffer.query.filter_by(id=id).first()
+        if job_offer is None:
+            raise NotFoundException("Job offer not found", id)
         db.session.delete(job_offer)
         db.session.commit()
 
@@ -49,6 +51,8 @@ class JobOfferRepo:
 
     def update_job_offer(self, dto: JobOfferUpdateDTO) -> JobOfferReadDTO:
         job_offer = JobOffer.query.filter_by(id=dto.id).first()
+        if job_offer is None:
+            raise NotFoundException("Job offer not found", dto.id)
         job_offer.title = dto.title
         job_offer.description = dto.description
         job_offer.address = dto.address
@@ -64,7 +68,6 @@ class JobOfferRepo:
         job_offer.isApproved = dto.isApproved
         job_offer.approbationMessage = dto.approbationMessage 
         job_offer.last_modified_by_id = dto.last_modified_by_id
-        job_offer.enterprise_id = dto.enterpriseId
         
         self._set_study_programs_to_model(job_offer, [sp.id for sp in dto.studyPrograms])
         self._set_employment_schedules_to_model(job_offer, [es.id for es in dto.employmentSchedules])
@@ -114,6 +117,8 @@ class JobOfferRepo:
 
     def update_approve_by_id(self, id, isApproved, approbationMessage):
         job_offer = JobOffer.query.filter_by(id=id).first()
+        if job_offer is None:
+            raise NotFoundException("Job offer not found", id)
         job_offer.isApproved = isApproved
         job_offer.approbationMessage = approbationMessage
         if job_offer.isApproved:

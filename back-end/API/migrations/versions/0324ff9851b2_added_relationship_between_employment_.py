@@ -31,8 +31,8 @@ def upgrade():
             existing_type=mysql.INTEGER(display_width=11),
             existing_nullable=False
         )
-        batch_op.create_foreign_key(None, 'job_offer', ['offerId'], ['id'], ondelete='CASCADE')
-        batch_op.create_foreign_key(None, 'employment_schedule', ['employmentScheduleId'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key('fk_offer_employment_schedule', 'job_offer', ['offerId'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key('fk_schedule_employment_schedule', 'employment_schedule', ['employmentScheduleId'], ['id'], ondelete='CASCADE')
         batch_op.drop_column('id')
 
     op.rename_table('employment_schedule__job_offer_link', 'offer_schedule')
@@ -45,8 +45,8 @@ def downgrade():
 
     with op.batch_alter_table('employment_schedule__job_offer_link', schema=None) as batch_op:
         batch_op.add_column(sa.Column('id', mysql.INTEGER(display_width=11), autoincrement=True, nullable=False))
-        batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.drop_constraint(None, type_='foreignkey')
+        batch_op.drop_constraint('fk_offer_employment_schedule', type_='foreignkey')
+        batch_op.drop_constraint('fk_schedule_employment_schedule', type_='foreignkey')
         batch_op.alter_column(
             'offerId',
             new_column_name='jobOfferId',

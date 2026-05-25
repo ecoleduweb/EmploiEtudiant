@@ -395,7 +395,7 @@ def test_updateJobOffer_IsApproved_ApprovedFalseToNone(client):
 
     response = client.put(f'/jobOffer/2', json=data)
     assert response.status_code == 200
-    assert response.json['isApproved'] == None
+    assert response.json['isApproved'] is None
 
 
 def test_updateJobOffer_OtherEntrepriseOffer(client):

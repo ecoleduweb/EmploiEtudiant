@@ -1,10 +1,13 @@
+from typing_extensions import Annotated
+
 from app.dtos.enterprise_dto import EnterpriseReadDTO
-from pydantic import BaseModel, ConfigDict, Field, EmailStr
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, StringConstraints
 
 class _UserBase(BaseModel):
     firstName: str = Field(min_length=3, max_length=255)
     lastName: str = Field(min_length=3, max_length=255)
-    email: EmailStr = Field(max_length=255)
+    email: Annotated[EmailStr, StringConstraints(max_length=255)]
+
     isModerator: bool  | None = None
     enterprise: EnterpriseReadDTO | None = None
     enterpriseId: int | None = None
@@ -37,4 +40,4 @@ class UserReadDTO(_UserBase):
     id: int
     # Permet de convertir un objet SQLAlchemy en DTO en utilisant les attributs de l'objet au lieu des clés du dictionnaire.
     password: str = Field(exclude=True)
-    model_config = ConfigDict(from_attributes=True)  
+    model_config = ConfigDict(from_attributes=True) 

@@ -16,7 +16,6 @@ from app.dtos.user_dto import (
 auth_service = AuthService()
 user_service = UserService()
 
-from logging import getLogger
 
 logger = getLogger(__name__)
 auth_blueprint = Blueprint('auth', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -54,23 +53,19 @@ def updatePassword(current_user, id):
 
 @auth_blueprint.route('/resetPassword', methods=['POST'])
 def resetPassword():
-    try:
-        data = request.get_json()
-        decryptedData = json.loads(decrypt(data['token']))
-        if data['password'] == data['confirmPassword']:
-            try:
-                reset_date = float(decryptedData['resetDate'])
-                if (reset_date + 900) > datetime.now().timestamp():
-                    user_service.update_reset_password(decryptedData['email'], data['password'])
-                    return jsonify({'message': 'Successfully resetted the password'})
-                else:
-                    logger.warning("A user tried to reset the password via a expired link")
-                    return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
-            except Exception as e:
-                logger.warning("A user tried to reset the password but it failed")
-                return jsonify({'message': 'Error while trying to reset the password'}), 401
-    except Exception as e:
-        return jsonify({'message': 'Error while trying to reset the password, is token valid?'}), 403
+    data = request.get_json()
+    decryptedData = json.loads(decrypt(data['token']))
+    if data['password'] == data['confirmPassword']:
+        reset_date = float(decryptedData['resetDate'])
+        if (reset_date + 900) > datetime.now().timestamp():
+            user_service.reset_password(decryptedData['email'], data['password'])
+            return '', 200
+        else:
+            logger.warning("A user tried to reset the password via a expired link")
+            return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
+    else:
+        logger.warning("A user tried to reset the password but it failed")
+        return jsonify({'message': 'Passwords do not match'}), 400
 
 
 def _generate_auth_response(user, token):

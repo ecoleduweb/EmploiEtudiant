@@ -17,7 +17,6 @@ class LoginException(Exception):
         if AccountDesactivated:
             errorCode = 403
             errorMessage = message + ": compte désactivé"
-        print(errorMessage, errorCode)
         super().__init__(errorMessage)
         self.message = errorMessage
         self.errorCode = errorCode

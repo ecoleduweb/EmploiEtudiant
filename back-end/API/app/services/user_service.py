@@ -7,9 +7,7 @@ from app.customexception.exception import PermissionException
 from app.repositories.enterprise_repo import EnterpriseRepo
 from app.utils.SanitizeDOM import sanitize_html
 from app.dtos.user_dto import (
-    UserLoginDTO,
     UserUpdateDTO,
-    UserRegisterDTO,
     UserReadDTO,
     UserUpdatePasswordDTO
 )
@@ -30,14 +28,14 @@ class UserService:
     def find_by_email(self, email) -> UserReadDTO:
         return user_repo.find_by_email(email)
     
-    def update_reset_password(self, email, new_password):
+    def reset_password(self, email, new_password):
         user = user_repo.find_by_email(email)
         user.password = hasher.hash(new_password)
         user_repo.update(user)
 
     def update_password(self, current_user, dto: UserUpdatePasswordDTO) -> UserReadDTO:
         if not current_user.isModerator and current_user.id != dto.id:
-            raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier le mot de passe de l'utilisateur {user.id}")
+            raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier le mot de passe de l'utilisateur {dto.id}")
         user = user_repo.find_by_id(dto.id)
         user.password = hasher.hash(dto.password)
         user = user_repo.update(user)
@@ -61,12 +59,12 @@ class UserService:
         user.isModerator = not user.isModerator
         return user_repo.update(user)
 
-    def delete(self, current_user, id: int) -> UserReadDTO:
+    def delete(self, current_user, id: int):
         user = user_repo.find_by_id(id)
 
         if user.id == current_user.id:
             raise PermissionException("Un utilisateur ne peut pas se supprimer lui même")
-        return user_repo.delete(user)
+        user_repo.delete(user)
 
     def toggle_active(self, current_user, id: int) -> UserReadDTO:
         user = user_repo.find_by_id(id)
@@ -80,7 +78,6 @@ class UserService:
         previous_enterprise = enterprise_repo.find_by_id(previous_enterprise_id)
         selected_enterprise = enterprise_repo.find_by_id(selected_enterprise_id)
         # si l'entreprise n'est pas temporaire, on ne fait rien
-        print(previous_enterprise_id, selected_enterprise_id, previous_enterprise.isTemporary, selected_enterprise.isTemporary)
         # L'entreprise perd sont status de temporaire.
         if previous_enterprise_id == selected_enterprise_id and selected_enterprise.isTemporary:
             enterprise_repo.end_enterprise_temporary(previous_enterprise)

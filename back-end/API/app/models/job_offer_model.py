@@ -25,7 +25,7 @@ class JobOffer(db.Model):
     isApproved = db.Column(db.Boolean, nullable=True, default=None)
     approvedDate = db.Column(db.DateTime, nullable=True, default=None) ## Date d'approbation de l'offre par l'administratrice
     last_modified_by_id = db.Column(db.Integer, nullable=True)
-    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc)) ## Date de la dernière modification de l'offre
+    lastModifiedDate  = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)) ## Date de la dernière modification de l'offre
 
     #Relations    
     enterpriseId = db.Column(db.Integer, db.ForeignKey("enterprise.id"), nullable=False)
@@ -59,4 +59,5 @@ class JobOffer(db.Model):
         enterpriseId='{self.enterpriseId}',
         isApproved='{self.isApproved}',
         approvedDate='{self.approvedDate}',
+        lastModifiedDate='{self.lastModifiedDate}',
         last_modified_by_id='{self.last_modified_by_id}')'''

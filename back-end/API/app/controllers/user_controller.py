@@ -8,7 +8,6 @@ from app.dtos.user_dto import (
 )
 
 user_service = UserService()
-from logging import getLogger
 
 logger = getLogger(__name__)
 user_blueprint = Blueprint('user', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
@@ -24,7 +23,7 @@ def updateUser(current_user, id):
 @user_blueprint.route('/all', methods=['GET'])
 @token_admin_required
 def get_all(current_user):
-    users = user_service.getAllUsers()
+    users = user_service.get_all()
     return [u.model_dump() for u in users], 200
 
 @user_blueprint.route('/toggleAdmin/<int:id>', methods=['PUT'])
@@ -48,5 +47,5 @@ def toggle_active(current_user, id):
 @user_blueprint.route('/<int:id>', methods=['GET'])
 @token_admin_required
 def get_user(current_user, id):
-    user = user_service.find_by_id(id)
-    return user.model_dump(), 200
+    user_service.find_by_id(id)
+    return 204

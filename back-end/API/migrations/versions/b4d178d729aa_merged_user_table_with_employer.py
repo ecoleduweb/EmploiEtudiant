@@ -21,7 +21,7 @@ def upgrade():
     with op.batch_alter_table('user', schema=None) as batch_op:
         batch_op.add_column(sa.Column('verified', sa.Boolean(), nullable=False, default=False))
         batch_op.add_column(sa.Column('enterpriseId', sa.Integer(), nullable=True))
-        batch_op.create_foreign_key(None, 'enterprise', ['enterpriseId'], ['id'])
+        batch_op.create_foreign_key('fk_user_enterprise', 'enterprise', ['enterpriseId'], ['id'])
     
     op.execute("""
         UPDATE user u

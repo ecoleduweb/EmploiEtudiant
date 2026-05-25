@@ -37,7 +37,7 @@ class JobOfferService:
         else:
             dto.isApproved = None
             # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
-            if current_user.enterpriseId == None:
+            if current_user.enterpriseId is None:
                 enterprise = enterprise_repo.create(dto.enterprise)
                 user_repo.update_enterprise_id(current_user.id, enterprise.id)
             else:
@@ -92,7 +92,7 @@ class JobOfferService:
         dto.lastModifiedDate = datetime.now(timezone.utc)
         updated = job_offer_repo.update_job_offer(dto)
 
-        if job_offer_to_udpate.isApproved != dto.isApproved and dto.isApproved == None and not current_user.isModerator:
+        if job_offer_to_udpate.isApproved != dto.isApproved and dto.isApproved is None and not current_user.isModerator:
             send_mail(current_user.email, "Modification d'une offre d'emploi", f"L'offre d'emploi au nom de <b> {dto.title} </b> a été modifiée avec succès. <br> Veuillez prévoir un délai moyen de 24 à 48 heures ouvrables pour la mise à jour de votre offre. <br> Vous recevrez un courriel lorsque votre offre modifiée sera affichée sur le Portail d'offres d'emploi du Cégep de Rivière-du-Loup. ")
             send_mail(os.environ.get('MAIL_ADMINISTRATOR_ADDRESS'), "Modification d'une offre d'emploi", f" {current_user.firstName} {current_user.lastName} a modifié son offre d'emploi <b>" + dto.title + "</b> et est en attente d'approbation.")
         return updated
@@ -150,3 +150,4 @@ class JobOfferService:
                                         or original_job_offer.salary != updated_job_offer.salary
                                         ):
             return True
+        return False

@@ -1,6 +1,6 @@
 from logging import getLogger
 from flask import current_app
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher, VerifyMismatchError
 import datetime
 from jwt import encode
 import os
@@ -24,9 +24,10 @@ class AuthService:
             user = user_repo.find_by_email(dto.email)
             if not user.active:
                 raise LoginException(True, f"Impossible de se connecter avec l'email: {dto.email}")
-            if not hasher.verify(user.password, dto.password):
-                raise LoginException(f"Login attempt failed on user: {dto.email} invalid password")
+            hasher.verify(user.password, dto.password)
             return self._generateToken(user), user
+        except VerifyMismatchError:
+            raise LoginException(f"Login attempt failed on user: {dto.email} invalid password")
         except NotFoundException:
             logger.warning(f"Login attempt failed on user: {dto.email} user not found")
             raise LoginException()
@@ -64,6 +65,7 @@ class AuthService:
 
     def _generateToken(self, user):
         payload = {
+            'id': user.id,
             'email': user.email,
             'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=30),
             'active': user.active,

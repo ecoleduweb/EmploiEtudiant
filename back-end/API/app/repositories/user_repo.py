@@ -30,10 +30,12 @@ class UserRepo:
         user.email = dto.email
         user.firstName = dto.firstName
         user.lastName = dto.lastName
-        if dto.password != None or dto.password != "":
+        if dto.password is not None and dto.password != "":
             user.password = dto.password
         db.session.commit()
-        return UserReadDTO.model_validate(user)
+        dto =  UserReadDTO.model_validate(user)
+        dto.password = None
+        return dto
     
     def delete(self, dto: UserReadDTO):
         User.query.filter_by(id=dto.id).delete()
@@ -60,6 +62,6 @@ class UserRepo:
 
     def get_all(self) -> list[UserReadDTO]:
         users = User.query.options(db.joinedload(User.enterprise)).all()
-        users_sorted = sorted(users, key=lambda e: locale.strxfrm(e.name))
+        users_sorted = sorted(users, key=lambda e: locale.strxfrm(e.firstName))
         dtos = [UserReadDTO.model_validate(e) for e in users_sorted]
         return dtos

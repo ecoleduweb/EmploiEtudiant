@@ -1,7 +1,6 @@
 from flask import jsonify, request, Blueprint
 from flask import Flask, jsonify, request, make_response
 from app.services.enterprise_service import EnterpriseService
-from app.services.user_service import UserService
 from app.middleware.adminTokenVerified import token_admin_required
 from app.middleware.tokenVerify import token_required
 from app.dtos.enterprise_dto import (
