@@ -272,7 +272,7 @@ def test_deleteUser(client):
     data2 = {
         "email": "utilisateur2@gmail.com"
     }
-    response1 = client.put(f'/user/delete/{user.id}', json=data2)
+    response1 = client.delete(f'/user/{user.id}', json=data2)
 
     data3 = {
         "email": "utilisateur2@gmail.com",

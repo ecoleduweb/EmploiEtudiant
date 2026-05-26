@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import { toFormattedDateString } from "../../ts/utils"
 
     interface Props {
         offer: JobOfferDetails
@@ -12,16 +13,15 @@
 <tr class="offreEmploi" onclick={() => handleModalClick(offer)}>
     <td>{offer.title}</td>
     <td class="desktop-only"
-        >{offer.employementSchedules?.map((x) => x.description).join(", ")}</td
+        >{offer.employmentSchedules?.map((x) => x.description).join(", ")}</td
     >
-    <td class="desktop-only">{offer.deadlineApply}</td>
+    <td class="desktop-only">{toFormattedDateString(offer.deadlineApply)}</td>
     <td class="desktop-only"
         >{offer.studyPrograms?.map((x) => x.name).join(", ")}</td
     >
     <td>{offer.enterprise?.name}</td>
     <td><img class="image" src="add.svg" alt="ajouter" /></td>
 </tr>
-employementSchedules
 
 <style scoped>
     .offreEmploi {

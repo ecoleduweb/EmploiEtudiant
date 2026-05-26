@@ -89,7 +89,7 @@
             const schedulesToFilterId = selectedSchedule[0]?.value
             const matchesSchedules =
                 selectedSchedule.length === 0 ||
-                offer.employementSchedules?.some(
+                offer.employmentSchedules?.some(
                     (schedule) => parseInt(schedule.id) === schedulesToFilterId,
                 )
 

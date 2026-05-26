@@ -1,8 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { onMount } from "svelte"
-    import { jwtDecode } from "jwt-decode"
-    import type Token from "../../Models/Token"
     import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
     import { GET, POST } from "../../ts/server"
     import { Hamburger } from "svelte-hamburgers"
@@ -12,7 +10,7 @@
 
     const fetchStudyPrograms = async () => {
         try {
-            let response = await GET<any>(`/studyProgram/studyPrograms`, false)
+            let response = await GET<any>(`/studyProgram/all`, false)
 
             if (response) return response
         } catch (error) {
@@ -22,7 +20,7 @@
 
     const checkSession = async () => {
         try {
-            const me = await GET<{ user: User }>("/user/me", false)
+            const me = await GET<{ user: User }>("/auth/me", false)
             currentUser.set(me as any)
             isLoggedIn.set(true)
         } catch {

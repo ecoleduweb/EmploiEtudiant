@@ -10,11 +10,11 @@ class NotFoundException(Exception):
 
 
 class LoginException(Exception):
-    def __init__(self, AccountDesactivated: bool = False, message="Impossible de se connecter"):
+    def __init__(self, account_desactivated: bool = False, message="Impossible de se connecter"):
         errorCode = 401
         errorMessage = message + ": informations invalide"
 
-        if AccountDesactivated:
+        if account_desactivated:
             errorCode = 403
             errorMessage = message + ": compte désactivé"
         super().__init__(errorMessage)

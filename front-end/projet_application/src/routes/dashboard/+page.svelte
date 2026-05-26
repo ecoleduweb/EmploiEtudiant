@@ -4,7 +4,7 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
-    import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
+    import ApproveOffer from "../../Components/JobOffer/ApproveOffer.svelte"
     import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
@@ -367,7 +367,7 @@
 
     {#if showApproveModal}
         <Modal handleCloseClick={onFinishedCallBack}>
-            <ApprouveOffre
+            <ApproveOffer
                 offer={jobOfferSelected}
                 handleApproveClick={onFinishedCallBack}
             />

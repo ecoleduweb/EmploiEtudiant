@@ -2,12 +2,12 @@
     import Modal from "../Common/Modal.svelte"
     import type { User } from "../../Models/User"
     import Button from "../Inputs/Button.svelte"
-    import { PUT } from "../../ts/server"
+    import { DELETE, PUT } from "../../ts/server"
 
     export let user: User
-    export let handleUserClick: () => void
+    export let onCloseModal: () => void
 
-    let confirmModal = false
+    let showConfirmModal = false
     let confirmMode: number = 0
     let approbationMessage: string = ""
 
@@ -17,14 +17,12 @@
 
     const changePassword = async (user: User) => {
         await PUT<any, any>(`/auth/updatePassword/${user.id}`, user)
-
-        handleUserClick()
+        onCloseModal()
     }
 
     const updateUser = async (user: User) => {
         await PUT<User, User>(`/user/${user.id}`, user)
-
-        handleUserClick()
+        onCloseModal()
     }
 
     const toggleAdmin = async (user: User) => {
@@ -32,7 +30,7 @@
     }
 
     const deleteUser = async (user: User) => {
-        await PUT<any, User>(`/user/delete/${user.id}`, {})
+        await DELETE(`/user/${user.id}`)
     }
 
     const desactivateUser = async (user: User) => {
@@ -40,7 +38,7 @@
     }
 
     const confirmAccept = async (user: User) => {
-        confirmModal = false
+        showConfirmModal = false
 
         switch (confirmMode) {
             case 1: {
@@ -56,35 +54,31 @@
                 break
             }
         }
-
-        handleUserClick()
+        onCloseModal()
     }
 
     const confirmRefuse = () => {
-        confirmModal = false
+        showConfirmModal = false
     }
 
     const handleConfirmToProceed = (mode: number) => {
         switch (mode) {
             case 1: {
-                approbationMessage =
-                    "Voulez-vous vraiment donner/retirer les permissions administrateur à cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment {user.isModerator ? 'retirer' : 'accorder'} les permissions administrateur à cet utilisateur?`
                 break
             }
             case 2: {
-                approbationMessage =
-                    "Voulez-vous vraiment supprimer cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment supprimer ${user.firstName} ${user.lastName}?`
                 break
             }
             case 3: {
-                approbationMessage =
-                    "Voulez-vous vraiment désactiver/activer cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment ${user.active ? "désactiver" : "activer"} ${user.firstName} ${user.lastName}?`
                 break
             }
         }
 
         confirmMode = mode
-        confirmModal = true
+        showConfirmModal = true
     }
 
     const handleConfirm = (result: boolean, user: User) => {
@@ -96,8 +90,8 @@
     }
 </script>
 
-<Modal handleCloseClick={handleUserClick}>
-    {#if !confirmModal}
+<Modal handleCloseClick={onCloseModal}>
+    {#if !showConfirmModal}
         <div class="container">
             <div class="titleContainer">
                 <h3 class="title">{user.email}</h3>
@@ -176,7 +170,9 @@
             <div class="editInfo userActions">
                 <div class="button">
                     <Button
-                        text="Modifier statut administrateur"
+                        text={user.isModerator
+                            ? "Retirer les privilèges d'administrateur"
+                            : "Accorder les privilèges d'administrateur"}
                         onClick={() => handleConfirmToProceed(1)}
                     />
                 </div>
@@ -188,7 +184,9 @@
                 </div>
                 <div class="button">
                     <Button
-                        text="Désactiver utilisateur"
+                        text={user.active
+                            ? "Désactiver l'utilisateur"
+                            : "Activer l'utilisateur"}
                         onClick={() => handleConfirmToProceed(3)}
                     />
                 </div>
@@ -269,7 +267,6 @@
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
-        width: 10vw;
         color: black;
     }
 

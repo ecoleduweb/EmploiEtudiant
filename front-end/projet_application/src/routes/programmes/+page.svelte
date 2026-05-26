@@ -9,16 +9,15 @@
     import StudyProgramRow from "../../Components/StudyProgram/ProgramRow.svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
 
-    let createStudyProgram = false
-    let modalOpened = $state(false)
+    let showModal = $state(false)
     let selectedProgram: StudyProgram | undefined = $state(undefined)
 
     const openModal = () => {
-        modalOpened = true
+        showModal = true
     }
 
     const closeModal = () => {
-        modalOpened = false
+        showModal = false
         refresh()
     }
 
@@ -30,7 +29,7 @@
 
     const openCreateStudy = () => {
         selectedProgram = undefined
-        modalOpened = true
+        showModal = true
     }
 
     const addStudy = async (offer: StudyProgram) => {
@@ -49,43 +48,39 @@
 
     const editStudy = async (offer: StudyProgram) => {
         try {
-            const response = await PUT<any, any>(
-                `/studyProgram/studyProgram/${offer.id}`,
-                {
-                    name: offer.name,
-                },
+            const response = await PUT<StudyProgram, any>(
+                `/studyProgram/${offer.id}`,
+                offer,
             )
-
-            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+            studyPrograms.update((programs) =>
+                programs.map((program) =>
+                    program.id === offer.id
+                        ? { ...program, ...offer }
+                        : program,
+                ),
+            )
         } catch (error) {
             console.error("Error editing study program:", error)
         }
-
-        await refresh()
     }
 
     const upsertStudyProgram = async (studyProgram: StudyProgram | void) => {
         if (studyProgram !== undefined) {
+            //Existant
             if (studyProgram.id >= 0) {
-                //Existant
                 await editStudy(studyProgram)
-                closeModal()
-            } //Nouveau
+            }
+            //Nouveau
             else {
                 await addStudy(studyProgram)
-                closeModal()
             }
-        } else {
-            closeModal()
         }
-        //Si offer.id >= 0, veut dire existant
-        //Si offer.id = -1, veut dire nouveau
-        //Si offer = undefined, veut dire annuler
+        closeModal()
     }
 
     const getStudyPrograms = async () => {
         try {
-            let response = await GET<any>(`/studyProgram/studyPrograms`)
+            let response = await GET<any>(`/studyProgram/all`)
 
             if (response) studyPrograms.set(response)
         } catch (error) {
@@ -128,7 +123,7 @@
             />
         {/each}
     </section>
-    {#if modalOpened}
+    {#if showModal}
         <Modal handleCloseClick={closeModal}>
             <CreateAndEditStudy
                 studyProgram={selectedProgram}

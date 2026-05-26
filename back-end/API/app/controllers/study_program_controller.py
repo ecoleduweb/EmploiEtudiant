@@ -15,12 +15,12 @@ study_program_service = StudyProgramService()
 study_program_blueprint = Blueprint('studyProgram', __name__) ## Représente l'app, https://flask.palletsprojects.com/en/2.2.x/blueprints/
 
 
-@study_program_blueprint.route('/studyPrograms', methods=['GET'])
+@study_program_blueprint.route('/all', methods=['GET'])
 def get_all():
     studyPrograms = study_program_service.find_all()
     return [sp.model_dump() for sp in studyPrograms], 200
 
-@study_program_blueprint.route('/studyProgram/<int:id>', methods=['PUT'])
+@study_program_blueprint.route('/<int:id>', methods=['PUT'])
 @token_admin_required
 def update(current_user, id):
     dto = StudyProgramUpdateDTO.model_validate(request.get_json())

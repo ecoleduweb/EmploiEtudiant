@@ -5,7 +5,11 @@
     import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import Button from "../Inputs/Button.svelte"
     import { copy } from "svelte-copy"
-    import { formatPhoneNumber, getShortURL } from "../../ts/utils"
+    import {
+        formatPhoneNumber,
+        getShortURL,
+        toFormattedDateString,
+    } from "../../ts/utils"
     import { page } from "$app/state"
     import ShareButtons from "../Common/ShareButtons.svelte"
 
@@ -114,14 +118,19 @@
             <p class="text">{formattedPhone}</p>
 
             <h5 class="infoTitle">Date de publication</h5>
-            <p class="text">{offer.offerDebut}</p>
+            <p class="text">{toFormattedDateString(offer.offerDebut)}</p>
 
             <h5 class="infoTitle">Date d'entrée en fonction</h5>
-            <p class="text">{offer.dateEntryOffice}</p>
+            <p class="text">{toFormattedDateString(offer.dateEntryOffice)}</p>
 
             <h5 class="infoTitle">Date limite pour postuler</h5>
-            <p class="text">{offer.deadlineApply}</p>
-            employementSchedules
+            <p class="text">{toFormattedDateString(offer.deadlineApply)}</p>
+            <h5 class="infoTitle">Types d'emploi</h5>
+            <p class="text">
+                {offer.employmentSchedules
+                    ?.map((s) => s.description)
+                    .join(", ")}
+            </p>
             <h5 class="infoTitle">Salaire</h5>
             <p class="text">{offer.salary}</p>
 

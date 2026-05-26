@@ -4,39 +4,36 @@
     import { writable } from "svelte/store"
     import { GET } from "../../ts/server"
     import type { User } from "../../Models/User"
-    import UserComponent from "../../Components/Utilisateur/Utilisateurs.svelte"
+    import UserConfigurationModal from "../../Components/Utilisateur/Utilisateurs.svelte"
     import UtilisateurRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
     let loaded = $state(false)
-    const modal = writable(false)
-    const selectedUserId = writable(0)
+    let selectedUser: User | null = $state(null)
 
-    const handleUserClick = (id: number) => {
-        openModal(id)
+    const handleUserClick = (user: User) => {
+        openModal(user)
     }
-    const openModal = (id: number) => {
-        modal.set(true)
-        selectedUserId.set(id)
+    const openModal = (user: User) => {
+        selectedUser = user
     }
     const closeModal = async () => {
-        modal.set(false)
+        console.log("Closing modal...")
+        selectedUser = null
         await getUsers()
     }
 
-    let users: User[] = $state()
+    let users: User[] = $state([])
 
     const getUsers = async () => {
         try {
-            const response = await GET<any>("/user/all")
-            users = response.users
+            users = await GET<User[]>("/user/all")
             loaded = true
-
         } catch (error) {
             console.error("Error fetching users:", error)
         }
     }
-    
+
     onMount(getUsers)
 </script>
 
@@ -55,7 +52,7 @@
             {#each users.filter((user) => user.isModerator) as user}
                 <UtilisateurRow
                     {user}
-                    handleModalClick={() => handleUserClick(user.id)}
+                    handleModalClick={() => handleUserClick(user)}
                 />
             {/each}
         </section>
@@ -64,19 +61,17 @@
             {#each users.filter((user) => !user.isModerator) as user}
                 <UtilisateurRow
                     {user}
-                    handleModalClick={() => handleUserClick(user.id)}
+                    handleModalClick={() => handleUserClick(user)}
                 />
             {/each}
         </section>
 
-        {#if $modal}
-            {#each users as user}
-                {#if user.id === $selectedUserId}
-                    <UserComponent {user} handleUserClick={closeModal} />
-                {/if}
-            {/each}
+        {#if selectedUser}
+            <UserConfigurationModal
+                user={selectedUser}
+                onCloseModal={closeModal}
+            />
         {/if}
-
     {:else}
         <div class="loading">
             <LoadingSpinner />

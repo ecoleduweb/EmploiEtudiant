@@ -59,7 +59,7 @@ def client(app):
         
   
 def test_studyPrograms(client):
-    response = client.get('/studyProgram/studyPrograms')
+    response = client.get('/studyProgram/all')
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -75,7 +75,7 @@ def test_editStudyProgram(client):
         "id": 1,
         "name": "Informatiques"
     }
-    response = client.put('/studyProgram/studyProgram/1', json=data)
+    response = client.put('/studyProgram/1', json=data)
     assert response.status_code == 200
 
 def test_editStudyProgram_sameName(client):
@@ -83,6 +83,6 @@ def test_editStudyProgram_sameName(client):
         "id": 1,
         "name": "Informatique"
     }
-    client.put('/studyProgram/studyProgram/1', json=data)
-    response = client.put('/studyProgram/studyProgram/1', json=data)
+    client.put('/studyProgram/1', json=data)
+    response = client.put('/studyProgram/1', json=data)
     assert response.status_code == 200

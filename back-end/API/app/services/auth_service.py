@@ -18,7 +18,7 @@ captcha_service = CaptchaService()
 logger = getLogger(__name__)
 
 hasher = PasswordHasher()
-
+# TODO quand on met le mauvais mot de passe, ca dit compte desactive
 class AuthService:
     def login(self, dto: UserLoginDTO):
         try:

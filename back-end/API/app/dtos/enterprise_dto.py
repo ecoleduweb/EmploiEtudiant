@@ -3,8 +3,8 @@ from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 class _EnterpriseBase(BaseModel):
     name: str = Field(min_length=3, max_length=255)
-    email: EmailStr = Field(max_length=255)
-    phone: str = Field(min_length=3, max_length=255)
+    email: str
+    phone: str = Field(max_length=255)
     address: str = Field(min_length=3, max_length=255)
     cityId: int
 

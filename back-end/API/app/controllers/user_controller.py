@@ -32,11 +32,11 @@ def toggle_admin(current_user, id):
     dto = user_service.toggle_admin(current_user, id)
     return dto.model_dump(), 200
     
-@user_blueprint.route('/delete/<int:id>', methods=['PUT'])
+@user_blueprint.route('/<int:id>', methods=['DELETE'])
 @token_admin_required
 def delete(current_user, id):
-    user = user_service.delete(current_user, id)
-    return user.model_dump(), 200   
+    user_service.delete(current_user, id)
+    return '', 204   
  
 @user_blueprint.route('/toggleActive/<int:id>', methods=['PUT'])
 @token_admin_required

@@ -115,5 +115,5 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401: boole
             throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }
     }
-    return (await response.json()) as T
+    return response.status == 204 ? undefined as T : (await response.json()) as T
 }
