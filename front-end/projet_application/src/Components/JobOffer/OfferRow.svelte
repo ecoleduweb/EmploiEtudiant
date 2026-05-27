@@ -1,17 +1,17 @@
 <script lang="ts">
     import { onMount } from "svelte"
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import type { Enterprise } from "../../Models/Enterprise"
     import { removeHtmlTags, toFormattedDateString } from "../../ts/utils"
+    import type { JobOffer } from "../../Models/Offre"
 
     interface Props {
         isModerator: boolean
-        offer: JobOfferDetails
+        offer: JobOffer
         enterprise?: Enterprise | null
-        handleEditModalClick: (id: number) => void
-        handleApproveModalClick: (id: number) => void
-        handleArchiveModalClick: (id: number) => void
-        handleDeleteModalClick: (id: number) => void
+        handleEditModalClick: (jobOffer: JobOffer) => void
+        handleApproveModalClick: (jobOffer: JobOffer) => void
+        handleArchiveModalClick: (jobOffer: JobOffer) => void
+        handleDeleteModalClick: (jobOffer: JobOffer) => void
     }
 
     let {
@@ -48,19 +48,16 @@
         {#if isModerator}
             <button
                 class="button"
-                onclick={() => handleApproveModalClick(offer.id)}
+                onclick={() => handleApproveModalClick(offer)}
             >
                 <img class="image" src="check.svg" alt="approve" />
             </button>
         {/if}
-        <button class="button" onclick={() => handleDeleteModalClick(offer.id)}>
+        <button class="button" onclick={() => handleDeleteModalClick(offer)}>
             <img class="image" src="delete.svg" alt="supprimer" />
         </button>
 
-        <button
-            class="button edit"
-            onclick={() => handleEditModalClick(offer.id)}
-        >
+        <button class="button edit" onclick={() => handleEditModalClick(offer)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
         {#if offer.isApproved && new Date()
@@ -70,7 +67,7 @@
                     .split("T")[0]}
             <button
                 class="button"
-                onclick={() => handleArchiveModalClick(offer.id)}
+                onclick={() => handleArchiveModalClick(offer)}
             >
                 <img class="image" src="archive.svg" alt="supprimer" />
             </button>

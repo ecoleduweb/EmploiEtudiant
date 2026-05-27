@@ -5,13 +5,11 @@
     import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
     import ApproveOffer from "../../Components/JobOffer/ApproveOffer.svelte"
-    import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
     import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
     import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
@@ -21,13 +19,15 @@
     } from "../../Service/CollapsedOfferLists"
     import type { CollapseListsStates } from "../../Service/CollapsedOfferLists"
     import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
+    import type { JobOffer } from "../../Models/Offre"
+    import { fetchJobOffersByEmployer } from "../../Service/JobOfferService"
+    import { toFormattedDateString } from "../../ts/utils"
 
     let showApproveModal = false
-    let showCreateEditOffer = false
+    let showCreateEditOfferModal = false
     let showEditEnterprise = false
     let showArchiveModal = false
-    let jobOfferSelected: JobOfferDetails = {} as any
-    let isJobOfferEdit = false
+    let jobOfferSelected: JobOffer
     let isModerator = false
 
     let iconeUp = "⮞"
@@ -46,11 +46,11 @@
     let showDeleteModal = false
 
     const handleCreateOffer = () => {
-        showCreateEditOffer = true
+        showCreateEditOfferModal = true
         jobOfferSelected = undefined as any
     }
 
-    const handleDeleteClick = (jobOffer: JobOfferDetails) => {
+    const handleDeleteClick = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showDeleteModal = true
     }
@@ -67,18 +67,18 @@
         showEditEnterprise = true
     }
 
-    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
-        isJobOfferEdit = true
+    const handleEditEmploiClick = (jobOffer: JobOffer) => {
+        console.log(jobOffer, "COCOU")
         jobOfferSelected = jobOffer
-        showCreateEditOffer = true
+        showCreateEditOfferModal = true
     }
 
-    const handleApproveClick = (jobOffer: JobOfferDetails) => {
+    const handleApproveClick = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showApproveModal = true
     }
 
-    const handleArchiveClick = (jobOffer: JobOfferDetails) => {
+    const handleArchiveClick = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showArchiveModal = true
     }
@@ -92,8 +92,7 @@
     }
 
     const closeModalCreateEdit = () => {
-        showCreateEditOffer = false
-        isJobOfferEdit = false
+        showCreateEditOfferModal = false
     }
 
     const closeModalArchive = () => {
@@ -140,47 +139,41 @@
         }
     })
 
-    let jobOffers: JobOfferDetails[] = []
+    let jobOffers: JobOffer[] = []
 
     const getJobOffersEmployer = async () => {
         try {
             // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
-            // TODO mettre cet appel dans le service.
-            const response = await GET<JobOfferDetails[]>(
-                "/jobOffer/employer/all?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
-            )
-            if (response) {
-                jobOffers = response
-            }
+            jobOffers = await fetchJobOffersByEmployer()
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
     }
 
-    let dateNow = new Date().toISOString().split("T")[0]
+    let dateNow = toFormattedDateString(new Date())
 
     $: toBeApprovedOffer = jobOffers
         .filter((x) => x.isApproved === null)
         .sort(
             (a, b) =>
-                new Date(a.lastModifiedDate).getTime() -
-                new Date(b.lastModifiedDate).getTime(),
+                new Date(a.lastModifiedDate!).getTime() -
+                new Date(b.lastModifiedDate!).getTime(),
         )
     $: isRefusedOffer = jobOffers.filter((x) => x.isApproved === false)
     $: offerToCome = jobOffers.filter((x) => {
         if (!x.isApproved) return false
-        let dateDebut = new Date(x.offerDebut).toISOString().split("T")[0]
-        return dateNow < dateDebut
+        let dateDebut = toFormattedDateString(new Date(x.offerDebut))
+        return x.offerDebut < dateDebut
     })
     $: offerDisplayed = jobOffers.filter((x) => {
         if (!x.isApproved) return false
-        let dateDebut = new Date(x.offerDebut).toISOString().split("T")[0]
-        let dateFin = new Date(x.deadlineApply).toISOString().split("T")[0]
+        let dateDebut = toFormattedDateString(new Date(x.offerDebut))
+        let dateFin = toFormattedDateString(new Date(x.deadlineApply))
         return dateNow >= dateDebut && dateNow <= dateFin
     })
     $: expiredOffer = jobOffers.filter((x) => {
         if (!x.isApproved) return false
-        let dateFin = new Date(x.deadlineApply).toISOString().split("T")[0]
+        let dateFin = toFormattedDateString(new Date(x.deadlineApply))
         return dateFin < dateNow
     })
 </script>
@@ -374,15 +367,13 @@
         </Modal>
     {/if}
     {#if showEditEnterprise}
-        <ModifyEnterprise handleCloseClick={closeEditEnterprise} />
+        <!-- <ModifyEnterprise handleCloseClick={closeEditEnterprise} TODO /> -->
     {/if}
-    {#if showCreateEditOffer}
+    {#if showCreateEditOfferModal}
         <Modal handleCloseClick={closeModalCreateEdit}>
             <CreateEditJobOffer
-                onFinished={onFinishedCallBack}
-                {isJobOfferEdit}
-                jobOffer={jobOfferSelected}
-                {enterprise}
+                onJobOfferProcessed={onFinishedCallBack}
+                jobOfferToEdit={jobOfferSelected}
             />
         </Modal>
     {/if}

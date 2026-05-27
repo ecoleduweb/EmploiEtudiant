@@ -3,8 +3,6 @@
     import type { Enterprise } from "../../Models/Enterprise"
     import MultiSelect from "svelte-multiselect"
     import { onMount, untrack } from "svelte"
-    import fetchCity from "../../Service/CityService"
-    import { entrepriseSchema } from "../../FormValidations/JobOffer"
     import { ValidationError } from "yup"
     import { extractErrors } from "../../ts/utils"
 

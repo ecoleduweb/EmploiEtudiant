@@ -1,15 +1,16 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import { GET, POST, PUT } from "../../ts/server"
+    import { POST, PUT } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import CreateAndEditStudy from "../../Components/StudyProgram/createAndEditStudy.svelte"
-    import { studyPrograms } from "$lib"
     import StudyProgramRow from "../../Components/StudyProgram/ProgramRow.svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
+    import { fetchStudyPrograms } from "../../Service/StudyProgramService"
 
     let showModal = $state(false)
+    let studyPrograms = $state<StudyProgram[]>([])
     let selectedProgram: StudyProgram | undefined = $state(undefined)
 
     const openModal = () => {
@@ -37,8 +38,7 @@
             const response = await POST<any, any>(`/studyProgram/new`, {
                 name: offer.name,
             })
-
-            //window.location.reload() //Pour l'unstant encore, il vas refresh la page (Ça vas venir)
+            studyPrograms.push(response.data)
         } catch (error) {
             console.error("Error creating study program:", error)
         }
@@ -46,18 +46,14 @@
         await refresh()
     }
 
-    const editStudy = async (offer: StudyProgram) => {
+    const editStudy = async (program: StudyProgram) => {
         try {
             const response = await PUT<StudyProgram, any>(
-                `/studyProgram/${offer.id}`,
-                offer,
+                `/studyProgram/${program.id}`,
+                program,
             )
-            studyPrograms.update((programs) =>
-                programs.map((program) =>
-                    program.id === offer.id
-                        ? { ...program, ...offer }
-                        : program,
-                ),
+            studyPrograms = studyPrograms.map((x) =>
+                x.id === response.data.id ? response.data : x,
             )
         } catch (error) {
             console.error("Error editing study program:", error)
@@ -80,9 +76,7 @@
 
     const getStudyPrograms = async () => {
         try {
-            let response = await GET<any>(`/studyProgram/all`)
-
-            if (response) studyPrograms.set(response)
+            studyPrograms = await fetchStudyPrograms()
         } catch (error) {
             console.error("Error fetching job offers:", error)
         }
@@ -116,7 +110,7 @@
         </div>
     </section>
     <section class="StudyPrograms">
-        {#each $studyPrograms as studyProgram}
+        {#each studyPrograms as studyProgram}
             <StudyProgramRow
                 {studyProgram}
                 handleModalClick={() => handleStudyProgramClick(studyProgram)}

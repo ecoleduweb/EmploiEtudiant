@@ -1,22 +1,12 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { onMount } from "svelte"
-    import { isLoggedIn, currentUser, studyPrograms } from "$lib" // La variable writable de login.
+    import { isLoggedIn, currentUser } from "$lib" // La variable writable de login.
     import { GET, POST } from "../../ts/server"
     import { Hamburger } from "svelte-hamburgers"
     import type { User } from "../../Models/User"
 
     let open = false
-
-    const fetchStudyPrograms = async () => {
-        try {
-            let response = await GET<any>(`/studyProgram/all`, false)
-
-            if (response) return response
-        } catch (error) {
-            console.error("Error fetching job offers:", error)
-        }
-    }
 
     const checkSession = async () => {
         try {
@@ -30,7 +20,6 @@
     }
     onMount(async () => {
         await checkSession()
-        studyPrograms.set((await fetchStudyPrograms()) ?? [])
     })
 
     const handleEmploi = () => {

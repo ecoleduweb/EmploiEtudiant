@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import Modal from "../Common/Modal.svelte"
     import { MultiSelect } from "svelte-multiselect"
     import type { Enterprise } from "../../Models/Enterprise"
@@ -10,10 +10,7 @@
     import Button from "../Inputs/Button.svelte"
     import { PUT } from "../../ts/server"
     import fetchCity from "../../Service/CityService"
-
-    interface Props {
-        handleCloseClick: () => void
-    }
+fetchCitiesAsOptions   }
 
     let { handleCloseClick }: Props = $props()
     let enterprise: Enterprise | undefined = $state()
@@ -77,7 +74,7 @@
                 <br />
                 <input
                     type="text"
-                    bind:value={enterprise.name}
+                    bind:valuefetchCitiesAsOptionsise.name}
                     class="form-control"
                     id="title"
                     readonly={false}
@@ -187,4 +184,4 @@
         justify-content: space-around;
         width: 100%;
     }
-</style>
+</style> -->

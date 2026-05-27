@@ -1,83 +1,39 @@
 <script lang="ts">
-    import getAllEnterprise from "../../Service/EnterpriseService"
     import Button from "../Inputs/Button.svelte"
     import RichTextEditor from "../Inputs/RichTextEditor.svelte"
     import MultiSelect from "svelte-multiselect"
-    import ValidationSchema, {
-        entrepriseSchema,
-    } from "../../FormValidations/JobOffer"
-    import { ValidationError } from "yup"
-    import type { JobOffer } from "../../Models/Offre"
-    import type { Enterprise } from "../../Models/Enterprise"
-    import { GET, POST, PUT } from "../../ts/server"
     import {
-        extractErrors,
-        isObjectEmpty,
-        toFormattedDateString,
-    } from "../../ts/utils"
+        validateForm,
+        jobOfferTemplate,
+    } from "../../FormValidations/JobOffer"
+    import type { JobOffer } from "../../Models/Offre"
+    import { upsertJobOffer } from "../../Service/JobOfferService"
+    import { toFormattedDateString } from "../../ts/utils"
     import { onMount } from "svelte"
-    import { currentUser, isLoggedIn, studyPrograms } from "$lib"
-    import fetchCity from "../../Service/CityService"
-    import EntrepriseDetails from "./EntrepriseDetails.svelte"
-    import CreateEditEnterprise from "./CreateEditEnterprise.svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     import { InvalidDataError } from "../../CustomError/invalidDataError"
+    import { fetchEmploymentSchedulesAsOptions } from "../../Service/EmploymentScheduleService"
+    import { fetchStudyProgramsAsOptions } from "../../Service/StudyProgramService"
+    import type { Option } from "../../Models/Option"
+    import EnterpriseSection from "./EnterpriseSection.svelte"
 
     interface Props {
-        onFinished: () => Promise<void>
-        isJobOfferEdit: boolean
-        jobOffer?: JobOffer
-        enterprise?: Enterprise
+        onJobOfferProcessed: (jobOffer: JobOffer) => Promise<void>
+        jobOfferToEdit: JobOffer | null
     }
+    let props: Props = $props()
 
-    let {
-        onFinished,
-        isJobOfferEdit,
-        jobOffer = $bindable({
-            id: 0,
-            title: "",
-            address: "",
-            description: "",
-            offerDebut: new Date().toISOString().split("T")[0],
-            dateEntryOffice: new Date().toISOString().split("T")[0],
-            deadlineApply: new Date().toISOString().split("T")[0],
-            email: "",
-            hoursPerWeek: 0,
-            internship: false,
-            offerLink: "",
-            offerStatus: 0,
-            salary: "",
-            userId: -1,
-            isApproved: false,
-            approbationMessage: "",
-            acceptCondition: false,
-            approvedDate: "",
-        }),
-        enterprise = $bindable({
-            id: 0,
-            name: "",
-            address: "",
-            email: "",
-            phone: "",
-            cityId: 0,
-            isTemporary: false,
-        }),
-    }: Props = $props()
+    const isJobOfferEdit = $derived(!!props.jobOfferToEdit)
+    const { onJobOfferProcessed: onFinished } = props
 
-    let jobOfferErrors: any = $state({})
-    let enterpriseErrors: any = $state({})
-    let invalidDataError: any = {}
-    let isModerator: boolean = $state(false)
-    let enterpriseSelected: { label: string; value: number }[] = $state([])
-    let enterpriseFromSelectedEnterprise: { label: string; value: number }[] =
-        $state([])
-    let enterpriseOption: { label: string; value: number }[] = $state([])
-    let createEnterprise: boolean = $state(false)
-    let selectedCity: { label: string; value: number }[] = $state([])
-    let cityFromEnterprise: { label: string; value: number }[] = $state([])
-    let cityOptions: { label: string; value: number }[] = $state([])
-    let scheduleIds: number[] = []
-    let loading = $state(false)
+    const jobOffer = $state<JobOffer>(jobOfferTemplate.generate())
+
+    let isSubmitting = $state(false)
+    let isFetchingOptions = $state(true)
+    let studyProgramOptions: Option[] = $state([])
+    let selectedPrograms: Option[] = $state([])
+    let employmentScheduleOptions: Option[] = $state([])
+    let selectedEmploymentSchedules: Option[] = $state([])
 
     // Derived max date from offerDebut
     let maxDateString = $derived.by(() => {
@@ -90,547 +46,330 @@
 
     let minDateString = toFormattedDateString(new Date())
 
-    // Sync cityFromEnterprise back into selectedCity
+    // Met à jour le modèle quand une des valeur dans le $effect change. Ici ce sont les selected
+    if (props.jobOfferToEdit) {
+        Object.assign(jobOffer, props.jobOfferToEdit)
+        jobOffer.offerDebut = toFormattedDateString(jobOffer.offerDebut)
+        jobOffer.dateEntryOffice = toFormattedDateString(
+            jobOffer.dateEntryOffice,
+        )
+        jobOffer.deadlineApply = toFormattedDateString(jobOffer.deadlineApply)
+    }
+
     $effect(() => {
-        if (cityFromEnterprise.length > 0) {
-            selectedCity = cityFromEnterprise
-        }
+        if (isFetchingOptions) return
+        const schedules = selectedEmploymentSchedules.map((opt) => ({
+            id: opt.value as number,
+            description: opt.label,
+        }))
+        jobOffer.employmentSchedules = schedules
+        setFields("employmentSchedules", schedules)
+        $errors.employmentSchedules = undefined
     })
 
-    const fetchEnterprise = async () => {
-        // TODO fix this, la route est morte
-        // si le user n'a pas d'entrerpise,on met  isEnterpriseSeenterpriseId = false
-        let response = undefined
-        if (isJobOfferEdit === true) {
-            // TODO fix this, la route est morte
-            // Permet d'aller chercher l'entreprise si on possède la dite entreprise.
-            response = await GET<any>(`/enterprise/employer/${jobOffer.userId}`)
-        } else if (!isModerator) {
-            // Permet d'aller chercher l'entreprise si on possède la dite entreprise.
-            // const employer = await GET<any>("/employer/currentEmployer")
-            // jobOffer.userd = employer?.id
-            // if (employer)
-            //     response = await GET<any>(`/enterprise/employer/${employer.id}`)
-        }
-        if (response !== undefined) {
-            enterprise = response
-            selectedCity = cityOptions.filter(
-                (x) => x.value === enterprise.cityId,
-            )
-            cityFromEnterprise = selectedCity
-            createEnterprise = true
-        } else {
-            // Permet de créer une nouvelle entreprise si aucune n'est associée à l'offre ou à l'employeur
-            createEnterprise = false
-        }
-    }
+    $effect(() => {
+        if (isFetchingOptions) return
+        jobOffer.enterpriseId = jobOffer.enterprise?.id
+        setFields("enterpriseId", jobOffer.enterpriseId)
+        $errors.enterpriseId = undefined
+    })
 
-    const fetchEmploymentSchedule = async () => {
-        // TODO plus besoin sera intégéré au job offer
-        const response = await GET<any>(
-            `/employmentSchedule/getByOfferId/${jobOffer.id}`,
-        )
-        scheduleSelected = scheduleOption.filter(
-            (option: { label: string; value: number }) =>
-                response.some(
-                    (schedule: { id: number }) => schedule.id === option.value,
-                ),
-        )
-    }
+    $effect(() => {
+        if (isFetchingOptions) return
+        const programs = selectedPrograms.map((opt) => ({
+            id: opt.value as number,
+            name: opt.label,
+        }))
+        jobOffer.studyPrograms = programs
+        setFields("studyPrograms", programs)
+        $errors.studyPrograms = undefined
+    })
 
     onMount(async () => {
-        cityOptions = await fetchCity()
-        if ($isLoggedIn) {
-            isModerator = ($currentUser as any).isModerator
-        }
-        if (isModerator === true) {
-            enterpriseOption = await getAllEnterprise()
-        }
-        await fetchEnterprise()
-        await getSchedule()
+        isFetchingOptions = true
+        ;[employmentScheduleOptions, studyProgramOptions] = await Promise.all([
+            fetchEmploymentSchedulesAsOptions(),
+            fetchStudyProgramsAsOptions(),
+        ])
         if (isJobOfferEdit) {
-            await getScheduleByOfferId()
-        }
-        if (isJobOfferEdit === true) {
-            const schedules = scheduleOption.filter((s) =>
-                scheduleIds.includes(s.value),
+            selectedEmploymentSchedules = jobOffer.employmentSchedules.map(
+                (schedule) => ({
+                    label: schedule.description,
+                    value: schedule.id,
+                }),
             )
-            if (schedules.length > 0) {
-                scheduleSelected = schedules.map((schedule) => ({
-                    label: schedule.label,
-                    value: schedule.value,
-                }))
-            }
-            // TODO fix this, la route est morte
-            const programs = await GET<any>(`/offerProgram/${jobOffer.id}`)
-            selectedPrograms = programs
-                .map((programId: number) => {
-                    let program = programOptions.find(
-                        (p) => p.value === programId,
-                    )
-                    return program
-                        ? { label: program.label, value: program.value }
-                        : null
-                })
-                .filter((p: number) => p !== null)
+
+            selectedPrograms = jobOffer.studyPrograms.map((program) => ({
+                label: program.name,
+                value: program.id,
+            }))
         }
-        if (isJobOfferEdit) {
-            await fetchEmploymentSchedule()
-        }
+        isFetchingOptions = false
     })
-
-    // TODO prendre l'enterprise dans l'objet JobOffer quand on aura fix le DTO
-    const setEnterpriseIfSelected = async (enterpriseId: number) => {
-        const response = await GET<any>(`/enterprise/${enterpriseId}`)
-        enterprise = response
-        const city = cityOptions.find(
-            (ville) => ville.value === response.cityId,
-        )
-        if (city) {
-            selectedCity = [city]
-            cityFromEnterprise = [city]
-        }
-        createEnterprise = enterprise !== undefined
-    }
-
-    let selectedPrograms: { label: string; value: number }[] = $state([])
-
-    let programOptions: { label: string; value: number }[] = $studyPrograms
-        .map((x: any) => ({ label: x.name, value: x.id }))
-        .sort((a: any, b: any) =>
-            a.label.localeCompare(b.label, "fr", { sensitivity: "base" }),
-        )
-
-    const getSchedule = async () => {
-        const response = await GET<any>(`/employmentSchedule/all`)
-        scheduleOption = response.map(
-            (schedule: { id: number; description: string }) => ({
-                label: schedule.description,
-                value: schedule.id,
-            }),
-        )
-    }
-
-    const getScheduleByOfferId = async () => {
-        const response = await GET<any>(
-            `/employmentSchedule/getByOfferId/${jobOffer.id}`,
-        )
-        scheduleSelected = response.map(
-            (schedule: { id: number; description: string }) => ({
-                label: schedule.description,
-                value: schedule.id,
-            }),
-        )
-    }
-
-    let scheduleSelected: { label: string; value: number }[] = $state([])
-
-    let scheduleFromExistingOffer: { label: string; value: number }[] = $state(
-        [],
-    )
-    let scheduleOption: { label: string; value: number }[] = $state([])
 
     const handleSubmit = async () => {
         try {
-            loading = true
-            jobOfferErrors = {}
-            enterpriseErrors = {}
-            if (isJobOfferEdit) {
-                await updateJobOffer()
-            } else {
-                await createJobOffer()
+            isSubmitting = true
+            const [updated, errorResponse] = await upsertJobOffer(jobOffer)
+            if (errorResponse) {
+                errors.set(errorResponse)
+            } else if (updated) {
+                onFinished(updated)
             }
         } catch (err) {
             console.error(err)
         } finally {
-            loading = false
+            isSubmitting = false
         }
     }
-
-    const handleEnterprise = () => {
-        window.open("/enterprise", "_blank")
-    }
-
-    const prepareAndThrowIfFormIsInvalid = async () => {
-        try {
-            enterprise.cityId = selectedCity[0]?.value ?? -1
-            await entrepriseSchema.validate(enterprise, { abortEarly: false })
-        } catch (err) {
-            if (err instanceof ValidationError) {
-                enterpriseErrors = extractErrors(err)
-            }
-        }
-
-        try {
-            scheduleIds =
-                Array.isArray(scheduleSelected) && scheduleSelected.length !== 0
-                    ? scheduleSelected.map((schedule) => schedule.value)
-                    : []
-            const jobOfferToValidate = {
-                ...jobOffer,
-                studyPrograms: selectedPrograms,
-                scheduleIds,
-            }
-            if (jobOffer?.approbationMessage === null) {
-                jobOffer.approbationMessage = ""
-            }
-            await ValidationSchema.validate(jobOfferToValidate, {
-                abortEarly: false,
-            })
-        } catch (err) {
-            if (err instanceof ValidationError) {
-                loading = false
-                jobOfferErrors = extractErrors(err)
-            }
-        }
-
-        if (
-            !isObjectEmpty(enterpriseErrors) ||
-            !isObjectEmpty(jobOfferErrors)
-        ) {
-            loading = false
-            throw new Error("Validation failed")
-        }
-
-        return {
-            enterprise: { ...enterprise },
-            jobOffer: { ...(({ acceptCondition, ...rest }) => rest)(jobOffer) },
-            studyPrograms: selectedPrograms.map((p) => p.value),
-            scheduleIds,
-        }
-    }
-
-    async function createJobOffer() {
-        try {
-            const requestData = await prepareAndThrowIfFormIsInvalid()
-            const response = await POST<any, any>(
-                "/jobOffer/new",
-                requestData,
-                false,
-            )
-            if (response) onFinished()
-        } catch (err: any) {
-            if (err instanceof InvalidDataError) {
-                jobOfferErrors = { [err.field]: err.message }
-            } else {
-                console.error("Not Invalid data error", err)
-            }
-        }
-    }
-
-    async function updateJobOffer() {
-        try {
-            const requestData = await prepareAndThrowIfFormIsInvalid()
-            const response = await PUT<any, any>(
-                `/jobOffer/${jobOffer.id}`,
-                requestData,
-                false,
-            )
-            if (response) onFinished()
-        } catch (err: any) {
-            if (err instanceof InvalidDataError) {
-                jobOfferErrors = { [err.field]: err.message }
-            } else {
-                console.error("Not Invalid data error", err)
-            }
-        }
-    }
+    const { form, errors, setFields } = validateForm(handleSubmit, jobOffer)
 </script>
 
-<form
-    onsubmit={(e) => {
-        e.preventDefault()
-        handleSubmit()
-    }}
-    class="form-offre"
->
-    <div class="content-form">
-        {#if jobOffer.id !== 0}
-            {#if jobOffer.isApproved === true}
-                <h3 style="color: green;">
-                    Raison d'acceptation: {jobOffer.approbationMessage}
-                </h3>
-            {:else if jobOffer.isApproved === false}
-                <h3 style="color: red;">
-                    Raison du refus: {jobOffer.approbationMessage}
-                </h3>
-            {/if}
-        {/if}
-
-        {#if !isJobOfferEdit}
-            {#if isModerator}
-                <h1>Sélectionner une entreprise existante</h1>
-                <div class="form-group-horizontal">
-                    {#if enterpriseOption.length}
-                        <MultiSelect
-                            id="enterprise"
-                            options={enterpriseOption}
-                            closeDropdownOnSelect={true}
-                            maxSelect={1}
-                            placeholder="Choisir une entreprise..."
-                            bind:selected={enterpriseFromSelectedEnterprise}
-                            onchange={(e: any) => {
-                                const added =
-                                    e?.detail?.option ??
-                                    enterpriseFromSelectedEnterprise[0]
-                                if (added) setEnterpriseIfSelected(added.value)
-                            }}
-                        />
-                    {:else}
-                        <LoadingSpinner />
-                    {/if}
-                    <div class="button-add">
-                        <Button
-                            submit={false}
-                            text="Ajouter"
-                            onClick={() => handleEnterprise()}
-                        />
-                    </div>
-                </div>
-                {#if enterprise.id !== 0 && selectedCity.length !== 0}
-                    <EntrepriseDetails {enterprise} {selectedCity} />
-                {/if}
-            {:else}
-                <h1>
-                    Création d'une nouvelle <span class="hightlight"
-                        >entreprise</span
-                    >
-                </h1>
-                {#if createEnterprise}
-                    <CreateEditEnterprise
-                        bind:enterprise
-                        errorsEnterprise={enterpriseErrors}
-                        {cityOptions}
-                        bind:cityFromEnterprise
-                    />
-                {:else}
-                    <EntrepriseDetails {enterprise} {selectedCity} />
+<div class="content-form">
+    <h1>
+        {isJobOfferEdit ? "Modification d'une" : "Création d'une"}
+        <span class="hightlight">offre d'emploi</span>
+    </h1>
+    <form use:form class="form-offre">
+        <div class="content-form">
+            {#if jobOffer.id !== 0 && jobOffer.approbationMessage}
+                <h3 style="color: orange;">Offre en attente d'approbation</h3>
+                {#if jobOffer.isApproved === true}
+                    <h3 style="color: green;">
+                        Message d'approbation: {jobOffer.approbationMessage}
+                    </h3>
+                {:else if jobOffer.isApproved === false}
+                    <h3 style="color: red;">
+                        Raison du refus: {jobOffer.approbationMessage}
+                    </h3>
                 {/if}
             {/if}
-            <h1>
-                Création d'une nouvelle <span class="hightlight"
-                    >offre d'emploi</span
-                >
-            </h1>
-        {:else}
-            <h1>Mon entreprise</h1>
-            <EntrepriseDetails {enterprise} {selectedCity} />
-            <h1>
-                Modification d'une <span class="hightlight">offre d'emploi</span
-                >
-            </h1>
-        {/if}
 
-        <div class="form-group-vertical">
-            <label for="title">Poste visé*</label>
-            <input
-                type="text"
-                bind:value={jobOffer.title}
-                class="form-control"
-                id="title"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.title}{jobOfferErrors.title}{/if}
-        </p>
+            <EnterpriseSection bind:enterprise={jobOffer.enterprise} {errors} />
+            <div class="form-group-vertical">
+                <label for="title">Poste visé*</label>
+                <input
+                    type="text"
+                    bind:value={jobOffer.title}
+                    name="title"
+                    class="form-control"
+                    id="title"
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.title}{$errors.title}{/if}
+            </p>
 
-        <div class="form-group-vertical">
-            <label for="schedule">Types d'emploi*</label>
-            {#if scheduleOption.length}
+            <div class="form-group-vertical">
+                <label for="schedule">Types d'emploi*</label>
                 <MultiSelect
                     id="schedule"
-                    options={scheduleOption}
+                    name="employmentSchedules"
+                    options={employmentScheduleOptions as any[]}
                     closeDropdownOnSelect={true}
+                    loading={isFetchingOptions}
                     placeholder="Choisir période(s)..."
-                    bind:selected={scheduleSelected}
-                />
-            {:else}
-                <LoadingSpinner />
-            {/if}
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.scheduleIds}{jobOfferErrors.scheduleIds}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="address">Adresse du lieu de travail*</label>
-            <input
-                type="text"
-                bind:value={jobOffer.address}
-                class="form-control"
-                id="address"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.address}{jobOfferErrors.address}{/if}
-        </p>
-
-        <div class="form-group-horizontal-date">
-            <div class="form-group-vertical">
-                <label for="offerDebut">Date de publication de l'offre</label>
-                <input
-                    type="date"
-                    bind:value={jobOffer.offerDebut}
-                    class="form-control"
-                    id="offerDebut"
-                    min={minDateString}
+                    bind:selected={selectedEmploymentSchedules as any[]}
                 />
             </div>
             <p class="errors-input">
-                {#if jobOfferErrors.offerDebut}{jobOfferErrors.offerDebut}{/if}
+                {#if $errors.employmentSchedules}{$errors.employmentSchedules}{/if}
             </p>
 
             <div class="form-group-vertical">
-                <label for="dateEntryOffice"
-                    >Date d'entrée en fonction de l'emploi*</label
-                >
+                <label for="address">Adresse du lieu de travail*</label>
                 <input
-                    type="date"
-                    bind:value={jobOffer.dateEntryOffice}
+                    type="text"
+                    name="address"
+                    bind:value={jobOffer.address}
                     class="form-control"
-                    id="dateEntryOffice"
-                    min={minDateString}
+                    id="address"
                 />
             </div>
             <p class="errors-input">
-                {#if jobOfferErrors.dateEntryOffice}{jobOfferErrors.dateEntryOffice}{/if}
+                {#if $errors.address}{$errors.address}{/if}
             </p>
+
+            <div class="form-group-horizontal-date">
+                <div class="form-group-vertical">
+                    <label for="offerDebut"
+                        >Date de publication de l'offre</label
+                    >
+                    <input
+                        type="date"
+                        bind:value={jobOffer.offerDebut}
+                        name="offerDebut"
+                        class="form-control"
+                        id="offerDebut"
+                        min={minDateString}
+                    />
+                </div>
+                <p class="errors-input">
+                    {#if $errors.offerDebut}{$errors.offerDebut}{/if}
+                </p>
+
+                <div class="form-group-vertical">
+                    <label for="dateEntryOffice"
+                        >Date d'entrée en fonction de l'emploi*</label
+                    >
+                    <input
+                        type="date"
+                        bind:value={jobOffer.dateEntryOffice}
+                        class="form-control"
+                        name="dateEntryOffice"
+                        id="dateEntryOffice"
+                        min={minDateString}
+                    />
+                </div>
+                <p class="errors-input">
+                    {#if $errors.dateEntryOffice}{$errors.dateEntryOffice}{/if}
+                </p>
+
+                <div class="form-group-vertical">
+                    <label for="deadlineApply">Date limite pour postuler*</label
+                    >
+                    <input
+                        type="date"
+                        bind:value={jobOffer.deadlineApply}
+                        class="form-control"
+                        name="deadlineApply"
+                        id="deadlineApply"
+                        max={maxDateString}
+                        min={jobOffer.offerDebut}
+                    />
+                </div>
+                <p class="errors-input">
+                    {#if $errors.deadlineApply}{$errors.deadlineApply}{/if}
+                </p>
+            </div>
 
             <div class="form-group-vertical">
-                <label for="deadlineApply">Date limite pour postuler*</label>
-                <input
-                    type="date"
-                    bind:value={jobOffer.deadlineApply}
-                    class="form-control"
-                    id="deadlineApply"
-                    max={maxDateString}
-                    min={jobOffer.offerDebut}
-                />
-            </div>
-            <p class="errors-input">
-                {#if jobOfferErrors.deadlineApply}{jobOfferErrors.deadlineApply}{/if}
-            </p>
-        </div>
-
-        <div class="form-group-vertical">
-            <label for="programme">Programme visé*</label>
-            {#if programOptions.length}
+                <label for="programme">Programme visé*</label>
                 <MultiSelect
+                    loading={isFetchingOptions}
                     id="programme"
-                    options={programOptions}
+                    name="studyPrograms"
+                    options={studyProgramOptions as any[]}
                     closeDropdownOnSelect={true}
                     placeholder="Choisir programme(s)..."
                     bind:selected={selectedPrograms}
                 />
-            {:else}
-                <LoadingSpinner />
-            {/if}
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.studyPrograms}{jobOfferErrors.studyPrograms}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="salary">Salaire horaire</label>
-            <input
-                type="text"
-                bind:value={jobOffer.salary}
-                class="form-control"
-                id="salary"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.salary}{jobOfferErrors.salary}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="hoursPerWeek">Heures/semaine*</label>
-            <input
-                type="text"
-                bind:value={jobOffer.hoursPerWeek}
-                class="form-control"
-                id="hoursPerWeek"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.hoursPerWeek}{jobOfferErrors.hoursPerWeek}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="offerLink">Lien vers l'offre d'emploi détaillée</label>
-            <input
-                type="text"
-                bind:value={jobOffer.offerLink}
-                class="form-control"
-                id="offerLink"
-                placeholder="https://www.exemple.com/"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.offerLink}{jobOfferErrors.offerLink}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="email">Courriel contact*</label>
-            <input
-                type="text"
-                bind:value={jobOffer.email}
-                class="form-control"
-                id="email"
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.email}{jobOfferErrors.email}{/if}
-        </p>
-
-        <div class="form-group-vertical">
-            <label for="description">Description du poste*</label>
-            <RichTextEditor
-                description={jobOffer.description}
-                onchange={(content) => (jobOffer.description = content)}
-            />
-        </div>
-        <p class="errors-input">
-            {#if jobOfferErrors.description}{jobOfferErrors.description}{/if}
-        </p>
-
-        <div class="accept-Condition">
-            <div class="accept-horiz">
-                <input
-                    type="checkbox"
-                    bind:checked={jobOffer.acceptCondition}
-                    class="form-control-acceptCondition"
-                    id="acceptCondition"
-                />
-                <label for="acceptCondition">J'accepte les conditions*</label>
             </div>
             <p class="errors-input">
-                {#if jobOfferErrors.acceptCondition}{jobOfferErrors.acceptCondition}{/if}
+                {#if $errors.studyPrograms}{$errors.studyPrograms}{/if}
             </p>
 
-            {#if loading}
-                <LoadingSpinner />
-            {:else}
-                <div class="send">
-                    <Button
-                        submit={true}
-                        text="Envoyer"
-                        onClick={() => handleSubmit()}
+            <div class="form-group-vertical">
+                <label for="salary">Salaire horaire</label>
+                <input
+                    type="text"
+                    bind:value={jobOffer.salary}
+                    class="form-control"
+                    id="salary"
+                    name="salary"
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.salary}{$errors.salary}{/if}
+            </p>
+
+            <div class="form-group-vertical">
+                <label for="hoursPerWeek">Heures/semaine*</label>
+                <input
+                    type="text"
+                    bind:value={jobOffer.hoursPerWeek}
+                    class="form-control"
+                    id="hoursPerWeek"
+                    name="hoursPerWeek"
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.hoursPerWeek}{$errors.hoursPerWeek}{/if}
+            </p>
+
+            <div class="form-group-vertical">
+                <label for="offerLink"
+                    >Lien vers l'offre d'emploi détaillée</label
+                >
+                <input
+                    type="text"
+                    bind:value={jobOffer.offerLink}
+                    class="form-control"
+                    id="offerLink"
+                    name="offerLink"
+                    placeholder="https://www.exemple.com/"
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.offerLink}{$errors.offerLink}{/if}
+            </p>
+
+            <div class="form-group-vertical">
+                <label for="email">Courriel contact*</label>
+                <input
+                    type="text"
+                    bind:value={jobOffer.email}
+                    class="form-control"
+                    id="email"
+                    name="email"
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.email}{$errors.email}{/if}
+            </p>
+
+            <div class="form-group-vertical">
+                <label for="description">Description du poste*</label>
+                <RichTextEditor
+                    name="description"
+                    content={jobOffer.description}
+                />
+            </div>
+            <p class="errors-input">
+                {#if $errors.description}{$errors.description}{/if}
+            </p>
+
+            <div class="accept-Condition">
+                <div class="accept-horiz">
+                    <input
+                        type="checkbox"
+                        bind:checked={jobOffer.acceptCondition}
+                        class="form-control-acceptCondition"
+                        id="acceptCondition"
+                        name="acceptCondition"
                     />
+                    <label for="acceptCondition"
+                        >J'accepte les conditions*</label
+                    >
                 </div>
-            {/if}
-        </div>
+                <p class="errors-input">
+                    {#if $errors.acceptCondition}{$errors.acceptCondition}{/if}
+                </p>
 
-        <div>
-            <p class="condition">
-                *Je consens à ce que les coordonnées inscrites dans le
-                formulaire soient diffusées sur le site d'offre d'emploi du
-                Cégep de Rivière-du-Loup afin que des personnes intéressées par
-                mes offres d'emploi puissent me contacter.
-            </p>
+                {#if isSubmitting}
+                    <LoadingSpinner />
+                {:else}
+                    <div class="send">
+                        <Button
+                            submit={true}
+                            text="Envoyer"
+                            onClick={() => handleSubmit()}
+                        />
+                    </div>
+                {/if}
+            </div>
+
+            <div>
+                <p class="condition">
+                    *Je consens à ce que les coordonnées inscrites dans le
+                    formulaire soient diffusées sur le site d'offre d'emploi du
+                    Cégep de Rivière-du-Loup afin que des personnes intéressées
+                    par mes offres d'emploi puissent me contacter.
+                </p>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
 <!-- styles unchanged -->
 <style>
@@ -656,13 +395,6 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-    }
-    .form-group-horizontal {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 80%;
-        margin: 1vh 0;
     }
     .form-group-vertical {
         display: flex;
@@ -705,11 +437,6 @@
         .form-offre {
             max-height: 100%;
         }
-        .form-group-horizontal {
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
         .form-group-vertical {
             width: 70%;
         }
@@ -734,9 +461,6 @@
         }
         .send {
             margin-bottom: 0vw;
-        }
-        .button-add {
-            margin-top: 2vw;
         }
         .condition {
             margin-top: 2vh;

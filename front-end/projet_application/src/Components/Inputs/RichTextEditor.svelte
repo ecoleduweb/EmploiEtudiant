@@ -2,47 +2,41 @@
     import { onMount, onDestroy } from "svelte"
     import { Editor } from "@tiptap/core"
     import StarterKit from "@tiptap/starter-kit"
-    import Underline from "@tiptap/extension-underline"
 
     interface Props {
-        description?: string | null
-        element?: any
-        onchange?: (content: string) => void
+        content: string
+        name: string
     }
 
-    let {
-        description = $bindable(null),
-        element = $bindable(null),
-        onchange,
-    }: Props = $props()
+    let { content = $bindable(), name }: Props = $props()
 
-    let editor: any = $state(null)
+    let editor: Editor | undefined = $state()
+    let element: HTMLDivElement | undefined = $state()
+
+    onDestroy(() => {
+        editor?.destroy()
+    })
 
     onMount(() => {
         editor = new Editor({
             element: element,
-            extensions: [StarterKit, Underline],
-            content: description || "",
+            extensions: [StarterKit],
+            content,
             onTransaction: () => {
                 editor = editor
             },
         })
 
-        const editorElement = element.querySelector(".ProseMirror")
-        if (editorElement) {
-            editorElement.style.textAlign = "left"
-            editorElement.style.minHeight = "200px"
-            editorElement.style.padding = "10px"
-            editorElement.style.fontSize = "16px"
-            editorElement.style.lineHeight = "1.5"
-            editorElement.style.color = "#333"
-        }
-
         editor.on("update", ({ editor }: any) => {
-            const content = editor.getHTML()
-            description = content
-            onchange?.(content)
+            content = editor.getHTML()
         })
+    })
+
+    // Au chargement, si content est vide, on ne capture pas le changement qui provient du parent. On recharge l'éditeur si le parent modifie le contenu.
+    $effect(() => {
+        if (editor && content !== editor.getHTML()) {
+            editor.commands.setContent(content, { emitUpdate: false })
+        }
     })
 
     onDestroy(() => {
@@ -58,9 +52,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleBold().run()
+                    editor!.chain().focus().toggleBold().run()
                 }}
-                class:active={editor.isActive("bold")}
+                class:active={editor!.isActive("bold")}
                 title="Gras"
             >
                 <strong>G</strong>
@@ -68,9 +62,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleItalic().run()
+                    editor!.chain().focus().toggleItalic().run()
                 }}
-                class:active={editor.isActive("italic")}
+                class:active={editor!.isActive("italic")}
                 title="Italique"
             >
                 <i>I</i>
@@ -78,9 +72,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleUnderline().run()
+                    editor!.chain().focus().toggleUnderline().run()
                 }}
-                class:active={editor.isActive("underline")}
+                class:active={editor!.isActive("underline")}
                 title="Souligné"
             >
                 <u>U</u>
@@ -89,9 +83,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleHeading({ level: 2 }).run()
+                    editor!.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
-                class:active={editor.isActive("heading", { level: 2 })}
+                class:active={editor!.isActive("heading", { level: 2 })}
                 title="Titre"
             >
                 Titre
@@ -99,9 +93,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleBulletList().run()
+                    editor!.chain().focus().toggleBulletList().run()
                 }}
-                class={editor.isActive("bulletList") ? "is-active" : ""}
+                class={editor!.isActive("bulletList") ? "is-active" : ""}
                 title="Liste à puces"
             >
                 <div class="bullet-list">
@@ -113,9 +107,9 @@
             <button
                 onclick={(e) => {
                     e.preventDefault()
-                    editor.chain().focus().toggleOrderedList().run()
+                    editor!.chain().focus().toggleOrderedList().run()
                 }}
-                class={editor.isActive("orderedList") ? "is-active" : ""}
+                class={editor!.isActive("orderedList") ? "is-active" : ""}
                 title="Liste numérotée"
             >
                 <div class="ordered-list">
@@ -128,9 +122,9 @@
                 <button
                     onclick={(e) => {
                         e.preventDefault()
-                        editor.chain().focus().undo().run()
+                        editor!.chain().focus().undo().run()
                     }}
-                    disabled={!editor.can().chain().focus().undo().run()}
+                    disabled={!editor!.can().chain().focus().undo().run()}
                     title="Retour en arrière"
                     style="font-size: 1.1em;"
                 >
@@ -139,9 +133,9 @@
                 <button
                     onclick={(e) => {
                         e.preventDefault()
-                        editor.chain().focus().redo().run()
+                        editor!.chain().focus().redo().run()
                     }}
-                    disabled={!editor.can().chain().focus().redo().run()}
+                    disabled={!editor!.can().chain().focus().redo().run()}
                     title="Retour en avant"
                     style="font-size: 1.1em;"
                 >
@@ -150,10 +144,20 @@
             </div>
         </div>
     {/if}
-    <div class="rich-text-content" bind:this={element}></div>
+    <div class="rich-text-content" bind:this={element} data-name={name}></div>
+    <input type="hidden" {name} value={content || ""} />
 </div>
 
 <style>
+    .rich-text-content {
+        text-align: left;
+        min-height: 200px;
+        padding: 10px;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333;
+    }
+
     .editor-wrapper {
         border: 1px solid #ccc;
         border-radius: 4px;

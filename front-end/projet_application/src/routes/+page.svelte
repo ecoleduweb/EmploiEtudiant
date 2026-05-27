@@ -3,7 +3,6 @@
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
-    import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
     import TableEmplois from "../Components/JobOffer/TableOffer.svelte"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"

@@ -23,7 +23,7 @@ export const enterpriseMocks = {
         }
     },
     enterpriseEmployer: {
-        url: '*/**/enterprise/employer/*',
+        url: '*/**/enterprise/currentEnterprise',
         response: {
             status: 200,
             json: {

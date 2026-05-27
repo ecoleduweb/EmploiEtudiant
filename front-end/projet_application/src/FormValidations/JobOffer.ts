@@ -1,5 +1,7 @@
 import * as yup from "yup"
 import { checkUrlAccessibility } from "../ts/utils"
+import type { JobOffer } from "../Models/Offre"
+import { createForm } from "felte"
 
 const schema = yup.object().shape({
     title: yup
@@ -78,8 +80,6 @@ const schema = yup.object().shape({
             }
             return true;
         }),
-
-    idProgramme: yup.array().min(1, "Le programme visé est requis"),
     acceptCondition: yup
         .boolean()
         .required("Vous devez accepter les conditions")
@@ -88,40 +88,94 @@ const schema = yup.object().shape({
         .array()
         .min(1, "Le programme visé est requis")
         .required("Le programme visé est requis"),
-    scheduleIds: yup
+    employmentSchedules: yup
         .array()
-        .min(1, "Le type d'emploi est requis")
-        .required("Le type d'emploi est requis")
-})
-
-export default schema
-
-export const entrepriseSchema = yup.object().shape({
-    address: yup
-        .string()
-        .required("Vous devez ajouter une adresse à votre entreprise")
-        .max(255, "L'adresse de l'entreprise doit être au maximum 255 caractères"),
-    cityId: yup
+        .min(1, "Au moins un type d'emploi est requis")
+        .required("Le type d'emploi est requis"),
+    enterpriseId: yup
         .number()
-        .required("Vous devez mettre une ville à votre entreprise")
-        .test(
-            "is-number",
-            "Vous devez mettre une ville à votre entreprise",
-            (value) => {
-                return value >= 1
-            }
-        ),
-    email: yup
-        .string()
-        .required("Votre entreprise doit avoir un courriel")
-        .email("Le courriel doit être valide")
-        .max(255, "Le courriel doit être 255 caractères maximum"),
-    name: yup
-        .string()
-        .required("Vous devez nommer votre entreprise")
-        .max(255, "Le nom de votre entreprise doit être maximum 255 caractères"),
-    phone: yup
-        .string()
-        .required("Vous devez mettre un numéro de téléphone à votre entreprise")
-        .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
+        .min(1, "Vous devez choisir une entreprise")
+        .required("Vous devez choisir une entreprise"),
+    enterprise: yup.object().shape({
+        address: yup
+            .string()
+            .required("Vous devez ajouter une adresse à votre entreprise")
+            .max(255, "L'adresse de l'entreprise doit être au maximum 255 caractères"),
+        cityId: yup
+            .number()
+            .required("Vous devez mettre une ville à votre entreprise")
+            .test(
+                "is-number",
+                "Vous devez mettre une ville à votre entreprise",
+                (value) => {
+                    return value >= 1
+                }
+            ),
+        email: yup
+            .string()
+            .required("Votre entreprise doit avoir un courriel")
+            .email("Le courriel doit être valide")
+            .max(255, "Le courriel doit être 255 caractères maximum"),
+        name: yup
+            .string()
+            .required("Vous devez nommer votre entreprise")
+            .max(255, "Le nom de votre entreprise doit être maximum 255 caractères"),
+        phone: yup
+            .string()
+            .required("Vous devez mettre un numéro de téléphone à votre entreprise")
+            .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
+    })
 })
+
+export const validateForm = (handleSubmit: (values: any) => void, jobOffer: JobOffer) => {
+    return createForm({
+        initialValues: { ...jobOffer },
+        validate: async (values) => {
+            try {
+                await schema.validate(values, { abortEarly: false });
+                return {};
+            } catch (err: any) {
+                const errors: any = {};
+                err.inner.forEach((value: any) => {
+                    errors[value.path] = value.message;
+                });
+
+                return errors;
+            }
+        },
+        onSubmit: handleSubmit,
+    });
+}
+
+export const jobOfferTemplate = {
+    generate: (): JobOffer => ({
+        id: 0,
+        title: "",
+        address: "",
+        description: "",
+        offerDebut: new Date().toISOString().split("T")[0],
+        dateEntryOffice: new Date().toISOString().split("T")[0],
+        deadlineApply: new Date().toISOString().split("T")[0],
+        email: "",
+        hoursPerWeek: 0,
+        internship: false,
+        offerLink: "",
+        offerStatus: 0,
+        salary: "",
+        isApproved: false,
+        approbationMessage: "",
+        acceptCondition: false,
+        employmentSchedules: [],
+        studyPrograms: [],
+        approvedDate: "",
+        enterprise: {
+            id: 0,
+            name: "",
+            address: "",
+            email: "",
+            phone: "",
+            cityId: 0,
+            isTemporary: false,
+        },
+    })
+}

@@ -8,8 +8,8 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import { enterprises } from "$lib"
     import Modal from "../../Components/Common/Modal.svelte"
-    import fetchCity from "../../Service/CityService"
-    import { getCityName } from "../../Service/CityService"
+    import { fetchCitiesAsOptions } from "../../Service/CityService"
+    import { getCityNameById } from "../../Service/CityService"
 
     let createEnterprise = false
     let modalOpened = $state(false)
@@ -98,7 +98,7 @@
     }
 
     onMount(async () => {
-        await fetchCity()
+        await fetchCitiesAsOptions()
         await getEnterprises()
     })
 
@@ -113,7 +113,7 @@
                 const enterprisesWithCity: EnterpriseWithCity[] =
                     await Promise.all(
                         $enterprises.map(async (enterprise) => {
-                            const cityName = await getCityName(
+                            const cityName = await getCityNameById(
                                 enterprise.cityId,
                             )
                             return { ...enterprise, cityName }

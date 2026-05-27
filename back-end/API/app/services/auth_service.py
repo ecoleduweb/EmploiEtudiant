@@ -19,6 +19,7 @@ logger = getLogger(__name__)
 
 hasher = PasswordHasher()
 # TODO quand on met le mauvais mot de passe, ca dit compte desactive
+# Reset password, la route n'existe plus :(
 class AuthService:
     def login(self, dto: UserLoginDTO):
         try:

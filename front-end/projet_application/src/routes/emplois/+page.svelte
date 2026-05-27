@@ -1,155 +1,106 @@
 <script lang="ts">
     import "../../styles/global.css"
-    import DetailOfferRow from "../../Components/JobOffer/DetailOfferRow.svelte"
     import OfferDetail from "../../Components/JobOffer/OfferDetail.svelte"
-    import { GET } from "../../ts/server"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
-    import TableEmplois from "../../Components/JobOffer/TableOffer.svelte"
+    import TableOffer from "../../Components/JobOffer/TableOffer.svelte"
     import { pushState } from "$app/navigation"
     import { page } from "$app/stores"
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
-    import { studyPrograms } from "$lib"
+    import type { JobOffer } from "../../Models/Offre"
     import MultiSelect from "svelte-multiselect"
     import Button from "../../Components/Inputs/Button.svelte"
+    import { fetchEmploymentSchedulesAsOptions } from "../../Service/EmploymentScheduleService"
+    import { fetchApprovedJobOffers } from "../../Service/JobOfferService"
+    import { fetchStudyProgramsAsOptions } from "../../Service/StudyProgramService"
+    import type { Option } from "../../Models/Option"
 
-    let showModal = false
-    let loaded = false
-    let selectedOffer: JobOfferDetails = undefined as any
-    let showFilterOffer = false
+    let showModal = $state(false)
+    let loaded = $state(false)
+    let selectedOffer: JobOffer = $state(undefined as any)
+    let showFilterModal = $state(false)
+    const allProgramsId = 16 // Gros fix super sale qui retourne le id du "programme" générique "Tous les programmes" pour le comparer lors du filtrage. C'est le id en prod :S
 
     const handleFilterOffer = () => {
-        showFilterOffer = true
+        showFilterModal = true
     }
 
     const closeFilterModal = () => {
-        showFilterOffer = false
+        showFilterModal = false
     }
 
-    const handleAddJobOfferClick = (offer: JobOfferDetails) => {
+    const handleShowJobOfferModal = (offer: JobOffer) => {
         showModal = true
         selectedOffer = offer
         pushState("?id=" + offer.id, {})
     }
 
-    const closeModal = () => {
+    const handleCloseJobOfferModal = () => {
         showModal = false
         pushState("/emplois", {})
     }
 
-    let jobOffers: JobOfferDetails[] = []
-    let filteredOffers: JobOfferDetails[] = []
+    let jobOffers: JobOffer[] = $state([])
+    let filteredOffers: JobOffer[] = $state([])
 
-    let programOptions: { label: string; value: number }[] = []
-    let selectedPrograms: { label: string; value: number }[] = []
+    let programOptions: Option[] = $state([])
+    let selectedPrograms: Option[] = $state([])
 
-    let scheduleOption: { label: string; value: number }[] = []
-    let selectedSchedule: { label: string; value: number }[] = []
+    let scheduleOption: Option[] = $state([])
+    let selectedSchedule: Option[] = $state([])
 
-    const getSchedule = async () => {
-        try {
-            const response = await GET<any>(`/employmentSchedule/all`)
-            scheduleOption = response.map(
-                (schedule: { id: number; description: string }) => ({
-                    label: schedule.description,
-                    value: schedule.id,
-                }),
-            )
-        } catch (error) {
-            console.error("Error fetching schedules:", error)
-        }
-    }
-
-    const confirmModalFilter = () => {
-        // On ferme la modal AVANT de traiter pour s'assurer qu'elle disparaisse
-        showFilterOffer = false
-
-        const allProgramsId =
-            selectedPrograms.find((x) => x.label === "Tous les programmes")
-                ?.value || 0
-
+    $effect(() => {
         filteredOffers = jobOffers.filter((offer) => {
-            if (
-                selectedPrograms.length === 0 &&
-                selectedSchedule.length === 0
-            ) {
-                return true
-            }
-
-            // Utilisation du chainage optionnel ?. pour éviter les erreurs undefined
             const progToFilterId = selectedPrograms[0]?.value
             const matchesPrograms =
                 selectedPrograms.length === 0 ||
                 offer.studyPrograms?.some(
-                    (prog) =>
-                        prog.id === progToFilterId || prog.id === allProgramsId,
+                    (x) => x.id === progToFilterId || x.id === allProgramsId,
                 )
 
             const schedulesToFilterId = selectedSchedule[0]?.value
             const matchesSchedules =
                 selectedSchedule.length === 0 ||
                 offer.employmentSchedules?.some(
-                    (schedule) => parseInt(schedule.id) === schedulesToFilterId,
+                    (x) => x.id === schedulesToFilterId,
                 )
-
+            // retourne la combinaison des deux filtres, si les deux sont appliqués, sinon retourne le filtre qui est appliqué
             return matchesPrograms && matchesSchedules
         })
+    })
+
+    const handleRemoveProgramFilterClick = () => {
+        selectedPrograms = []
     }
 
-    const onRemoveProgramFilterClick = (program: {
-        label: string
-        value: number
-    }) => {
-        selectedPrograms = selectedPrograms.filter(
-            (x) => x.value !== program.value,
-        )
-        confirmModalFilter()
-    }
-
-    const onRemoveScheduleFilterClick = (schedule: {
-        label: string
-        value: number
-    }) => {
-        selectedSchedule = selectedSchedule.filter(
-            (x) => x.value !== schedule.value,
-        )
-        confirmModalFilter()
+    const handleRemoveScheduleFilterClick = () => {
+        selectedSchedule = []
     }
 
     onMount(async () => {
         try {
-            await getSchedule()
-            const response = await GET<JobOfferDetails[]>(
-                "/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
-            )
-            jobOffers = response
+            scheduleOption = await fetchEmploymentSchedulesAsOptions()
+            programOptions = await fetchStudyProgramsAsOptions()
+            jobOffers = await fetchApprovedJobOffers()
             filteredOffers = jobOffers
-
-            programOptions = $studyPrograms
-                .map((x: any) => ({ label: x.name, value: x.id }))
-                .sort((a, b) =>
-                    a.label.localeCompare(b.label, "fr", {
-                        sensitivity: "base",
-                    }),
-                )
-        } catch (error) {
-            console.error("Error fetching job offers:", error)
-        } finally {
-            loaded = true
-
+            // affiche l'offre d'emploi si un id est présent dans les query params
             const id = $page.url.searchParams.get("id")
-
             if (id) {
                 let jobOffer = jobOffers.find(
                     (offer) => offer.id.toString() == id,
                 )
-
                 if (jobOffer) {
                     showModal = true
                     selectedOffer = jobOffer
                 }
             }
+        } catch (error) {
+            console.error("Error fetching job offers:", error)
+            alert(
+                "Une erreur est survenue lors du chargement des offres d'emploi.",
+            )
+        } finally {
+            loaded = true
         }
     })
 </script>
@@ -175,10 +126,8 @@
                                     <button
                                         type="button"
                                         class="badge-close"
-                                        on:click={() =>
-                                            onRemoveProgramFilterClick(
-                                                selectedPrograms[0],
-                                            )}>x</button
+                                        onclick={handleRemoveProgramFilterClick}
+                                        >x</button
                                     >
                                 </div>
                             {/if}
@@ -188,10 +137,8 @@
                                     <button
                                         type="button"
                                         class="badge-close"
-                                        on:click={() =>
-                                            onRemoveScheduleFilterClick(
-                                                selectedSchedule[0],
-                                            )}>x</button
+                                        onclick={handleRemoveScheduleFilterClick}
+                                        >x</button
                                     >
                                 </div>
                             {/if}
@@ -211,9 +158,9 @@
                     <p>Aucune offre trouvée</p>
                 </div>
             {:else}
-                <TableEmplois
+                <TableOffer
                     offers={filteredOffers}
-                    handleOfferClick={handleAddJobOfferClick}
+                    handleOfferClick={handleShowJobOfferModal}
                 />
             {/if}
         {:else}
@@ -223,35 +170,38 @@
         {/if}
     </section>
 
-    {#if showFilterOffer}
+    {#if showFilterModal}
         <Modal handleCloseClick={closeFilterModal}>
             <div class="filtre-modal">
                 <h1 class="title-filtre">Filtrer les offres</h1>
                 <p class="text-filtre">Programme visé:</p>
                 <MultiSelect
                     id="programme"
-                    options={programOptions}
+                    options={programOptions as any}
                     closeDropdownOnSelect={true}
                     maxSelect={1}
                     placeholder="Choisir un programme visé..."
-                    bind:selected={selectedPrograms}
+                    bind:selected={selectedPrograms as any}
                 />
                 <p class="text-filtre">Type d'emploi:</p>
                 <MultiSelect
                     id="schedule"
-                    options={scheduleOption}
+                    options={scheduleOption as any}
                     closeDropdownOnSelect={true}
                     maxSelect={1}
                     placeholder="Choisir un type d'emploi..."
-                    bind:selected={selectedSchedule}
+                    bind:selected={selectedSchedule as any}
                 />
-                <Button onClick={confirmModalFilter} text="Confirmer" />
+                <Button
+                    onClick={() => (showFilterModal = false)}
+                    text="Confirmer"
+                />
             </div>
         </Modal>
     {/if}
 
     {#if showModal}
-        <Modal handleCloseClick={closeModal}>
+        <Modal handleCloseClick={handleCloseJobOfferModal}>
             <OfferDetail offer={selectedOffer} showShareButtons={true} />
         </Modal>
     {/if}

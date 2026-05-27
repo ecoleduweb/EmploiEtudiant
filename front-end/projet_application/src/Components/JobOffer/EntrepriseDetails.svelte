@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { formatPhoneNumber } from "../../ts/utils"
+    import { getCityNameById } from "../../Service/CityService"
+    import type { Enterprise } from "../../Models/Enterprise"
     interface Props {
-        enterprise: any;
-        selectedCity: any;
+        enterprise: Enterprise
     }
 
-    let { enterprise, selectedCity }: Props = $props();
+    let { enterprise }: Props = $props()
 </script>
 
 <div class="form-group-vertical">
@@ -21,16 +23,16 @@
 </div>
 <div class="form-group-vertical">
     <label for="lieu">Téléphone : </label>
-    <p>{enterprise.phone}</p>
+    <p>{formatPhoneNumber(enterprise.phone)}</p>
 </div>
 <div class="form-group-vertical last">
     <label for="lieu">Ville : </label>
-    
-    <p>{selectedCity?.length ? selectedCity[0].label : 'En chargement'}</p>
+    <p>{getCityNameById(enterprise.cityId)}</p>
 </div>
 
 <style scoped>
-    label, p {
+    label,
+    p {
         color: black;
         display: inline;
     }

@@ -84,7 +84,7 @@ def _generate_auth_response(user, token):
         httponly=True, 
         samesite='Lax', 
         secure=secure_cookie, 
-        max_age=60 * 30, 
+        max_age=60 * 30 * 300000, # TODO retirer 
         path='/'
     )
     

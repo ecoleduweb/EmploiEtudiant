@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
-    import fetchCity from "../../Service/CityService"
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import { getCityNameById } from "../../Service/CityService"
+    import type { JobOffer } from "../../Models/Offre"
     import Button from "../Inputs/Button.svelte"
     import { copy } from "svelte-copy"
     import {
@@ -10,15 +9,13 @@
         getShortURL,
         toFormattedDateString,
     } from "../../ts/utils"
-    import { page } from "$app/state"
     import ShareButtons from "../Common/ShareButtons.svelte"
 
     interface Props {
-        offer: JobOfferDetails
-        showShareButtons?: boolean
+        offer: JobOffer
     }
 
-    let { offer, showShareButtons = false }: Props = $props()
+    let { offer }: Props = $props()
 
     let hideURL = $derived(
         !offer.offerLink ||
@@ -26,38 +23,7 @@
             offer.offerLink === "http://",
     )
 
-    let cityOptions: any = $state()
-    let selectedCity: any = $state()
     let loaded = $state(false)
-
-    let formattedPhone: string = $state("")
-    let url = $state("")
-
-    let shareUrl = page.url.href
-
-    let title = $derived(offer.title)
-    let shareText = $derived(` ${shareUrl} ${title}`.trim())
-
-    onMount(async () => {
-        cityOptions = await fetchCity()
-
-        if (offer.enterprise?.phone) {
-            formattedPhone = formatPhoneNumber(offer.enterprise.phone)
-        }
-        url = await getShortURL(offer.offerLink)
-
-        loaded = true
-    })
-
-    $effect(() => {
-        if (!cityOptions) return
-
-        const city = cityOptions.find(
-            (ville: any) => ville.value === offer?.enterprise?.cityId,
-        )
-
-        if (city) selectedCity = [city]
-    })
 </script>
 
 <div class="container">
@@ -99,7 +65,7 @@
 
                 <div class="form-group-vertical">
                     <h5 class="infoTitle">Ville*</h5>
-                    <p>{selectedCity?.[0]?.label ?? ""}</p>
+                    <p>{getCityNameById(offer.enterprise.cityId)}</p>
                 </div>
             </div>
             <br />
@@ -114,8 +80,8 @@
             <h5 class="infoTitle">Adresse du lieu de travail</h5>
             <p class="text">{offer.address}</p>
 
-            <h5 class="infoTitle">Numéro de téléphone</h5>
-            <p class="text">{formattedPhone}</p>
+            <h5 class="infoTitle">Numéro de téléphone de l'entreprise</h5>
+            <p class="text">{formatPhoneNumber(offer.enterprise.phone)}</p>
 
             <h5 class="infoTitle">Date de publication</h5>
             <p class="text">{toFormattedDateString(offer.offerDebut)}</p>
@@ -143,7 +109,9 @@
             </p>
             <h5 class="infoTitle">Poste visé</h5>
             <p class="text">
-                {offer.schedules?.map((s) => s.description).join(", ")}
+                {offer.employmentSchedules
+                    ?.map((s) => s.description)
+                    .join(", ")}
             </p>
             <h5 class="infoTitle">Description du poste</h5>
             <div class="description">{@html offer.description}</div>
@@ -153,10 +121,14 @@
             <div class="row-copy">
                 {#if !hideURL}
                     <div class="link_padding">
-                        <a href={offer.offerLink} class="text_link">{url}</a>
+                        <a href={offer.offerLink} class="text_link"
+                            >{getShortURL(offer.offerLink)}</a
+                        >
                     </div>
                 {:else}
-                    <p class="text CanBeHidden">{url}</p>
+                    <p class="text CanBeHidden">
+                        {getShortURL(offer.offerLink)}
+                    </p>
                 {/if}
                 <div use:copy={offer.offerLink}>
                     <img
@@ -174,9 +146,7 @@
                     <Button text="Postuler par courriel" />
                 </a>
             </div>
-            {#if showShareButtons && !hideURL}
-                <ShareButtons {shareUrl} {shareText} {title} />
-            {/if}
+            <ShareButtons title={offer.title} />
         </div>
     {/if}
 </div>
@@ -285,49 +255,6 @@
 
     .iconeCopy:hover {
         filter: invert(0.05);
-    }
-
-    :global(.shareCell .ssbc-button__link),
-    :global(.shareCell .ssbc-button__icon) {
-        display: inline-block;
-    }
-
-    :global(.shareGrid .shareCell .ssbc-button__link) {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        text-decoration: none;
-        color: #fff;
-    }
-
-    :global(.shareGrid .shareCell .ssbc-button) {
-        transition: 25ms ease-out;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-
-        margin: 0;
-        border-radius: 0;
-    }
-
-    :global(.shareCell .ssbc-button__icon svg) {
-        width: 1em;
-        height: 1em;
-        margin: 0;
-        vertical-align: middle;
-    }
-
-    :global(.shareCell .ssbc-button__icon--fill) {
-        fill: #fff;
-        stroke: none;
-    }
-
-    :global(.shareCell .ssbc-button__icon--outline) {
-        fill: none;
-        stroke: #fff;
     }
 
     @media (max-width: 768px) {
