@@ -1,144 +1,72 @@
 <script lang="ts">
     import "../../styles/global.css"
     import { onMount } from "svelte"
-    import { GET, PATCH, POST, PUT } from "../../ts/server"
     import type { Enterprise } from "../../Models/Enterprise"
     import EnterpriseRow from "../../Components/Enterprise/EnterpriseRow.svelte"
-    import CreateAndEditEnterprise from "../../Components/Enterprise/CreateAndEditEnterprise.svelte"
+    import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
-    import { enterprises } from "$lib"
     import Modal from "../../Components/Common/Modal.svelte"
-    import { fetchCitiesAsOptions } from "../../Service/CityService"
-    import { getCityNameById } from "../../Service/CityService"
+    import { fetchEnterprises } from "../../Service/EnterpriseService"
 
-    let createEnterprise = false
-    let modalOpened = $state(false)
+    let showCreateEditEnterpriseModal = $state(false)
     let selectedEnterprise: Enterprise | undefined = $state(undefined)
     let searchTerm = $state("")
-
-    const openModal = () => {
-        modalOpened = true
-    }
+    let enterprises = $state<Enterprise[]>([])
+    let filteredEnterprises: Enterprise[] = $state([])
 
     const closeModal = () => {
-        modalOpened = false
+        showCreateEditEnterpriseModal = false
     }
-    const handleEnterpriseClick = (enterprise: Enterprise) => {
+
+    const handleShowCreateEditEnterpriseModal = (
+        enterprise: Enterprise | undefined = undefined,
+    ) => {
         selectedEnterprise = enterprise
-        openModal()
+        showCreateEditEnterpriseModal = true
     }
-    const openCreateEnterprise = () => {
-        selectedEnterprise = undefined
-        modalOpened = true
-    }
+
     const normalize = (str: string) => {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     }
-    const addEnterprise = async (newEnterprise: Enterprise) => {
-        try {
-            const response = await POST<any, any>(`/enterprise/new`, {
-                name: newEnterprise.name,
-                address: newEnterprise.address,
-                phone: newEnterprise.phone,
-                email: newEnterprise.email,
-                cityId: newEnterprise.cityId,
-            })
 
-            enterprises.update((list) => [...list, response.data])
-        } catch (error) {
-            console.error("Error creating enterprise:", error)
-        }
-    }
-    const editEnterprise = async (enterprise: Enterprise) => {
-        try {
-            const response = await PUT<any, any>(
-                `/enterprise/${enterprise.id}`,
-                {
-                    id: enterprise.id,
-                    name: enterprise.name,
-                    email: enterprise.email,
-                    phone: enterprise.phone,
-                    address: enterprise.address,
-                    cityId: enterprise.cityId,
-                },
-            )
-
-            enterprises.update((list) =>
-                list.map((ent) =>
-                    ent.id === enterprise.id ? enterprise : ent,
-                ),
-            )
-        } catch (error) {
-            console.error("Error editing enterprise:", error)
-        }
-    }
-    const upsertEnterprise = async (enterprise: Enterprise | void) => {
+    const handleApproveClick = async (enterprise: Enterprise | void) => {
         if (enterprise !== undefined) {
-            if (enterprise.id !== undefined && enterprise.id >= 0) {
-                //Existant
-                await editEnterprise(enterprise)
-                closeModal()
-            } //Nouveau
-            else {
-                await addEnterprise(enterprise)
-                closeModal()
+            const index = enterprises.findIndex(
+                (x) => x.id === upsertedEnterprise.id,
+            )
+            if (index !== -1) {
+                enterprises[index] = upsertedEnterprise
+            } else {
+                enterprises = [upsertedEnterprise, ...enterprises]
             }
         } else {
             closeModal()
         }
     }
 
-    const getEnterprises = async () => {
-        try {
-            const response = await GET<any>("/enterprise/all")
-            enterprises.set(response)
-        } catch (error) {
-            console.error("Error fetching job offers:", error)
-        }
-    }
-
     onMount(async () => {
-        await fetchCitiesAsOptions()
-        await getEnterprises()
+        enterprises = await fetchEnterprises()
     })
 
-    type EnterpriseWithCity = Enterprise & { cityName: string }
-    let filteredEnterprises: EnterpriseWithCity[] = $state([])
-
     $effect(() => {
-        if ($enterprises) {
-            ;(async () => {
-                const search = searchTerm.toLowerCase()
-
-                const enterprisesWithCity: EnterpriseWithCity[] =
-                    await Promise.all(
-                        $enterprises.map(async (enterprise) => {
-                            const cityName = await getCityNameById(
-                                enterprise.cityId,
-                            )
-                            return { ...enterprise, cityName }
-                        }),
-                    )
-
-                filteredEnterprises = enterprisesWithCity.filter(
-                    (enterprise) =>
-                        normalize(enterprise.name)
-                            .toLowerCase()
-                            .includes(search) ||
-                        normalize(enterprise.email)
-                            .toLowerCase()
-                            .includes(search) ||
-                        normalize(enterprise.address)
-                            .toLowerCase()
-                            .includes(search) ||
-                        normalize(enterprise.phone)
-                            .toLowerCase()
-                            .includes(search) ||
-                        normalize(enterprise.cityName)
-                            .toLowerCase()
-                            .includes(search),
-                )
-            })()
+        if (enterprises) {
+            const search = searchTerm.toLowerCase()
+            filteredEnterprises = enterprises.filter(
+                (enterprise) =>
+                    normalize(enterprise.name).toLowerCase().includes(search) ||
+                    normalize(enterprise.email)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.address)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.phone)
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(enterprise.city?.city ?? "")
+                        .toLowerCase()
+                        .includes(search),
+            )
         }
     })
 </script>
@@ -148,7 +76,7 @@
         <div class="top-left">
             <div class="flex-container">
                 <Button
-                    onClick={openCreateEnterprise}
+                    onClick={() => handleShowCreateEditEnterpriseModal()}
                     text="Créer une nouvelle entreprise"
                 />
             </div>
@@ -186,16 +114,17 @@
         {#each filteredEnterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
-                cityName={enterprise.cityName}
-                handleModalClick={() => handleEnterpriseClick(enterprise)}
+                cityName={enterprise.city?.city}
+                handleModalClick={() =>
+                    handleShowCreateEditEnterpriseModal(enterprise)}
             />
         {/each}
     </section>
-    {#if modalOpened}
+    {#if showCreateEditEnterpriseModal}
         <Modal handleCloseClick={closeModal}>
-            <CreateAndEditEnterprise
-                enterprise={selectedEnterprise}
-                handleApproveClick={(offer) => upsertEnterprise(offer)}
+            <CreateEditEnterprise
+                jobOfferToEdit={selectedEnterprise}
+                onApproveClick={(offer) => handleApproveClick(offer)}
             />
         </Modal>
     {/if}

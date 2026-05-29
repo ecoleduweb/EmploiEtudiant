@@ -38,12 +38,6 @@
             editor.commands.setContent(content, { emitUpdate: false })
         }
     })
-
-    onDestroy(() => {
-        if (editor) {
-            editor.destroy()
-        }
-    })
 </script>
 
 <div class="editor-wrapper">
@@ -145,7 +139,6 @@
         </div>
     {/if}
     <div class="rich-text-content" bind:this={element} data-name={name}></div>
-    <input type="hidden" {name} value={content || ""} />
 </div>
 
 <style>

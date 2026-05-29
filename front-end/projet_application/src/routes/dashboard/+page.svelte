@@ -2,7 +2,6 @@
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
-    import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
     import ApproveOffer from "../../Components/JobOffer/ApproveOffer.svelte"
     import { onMount } from "svelte"
@@ -10,8 +9,8 @@
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
     import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
-    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
-    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
+    import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
+    import { fetchCurrentUserEnterprise } from "../../Service/EnterpriseService"
     import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
     import {
         getStatesFromStorage,
@@ -23,17 +22,22 @@
     import { fetchJobOffersByEmployer } from "../../Service/JobOfferService"
     import { toFormattedDateString } from "../../ts/utils"
 
-    let showApproveModal = false
-    let showCreateEditOfferModal = false
-    let showEditEnterprise = false
-    let showArchiveModal = false
-    let jobOfferSelected: JobOffer
-    let isModerator = false
+    let jobOfferSelected: JobOffer = $state({} as JobOffer)
+    let currentEnterprise: Enterprise | undefined = $state()
+    let jobOffers: JobOffer[] = $state([])
+
+    let isModerator = $state(false)
+    let showApproveModal = $state(false)
+    let showCreateEditOfferModal = $state(false)
+    let showEditEnterprise = $state(false)
+    let showArchiveModal = $state(false)
+    let showLoadingSpinner = $state(false)
+    let showDeleteModal = $state(false)
 
     let iconeUp = "⮞"
     let iconeDown = "⮟"
 
-    let hideListsStates = getStatesFromStorage()
+    let hideListsStates = $state(getStatesFromStorage())
 
     function toggleList(nomListe: keyof CollapseListsStates) {
         hideListsStates = updateState(
@@ -42,8 +46,6 @@
             !hideListsStates[nomListe],
         )
     }
-
-    let showDeleteModal = false
 
     const handleCreateOffer = () => {
         showCreateEditOfferModal = true
@@ -63,119 +65,108 @@
         }
     }
 
-    const handleEditEnterprise = () => {
+    const handleShowEditEnterpriseModal = () => {
         showEditEnterprise = true
     }
 
-    const handleEditEmploiClick = (jobOffer: JobOffer) => {
-        console.log(jobOffer, "COCOU")
+    const handleShowEditJobOfferModal = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showCreateEditOfferModal = true
     }
 
-    const handleApproveClick = (jobOffer: JobOffer) => {
+    const handleShowApproveModal = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showApproveModal = true
     }
 
-    const handleArchiveClick = (jobOffer: JobOffer) => {
+    const handleShowArchiveModal = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showArchiveModal = true
     }
 
-    const closeEditEnterprise = () => {
+    const handleCloseEditModalEnterprise = (
+        enterprise: Enterprise | undefined = undefined,
+    ) => {
+        if (enterprise) {
+            currentEnterprise = enterprise
+        }
         showEditEnterprise = false
     }
 
-    const closeModalApprove = () => {
+    const handleCloseModalApprove = async () => {
         showApproveModal = false
     }
 
-    const closeModalCreateEdit = () => {
+    const handleCloseModalCreateEdit = async (
+        jobOffer: JobOffer | undefined = undefined,
+    ) => {
+        if (jobOffer) {
+            const index = jobOffers.findIndex((x) => x.id === jobOffer.id)
+            if (index !== -1) {
+                jobOffers[index] = jobOffer
+            } else {
+                jobOffers = [jobOffer, ...jobOffers]
+            }
+        }
         showCreateEditOfferModal = false
     }
 
-    const closeModalArchive = () => {
+    const handleCloseModalArchive = async () => {
         showArchiveModal = false
     }
 
-    const closeModalDelete = () => {
+    const handleCloseModalDelete = async () => {
         showDeleteModal = false
     }
 
-    const onFinishedCallBack = async () => {
-        await getJobOffersEmployer()
-
-        closeModalApprove()
-        closeModalArchive()
-        closeModalCreateEdit()
-        closeModalDelete()
-    }
-
-    let enterprise: Enterprise = {
-        id: 0,
-        name: "",
-        address: "",
-        email: "",
-        phone: "",
-        cityId: 0,
-        isTemporary: false,
-    }
-
-    let loaded = false
-    let userHaveEnterprise = false
-
     onMount(async () => {
-        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
         try {
-            if ($isLoggedIn) {
-                isModerator = ($currentUser as any).isModerator === true
-                await getJobOffersEmployer()
-            }
+            isModerator = $currentUser?.isModerator === true
+            jobOffers = await fetchJobOffersByEmployer()
+            currentEnterprise = await fetchCurrentUserEnterprise()
         } catch (error) {
             console.error("Error while loading:", error)
         } finally {
-            loaded = true
+            showLoadingSpinner = true
         }
     })
-
-    let jobOffers: JobOffer[] = []
-
-    const getJobOffersEmployer = async () => {
-        try {
-            // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
-            jobOffers = await fetchJobOffersByEmployer()
-        } catch (error) {
-            console.error("Error fetching job offers:", error)
-        }
-    }
 
     let dateNow = toFormattedDateString(new Date())
 
-    $: toBeApprovedOffer = jobOffers
-        .filter((x) => x.isApproved === null)
-        .sort(
-            (a, b) =>
-                new Date(a.lastModifiedDate!).getTime() -
-                new Date(b.lastModifiedDate!).getTime(),
-        )
-    $: isRefusedOffer = jobOffers.filter((x) => x.isApproved === false)
-    $: offerToCome = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateDebut = toFormattedDateString(new Date(x.offerDebut))
-        return x.offerDebut < dateDebut
-    })
-    $: offerDisplayed = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateDebut = toFormattedDateString(new Date(x.offerDebut))
-        let dateFin = toFormattedDateString(new Date(x.deadlineApply))
-        return dateNow >= dateDebut && dateNow <= dateFin
-    })
-    $: expiredOffer = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateFin = toFormattedDateString(new Date(x.deadlineApply))
-        return dateFin < dateNow
-    })
+    let toBeApprovedOffer = $derived(
+        jobOffers
+            .filter((x) => x.isApproved === null)
+            .sort(
+                (a, b) =>
+                    new Date(a.lastModifiedDate!).getTime() -
+                    new Date(b.lastModifiedDate!).getTime(),
+            ),
+    )
+    let isRefusedOffer = $derived(
+        jobOffers.filter((x) => x.isApproved === false),
+    )
+    let offerToCome = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            let dateDebut = toFormattedDateString(new Date(x.offerDebut))
+            return x.offerDebut < dateDebut
+        }),
+    )
+    let offerDisplayed = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            let dateDebut = toFormattedDateString(new Date(x.offerDebut))
+            let dateFin = toFormattedDateString(new Date(x.deadlineApply))
+            return dateNow >= dateDebut && dateNow <= dateFin
+        }),
+    )
+    let expiredOffer = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            let dateFin = toFormattedDateString(new Date(x.deadlineApply))
+            return dateFin < dateNow
+        }),
+    )
 </script>
 
 <main>
@@ -188,10 +179,10 @@
                 />
             </div>
 
-            {#if userHaveEnterprise}
+            {#if currentEnterprise}
                 <div class="divFlex" id="editEnterprise">
                     <Button
-                        onClick={handleEditEnterprise}
+                        onClick={handleShowEditEnterpriseModal}
                         text="Modifier l'entreprise"
                     />
                 </div>
@@ -199,7 +190,7 @@
         </div>
     </section>
 
-    {#if !loaded}
+    {#if !showLoadingSpinner}
         <section class="Loading">
             <LoadingSpinner />
         </section>
@@ -230,9 +221,9 @@
                     <TableDashboard
                         offers={isRefusedOffer}
                         {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -261,9 +252,9 @@
                     <TableDashboard
                         offers={toBeApprovedOffer}
                         {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -290,9 +281,9 @@
                     <TableDashboard
                         offers={offerToCome}
                         {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -319,9 +310,9 @@
                     <TableDashboard
                         offers={offerDisplayed}
                         {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -348,9 +339,9 @@
                     <TableDashboard
                         offers={expiredOffer}
                         {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -359,38 +350,43 @@
     {/if}
 
     {#if showApproveModal}
-        <Modal handleCloseClick={onFinishedCallBack}>
+        <Modal handleCloseClick={handleCloseModalApprove}>
             <ApproveOffer
                 offer={jobOfferSelected}
-                handleApproveClick={onFinishedCallBack}
+                handleApproveClick={handleCloseModalApprove}
             />
         </Modal>
     {/if}
     {#if showEditEnterprise}
-        <!-- <ModifyEnterprise handleCloseClick={closeEditEnterprise} TODO /> -->
+        <Modal handleCloseClick={handleCloseEditModalEnterprise}>
+            <CreateEditEnterprise
+                enterpriseToEdit={currentEnterprise}
+                onApproveClick={handleCloseEditModalEnterprise}
+            />
+        </Modal>
     {/if}
     {#if showCreateEditOfferModal}
-        <Modal handleCloseClick={closeModalCreateEdit}>
+        <Modal handleCloseClick={handleCloseModalCreateEdit}>
             <CreateEditJobOffer
-                onJobOfferProcessed={onFinishedCallBack}
+                onJobOfferProcessed={handleCloseModalCreateEdit}
                 jobOfferToEdit={jobOfferSelected}
             />
         </Modal>
     {/if}
     {#if showArchiveModal}
-        <Modal handleCloseClick={closeModalArchive}>
+        <Modal handleCloseClick={handleCloseModalArchive}>
             <ArchiveConfirm
                 offer={jobOfferSelected}
-                handleApproveClick={closeModalArchive}
+                handleApproveClick={handleCloseModalArchive}
             />
         </Modal>
     {/if}
     {#if showDeleteModal}
-        <Modal handleCloseClick={closeModalDelete}>
+        <Modal handleCloseClick={handleCloseModalDelete}>
             <DeleteOffer
                 offer={jobOfferSelected}
                 {deleteOfferAndCloseModal}
-                {closeModalDelete}
+                closeModalDelete={handleCloseModalDelete}
             />
         </Modal>
     {/if}

@@ -33,7 +33,7 @@ class JobOfferRepo:
         ).all()
         newJobOffer.employmentSchedules = schedules
 
-    def delete_by_id(self, id) -> None:
+    def delete_by_id(self, id: int) -> None:
         job_offer = JobOffer.query.filter_by(id=id).first()
         if job_offer is None:
             raise NotFoundException("Job offer not found", id)
@@ -41,7 +41,7 @@ class JobOfferRepo:
         db.session.commit()
 
     def find_enterprises_job_offer_by_user_id(self, user_id, get_entreprise_details, employment_schedule_details, study_program_details) -> list[JobOfferReadDTO]:
-        user = db.session.get(User, user_id)
+        user = User.query.filter_by(id=user_id).first()
         if user is None or user.enterpriseId is None:
             raise NotFoundException("User or user's enterprise not found", user_id)
         

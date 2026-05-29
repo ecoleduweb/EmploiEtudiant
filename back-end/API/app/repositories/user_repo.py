@@ -60,6 +60,13 @@ class UserRepo:
         db.session.commit()
         return [UserReadDTO.model_validate(user) for user in users]
 
+    def update_user_enterprise_id(self, user_id, new_enterprise_id):
+        user = User.query.filter_by(id=user_id).first()
+        if user is None:
+            raise NotFoundException("user not found", user_id)
+        user.enterpriseId = new_enterprise_id
+        db.session.commit()
+
     def get_all(self) -> list[UserReadDTO]:
         users = User.query.options(db.joinedload(User.enterprise)).all()
         users_sorted = sorted(users, key=lambda e: locale.strxfrm(e.firstName))

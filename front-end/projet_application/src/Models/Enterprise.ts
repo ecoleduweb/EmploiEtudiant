@@ -1,3 +1,5 @@
+import type { City } from "./City"
+
 export type Enterprise = {
     id?: number
     name: string
@@ -6,4 +8,5 @@ export type Enterprise = {
     address: string
     cityId: number
     isTemporary: boolean
+    city?: City
 }

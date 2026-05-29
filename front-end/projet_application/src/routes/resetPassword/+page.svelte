@@ -86,7 +86,7 @@
     const handleSubmit = async () => {
         try {
             // `abortEarly: false` to get all the errors
-            await schema.validate(resetPassword, { abortEarly: false })
+            schema.validateSync(resetPassword, { abortEarly: false })
             errors = {
                 token: "",
                 password: "",

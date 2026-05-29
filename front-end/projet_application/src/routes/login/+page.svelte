@@ -32,7 +32,7 @@
     const handleSubmit = async () => {
         try {
             // `abortEarly: false` to get all the errors
-            await schema.validate(form, { abortEarly: false })
+            schema.validateSync(form, { abortEarly: false })
             errors = {
                 email: "",
                 password: "",

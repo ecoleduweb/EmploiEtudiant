@@ -1,6 +1,8 @@
 import * as yup from "yup"
+import type { Enterprise } from "../Models/Enterprise"
+import { createForm } from "felte"
 
-export const entrepriseSchema = yup.object().shape({
+const schema = yup.object().shape({
     address: yup
         .string()
         .min(3, "L'addresse de l'entreprise doit être au minimum 3 caractères")
@@ -26,3 +28,33 @@ export const entrepriseSchema = yup.object().shape({
         .max(255, "Le numéro de téléphone doit être au maximum 255 caractères")
 
 })
+export const validateForm = (handleSubmit: (values: any) => void, enterprise: Enterprise) => {
+    return createForm({
+        initialValues: { ...enterprise },
+        validate: async (values) => {
+            try {
+                schema.validateSync(values, { abortEarly: false });
+                return {};
+            } catch (err: any) {
+                const errors: any = {};
+                err.inner.forEach((value: any) => {
+                    errors[value.path] = value.message;
+                });
+                return errors;
+            }
+        },
+        onSubmit: handleSubmit,
+    });
+}
+
+export const enterpriseTemplate = {
+    generate: (): Enterprise => ({
+        address: "",
+        cityId: 0,
+        email: "",
+        name: "",
+        phone: "",
+        isTemporary: true,
+        id: 0,
+    })
+}

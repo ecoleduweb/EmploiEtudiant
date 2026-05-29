@@ -2,11 +2,17 @@
     import { formatPhoneNumber } from "../../ts/utils"
     import { getCityNameById } from "../../Service/CityService"
     import type { Enterprise } from "../../Models/Enterprise"
+    import { onMount } from "svelte"
     interface Props {
         enterprise: Enterprise
     }
-
     let { enterprise }: Props = $props()
+    let cityName = $state("")
+    onMount(async () => {
+        if (enterprise.cityId) {
+            cityName = await getCityNameById(enterprise.cityId)
+        }
+    })
 </script>
 
 <div class="form-group-vertical">
@@ -27,7 +33,7 @@
 </div>
 <div class="form-group-vertical last">
     <label for="lieu">Ville : </label>
-    <p>{getCityNameById(enterprise.cityId)}</p>
+    <p>{cityName}</p>
 </div>
 
 <style scoped>

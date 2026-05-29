@@ -39,7 +39,7 @@ class JobOfferService:
             # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
             if current_user.enterpriseId is None:
                 enterprise = enterprise_repo.create(dto.enterprise)
-                user_repo.update_enterprise_id(current_user.id, enterprise.id)
+                user_repo.update_user_enterprise_id(current_user.id, enterprise.id)
             else:
                 enterprise = enterprise_repo.find_by_id(current_user.enterpriseId)
             dto.enterpriseId = enterprise.id

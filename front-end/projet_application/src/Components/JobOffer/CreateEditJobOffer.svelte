@@ -11,7 +11,6 @@
     import { toFormattedDateString } from "../../ts/utils"
     import { onMount } from "svelte"
     import LoadingSpinner from "../Common/LoadingSpinner.svelte"
-    import { InvalidDataError } from "../../CustomError/invalidDataError"
     import { fetchEmploymentSchedulesAsOptions } from "../../Service/EmploymentScheduleService"
     import { fetchStudyProgramsAsOptions } from "../../Service/StudyProgramService"
     import type { Option } from "../../Models/Option"
@@ -24,18 +23,16 @@
     let props: Props = $props()
 
     const isJobOfferEdit = $derived(!!props.jobOfferToEdit)
-    const { onJobOfferProcessed: onFinished } = props
+    const { onJobOfferProcessed } = props
 
     const jobOffer = $state<JobOffer>(jobOfferTemplate.generate())
 
-    let isSubmitting = $state(false)
     let isFetchingOptions = $state(true)
     let studyProgramOptions: Option[] = $state([])
     let selectedPrograms: Option[] = $state([])
     let employmentScheduleOptions: Option[] = $state([])
     let selectedEmploymentSchedules: Option[] = $state([])
 
-    // Derived max date from offerDebut
     let maxDateString = $derived.by(() => {
         let offerDebut = new Date(jobOffer.offerDebut)
         let maxDate = new Date(
@@ -46,7 +43,6 @@
 
     let minDateString = toFormattedDateString(new Date())
 
-    // Met à jour le modèle quand une des valeur dans le $effect change. Ici ce sont les selected
     if (props.jobOfferToEdit) {
         Object.assign(jobOffer, props.jobOfferToEdit)
         jobOffer.offerDebut = toFormattedDateString(jobOffer.offerDebut)
@@ -56,6 +52,7 @@
         jobOffer.deadlineApply = toFormattedDateString(jobOffer.deadlineApply)
     }
 
+    // Met à jour le modèle quand une des valeur dans le $effect change. Ici ce sont les selected
     $effect(() => {
         if (isFetchingOptions) return
         const schedules = selectedEmploymentSchedules.map((opt) => ({
@@ -72,6 +69,21 @@
         jobOffer.enterpriseId = jobOffer.enterprise?.id
         setFields("enterpriseId", jobOffer.enterpriseId)
         $errors.enterpriseId = undefined
+    })
+
+    $effect(() => {
+        if (isFetchingOptions) return
+        void jobOffer.description
+        setFields("description", jobOffer.description)
+        $errors.description = undefined
+    })
+
+    $effect(() => {
+        if (isFetchingOptions) return
+        void jobOffer.enterprise?.cityId
+        setFields("enterprise.cityId", jobOffer.enterprise?.cityId)
+        // Permet de lancer une validation quand on change le id de la ville de la nouvelle entreprise.
+        $errors["enterprise.cityId"] = undefined
     })
 
     $effect(() => {
@@ -109,20 +121,20 @@
 
     const handleSubmit = async () => {
         try {
-            isSubmitting = true
-            const [updated, errorResponse] = await upsertJobOffer(jobOffer)
+            const [upserted, errorResponse] = await upsertJobOffer(jobOffer)
             if (errorResponse) {
                 errors.set(errorResponse)
-            } else if (updated) {
-                onFinished(updated)
+            } else if (upserted) {
+                onJobOfferProcessed(upserted)
             }
         } catch (err) {
             console.error(err)
-        } finally {
-            isSubmitting = false
         }
     }
-    const { form, errors, setFields } = validateForm(handleSubmit, jobOffer)
+    const { form, errors, setFields, isSubmitting } = validateForm(
+        handleSubmit,
+        jobOffer,
+    )
 </script>
 
 <div class="content-form">
@@ -144,8 +156,10 @@
                     </h3>
                 {/if}
             {/if}
-
-            <EnterpriseSection bind:enterprise={jobOffer.enterprise} {errors} />
+            <EnterpriseSection
+                bind:enterprise={jobOffer.enterprise}
+                errors={$errors}
+            />
             <div class="form-group-vertical">
                 <label for="title">Poste visé*</label>
                 <input
@@ -317,12 +331,11 @@
             <p class="errors-input">
                 {#if $errors.email}{$errors.email}{/if}
             </p>
-
             <div class="form-group-vertical">
                 <label for="description">Description du poste*</label>
                 <RichTextEditor
                     name="description"
-                    content={jobOffer.description}
+                    bind:content={jobOffer.description}
                 />
             </div>
             <p class="errors-input">
@@ -346,17 +359,13 @@
                     {#if $errors.acceptCondition}{$errors.acceptCondition}{/if}
                 </p>
 
-                {#if isSubmitting}
-                    <LoadingSpinner />
-                {:else}
-                    <div class="send">
-                        <Button
-                            submit={true}
-                            text="Envoyer"
-                            onClick={() => handleSubmit()}
-                        />
-                    </div>
-                {/if}
+                <div class="send">
+                    {#if $isSubmitting}
+                        <LoadingSpinner />
+                    {:else}
+                        <Button submit={true} text="Envoyer" />
+                    {/if}
+                </div>
             </div>
 
             <div>
