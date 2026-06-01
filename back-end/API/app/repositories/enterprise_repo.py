@@ -1,5 +1,3 @@
-from turtle import update
-
 from app import locale
 from app import db
 from app.models.enterprise_model import Enterprise
