@@ -303,7 +303,7 @@
     </div>
 </header>
 
-<style>
+<style scoped>
     header {
         display: flex;
         flex-direction: row;

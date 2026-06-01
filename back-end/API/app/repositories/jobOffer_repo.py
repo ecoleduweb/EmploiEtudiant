@@ -125,7 +125,7 @@ class JobOfferRepo:
             job_offer.approvedDate = datetime.now(timezone.utc)
         db.session.commit()
 
-    def archiveJobOffer(self, id):
+    def archiveJobOffer(self, id) -> JobOfferReadDTO:
         job_offer = JobOffer.query.filter_by(id=id).first()
         job_offer.deadlineApply = date.today() - timedelta(days=1)
         db.session.commit()

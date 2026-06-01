@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
+    import type { JobOffer } from "../../Models/Offre"
     import { toFormattedDateString } from "../../ts/utils"
 
     interface Props {
-        offer: JobOfferDetails
-        handleModalClick: (offer: JobOfferDetails) => void
+        offer: JobOffer
+        handleModalClick: (offer: JobOffer) => void
     }
 
     let { offer, handleModalClick }: Props = $props()

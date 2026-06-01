@@ -213,7 +213,7 @@
     {/if}
 </Modal>
 
-<style>
+<style scoped>
     .confirmContainer {
         width: 100%;
         display: flex;

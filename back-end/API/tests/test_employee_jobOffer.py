@@ -461,10 +461,8 @@ def test_createJobOfferWithoutOfferLink(client):
 
 def test_deleteOwnJobOfferAsEmployee(client):
     response2 = client.delete(f'/jobOffer/2')
-
-    assert response2.status_code == 200
+    assert response2.status_code == 204
 
 def test_deleteOthersJobOfferAsEmployee(client):
     response2 = client.delete(f'/jobOffer/3')
-    
     assert response2.status_code == 403

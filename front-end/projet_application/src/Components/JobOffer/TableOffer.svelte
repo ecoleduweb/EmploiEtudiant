@@ -33,7 +33,7 @@
     </table>
 </div>
 
-<style>
+<style scoped>
     .table-container {
         width: 100%;
         overflow-x: auto;

@@ -38,6 +38,7 @@ class JobOfferService:
             dto.isApproved = None
             # Quand un employeur crée pour la première fois une offre, on crée aussi son entreprise.
             if current_user.enterpriseId is None:
+                dto.enterprise.isTemporary = True
                 enterprise = enterprise_repo.create(dto.enterprise)
                 user_repo.update_user_enterprise_id(current_user.id, enterprise.id)
             else:
@@ -127,9 +128,9 @@ class JobOfferService:
                 send_mail(user_that_created_the_job_offer.email, "Refus de l'approbation de l'offre d'emploi", f"L'offre d'emploi au nom de <b>{job_offer_to_approve.title}</b> a été refusée.<br> Raison: {job_offer_to_approve.approbationMessage}")
         return updated
 
-    def archive(self, id):
+    def archive(self, id) -> JobOfferReadDTO:
         if job_offer_repo.jobOfferExist(id):
-            job_offer_repo.archiveJobOffer(id)
+            return job_offer_repo.archiveJobOffer(id)
         else:
             raise NotFoundException("Job offer not found", id)
     

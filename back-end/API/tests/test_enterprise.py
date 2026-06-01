@@ -8,6 +8,37 @@ from argon2 import PasswordHasher
 from freezegun import freeze_time
 
 hasher = PasswordHasher()
+user_with_enterprise = {
+    'verified': False,
+    "id": 2,
+    "firstName": "No enterprise",
+    "lastName": "test",
+    "email": "no@enterprise.com",
+    "isModerator": True,
+    "active": True,
+    "enterpriseId": 2
+}
+user_without_enterprise ={
+    'verified': False,
+    "id": 3,
+    "firstName": "has enterprise",
+    "lastName": "test",
+    "email": "has@enterprise.com",
+    "isModerator": True,
+    "active": True,
+    "enterpriseId": None
+}
+
+user_with_enterprise_id_1 = {
+    'verified': False,
+    "id": 1,
+    "firstName": "test",
+    "lastName": "test",
+    "email": "test@test.com",
+    "isModerator": True,
+    "active": True,
+    "enterpriseId": 1
+}
 
 @pytest.fixture(scope='module', autouse=True)
 def freeze_test_date():
@@ -36,41 +67,32 @@ def app():
             idRegion=1,
         ))
 
-        data = {
+        enterprise = Enterprise(**{
             "id": 1,
-            "name": "Développeur",
+            "name": "entreprise 1",
             "email": "test@test.com",
             "phone": "123-123-1234",
             "address": "123 rue de la",
             "isTemporary": False,
             "cityId": 1,
-        }
-        enterprise = Enterprise(**data)
+        })
         db.session.add(enterprise)
-        data = {
+        enterprise = Enterprise(**{
             "id": 2,
-            "name": "Développeur",
+            "name": "enterprise 2",
             "email": "test2@test.com",
             "phone": "123-123-1234",
             "address": "123 rue de la",
             "isTemporary": True,
             "cityId": 1,
-        }
-        enterprise = Enterprise(**data)
+        })
         db.session.add(enterprise)
         hashed_password = hasher.hash("test123_12caracters!")
-        data = {
-            "id": 1,
-            "firstName": "test",
-            "lastName": "test",
-            "email": "test@test.com",
-            "password": hashed_password,
-            "isModerator": True,
-            "active": True,
-            "enterpriseId": 1
-        }
-        user = User(**data)
+        user= User(**user_with_enterprise_id_1)
+        user.password = hashed_password
         db.session.add(user)
+        db.session.add(User(**user_with_enterprise))
+        db.session.add(User(**user_without_enterprise))
         db.session.commit()
         
         yield app
@@ -116,8 +138,9 @@ def test_createEnterprise(client):
         "id":3,
         "isTemporary":False,
         "name":"Développeur",
-        "phone":"123-123-1234"
-        }
+        "phone":"123-123-1234",
+        "users": []
+    }
 
 def test_getEnterprise(client):
     response = client.get('/enterprise/1')
@@ -134,8 +157,9 @@ def test_getEnterprise(client):
         'email': 'test@test.com', 
         'id': 1, 
         'isTemporary': False, 
-        'name': 'Développeur', 
-        'phone': '123-123-1234'
+        'name': 'entreprise 1', 
+        'phone': '123-123-1234',
+        "users": [user_with_enterprise_id_1]
         }
 
 def test_checkIfUserHaveEnterprise(client):
@@ -153,22 +177,26 @@ def test_checkIfUserHaveEnterprise(client):
     'email': 'test@test.com', 
     'id': 1, 
     'isTemporary': False, 
-    'name': 'Développeur', 
-    'phone': '123-123-1234'
+    'name': 'entreprise 1', 
+    'phone': '123-123-1234',
+    'users': [user_with_enterprise_id_1]
     }
 
 
 
 def test_updateEnterprise(client):
     data = {
-        "id": 3,
-        "name": "Développeur modifié",
+        "id": 2,
+        "name": "nom modifié",
         "email": "mod@test.com",
         "phone": "123-123-2222",
         "address": "123 rue de la",
         "cityId": 2,
+        "users": [
+            user_without_enterprise,
+        ]
     }
-    response = client.put('/enterprise/3', json=data)
+    response = client.put('/enterprise/2', json=data)
     assert response.status_code == 200
     assert response.json == {
         "address":"123 rue de la",
@@ -179,10 +207,20 @@ def test_updateEnterprise(client):
         },
         "cityId":2,
         "email":"mod@test.com",
-        "id":3,
+        "id":2,
         "isTemporary":False,
-        "name":"Développeur modifié",
-        "phone":"123-123-2222"
+        "name":"nom modifié",
+        "phone":"123-123-2222",
+        "users": [{
+            'verified': False,
+            "id": 3,
+            "firstName": "has enterprise",
+            "lastName": "test",
+            "email": "has@enterprise.com",
+            "isModerator": True,
+            "active": True,
+            "enterpriseId": 2
+        }]
     }
  
 def test_checkIfUserHaveEnterprise_NewUser(client):

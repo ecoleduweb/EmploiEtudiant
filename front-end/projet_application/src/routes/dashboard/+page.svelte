@@ -26,7 +26,6 @@
     let currentEnterprise: Enterprise | undefined = $state()
     let jobOffers: JobOffer[] = $state([])
 
-    let isModerator = $state(false)
     let showApproveModal = $state(false)
     let showCreateEditOfferModal = $state(false)
     let showEditEnterprise = $state(false)
@@ -57,10 +56,9 @@
         showDeleteModal = true
     }
 
-    const deleteOfferAndCloseModal = (idJobOffer: number | null) => {
+    const handleDeleteOfferAndCloseModal = (idJobOffer: number | undefined) => {
         showDeleteModal = false
-
-        if (idJobOffer !== null) {
+        if (idJobOffer !== undefined) {
             jobOffers = jobOffers.filter((x) => x.id !== idJobOffer)
         }
     }
@@ -93,8 +91,15 @@
         showEditEnterprise = false
     }
 
-    const handleCloseModalApprove = async () => {
+    const handleCloseModalApprove = (
+        approvedJobOffer: JobOffer | undefined = undefined,
+    ) => {
         showApproveModal = false
+        if (approvedJobOffer) {
+            jobOffers = jobOffers.map((offer) =>
+                offer.id === approvedJobOffer.id ? approvedJobOffer : offer,
+            )
+        }
     }
 
     const handleCloseModalCreateEdit = async (
@@ -111,8 +116,15 @@
         showCreateEditOfferModal = false
     }
 
-    const handleCloseModalArchive = async () => {
+    const handleCloseModalArchive = (
+        approvedJobOffer: JobOffer | undefined = undefined,
+    ) => {
         showArchiveModal = false
+        if (approvedJobOffer) {
+            jobOffers = jobOffers.map((offer) =>
+                offer.id === approvedJobOffer.id ? approvedJobOffer : offer,
+            )
+        }
     }
 
     const handleCloseModalDelete = async () => {
@@ -121,7 +133,6 @@
 
     onMount(async () => {
         try {
-            isModerator = $currentUser?.isModerator === true
             jobOffers = await fetchJobOffersByEmployer()
             currentEnterprise = await fetchCurrentUserEnterprise()
         } catch (error) {
@@ -220,7 +231,6 @@
                 >
                     <TableDashboard
                         offers={isRefusedOffer}
-                        {isModerator}
                         handleEditModalClick={handleShowEditJobOfferModal}
                         handleApproveModalClick={handleShowApproveModal}
                         handleArchiveModalClick={handleShowArchiveModal}
@@ -251,7 +261,6 @@
                 >
                     <TableDashboard
                         offers={toBeApprovedOffer}
-                        {isModerator}
                         handleEditModalClick={handleShowEditJobOfferModal}
                         handleApproveModalClick={handleShowApproveModal}
                         handleArchiveModalClick={handleShowArchiveModal}
@@ -280,7 +289,6 @@
                 >
                     <TableDashboard
                         offers={offerToCome}
-                        {isModerator}
                         handleEditModalClick={handleShowEditJobOfferModal}
                         handleApproveModalClick={handleShowApproveModal}
                         handleArchiveModalClick={handleShowArchiveModal}
@@ -309,7 +317,6 @@
                 >
                     <TableDashboard
                         offers={offerDisplayed}
-                        {isModerator}
                         handleEditModalClick={handleShowEditJobOfferModal}
                         handleApproveModalClick={handleShowApproveModal}
                         handleArchiveModalClick={handleShowArchiveModal}
@@ -338,7 +345,6 @@
                 >
                     <TableDashboard
                         offers={expiredOffer}
-                        {isModerator}
                         handleEditModalClick={handleShowEditJobOfferModal}
                         handleApproveModalClick={handleShowApproveModal}
                         handleArchiveModalClick={handleShowArchiveModal}
@@ -353,7 +359,7 @@
         <Modal handleCloseClick={handleCloseModalApprove}>
             <ApproveOffer
                 offer={jobOfferSelected}
-                handleApproveClick={handleCloseModalApprove}
+                onApprove={handleCloseModalApprove}
             />
         </Modal>
     {/if}
@@ -377,7 +383,7 @@
         <Modal handleCloseClick={handleCloseModalArchive}>
             <ArchiveConfirm
                 offer={jobOfferSelected}
-                handleApproveClick={handleCloseModalArchive}
+                onToggleArchiveClick={handleCloseModalArchive}
             />
         </Modal>
     {/if}
@@ -385,7 +391,7 @@
         <Modal handleCloseClick={handleCloseModalDelete}>
             <DeleteOffer
                 offer={jobOfferSelected}
-                {deleteOfferAndCloseModal}
+                onDeleteOffer={handleDeleteOfferAndCloseModal}
                 closeModalDelete={handleCloseModalDelete}
             />
         </Modal>

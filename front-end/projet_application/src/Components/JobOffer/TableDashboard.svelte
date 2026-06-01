@@ -1,11 +1,11 @@
 <!-- TableDashboard.svelte -->
 <script lang="ts">
+    import { currentUser } from "$lib"
     import type { JobOffer } from "../../Models/Offre"
     import OfferRow from "./OfferRow.svelte"
 
     interface Props {
         offers?: JobOffer[]
-        isModerator?: boolean
         handleEditModalClick: (offer: JobOffer) => void
         handleApproveModalClick: (offer: JobOffer) => void
         handleArchiveModalClick: (offer: JobOffer) => void
@@ -14,12 +14,12 @@
 
     let {
         offers = [],
-        isModerator = false,
         handleEditModalClick,
         handleApproveModalClick,
         handleArchiveModalClick,
         handleDeleteModalClick,
     }: Props = $props()
+    const isModerator = $currentUser?.isModerator ?? false
 </script>
 
 <div class="table-container">
@@ -52,7 +52,7 @@
     </table>
 </div>
 
-<style>
+<style scoped>
     .table-container {
         width: 100%;
         overflow-x: auto;

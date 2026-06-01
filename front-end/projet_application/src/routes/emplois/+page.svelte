@@ -202,12 +202,12 @@
 
     {#if showModal}
         <Modal handleCloseClick={handleCloseJobOfferModal}>
-            <OfferDetail offer={selectedOffer} showShareButtons={true} />
+            <OfferDetail offer={selectedOffer} />
         </Modal>
     {/if}
 </main>
 
-<style>
+<style scoped>
     .loading {
         height: 100%;
         width: 100%;

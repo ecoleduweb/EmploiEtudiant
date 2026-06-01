@@ -7,6 +7,7 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import { fetchEnterprises } from "../../Service/EnterpriseService"
+    import type { User } from "../../Models/User"
 
     let showCreateEditEnterpriseModal = $state(false)
     let selectedEnterprise: Enterprise | undefined = $state(undefined)
@@ -29,8 +30,10 @@
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     }
 
-    const handleApproveClick = async (enterprise: Enterprise | void) => {
-        if (enterprise !== undefined) {
+    const handleApproveClick = async (
+        upsertedEnterprise: Enterprise | void,
+    ) => {
+        if (upsertedEnterprise !== undefined) {
             const index = enterprises.findIndex(
                 (x) => x.id === upsertedEnterprise.id,
             )
@@ -39,9 +42,8 @@
             } else {
                 enterprises = [upsertedEnterprise, ...enterprises]
             }
-        } else {
-            closeModal()
         }
+        closeModal()
     }
 
     onMount(async () => {
@@ -64,6 +66,13 @@
                         .toLowerCase()
                         .includes(search) ||
                     normalize(enterprise.city?.city ?? "")
+                        .toLowerCase()
+                        .includes(search) ||
+                    normalize(
+                        enterprise.users
+                            ?.map((x: User) => x.firstName + " " + x.lastName)
+                            .join(" ") ?? "",
+                    )
                         .toLowerCase()
                         .includes(search),
             )
@@ -111,6 +120,27 @@
     </section>
 
     <section class="enterprises">
+        <div class="row">
+            <div class="info">
+                <p class="text">Nom</p>
+            </div>
+            <div class="info">
+                <p class="text">Courriel</p>
+            </div>
+            <div class="info">
+                <p class="text">Téléphone</p>
+            </div>
+            <div class="info">
+                <p class="text">Adresse</p>
+            </div>
+            <div class="info">
+                <p class="text">Ville</p>
+            </div>
+            <div class="info">
+                <p class="text">Utilisateurs</p>
+            </div>
+            <div class="info"></div>
+        </div>
         {#each filteredEnterprises as enterprise}
             <EnterpriseRow
                 {enterprise}
@@ -123,14 +153,27 @@
     {#if showCreateEditEnterpriseModal}
         <Modal handleCloseClick={closeModal}>
             <CreateEditEnterprise
-                jobOfferToEdit={selectedEnterprise}
-                onApproveClick={(offer) => handleApproveClick(offer)}
+                enterpriseToEdit={selectedEnterprise}
+                onApproveClick={(upsertedEnterprise) =>
+                    handleApproveClick(upsertedEnterprise)}
             />
         </Modal>
     {/if}
 </main>
 
-<style>
+<style scoped>
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 90%;
+        margin-left: 5.2%;
+    }
     .title {
         left: 7.2%;
         margin: 0;

@@ -1,20 +1,19 @@
 <script lang="ts">
     import type { JobOffer } from "../../Models/Offre"
+    import { deleteJobOffer } from "../../Service/JobOfferService"
     import Button from "../Inputs/Button.svelte"
-    import { DELETE } from "../../ts/server"
     export const isDeleted = false
     interface Props {
         offer: JobOffer
-        deleteOfferAndCloseModal: (idJobOffer: number | null) => void
-        closeModalDelete: () => void
+        onDeleteOffer: (idJobOffer: number | undefined) => void
     }
 
-    let { offer, deleteOfferAndCloseModal, closeModalDelete }: Props = $props()
+    let { offer, onDeleteOffer }: Props = $props()
 
     const deleteOffer = async () => {
         try {
-            await DELETE(`/jobOffer/${offer.id}`)
-            deleteOfferAndCloseModal(offer.id)
+            await deleteJobOffer(offer.id)
+            onDeleteOffer(offer.id)
         } catch (error) {
             console.error("Erreur lors de la suppression :", error)
         }
@@ -31,7 +30,7 @@
         <div class="button">
             <Button text="Confirmer" onClick={() => deleteOffer()} />
 
-            <Button text="Refuser" onClick={() => closeModalDelete()} />
+            <Button text="Refuser" onClick={() => onDeleteOffer(undefined)} />
         </div>
     </div>
 </div>

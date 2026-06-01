@@ -1,5 +1,4 @@
 <script lang="ts">
-    import LoadingSpinner from "../Common/LoadingSpinner.svelte"
     import { getCityNameById } from "../../Service/CityService"
     import type { JobOffer } from "../../Models/Offre"
     import Button from "../Inputs/Button.svelte"
@@ -22,114 +21,98 @@
             offer.offerLink === "https://" ||
             offer.offerLink === "http://",
     )
-
-    let loaded = $state(false)
 </script>
 
 <div class="container">
-    {#if !loaded}
-        <div class="Loading2">
-            <LoadingSpinner />
-        </div>
-    {:else}
-        <div class="titleContainer">
-            <h3 class="title">{offer.title}</h3>
-            {#if offer.enterprise}
-                <h4 class="subtitle">Chez {offer.enterprise.name}</h4>
-            {/if}
-        </div>
-
-        {#if offer.enterprise && offer.enterprise?.isTemporary}
-            <div class="info">
-                <h2 class="infoTitle separator">Entreprise:</h2>
-
-                <div class="form-group-vertical">
-                    <h5 class="infoTitle">Nom*</h5>
-                    <p>{offer.enterprise.name}</p>
-                </div>
-
-                <div class="form-group-vertical">
-                    <h5 class="infoTitle">Adresse*</h5>
-                    <p>{offer.enterprise.address}</p>
-                </div>
-
-                <div class="form-group-vertical">
-                    <h5 class="infoTitle">Courriel*</h5>
-                    <p>{offer.enterprise.email}</p>
-                </div>
-
-                <div class="form-group-vertical">
-                    <h5 class="infoTitle">Téléphone*</h5>
-                    <p>{offer.enterprise.phone}</p>
-                </div>
-
-                <div class="form-group-vertical">
-                    <h5 class="infoTitle">Ville*</h5>
-                    <p>{getCityNameById(offer.enterprise.cityId)}</p>
-                </div>
-            </div>
-            <br />
+    <div class="titleContainer">
+        <h3 class="title">{offer.title}</h3>
+        {#if offer.enterprise}
+            <h4 class="subtitle">Chez {offer.enterprise.name}</h4>
         {/if}
-
+    </div>
+    {#if offer.enterprise && offer.enterprise?.isTemporary}
         <div class="info">
-            <h2 class="infoTitle separator">Offre:</h2>
+            <h2 class="infoTitle separator">Entreprise:</h2>
 
-            <h5 class="infoTitle">Nom du poste</h5>
-            <p class="text">{offer.title}</p>
+            <div class="form-group-vertical">
+                <h5 class="infoTitle">Nom*</h5>
+                <p>{offer.enterprise.name}</p>
+            </div>
 
-            <h5 class="infoTitle">Adresse du lieu de travail</h5>
-            <p class="text">{offer.address}</p>
+            <div class="form-group-vertical">
+                <h5 class="infoTitle">Adresse*</h5>
+                <p>{offer.enterprise.address}</p>
+            </div>
 
-            <h5 class="infoTitle">Numéro de téléphone de l'entreprise</h5>
-            <p class="text">{formatPhoneNumber(offer.enterprise.phone)}</p>
+            <div class="form-group-vertical">
+                <h5 class="infoTitle">Courriel*</h5>
+                <p>{offer.enterprise.email}</p>
+            </div>
 
-            <h5 class="infoTitle">Date de publication</h5>
-            <p class="text">{toFormattedDateString(offer.offerDebut)}</p>
+            <div class="form-group-vertical">
+                <h5 class="infoTitle">Téléphone*</h5>
+                <p>{offer.enterprise.phone}</p>
+            </div>
 
-            <h5 class="infoTitle">Date d'entrée en fonction</h5>
-            <p class="text">{toFormattedDateString(offer.dateEntryOffice)}</p>
+            <div class="form-group-vertical">
+                <h5 class="infoTitle">Ville*</h5>
+                <p>{getCityNameById(offer.enterprise.cityId)}</p>
+            </div>
+        </div>
+        <br />
+    {/if}
 
-            <h5 class="infoTitle">Date limite pour postuler</h5>
-            <p class="text">{toFormattedDateString(offer.deadlineApply)}</p>
-            <h5 class="infoTitle">Types d'emploi</h5>
-            <p class="text">
-                {offer.employmentSchedules
-                    ?.map((s) => s.description)
-                    .join(", ")}
+    <div class="info">
+        <h2 class="infoTitle separator">Offre:</h2>
+
+        <h5 class="infoTitle">Nom du poste</h5>
+        <p class="text">{offer.title}</p>
+
+        <h5 class="infoTitle">Adresse du lieu de travail</h5>
+        <p class="text">{offer.address}</p>
+
+        <h5 class="infoTitle">Numéro de téléphone de l'entreprise</h5>
+        <p class="text">{formatPhoneNumber(offer.enterprise!.phone)}</p>
+
+        <h5 class="infoTitle">Date de publication</h5>
+        <p class="text">{toFormattedDateString(offer.offerDebut)}</p>
+
+        <h5 class="infoTitle">Date d'entrée en fonction</h5>
+        <p class="text">{toFormattedDateString(offer.dateEntryOffice)}</p>
+
+        <h5 class="infoTitle">Date limite pour postuler</h5>
+        <p class="text">{toFormattedDateString(offer.deadlineApply)}</p>
+        <h5 class="infoTitle">Types d'emploi</h5>
+        <p class="text">
+            {offer.employmentSchedules?.map((s) => s.description).join(", ")}
+        </p>
+        <h5 class="infoTitle">Salaire</h5>
+        <p class="text">{offer.salary}</p>
+
+        <h5 class="infoTitle">Heure par semaine</h5>
+        <p class="text">{offer.hoursPerWeek}</p>
+
+        <h5 class="infoTitle">Programme</h5>
+        <p class="text">
+            {offer.studyPrograms?.map((p) => p.name).join(", ")}
+        </p>
+        <h5 class="infoTitle">Poste visé</h5>
+        <p class="text">
+            {offer.employmentSchedules?.map((s) => s.description).join(", ")}
+        </p>
+        <h5 class="infoTitle">Description du poste</h5>
+        <div class="description">{@html offer.description}</div>
+        {#if !hideURL}
+            <h5 class="infoTitle">Lien vers l'offre d'emploi détaillée</h5>
+            <p class="text CanBeHidden">
+                {getShortURL(offer.offerLink)}
             </p>
-            <h5 class="infoTitle">Salaire</h5>
-            <p class="text">{offer.salary}</p>
-
-            <h5 class="infoTitle">Heure par semaine</h5>
-            <p class="text">{offer.hoursPerWeek}</p>
-
-            <h5 class="infoTitle">Programme</h5>
-            <p class="text">
-                {offer.studyPrograms?.map((p) => p.name).join(", ")}
-            </p>
-            <h5 class="infoTitle">Poste visé</h5>
-            <p class="text">
-                {offer.employmentSchedules
-                    ?.map((s) => s.description)
-                    .join(", ")}
-            </p>
-            <h5 class="infoTitle">Description du poste</h5>
-            <div class="description">{@html offer.description}</div>
-            <h5 class={hideURL ? "infoTitle CanBeHidden" : "infoTitle"}>
-                Lien vers l'offre d'emploi détaillée
-            </h5>
             <div class="row-copy">
-                {#if !hideURL}
-                    <div class="link_padding">
-                        <a href={offer.offerLink} class="text_link"
-                            >{getShortURL(offer.offerLink)}</a
-                        >
-                    </div>
-                {:else}
-                    <p class="text CanBeHidden">
-                        {getShortURL(offer.offerLink)}
-                    </p>
-                {/if}
+                <div class="link_padding">
+                    <a href={offer.offerLink} class="text_link" target="_blank"
+                        >{getShortURL(offer.offerLink)}</a
+                    >
+                </div>
                 <div use:copy={offer.offerLink}>
                     <img
                         class="iconeCopy"
@@ -138,27 +121,22 @@
                     />
                 </div>
             </div>
+        {/if}
 
-            <h5 class="infoTitle">Où envoyer votre candidature</h5>
-            <div class="row">
-                <p class="text">{offer.email}</p>
-                <a href="mailto:{offer.email}">
-                    <Button text="Postuler par courriel" />
-                </a>
-            </div>
-            <ShareButtons title={offer.title} />
+        <h5 class="infoTitle">Où envoyer votre candidature</h5>
+        <div class="row">
+            <p class="text">{offer.email}</p>
         </div>
-    {/if}
+        <a href="mailto:{offer.email}">
+            <Button text="Postuler par courriel" />
+        </a>
+        <ShareButtons title={offer.title} />
+    </div>
 </div>
 
 <style scoped>
     .CanBeHidden {
         display: none;
-    }
-
-    .container > .Loading2 {
-        display: flex !important;
-        justify-content: center !important;
     }
 
     .titleContainer {

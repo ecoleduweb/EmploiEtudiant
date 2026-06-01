@@ -141,7 +141,7 @@
     <div class="rich-text-content" bind:this={element} data-name={name}></div>
 </div>
 
-<style>
+<style scoped>
     .rich-text-content {
         text-align: left;
         min-height: 200px;

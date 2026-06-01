@@ -1,3 +1,5 @@
+from turtle import update
+
 from app import locale
 from app import db
 from app.models.enterprise_model import Enterprise
@@ -14,7 +16,7 @@ logger = getLogger(__name__)
 
 class EnterpriseRepo:
     def end_enterprise_temporary(self, dto: EnterpriseReadDTO):
-        enterprise = Enterprise.query.filter_by(id=dto.id).first()
+        enterprise = Enterprise.query.filter_by(id=dto.id).options(db.joinedload(Enterprise.users)).first()
         if enterprise is None:
             raise NotFoundException("Enterprise not found", dto.id)
         enterprise.isTemporary = False
@@ -49,15 +51,25 @@ class EnterpriseRepo:
         return EnterpriseReadDTO.model_validate(enterprise)
 
     def update(self, dto: EnterpriseUpdateDTO) -> EnterpriseReadDTO:
-        enterprise = Enterprise.query.filter_by(id=dto.id).first()
+        enterprise = Enterprise.query.filter_by(id=dto.id).options(db.joinedload(Enterprise.users)).first()
         if enterprise is None:
             raise NotFoundException("Enterprise not found", dto.id)
-    
         enterprise.name = dto.name
         enterprise.email = dto.email
         enterprise.phone = dto.phone
         enterprise.address = dto.address
         enterprise.cityId = dto.cityId
+        enterprise.isTemporary = dto.isTemporary
+        for user in enterprise.users:
+            # Cherche tous les utilisateurs qui avaient l'entrerprise avant la mise à jour
+            # Mais qui n'en font plus parti.
+            if user.id not in [u.id for u in dto.users]:
+                User.query.filter_by(id=user.id).update({"enterpriseId": None})
+        # Cherche tous les utilisateurs qui possèdent l'entreprise avec la mise à jour.
+        for user in dto.users:
+            if user.id not in [u.id for u in enterprise.users]:
+                User.query.filter_by(id=user.id).update({"enterpriseId": enterprise.id})
+
         db.session.commit()
         return EnterpriseReadDTO.model_validate(enterprise)
     

@@ -154,7 +154,7 @@ export const jobOfferTemplate = {
             email: "",
             phone: "",
             cityId: 0,
-            isTemporary: false,
+            isTemporary: true,
         },
     })
 }

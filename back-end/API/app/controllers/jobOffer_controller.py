@@ -47,8 +47,8 @@ def get_job_offer(id):
 @job_offer_blueprint.route('/<int:id>', methods=['DELETE'])
 @token_required
 def delete_job_offer(current_user, id):
-    dto = job_offer_service.delete_by_id(current_user,id)
-    return dto.model_dump(), 200
+    job_offer_service.delete_by_id(current_user,id)
+    return '', 204
 
 
 @job_offer_blueprint.route('/<int:id>', methods=['PUT'])

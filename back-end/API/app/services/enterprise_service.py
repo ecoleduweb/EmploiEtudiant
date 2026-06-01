@@ -30,6 +30,7 @@ class EnterpriseService:
             # Setting the isTemporary field to the current value in the database to prevent a user from changing it when updating their enterprise
             enterprise = enterprise_repo.find_by_id(current_user.enterpriseId)
             dto.isTemporary = enterprise.isTemporary
+            dto.users = enterprise.users
         return enterprise_repo.update(dto)
     
     def delete_by_id(self, id) -> EnterpriseReadDTO:

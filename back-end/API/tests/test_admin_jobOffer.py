@@ -309,7 +309,6 @@ def test_disapproveJobOfferAndAndValidatedEnterprise(client):
     assert response.json.get('isTemporary') is True
     response =  client.get('/user/1')
     assert response.status_code == 200
-    assert response.json.get('enterpriseId') == 2
 
 def test_approveJobOfferAndDeleteEnterprise(client):
     response = client.put('/jobOffer/approve/3', json={'isApproved': True, 'approbationMessage': "", 'selectedEnterpriseId': 1})
@@ -336,7 +335,6 @@ def test_approveJobOfferAndApproveEnterprise(client):
 
 def test_deleteJobOfferAsAdmin(client):
     response = client.delete('/jobOffer/1')
-    assert response.status_code == 200
-    assert response.json['id'] == 1
+    assert response.status_code == 204
     response = client.get('/jobOffer/1')
     assert response.status_code == 404

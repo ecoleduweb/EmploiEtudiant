@@ -1,4 +1,5 @@
 import type { City } from "./City"
+import type { User } from "./User"
 
 export type Enterprise = {
     id?: number
@@ -9,4 +10,5 @@ export type Enterprise = {
     cityId: number
     isTemporary: boolean
     city?: City
+    users?: User[]
 }

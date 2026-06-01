@@ -2,10 +2,10 @@
     import { onMount } from "svelte"
     import Analytic from "../../lib/analytic.svelte"
     import { env } from "$env/dynamic/public"
-    import { GoogleAnalytics } from '@beyonk/svelte-google-analytics'
+    import { GoogleAnalytics } from "@beyonk/svelte-google-analytics"
 
     let accepted = $state(false)
-    const measurementId = env.PUBLIC_PUBLIC_MEASUREMENT_ID;
+    const measurementId = env.PUBLIC_PUBLIC_MEASUREMENT_ID
 
     function acceptCookies() {
         accepted = true
@@ -33,17 +33,17 @@
                 >En savoir plus</a
             >.
         </p>
-        <button id="cookieBannerOk" onclick={acceptCookies}>J'ai compris</button>
+        <button id="cookieBannerOk" onclick={acceptCookies}>J'ai compris</button
+        >
     </div>
 {/if}
 
 {#if accepted}
-
     <Analytic />
     <GoogleAnalytics properties={[measurementId]} />
 {/if}
 
-<style>
+<style scoped>
     .cookie-banner {
         position: fixed;
         bottom: 0;

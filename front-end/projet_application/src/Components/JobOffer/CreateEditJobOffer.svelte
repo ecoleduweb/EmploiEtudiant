@@ -380,8 +380,7 @@
     </form>
 </div>
 
-<!-- styles unchanged -->
-<style>
+<style scoped>
     label {
         display: block;
         margin-bottom: 0.26vw;
