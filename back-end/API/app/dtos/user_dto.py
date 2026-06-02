@@ -25,7 +25,7 @@ class UserLoginDTO(BaseModel):
     password: str = Field(max_length=255)
 
 
-class UserUpdatePasswordDTO(UserLoginDTO):
+class UserUpdatePasswordDTO(BaseModel):
     password: str = Field(min_length=12, max_length=255)
     id: int | None = None
 

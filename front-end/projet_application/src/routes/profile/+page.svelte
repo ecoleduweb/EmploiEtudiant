@@ -2,28 +2,22 @@
     import { goto } from "$app/navigation"
     import { currentUser, isLoggedIn } from "$lib"
     import { onMount } from "svelte"
-    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import type { User } from "../../Models/User"
-    import { GET, PUT } from "../../ts/server"
-    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
-
+    import { PUT } from "../../ts/server"
+    import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
+    import { fetchCurrentUserEnterprise } from "../../Service/EnterpriseService"
+    import type { Enterprise } from "../../Models/Enterprise"
+    import Modal from "../../Components/Common/Modal.svelte"
     let lastname: string = $state("")
     let firstname: string = $state("")
     let password: string = $state("")
     let showEnterpriseEditModal = $state(false)
-
-    const handleShow = () => {
-        showEnterpriseEditModal = true
-    }
-
-    const closeModal = () => {
-        showEnterpriseEditModal = false
-    }
+    let currentEnterprise: Enterprise | undefined = $state(undefined)
 
     const changePassword = async () => {
         await PUT<any, any>(
-            `/user/updatePassword/${($currentUser as User).id}`,
+            `/auth/updatePassword/${($currentUser as User).id}`,
             {
                 email: ($currentUser as User).email,
                 password: password,
@@ -49,10 +43,8 @@
         }
     }
 
-    let userHaveEnterprise = $state(false)
-
     onMount(async () => {
-        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
+        currentEnterprise = await fetchCurrentUserEnterprise()
     })
 </script>
 
@@ -72,15 +64,23 @@
             <br />
         </div>
 
-        <div class="Modal">
-            {#if userHaveEnterprise}
-                <div class="divFlex" id="editEnterprise">
-                    <Button onClick={handleShow} text="Modifier l'entreprise" />
-                </div>
+        {#if currentEnterprise}
+            <div class="divFlex" id="editEnterprise">
+                <Button
+                    onClick={() => (showEnterpriseEditModal = true)}
+                    text="Modifier l'entreprise"
+                />
+            </div>
+            {#if showEnterpriseEditModal}
+                <Modal
+                    handleCloseClick={() => (showEnterpriseEditModal = false)}
+                >
+                    <CreateEditEnterprise
+                        enterpriseToEdit={currentEnterprise}
+                        onApproveClick={() => (showEnterpriseEditModal = false)}
+                    ></CreateEditEnterprise>
+                </Modal>
             {/if}
-        </div>
-        {#if showEnterpriseEditModal}
-            <ModifyEnterprise handleCloseClick={closeModal}></ModifyEnterprise>
         {/if}
 
         <div class="more-information">

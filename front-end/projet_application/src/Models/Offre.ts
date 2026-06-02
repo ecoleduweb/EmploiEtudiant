@@ -25,4 +25,5 @@ export interface JobOffer {
     approvedDate: string
     enterprise?: Enterprise
     lastModifiedDate?: Date
+    last_modified_by_id?: number
 }

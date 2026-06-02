@@ -5,7 +5,6 @@ import json
 from app.middleware.tokenVerify import token_required
 from app.services.auth_service import AuthService
 from app.services.user_service import UserService
-from datetime import datetime
 from app.utils.Encryption import decrypt
 from app.dtos.user_dto import (
     UserRegisterDTO,
@@ -54,19 +53,15 @@ def updatePassword(current_user, id):
 @auth_blueprint.route('/resetPassword', methods=['POST'])
 def resetPassword():
     data = request.get_json()
-    decryptedData = json.loads(decrypt(data['token']))
-    if data['password'] == data['confirmPassword']:
-        reset_date = float(decryptedData['resetDate'])
-        if (reset_date + 900) > datetime.now().timestamp():
-            user_service.reset_password(decryptedData['email'], data['password'])
-            return '', 200
-        else:
-            logger.warning("A user tried to reset the password via a expired link")
-            return jsonify({'message': 'Error while trying to reset the password (Link expired)'}), 403
-    else:
-        logger.warning("A user tried to reset the password but it failed")
-        return jsonify({'message': 'Passwords do not match'}), 400
+    auth_service.request_reset_password(data['email'])
+    return {'message': 'Mise à jour réussie'}, 200
 
+@auth_blueprint.route('/requestResetPassword', methods=['POST'])
+def requestResetPassword():
+    data = request.get_json()
+    decryptedData = json.loads(decrypt(data['token']))
+    auth_service.reset_password(decryptedData['email'], data['password'], float(decryptedData['resetDate']))
+    return {'message': 'Envoie du courriel réussi'}, 200
 
 def _generate_auth_response(user, token):
     response = jsonify({

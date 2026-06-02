@@ -1,10 +1,9 @@
 <script lang="ts">
     import "../../styles/global.css"
     import { onMount } from "svelte"
-    import { writable } from "svelte/store"
     import { GET } from "../../ts/server"
     import type { User } from "../../Models/User"
-    import UserConfigurationModal from "../../Components/Utilisateur/Utilisateurs.svelte"
+    import EditUser from "../../Components/Utilisateur/EditUser.svelte"
     import UtilisateurRow from "../../Components/Utilisateur/UtilisateurRow.svelte"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
 
@@ -18,7 +17,6 @@
         selectedUser = user
     }
     const closeModal = async () => {
-        console.log("Closing modal...")
         selectedUser = null
         await getUsers()
     }
@@ -67,10 +65,7 @@
         </section>
 
         {#if selectedUser}
-            <UserConfigurationModal
-                user={selectedUser}
-                onCloseModal={closeModal}
-            />
+            <EditUser user={selectedUser} onCloseModal={closeModal} />
         {/if}
     {:else}
         <div class="loading">

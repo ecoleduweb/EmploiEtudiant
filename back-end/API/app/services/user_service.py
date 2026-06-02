@@ -34,7 +34,7 @@ class UserService:
     def reset_password(self, email, new_password):
         user = user_repo.find_by_email(email)
         user.password = hasher.hash(new_password)
-        user_repo.update(user)
+        return user_repo.update(user)
 
     def update_password(self, current_user, dto: UserUpdatePasswordDTO) -> UpdatedUserReadDTO:
         if not current_user.isModerator and current_user.id != dto.id:

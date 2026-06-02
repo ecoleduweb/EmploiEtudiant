@@ -102,7 +102,10 @@
             }
 
             try {
-                await POST<any, any>("/auth/resetPassword", resetPassword)
+                await POST<any, any>(
+                    "/auth/requestResetPassword",
+                    resetPassword,
+                )
                 popupMessage = successPopupMessage
             } catch (err) {
                 popupMessage = failedPopupMessage

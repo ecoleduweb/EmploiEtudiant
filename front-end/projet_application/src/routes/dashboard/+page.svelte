@@ -142,7 +142,7 @@
         }
     })
 
-    let dateNow = toFormattedDateString(new Date())
+    let dateNow = new Date()
 
     let toBeApprovedOffer = $derived(
         jobOffers
@@ -159,22 +159,21 @@
     let offerToCome = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            let dateDebut = toFormattedDateString(new Date(x.offerDebut))
-            return x.offerDebut < dateDebut
+            return new Date(x.offerDebut) > new Date()
         }),
     )
     let offerDisplayed = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            let dateDebut = toFormattedDateString(new Date(x.offerDebut))
-            let dateFin = toFormattedDateString(new Date(x.deadlineApply))
+            let dateDebut = new Date(x.offerDebut)
+            let dateFin = new Date(x.deadlineApply)
             return dateNow >= dateDebut && dateNow <= dateFin
         }),
     )
     let expiredOffer = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            let dateFin = toFormattedDateString(new Date(x.deadlineApply))
+            let dateFin = new Date(x.deadlineApply)
             return dateFin < dateNow
         }),
     )

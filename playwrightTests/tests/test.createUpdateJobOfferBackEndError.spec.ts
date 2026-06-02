@@ -6,18 +6,16 @@ import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
-import { employementScheduleByOfferIdMocks } from '../Helper/Mocks/employementScheduleByOfferId.mock';
 import { userMocks } from '../Helper/Mocks/user.mock';
 
 
 test.describe('createUpdateJobOfferBackEndError', () => {
-  var apiMocker;
+  let apiMocker: any;
   test.beforeEach(async ({ page }) => {
     apiMocker = new ApiMocker(page);
     await apiMocker.addMocks([
       studyProgramMocks.success,
       cityMocks.success,
-      employementScheduleByOfferIdMocks.success,
       employmentScheduleMocks.success,
       jobOfferMocks.jobOfferNew,
       enterpriseMocks.success,
