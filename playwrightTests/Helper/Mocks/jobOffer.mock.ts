@@ -1,3 +1,4 @@
+import { LAST_MONTH, NEXT_MONTH, NOW } from "../../tests/fixtures";
 import { MockConfig } from "../types";
 
 export const jobOfferMocks = {
@@ -8,11 +9,11 @@ export const jobOfferMocks = {
       json: { "message": "Offre créée" }
     }
   },
-  jobOfferEmployer: {
+  emptyJobOfferEmployer: {
     url: '*/**/jobOffer/employer/*',
     response: {
-      status: 404,
-      json: { "message": "Offres non trouvées" }
+      status: 200,
+      json: []
     }
   },
   jobOfferVerifyURL: {
@@ -48,47 +49,47 @@ export const jobOfferMocks = {
     url: '*/**/jobOffer/employer/*',
     response: {
       status: 200,
-      json: [{
-        "active": true,
-        "address": "123 rue bacon",
-        "approbationMessage": "\ud83e\udd96",
-        "lastModifiedDate": '2024-02-25',
-        "approvedDate": '2024-02-25',
-        "dateEntryOffice": '2024-02-26',
-        "deadlineApply": '2024-03-05',
-        "description": "\ud83e\udd96",
-        "email": "bob@cegeprdl.ca",
-        "employerId": 2,
-        "enterprise": {
+      json: [
+        {
           "address": "123 rue bacon",
-          "cityId": 637,
-          "email": "abc@hotmail.com",
-          "id": 2,
-          "isTemporary": false,
-          "name": "pistouille",
-          "phone": "111-222-3333"
-        },
-        "hoursPerWeek": 32.0,
-        "id": 5,
-        "isApproved": true,
-        "last_modified_by_id": 2,
-        "offerDebut": '2024-02-26',
-        "offerLink": "https://google.ca",
-        "salary": "23456789",
-        "schedules": [
-          {
-            "description": "Emploi d'été",
-            "id": 2
-          }
-        ],
-        "studyPrograms": [
-          {
-            "id": 3,
-            "name": "Gestion et intervention en loisir"
-          }
-        ],
-        "title": "\ud83e\udd96"
-      }]
+          "approbationMessage": "\ud83e\udd96",
+          "lastModifiedDate": NEXT_MONTH.toISOString().split('T')[0],
+          "approvedDate": NEXT_MONTH.toISOString().split('T')[0],
+          "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+          "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
+          "description": "\ud83e\udd96",
+          "email": "bob@cegeprdl.ca",
+          "userId": 2,
+          "enterprise": {
+            "address": "123 rue bacon",
+            "cityId": 637,
+            "email": "abc@hotmail.com",
+            "id": 2,
+            "isTemporary": false,
+            "name": "pistouille",
+            "phone": "111-222-3333"
+          },
+          "hoursPerWeek": 32.0,
+          "id": 5,
+          "isApproved": true,
+          "last_modified_by_id": 2,
+          "offerDebut": '2024-02-26',
+          "offerLink": "https://google.ca",
+          "salary": "23456789",
+          "employmentSchedules": [
+            {
+              "description": "Emploi d'été",
+              "id": 2
+            }
+          ],
+          "studyPrograms": [
+            {
+              "id": 3,
+              "name": "Gestion et intervention en loisir"
+            }
+          ],
+          "title": "\ud83e\udd96"
+        }]
     }
   },
   jobOfferUpdateInvalid: {
@@ -117,15 +118,15 @@ export const jobOfferMocks = {
       json:
         [
           {
-            "active": true,
             "address": "maison",
             "approbationMessage": "sdsd",
-            "approvedDate": "2024-02-10",
-            "dateEntryOffice": "2024-02-15",
-            "deadlineApply": "2024-02-20",
+            "lastModifiedDate": NEXT_MONTH.toISOString().split('T')[0],
+            "approvedDate": NEXT_MONTH.toISOString().split('T')[0],
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": LAST_MONTH.toISOString().split('T')[0],
             "description": "Lorem ipsum dolor sit amet",
             "email": "vincent.bouch1@gmail.com",
-            "employerId": 2,
+            "userId": 2,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -139,23 +140,22 @@ export const jobOfferMocks = {
             "id": 3,
             "isApproved": true,
             "last_modified_by_id": 2,
-            "offerDebut": "2024-02-01",
+            "offerDebut": NOW.toISOString().split('T')[0],
             "offerLink": "https://nodejs.org/fr/blog/release/v20.11.1",
             "salary": "10",
-            "schedules": [{ "description": "Emploi d'été", "id": 2 }],
+            "employmentSchedules": [{ "description": "Emploi d'été", "id": 2 }],
             "studyPrograms": [{ "id": 1, "name": "Design d'intérieur" }],
-            "title": "stagiaire"
+            "title": "expirée"
           },
           {
-            "active": true,
             "address": "sda",
             "approbationMessage": "",
             "approvedDate": null,
-            "dateEntryOffice": "2024-03-05",
-            "deadlineApply": "2024-03-10",
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
             "description": "Lorem ipsum dolor sit amet",
             "email": "asdasd@asdasd.ca",
-            "employerId": 2,
+            "userId": 2,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -169,23 +169,22 @@ export const jobOfferMocks = {
             "id": 4,
             "isApproved": false,
             "last_modified_by_id": 2,
-            "offerDebut": "2024-02-26",
+            "offerDebut": NOW.toISOString().split('T')[0],
             "offerLink": "https://youtu.be",
             "salary": "44",
-            "schedules": [{ "description": "Emploi d'été", "id": 2 }],
+            "employmentSchedules": [{ "description": "Emploi d'été", "id": 2 }],
             "studyPrograms": [{ "id": 1, "name": "Design d'intérieur" }],
-            "title": "skidi"
+            "title": "REFUSÉ"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
-            "approvedDate": "2024-02-24",
-            "dateEntryOffice": "2024-03-12",
-            "deadlineApply": "2024-03-20",
+            "approvedDate": NEXT_MONTH.toISOString().split('T')[0],
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
             "description": "Merci !",
             "email": "courriel@contact.com",
-            "employerId": 6,
+            "userId": 6,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -199,23 +198,22 @@ export const jobOfferMocks = {
             "id": 8,
             "isApproved": true,
             "last_modified_by_id": 3,
-            "offerDebut": "2024-02-24",
+            "offerDebut": NEXT_MONTH.toISOString().split('T')[0],
             "offerLink": "",
             "salary": "66",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
             "title": "toBeAnnounced"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
-            "approvedDate": "2024-02-26",
-            "dateEntryOffice": "2024-03-12",
-            "deadlineApply": "2024-09-24",
+            "approvedDate": NEXT_MONTH.toISOString().split('T')[0],
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
             "description": "Merci !",
             "email": "courriel@contact.com",
-            "employerId": 6,
+            "userId": 6,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -229,23 +227,22 @@ export const jobOfferMocks = {
             "id": 8,
             "isApproved": true,
             "last_modified_by_id": 3,
-            "offerDebut": "2024-03-05",
+            "offerDebut": NOW.toISOString().split('T')[0],
             "offerLink": "",
             "salary": "66",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
             "title": "toBeApprovedPourVrai"
           },
           {
-            "active": true,
             "address": "80 rue frontenac",
             "approbationMessage": null,
             "approvedDate": null,
-            "dateEntryOffice": "2024-03-01",
-            "deadlineApply": "2024-03-15",
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
             "description": "dxfchkl",
             "email": "ll@cegeprdl.ca",
-            "employerId": 5,
+            "userId": 5,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -259,23 +256,22 @@ export const jobOfferMocks = {
             "id": 7,
             "isApproved": null,
             "last_modified_by_id": 3,
-            "offerDebut": "2024-03-01",
+            "offerDebut": NOW.toISOString().split('T')[0],
             "offerLink": "",
             "salary": "77",
-            "schedules": [{ "description": "Temps partiel", "id": 3 }],
+            "employmentSchedules": [{ "description": "Temps partiel", "id": 3 }],
             "studyPrograms": [{ "id": 2, "name": "Éducation à l'enfance" }],
-            "title": "papapapapa"
+            "title": "En attente de l'approbation"
           },
           {
-            "active": false,
             "address": "quelque part",
             "approbationMessage": "Refusée par l’administrateur",
             "approvedDate": null,
-            "dateEntryOffice": "2024-02-10",
-            "deadlineApply": "2024-02-15",
+            "dateEntryOffice": NEXT_MONTH.toISOString().split('T')[0],
+            "deadlineApply": NEXT_MONTH.toISOString().split('T')[0],
             "description": "Offre explicitement refusée",
             "email": "refuse@exemple.com",
-            "employerId": 9,
+            "userId": 9,
             "enterprise": {
               "address": "qwe#",
               "cityId": 637,
@@ -289,10 +285,10 @@ export const jobOfferMocks = {
             "id": 105,
             "isApproved": false,
             "last_modified_by_id": 3,
-            "offerDebut": "2024-02-01",
+            "offerDebut": NOW.toISOString().split('T')[0],
             "offerLink": "",
             "salary": "20",
-            "schedules": [
+            "employmentSchedules": [
               { "description": "Temps partiel", "id": 3 }
             ],
             "studyPrograms": [

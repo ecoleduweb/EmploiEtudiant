@@ -22,8 +22,8 @@ export const enterpriseMocks = {
             }
         }
     },
-    enterpriseEmployer: {
-        url: '*/**/enterprise/employer/*',
+    hasCurrentEnterprise: {
+        url: '*/**/enterprise/currentEnterprise',
         response: {
             status: 200,
             json: {
@@ -32,8 +32,31 @@ export const enterpriseMocks = {
                 "email": "test@gmail.com",
                 "id": 7,
                 "isTemporary": false,
-                "name": "test",
+                "name": "employer enterprise",
                 "phone": "1231234123"
+            }
+        }
+    },
+    hasTemporaryCurrentEnterprise: {
+        url: '*/**/enterprise/currentEnterprise',
+        response: {
+            status: 200,
+            json: {
+                "address": "test",
+                "cityId": 1,
+                "email": "test@gmail.com",
+                "id": 7,
+                "isTemporary": true,
+                "name": "temporary enterprise",
+                "phone": "1231234123"
+            }
+        }
+    },
+    notFoundEmployerEnterprise: {
+        url: '*/**/enterprise/currentEnterprise',
+        response: {
+            status: 404,
+            json: {
             }
         }
     },
@@ -49,7 +72,23 @@ export const enterpriseMocks = {
                     phone: '4185551111',
                     address: '123 Rue Test',
                     cityId: 1,
-                    isTemporary: false
+                    city: {
+                        id: 1,
+                        city: 'Abercorn'
+                    },
+                    isTemporary: false,
+                    users: [
+                        {
+                            id: 1,
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            email: 'John@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ]
                 },
                 {
                     id: 2,
@@ -58,6 +97,22 @@ export const enterpriseMocks = {
                     phone: '4185552222',
                     address: '456 Avenue Test',
                     cityId: 2,
+                    city: {
+                        id: 2,
+                        city: 'Montreal'
+                    },
+                    users: [
+                        {
+                            id: 2,
+                            firstName: 'John2',
+                            lastName: 'Doe2',
+                            email: 'John@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ],
                     isTemporary: false
                 },
                 {
@@ -67,7 +122,23 @@ export const enterpriseMocks = {
                     phone: '5145553333',
                     address: '789 Blvd Montreal',
                     cityId: 3,
-                    isTemporary: false
+                    city: {
+                        id: 3,
+                        city: 'Montreal'
+                    },
+                    isTemporary: false,
+                    users: [
+                        {
+                            id: 3,
+                            firstName: 'John3',
+                            lastName: 'Doe3',
+                            email: 'John3@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ]
                 }
             ]
         }
@@ -83,6 +154,10 @@ export const enterpriseMocks = {
                 phone: '4185554444',
                 address: '321 Rue Nouvelle',
                 cityId: 1,
+                city: {
+                    id: 1,
+                    city: 'Abercorn'
+                },
                 isTemporary: false
             }
         }
@@ -91,7 +166,19 @@ export const enterpriseMocks = {
         url: '*/**/enterprise/1',
         response: {
             status: 200,
-            json: { message: 'enterprise updated' }
+            json: {
+                id: 1,
+                name: 'Mise à jour Entreprise',
+                email: 'miks@ajour.com',
+                phone: '123 updated',
+                address: '321 Rue à jour',
+                cityId: 2,
+                city: {
+                    id: 2,
+                    city: 'Moncton'
+                },
+                isTemporary: false
+            }
         }
     }
 } satisfies Record<string, MockConfig>;

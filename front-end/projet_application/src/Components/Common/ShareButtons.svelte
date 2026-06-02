@@ -6,14 +6,17 @@
         Email,
         //@ts-ignore
     } from "svelte-share-buttons-component"
+    import { env } from "$env/dynamic/public"
 
     interface Props {
-        shareUrl: string
-        shareText: string
         title: string
     }
 
-    let { shareUrl, shareText, title }: Props = $props()
+    const appId = env.PUBLIC_MESSENGER_APP_ID
+
+    let { title }: Props = $props()
+
+    const shareUrl = $derived(window.location.href)
 
     let isIOS = $derived(
         typeof navigator !== "undefined" &&
@@ -22,19 +25,34 @@
 
     let smsHref = $derived(
         isIOS
-            ? `sms:&body=${encodeURIComponent(shareText)}`
-            : `sms:?body=${encodeURIComponent(shareText)}`,
+            ? `sms:&body=${encodeURIComponent(shareUrl)}`
+            : `sms:?body=${encodeURIComponent(shareUrl)}`,
+    )
+    const isOnMobile = $derived(
+        typeof navigator !== "undefined" &&
+            /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                navigator.userAgent,
+            ),
     )
 
-    let messengerShare = $derived(
-        `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`,
+    let messengerShareLink = $derived(
+        isOnMobile
+            ? `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`
+            : `https://www.facebook.com/share_as_message/?link=${encodeURIComponent(shareUrl)}&app_id=${appId}`,
+    )
+
+    const text = $derived(
+        `J'ai trouvé cette offre sur le site d'emploi étudiant : ${title}.`,
+    )
+    const textWithUrl = $derived(
+        `${text} Voici le lien pour t'y rendre : ${shareUrl}`,
     )
 </script>
 
 <div class="shareInlineBlock">
     <div class="shareGrid">
         <div class="shareCell">
-            <WhatsApp url={shareUrl} text={shareText} />
+            <WhatsApp url={shareUrl} {text} />
         </div>
 
         <div class="shareCell">
@@ -42,16 +60,16 @@
         </div>
 
         <div class="shareCell">
-            <X url={shareUrl} text={shareText} />
+            <X url={shareUrl} {text} />
         </div>
 
         <div class="shareCell">
-            <Email subject={title} body={shareText} />
+            <Email subject={title} body={textWithUrl} />
         </div>
 
         <a
             class="shareCell messengerItem"
-            href={messengerShare}
+            href={messengerShareLink}
             aria-label="Partager sur Messenger"
             target="_blank"
             rel="noopener noreferrer"
@@ -69,33 +87,29 @@
             </svg>
         </a>
 
-        <a
-            class="shareCell smsItem"
-            href={smsHref}
-            aria-label="Partager par SMS"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-                fill="white"
+        {#if isOnMobile}
+            <a
+                class="shareCell smsItem"
+                href={smsHref}
+                aria-label="Partager par SMS"
             >
-                <path
-                    d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"
-                />
-            </svg>
-        </a>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="2em"
+                    height="2em"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                >
+                    <path
+                        d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"
+                    />
+                </svg>
+            </a>
+        {/if}
     </div>
 </div>
 
 <style scoped>
-    .infoTitle {
-        font-size: 1.3rem;
-        margin: 0px;
-        margin-bottom: 0.5vw;
-    }
-
     .shareInlineBlock {
         margin-top: 1rem;
         width: 100%;
@@ -177,10 +191,6 @@
     }
 
     @media (max-width: 768px) {
-        .infoTitle {
-            margin-bottom: 0.5rem;
-        }
-
         .shareInlineBlock {
             width: 100%;
             margin-top: 1.25rem;

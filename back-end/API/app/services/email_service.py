@@ -38,7 +38,7 @@ def get_microsoft_graph_token():
         logger.error(f"Erreur lors de l'acquisition du token Microsoft Graph: {str(e)}")
         return {"error": "authentication_failed", "error_description": str(e)}
 
-def sendMail(receiver_mail, subject, content):
+def send_mail(receiver_mail, subject, content):
     """
     Envoie un email via l'API Microsoft Graph.
     
@@ -53,7 +53,7 @@ def sendMail(receiver_mail, subject, content):
     
     if (not enabled or current_app.config.get('TESTING')):
         logger.info(f"Envoi d'email désactivé: enabled={enabled}, URL={request.url_root}, testing={current_app.config.get('TESTING')}")
-        return
+        return True # Simule un envoi réussi en mode test ou si l'envoi est désactivé
     
     logger.info("Appel à get_microsoft_graph_token()")
     token_result = get_microsoft_graph_token()

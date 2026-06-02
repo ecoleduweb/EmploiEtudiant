@@ -8,11 +8,11 @@ class User(db.Model):
     password = db.Column(db.String(300), default=False)
     active = db.Column(db.Boolean, default=False)
     isModerator = db.Column(db.Boolean, default=False)
+    #Enventuellement, un employeur vérifié pourrait publier des offres d'emplois sans passer par le processus d'approbation.
+    verified = db.Column(db.Boolean, nullable=False , default=False)
+    # Relations
+    enterpriseId = db.Column(db.Integer, db.ForeignKey("enterprise.id"), nullable=True)
+    enterprise = db.relationship("Enterprise", back_populates="users")
 
     def __repr__(self):
-        return f"User('{self.firstName}','{self.lastName}','{self.email}', '{self.password}', '{self.active}',  '{self.isModerator}')"
-    
-    def to_json_string(self):
-        return {'id': self.id, 'firstName':self.firstName, 'lastName':self.lastName, 'email': self.email, "active": self.active, 'isModerator': self.isModerator}
-    def minimal_information_to_json_string(self):
-        return {'firstName':self.firstName, 'lastName':self.lastName, 'isModerator': self.isModerator, 'email': self.email}
+        return f"User('{self.firstName}','{self.lastName}','{self.email}', '{self.active}',  '{self.isModerator}', '{self.verified}', '{self.enterpriseId}')"

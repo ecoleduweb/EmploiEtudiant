@@ -1,33 +1,43 @@
 <script lang="ts">
     import Button from "../Inputs/Button.svelte"
     import type { StudyProgram } from "../../Models/StudyProgram"
-    import { onMount } from "svelte"
     interface Props {
-        studyProgram?: StudyProgram;
-        handleApproveClick: (studyProgram: StudyProgram | void) => void;
+        studyProgram?: StudyProgram
+        handleApproveClick: (studyProgram: StudyProgram | void) => void
     }
 
-    let { studyProgram = $bindable({name: "", id: -1}), handleApproveClick }: Props = $props();
+    let {
+        studyProgram = $bindable({ name: "", id: -1 }),
+        handleApproveClick,
+    }: Props = $props()
 
     let savedName = $state(studyProgram.name)
-
 </script>
 
 <div class="main-div">
     <div class="container">
         <div>
-            <h5 class="infoTitle">{studyProgram.id <= 0 ? "Veuillez choisir un nouveau nom pour le nouveau programme" : "Veuillez choisir un nouveau nom pour le programme suivant: " + savedName}</h5>
-            <input type="text"
+            <h5 class="infoTitle">
+                {studyProgram.id <= 0
+                    ? "Veuillez choisir un nouveau nom pour le nouveau programme"
+                    : "Veuillez choisir un nouveau nom pour le programme suivant: " +
+                      savedName}
+            </h5>
+            <input
+                type="text"
                 bind:value={studyProgram.name}
                 placeholder="Nouveau nom"
                 class="input"
             />
         </div>
         <div class="button">
-            <Button text={studyProgram.id <= 0 ? "Créer" : "Modifier"} onClick={() => { 
-                handleApproveClick(studyProgram)
-                savedName = studyProgram.name
-            }}/>
+            <Button
+                text={studyProgram.id <= 0 ? "Créer" : "Modifier"}
+                onClick={() => {
+                    handleApproveClick(studyProgram)
+                    savedName = studyProgram.name
+                }}
+            />
 
             <Button text="Annuler" onClick={() => handleApproveClick()} />
         </div>
@@ -63,8 +73,7 @@
         flex-direction: column;
         margin: auto;
     }
-    .infoTitle 
-    {
+    .infoTitle {
         color: black;
     }
 

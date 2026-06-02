@@ -1,44 +1,36 @@
 <script lang="ts">
-    import Modal from "../Common/Modal.svelte"
     import type { JobOffer } from "../../Models/Offre"
-    import type { Enterprise } from "../../Models/Enterprise"
     import Button from "../Inputs/Button.svelte"
-    import { GET, POST, PUT } from "../../ts/server"
+    import { toggleArchive } from "../../Service/JobOfferService"
     interface Props {
-        offer: JobOffer;
-        handleApproveClick: () => void;
+        offer: JobOffer
+        onToggleArchiveClick: (jobOffer: JobOffer | undefined) => void
     }
 
-    let { offer, handleApproveClick }: Props = $props();
+    let { offer, onToggleArchiveClick }: Props = $props()
 
-    let approbationMessage: string = ""
-
-    const approveArchive = async (isApproved: boolean) => {
-        if (isApproved) 
+    const toggleArchiveStatus = async () => {
         {
-            try {
-            const response = await POST<any, any>(`/jobOffer/archive/${offer.id}`, {})
-
-            // TODO ajouter l'offre à la page sans recharger.
-            window.location.reload()
-            } catch (error) {
-                //console.error("Error approving job offer:", error)
-            }
+            const updated = await toggleArchive(offer.id)
+            onToggleArchiveClick(updated)
         }
-
-        handleApproveClick()
     }
 </script>
 
 <div class="main-div">
     <div class="container">
         <div>
-            <h5 class="infoTitle">Voulez-vous vraiment archiver cette offre?</h5>
+            <h5 class="infoTitle">
+                Voulez-vous vraiment archiver cette offre?
+            </h5>
         </div>
         <div class="button">
-            <Button text="Confirmer" onClick={() => approveArchive(true)} />
+            <Button text="Confirmer" onClick={() => toggleArchiveStatus()} />
 
-            <Button text="Refuser" onClick={() => approveArchive(false)} />
+            <Button
+                text="Refuser"
+                onClick={() => onToggleArchiveClick(undefined)}
+            />
         </div>
     </div>
 </div>
@@ -59,7 +51,7 @@
         color: black;
         font-size: 1.6vw;
     }
-    
+
     .button {
         display: flex;
         flex-direction: row;
@@ -76,6 +68,4 @@
             font-size: 4vw;
         }
     }
-
-
 </style>

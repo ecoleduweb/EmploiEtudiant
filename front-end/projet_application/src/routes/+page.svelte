@@ -3,18 +3,17 @@
     import Button from "../Components/Inputs/Button.svelte"
     import { goto } from "$app/navigation"
     import LoadingSpinner from "../Components/Common/LoadingSpinner.svelte"
-    import DetailOfferRow from "../Components/JobOffer/DetailOfferRow.svelte"
     import TableEmplois from "../Components/JobOffer/TableOffer.svelte"
     import { GET } from "../ts/server"
     import { onMount } from "svelte"
-    import type { JobOfferDetails } from "../Models/JobOfferDetails"
+    import type { JobOffer } from "../Models/Offre"
 
     let loaded = false
-    let latestJobOffers: JobOfferDetails[] = []
+    let latestJobOffers: JobOffer[] = []
 
     onMount(async () => {
         try {
-            latestJobOffers = await GET<JobOfferDetails[]>(
+            latestJobOffers = await GET<JobOffer[]>(
                 "/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
             )
         } catch (error) {
@@ -32,7 +31,7 @@
         goto(`/emplois?id=${id}`)
     }
 
-    const handleOfferClick = (offer: JobOfferDetails) => {
+    const handleOfferClick = (offer: JobOffer) => {
         handleEmploiWithId(offer.id)
     }
 </script>
@@ -113,7 +112,7 @@
     {/if}
 </main>
 
-<style>
+<style scoped>
     .Loading {
         height: 100%;
         width: 100%;

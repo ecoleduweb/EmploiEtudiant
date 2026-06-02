@@ -14,7 +14,7 @@
 </script>
 
 <button class="enterprise" onclick={() => handleModalClick()}>
-    <div class="emploi">
+    <div class="row">
         <div class="info">
             <p class="text">{enterprise.name}</p>
         </div>
@@ -29,6 +29,13 @@
         </div>
         <div class="info">
             <p class="text">{cityName}</p>
+        </div>
+        <div class="info">
+            <ul>
+                {#each enterprise.users as user}
+                    <li class="text">{user.firstName} {user.lastName}</li>
+                {/each}
+            </ul>
         </div>
         <img class="image" src="edit.svg" alt="modifier" />
     </div>
@@ -60,7 +67,7 @@
         margin-left: 0.2vw;
     }
 
-    .emploi {
+    .row {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -73,7 +80,7 @@
         height: 100%;
         padding: 5px 0px 5px 0px;
     }
-    .emploi:hover {
+    .row:hover {
         background-color: #555b66;
     }
     .image {

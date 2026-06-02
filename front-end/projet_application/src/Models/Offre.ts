@@ -1,4 +1,10 @@
+import type { Enterprise } from "./Enterprise"
+import type { EmploymentSchedule } from "./EmploymentSchedule"
+import type { StudyProgram } from "./StudyProgram"
+
 export interface JobOffer {
+    studyPrograms: StudyProgram[]
+    employmentSchedules: EmploymentSchedule[]
     id: number // id de l'offre
     title: string // titre de l'offre
     address: string // lieu de travail
@@ -11,11 +17,13 @@ export interface JobOffer {
     internship: boolean // si l'offre est un stage
     offerLink: string // lien vers l'offre ou site web de l'employeur
     offerStatus: number
-    active: boolean // si l'offre est active ou non
-    salary: string // salaire de lheure                     ** A AJOUTER BD **
-    employerId: number // id de l'employeur
+    salary: string
+    enterpriseId?: number
     isApproved: boolean | null // si l'offre est approuvée ou non
     approbationMessage: string | null // message d'approbation
     acceptCondition: boolean | null | undefined
     approvedDate: string
+    enterprise?: Enterprise
+    lastModifiedDate?: Date
+    last_modified_by_id?: number
 }

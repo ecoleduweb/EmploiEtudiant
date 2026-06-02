@@ -2,12 +2,12 @@
     import Modal from "../Common/Modal.svelte"
     import type { User } from "../../Models/User"
     import Button from "../Inputs/Button.svelte"
-    import { PUT } from "../../ts/server"
-    
-    export let user: User
-    export let handleUserClick: () => void
+    import { DELETE, PUT } from "../../ts/server"
 
-    let confirmModal = false
+    export let user: User
+    export let onCloseModal: () => void
+
+    let showConfirmModal = false
     let confirmMode: number = 0
     let approbationMessage: string = ""
 
@@ -15,99 +15,83 @@
     let firstname: string = ""
     let password: string = ""
 
-    const ChangePassword = async () => {
-        await PUT<any, any>("/user/updatePassword", {
-            email: user.email,
-            password: password
-        })
-
-        handleUserClick()
+    const changePassword = async (user: User) => {
+        await PUT<any, any>(`/auth/updatePassword/${user.id}`, user)
+        onCloseModal()
     }
 
-    const ChangeUser = async (lastName: string, firstName: string) => {
-        await PUT<any, any>("/user/user", {
-            lastname: lastName,
-            firstname: firstName,
-            email: user.email
-        })
-
-        handleUserClick()
+    const updateUser = async (user: User) => {
+        await PUT<User, User>(`/user/${user.id}`, user)
+        onCloseModal()
     }
 
-    const MakeAdmin = async () => {
-        await PUT<any, any>("/user/makeAdmin", {
-            email: user.email
-        })
+    const toggleAdmin = async (user: User) => {
+        await PUT<any, User>(`/user/toggleAdmin/${user.id}`, {})
     }
 
-    const RemoveUser = async () => {
-        await PUT<any, any>("/user/deleteUser", {
-            email: user.email
-        })
+    const deleteUser = async (user: User) => {
+        await DELETE(`/user/${user.id}`)
     }
 
-    const DesactivateUser = async () => {
-        await PUT<any, any>("/user/desactivateUser", {
-            email: user.email
-        })
+    const desactivateUser = async (user: User) => {
+        await PUT<any, User>(`/user/toggleActive/${user.id}`, {})
     }
 
-    const ConfirmAccept = async () => {
-        confirmModal = false
+    const confirmAccept = async (user: User) => {
+        showConfirmModal = false
 
         switch (confirmMode) {
             case 1: {
-                await MakeAdmin()
-                break;
+                await toggleAdmin(user)
+                break
             }
             case 2: {
-                await RemoveUser()
-                break;
+                await deleteUser(user)
+                break
             }
             case 3: {
-                await DesactivateUser()
-                break;
+                await desactivateUser(user)
+                break
             }
         }
-
-        handleUserClick()
+        onCloseModal()
     }
 
-    const ConfirmRefuse = () => {
-        confirmModal = false
+    const confirmRefuse = () => {
+        showConfirmModal = false
     }
 
-    const ConfirmBefore = (mode: number) => {
+    const handleConfirmToProceed = (mode: number) => {
         switch (mode) {
             case 1: {
-                approbationMessage = "Voulez-vous vraiment donner/retirer les permissions administrateur à cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment ${user.isModerator ? "retirer" : "accorder"} les permissions administrateur à cet utilisateur?`
                 break
             }
             case 2: {
-                approbationMessage = "Voulez-vous vraiment supprimer cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment supprimer ${user.firstName} ${user.lastName}?`
                 break
             }
             case 3: {
-                approbationMessage = "Voulez-vous vraiment désactiver/activer cet utilisateur?"
+                approbationMessage = `Voulez-vous vraiment ${user.active ? "désactiver" : "activer"} ${user.firstName} ${user.lastName}?`
                 break
             }
         }
 
         confirmMode = mode
-        confirmModal = true
+        showConfirmModal = true
     }
 
-    const ConfirmModalCallback = (result: boolean) => {
+    const handleConfirm = (result: boolean, user: User) => {
         if (result) {
-            ConfirmAccept()
+            confirmAccept(user)
         } else {
-            ConfirmRefuse()
+            confirmRefuse()
         }
     }
 </script>
 
-<Modal handleCloseClick={handleUserClick}>
-    {#if !confirmModal}
+<Modal handleCloseClick={onCloseModal}>
+    {#if !showConfirmModal}
         <div class="container">
             <div class="titleContainer">
                 <h3 class="title">{user.email}</h3>
@@ -124,56 +108,87 @@
 
             <div class="editInfo">
                 <h5 class="infoTitleModify">Prénom :</h5>
-                <input type="text"
+                <input
+                    type="text"
                     bind:value={firstname}
                     placeholder="Nouveau prénom :"
                     class="input"
                 />
 
                 <div class="button">
-                    <Button text="Changer" onClick={() => ChangeUser(" ", firstname)}/>
+                    <Button
+                        text="Changer"
+                        onClick={() =>
+                            updateUser({ ...user, firstName: firstname })}
+                    />
                 </div>
             </div>
 
             <div class="editInfo">
                 <h5 class="infoTitleModify">Nom :</h5>
-                <input type="text"
+                <input
+                    type="text"
                     bind:value={lastname}
                     placeholder="Nouveau nom :"
                     class="input"
                 />
 
                 <div class="button">
-                    <Button text="Changer" onClick={() => ChangeUser(lastname, " ")}/>
+                    <Button
+                        text="Changer"
+                        onClick={() =>
+                            updateUser({ ...user, lastName: lastname })}
+                    />
                 </div>
             </div>
 
             <div class="editInfo">
                 <h5 class="infoTitleModify">Mot de passe :</h5>
-                <input type="text"
+                <input
+                    type="text"
                     bind:value={password}
                     placeholder="Nouveau mot de passe :"
                     class="input"
                 />
 
                 <div class="button">
-                    <Button text="Changer" onClick={ChangePassword}/>
+                    <Button
+                        text="Changer"
+                        onClick={() =>
+                            changePassword({ ...user, password: password })}
+                    />
                 </div>
             </div>
 
             <div>
-                <h5 class="info">Une reconnexion est nécessaire pour appliquer les modifications.</h5>
+                <h5 class="info">
+                    Une reconnexion est nécessaire pour appliquer les
+                    modifications.
+                </h5>
             </div>
 
             <div class="editInfo userActions">
                 <div class="button">
-                    <Button text="Modifier statut administrateur" onClick={() => ConfirmBefore(1)}/>
+                    <Button
+                        text={user.isModerator
+                            ? "Retirer les privilèges d'administrateur"
+                            : "Accorder les privilèges d'administrateur"}
+                        onClick={() => handleConfirmToProceed(1)}
+                    />
                 </div>
                 <div class="button">
-                    <Button text="Supprimer utilisateur" onClick={() => ConfirmBefore(2)}/>
+                    <Button
+                        text="Supprimer utilisateur"
+                        onClick={() => handleConfirmToProceed(2)}
+                    />
                 </div>
                 <div class="button">
-                    <Button text="Désactiver utilisateur" onClick={() => ConfirmBefore(3)}/>
+                    <Button
+                        text={user.active
+                            ? "Désactiver l'utilisateur"
+                            : "Activer l'utilisateur"}
+                        onClick={() => handleConfirmToProceed(3)}
+                    />
                 </div>
             </div>
         </div>
@@ -184,15 +199,21 @@
                     <h5 class="infoTitle">{approbationMessage}</h5>
                 </div>
                 <div class="confirmButton">
-                    <Button text="Confirmer" onClick={() => ConfirmModalCallback(true)} />
-                    <Button text="Refuser" onClick={() => ConfirmModalCallback(false)} />
+                    <Button
+                        text="Confirmer"
+                        onClick={() => handleConfirm(true, user)}
+                    />
+                    <Button
+                        text="Refuser"
+                        onClick={() => handleConfirm(false, user)}
+                    />
                 </div>
             </div>
         </div>
     {/if}
 </Modal>
 
-<style>
+<style scoped>
     .confirmContainer {
         width: 100%;
         display: flex;
@@ -218,7 +239,7 @@
 
     .container {
         overflow-y: auto;
-        max-height: 80vh; 
+        max-height: 80vh;
         width: 95%;
         display: flex;
         flex-direction: column;
@@ -246,7 +267,6 @@
         margin: 0px;
         margin-bottom: 0.5vw;
         margin-right: 1.5vw;
-        width: 10vw;
         color: black;
     }
 

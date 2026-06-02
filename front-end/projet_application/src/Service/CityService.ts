@@ -1,52 +1,49 @@
-import type { City } from "$lib/interfaces";
+import type { City } from "../Models/City";
+import type { Option } from "../Models/Option";
 import { GET } from "../ts/server";
 
-let city: City;
-
-const getCityData = async (): Promise<City> => {
-  const response = await GET<any>("/city/all")
-
-  let cities = response.map((c: any) => {
-    return { label: c.city, value: c.id }
-  })
-
-  return {
-    cities: cities,
-    cachingDate: new Date().getTime(),
-  }
-}
-
-const cacheCity = async () => {
-  let savedData = localStorage.getItem("City")
+const getCities = async (): Promise<City[]> => {
   let cityData: any;
 
   try {
-    if (city.cachingDate !== 0) {
-      cityData = city
-    }
-    else if (savedData) {
+    const savedData = localStorage.getItem("City")
+    if (savedData) {
       cityData = JSON.parse(savedData)
     }
-  }
-  catch {
-    cityData = await getCityData()
-    city = cityData
-    localStorage.setItem("City", JSON.stringify(cityData))
-  }
+    // Valeur de date hardcodée. Pas parfait, mais plus simple.
+    if (cityData?.cachingDate && cityData.cachingDate > new Date("2026-05-28").getTime()) {
+      return cityData.cities
+    }
 
-  finally {
+    // pas de ville à retourner? Alors on les fetchs.
+    const cities = await GET<City[]>("/city/all")
+    cityData = {
+      cities: cities,
+      cachingDate: new Date().getTime(),
+    }
+    localStorage.setItem("City", JSON.stringify(cityData))
     return cityData.cities
   }
+  catch {
+    console.error("Failed to fetch cities. Returning empty array.")
+    alert("Impossible de récupérer les villes. Veuillez contacter le service des communications pour nous faire part du problème.")
+  }
+  // plan b
+  finally {
+    return cityData.cities ? cityData.cities : GET<City[]>("/city/all")
+  }
 }
 
-const fetchCity = async () => {
-  return cacheCity()
+export const fetchCitiesAsOptions = async (): Promise<Option[]> => {
+  const cities = await getCities();
+  return cities.map((x: City) => ({ value: x.id, label: x.city }));
 }
 
-export const getCityName = async (cityId: number): Promise<string> => {
-  const cities = await fetchCity();
-  const city = cities.find((c: any) => c.value === cityId);
-  return city ? city.label : "Unknown City";
+export const fetchCities = async (): Promise<City[]> => {
+  return getCities()
 }
 
-export default fetchCity;
+export const getCityNameById = async (cityId: number): Promise<string> => {
+  const cities = await getCities();
+  return cities.find((c: any) => c.id === cityId)?.city ?? "Ville inconnue";
+}

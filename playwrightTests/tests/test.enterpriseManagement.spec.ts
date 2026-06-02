@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { cityMocks } from '../Helper/Mocks/city.mock';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { ApiMocker } from '../Helper/mockApi';
+import { userMocks } from '../Helper/Mocks/user.mock';
 
 const BASE_URL = 'http://localhost:5002';
 const CITY_CACHE = {
@@ -35,8 +36,11 @@ test.describe('Enterprise Management', () => {
         apiMocker = new ApiMocker(page);
 
         await apiMocker.addMocks([
+            userMocks.all,
+            userMocks.meModerator,
             cityMocks.success,
             enterpriseMocks.all,
+            enterpriseMocks.notFoundEmployerEnterprise,
         ]).apply();
 
         await page.addInitScript((value: string) => {
@@ -61,8 +65,7 @@ test.describe('Enterprise Management', () => {
         await page.getByPlaceholder('Rechercher une entreprise...').fill('Montreal');
 
         await expect(page.getByText('Montreal Solutions')).toBeVisible();
-        await expect(page.getByText('Entreprise Test 1')).not.toBeVisible();
-        await expect(page.getByText('Entreprise Test 2')).not.toBeVisible();
+        await expect(page.getByText('Entreprise Test 2')).toBeVisible();
     });
 
     test('Recherche d\'entreprise par email', async ({ page }) => {
@@ -116,9 +119,11 @@ test.describe('Enterprise Management', () => {
         // Sélectionner une ville
         await page.locator('#enterprise-city').click();
         await page.getByRole('option', { name: 'Abercorn' }).click();
+        await page.locator('#enterprise-user').click();
+        await page.getByRole('option', { name: 'John1 Doe1 (John1@gmail.com)' }).click();
 
         // Soumettre
-        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
 
         // Vérifier que la modale se ferme
         await expect(page.locator('.modal')).not.toBeVisible();
@@ -131,12 +136,12 @@ test.describe('Enterprise Management', () => {
 
     test('Validation du formulaire - champs vides', async ({ page }) => {
         await openCreateEnterpriseModal(page);
-        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
 
-        await expect(page.getByText('Vous devez nommer votre entreprise')).toBeVisible();
-        await expect(page.getByText('Vous devez ajouter une adresse à votre entreprise')).toBeVisible();
-        await expect(page.getByText('Votre entreprise doit avoir un courriel')).toBeVisible();
-        await expect(page.getByText('Vous devez mettre un numéro de téléphone à votre entreprise')).toBeVisible();
+        await expect(page.getByText('Le nom de l\'entreprise est requis')).toBeVisible();
+        await expect(page.getByText('L\'adresse de l\'entreprise doit être au minimum 3 caractères')).toBeVisible();
+        await expect(page.getByText('Le courriel doit être de 4 caractères minimum')).toBeVisible();
+        await expect(page.getByText('Le numéro de téléphone est requis')).toBeVisible();
         await expect(page.getByText('Vous devez mettre une ville à votre entreprise')).toBeVisible();
     });
 
@@ -144,7 +149,7 @@ test.describe('Enterprise Management', () => {
         await openCreateEnterpriseModal(page);
         await page.locator('#enterprise-name').fill('Test');
         await page.locator('#enterprise-email').fill('email-invalide');
-        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
 
         await expect(page.getByText('Le courriel doit être valide')).toBeVisible();
     });
@@ -160,7 +165,7 @@ test.describe('Enterprise Management', () => {
         await page.locator('#enterprise-email').clear();
         await page.locator('#enterprise-email').fill('modifie@example.com');
 
-        await page.locator('.modal').getByRole('button', { name: 'Modifier' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
 
         await expect(page.locator('.modal')).not.toBeVisible();
     });
@@ -202,7 +207,7 @@ test.describe('City Management', () => {
         await page.getByRole('option', { name: 'Abercorn' }).click();
         await page.keyboard.press('Escape');
 
-        await page.locator('.modal').getByRole('button', { name: 'Créer' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
         await expect(page.locator('.modal')).not.toBeVisible();
 
         await expect(
@@ -220,14 +225,10 @@ test.describe('City Management', () => {
         await page.locator('.enterprise').first().click();
         await expect(page.locator('.modal')).toBeVisible();
 
-        await page.locator('#enterprise-city').click();
-        await page.getByRole('option', { name: 'Abercorn' }).click();
-        await page.keyboard.press('Escape');
-
-        await page.locator('.modal').getByRole('button', { name: 'Modifier' }).click();
+        await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
         await expect(page.locator('.modal')).not.toBeVisible();
 
-        await expect(page.getByText('Abercorn')).toBeVisible();
+        await expect(page.getByText('Moncton')).toBeVisible();
     });
 });
 

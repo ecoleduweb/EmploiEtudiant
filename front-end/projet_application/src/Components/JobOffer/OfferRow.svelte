@@ -1,18 +1,17 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import type { JobOffer } from "../../Models/Offre";
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails";
-    import type { Enterprise } from "../../Models/Enterprise";
-    import { removeHtmlTags } from "../../ts/utils";
+    import { onMount } from "svelte"
+    import type { Enterprise } from "../../Models/Enterprise"
+    import { removeHtmlTags, toFormattedDateString } from "../../ts/utils"
+    import type { JobOffer } from "../../Models/Offre"
 
     interface Props {
-        isModerator: boolean;
-        offer: JobOfferDetails;
-        enterprise?: Enterprise | null;
-        handleEditModalClick: (id: number) => void;
-        handleApproveModalClick: (id: number) => void;
-        handleArchiveModalClick: (id: number) => void;
-        handleDeleteModalClick: (id: number) => void;
+        isModerator: boolean
+        offer: JobOffer
+        enterprise?: Enterprise | null
+        handleEditModalClick: (jobOffer: JobOffer) => void
+        handleApproveModalClick: (jobOffer: JobOffer) => void
+        handleArchiveModalClick: (jobOffer: JobOffer) => void
+        handleDeleteModalClick: (jobOffer: JobOffer) => void
     }
 
     let {
@@ -22,41 +21,54 @@
         handleEditModalClick,
         handleApproveModalClick,
         handleArchiveModalClick,
-        handleDeleteModalClick
-    }: Props = $props();
+        handleDeleteModalClick,
+    }: Props = $props()
 
-    let enterpriseName = $state("Entreprise inconnue");
+    let enterpriseName = $state("Entreprise inconnue")
 
     onMount(() => {
         if (offer.enterprise) {
-            enterpriseName = offer.enterprise.name;
+            enterpriseName = offer.enterprise.name
         } else if (enterprise) {
-            enterpriseName = enterprise.name;
+            enterpriseName = enterprise.name
         }
-    });
+    })
 </script>
-
 
 <tr class="offreEmploi">
     <td>{offer.title}</td>
     <td>{enterpriseName}</td>
-    <td>{@html removeHtmlTags(offer.description).length > 100 ? removeHtmlTags(offer.description).substring(0,100) + "..." : removeHtmlTags(offer.description)}</td>
-    <td>{offer.offerDebut}</td>
+    <td
+        >{@html removeHtmlTags(offer.description).length > 100
+            ? removeHtmlTags(offer.description).substring(0, 100) + "..."
+            : removeHtmlTags(offer.description)}</td
+    >
+    <td>{toFormattedDateString(offer.offerDebut)}</td>
     <td>
         {#if isModerator}
-            <button class="button" onclick={() => handleApproveModalClick(offer.id)}>
+            <button
+                class="button"
+                onclick={() => handleApproveModalClick(offer)}
+            >
                 <img class="image" src="check.svg" alt="approve" />
             </button>
         {/if}
-        <button class="button" onclick={()=> handleDeleteModalClick(offer.id)}>
+        <button class="button" onclick={() => handleDeleteModalClick(offer)}>
             <img class="image" src="delete.svg" alt="supprimer" />
         </button>
-        
-        <button class="button edit" onclick={() => handleEditModalClick(offer.id)}>
+
+        <button class="button edit" onclick={() => handleEditModalClick(offer)}>
             <img class="image" src="edit.svg" alt="modifier" />
         </button>
-        {#if offer.isApproved && ((new Date().toISOString().split("T")[0]) <= (new Date(offer.deadlineApply).toISOString().split("T")[0]))}
-            <button class="button" onclick={() => handleArchiveModalClick(offer.id)}>
+        {#if offer.isApproved && new Date()
+                .toISOString()
+                .split("T")[0] <= new Date(offer.deadlineApply)
+                    .toISOString()
+                    .split("T")[0]}
+            <button
+                class="button"
+                onclick={() => handleArchiveModalClick(offer)}
+            >
                 <img class="image" src="archive.svg" alt="supprimer" />
             </button>
         {/if}

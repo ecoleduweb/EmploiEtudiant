@@ -58,11 +58,11 @@ def client(app):
 def test_deleteJobOfferAsAdmin(client):
     # Authentification de l'admin
     data1 = {"email": "admin@gmail.com", "password": "test123"}
-    response1 = client.post('/user/login', json=data1)
+    response1 = client.post('/auth/login', json=data1)
     token = response1.json['token']
     
     # Requête de suppression
-    response2 = client.delete(f'/jobOffer/delete/1', headers={'Authorization': token})
+    response2 = client.delete(f'/jobOffer/1', headers={'Authorization': token})
     
     # Vérifications
     assert response2.status_code == 200
@@ -71,7 +71,7 @@ def test_deleteJobOfferAsAdmin(client):
 
 #### Objectif du test:
 1. Authentifier l'admin (admin@gmail.com)
-2. Envoyer une requête DELETE à /jobOffer/delete/1
+2. Envoyer une requête DELETE à /jobOffer/1
 3. Vérifier que le statut est 200 et que le message confirme la suppression
 
 ## Lancement des tests

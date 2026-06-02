@@ -2,176 +2,180 @@
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
     import type { Enterprise } from "../../Models/Enterprise"
-    import OfferRow from "../../Components/JobOffer/OfferRow.svelte"
     import CreateEditJobOffer from "../../Components/JobOffer/CreateEditJobOffer.svelte"
-    import ApprouveOffre from "../../Components/JobOffer/ApprouveOffre.svelte"
-    import { GET } from "../../ts/server"
+    import ApproveOffer from "../../Components/JobOffer/ApproveOffer.svelte"
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
-    import type { JobOfferDetails } from "../../Models/JobOfferDetails"
-    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
-    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
+    import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
+    import { fetchCurrentUserEnterprise } from "../../Service/EnterpriseService"
     import TableDashboard from "../../Components/JobOffer/TableDashboard.svelte"
-    import { getStatesFromStorage, updateState } from "../../Service/CollapsedOfferLists"
+    import {
+        getStatesFromStorage,
+        updateState,
+    } from "../../Service/CollapsedOfferLists"
     import type { CollapseListsStates } from "../../Service/CollapsedOfferLists"
     import DeleteOffer from "../../Components/JobOffer/DeleteOffer.svelte"
-    
-    let showApproveModal = false;
-    let showCreateEditOffer = false;
-    let showEditEnterprise = false;
-    let showArchiveModal = false;
-    let jobOfferSelected: JobOfferDetails = {} as any
-    let isJobOfferEdit = false
-    let isModerator = false
-    
+    import type { JobOffer } from "../../Models/Offre"
+    import { fetchJobOffersByEmployer } from "../../Service/JobOfferService"
+    import { toFormattedDateString } from "../../ts/utils"
+
+    let jobOfferSelected: JobOffer = $state({} as JobOffer)
+    let currentEnterprise: Enterprise | undefined = $state()
+    let jobOffers: JobOffer[] = $state([])
+
+    let showApproveModal = $state(false)
+    let showCreateEditOfferModal = $state(false)
+    let showEditEnterprise = $state(false)
+    let showArchiveModal = $state(false)
+    let showLoadingSpinner = $state(true)
+    let showDeleteModal = $state(false)
+
     let iconeUp = "⮞"
     let iconeDown = "⮟"
-    
-    let hideListsStates = getStatesFromStorage();
+
+    let hideListsStates = $state(getStatesFromStorage())
 
     function toggleList(nomListe: keyof CollapseListsStates) {
-        hideListsStates = updateState(hideListsStates, nomListe, !hideListsStates[nomListe]);
+        hideListsStates = updateState(
+            hideListsStates,
+            nomListe,
+            !hideListsStates[nomListe],
+        )
     }
 
-    let showDeleteModal = false
-
     const handleCreateOffer = () => {
-        showCreateEditOffer = true
+        showCreateEditOfferModal = true
         jobOfferSelected = undefined as any
     }
 
-    const handleDeleteClick = (jobOffer: JobOfferDetails) => {
+    const handleDeleteClick = (jobOffer: JobOffer) => {
         jobOfferSelected = jobOffer
         showDeleteModal = true
     }
 
-    const deleteOfferAndCloseModal = (idJobOffer: number | null) => {
+    const handleDeleteOfferAndCloseModal = (idJobOffer: number | undefined) => {
         showDeleteModal = false
-
-        if (idJobOffer !== null) {
+        if (idJobOffer !== undefined) {
             jobOffers = jobOffers.filter((x) => x.id !== idJobOffer)
         }
     }
-    
-    const handleEditEnterprise = () => {
-        showEditEnterprise = true 
+
+    const handleShowEditEnterpriseModal = () => {
+        showEditEnterprise = true
     }
 
-    const handleEditEmploiClick = (jobOffer: JobOfferDetails) => {
-        isJobOfferEdit = true
-        jobOfferSelected = jobOffer;
-        showCreateEditOffer = true
+    const handleShowEditJobOfferModal = (jobOffer: JobOffer) => {
+        jobOfferSelected = jobOffer
+        showCreateEditOfferModal = true
     }
 
-    const handleApproveClick = (jobOffer: JobOfferDetails) => {
-        jobOfferSelected = jobOffer;
-        showApproveModal = true;
+    const handleShowApproveModal = (jobOffer: JobOffer) => {
+        jobOfferSelected = jobOffer
+        showApproveModal = true
     }
 
-    const handleArchiveClick = (jobOffer: JobOfferDetails) => {
-        jobOfferSelected = jobOffer;
-        showArchiveModal = true;
+    const handleShowArchiveModal = (jobOffer: JobOffer) => {
+        jobOfferSelected = jobOffer
+        showArchiveModal = true
     }
 
-    const closeEditEnterprise = () => {
+    const handleCloseEditModalEnterprise = (
+        enterprise: Enterprise | undefined = undefined,
+    ) => {
+        if (enterprise) {
+            currentEnterprise = enterprise
+        }
         showEditEnterprise = false
     }
 
-    const closeModalApprove = () => {
-        showApproveModal = false 
+    const handleCloseModalApprove = (
+        approvedJobOffer: JobOffer | undefined = undefined,
+    ) => {
+        showApproveModal = false
+        if (approvedJobOffer) {
+            jobOffers = jobOffers.map((offer) =>
+                offer.id === approvedJobOffer.id ? approvedJobOffer : offer,
+            )
+        }
     }
 
-    const closeModalCreateEdit = () => {
-        showCreateEditOffer = false
-        isJobOfferEdit = false
+    const handleCloseModalCreateEdit = async (
+        jobOffer: JobOffer | undefined = undefined,
+    ) => {
+        if (jobOffer) {
+            const index = jobOffers.findIndex((x) => x.id === jobOffer.id)
+            if (index !== -1) {
+                jobOffers[index] = jobOffer
+            } else {
+                jobOffers = [jobOffer, ...jobOffers]
+            }
+        }
+        showCreateEditOfferModal = false
     }
 
-    const closeModalArchive = () => {
+    const handleCloseModalArchive = (
+        approvedJobOffer: JobOffer | undefined = undefined,
+    ) => {
         showArchiveModal = false
+        if (approvedJobOffer) {
+            jobOffers = jobOffers.map((offer) =>
+                offer.id === approvedJobOffer.id ? approvedJobOffer : offer,
+            )
+        }
     }
 
-    const closeModalDelete = () => {
+    const handleCloseModalDelete = async () => {
         showDeleteModal = false
     }
 
-    const onFinishedCallBack = async () => {
-        await getJobOffersEmployer()
-
-        closeModalApprove()
-        closeModalArchive()
-        closeModalCreateEdit()
-        closeModalDelete()
-    }
-
-    let enterprise: Enterprise = {
-        id: 0,
-        name: "",
-        address: "",
-        email: "",
-        phone: "",
-        cityId: 0,
-        isTemporary: false,
-    }
-    
-    let loaded = false
-    let userHaveEnterprise = false
-
     onMount(async () => {
-        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
         try {
-            if ($isLoggedIn) {
-                isModerator = ($currentUser as any).isModerator === true
-                await getJobOffersEmployer();    
-            }
-        }
-        catch (error) {
-            console.error("Error while loading:", error)
-        }
-        finally {
-            loaded = true
-        }
-    })
-
-    let jobOffers: JobOfferDetails[] = []
-
-    const getJobOffersEmployer = async () => {
-        try {
-            // Il est possible qu'il n'y ait pas d'offres encore quand c'est un nouvel employeur.
-            const response = await GET<JobOfferDetails[]>(
-                "/jobOffer/employer/all?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true",
-            )
-            if (response) {
-                jobOffers = response
-            }
+            jobOffers = await fetchJobOffersByEmployer()
+            currentEnterprise = await fetchCurrentUserEnterprise()
         } catch (error) {
-            console.error("Error fetching job offers:", error)
+            console.error("Error while loading:", error)
+        } finally {
+            showLoadingSpinner = false
         }
-    }
+    })
 
-    let dateNow = new Date().toISOString().split("T")[0]
+    let dateNow = new Date()
 
-    $: toBeApprovedOffer = jobOffers.filter((x) => x.isApproved === null)
-        .sort((a, b) => new Date(a.lastModifiedDate).getTime() - new Date(b.lastModifiedDate).getTime());
-    $: isRefusedOffer = jobOffers.filter((x) => x.isApproved === false)
-    $: offerToCome = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateDebut = new Date(x.offerDebut).toISOString().split("T")[0]
-        return dateNow < dateDebut
-    })
-    $: offerDisplayed = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateDebut = new Date(x.offerDebut).toISOString().split("T")[0]
-        let dateFin = new Date(x.deadlineApply).toISOString().split("T")[0]
-        return dateNow >= dateDebut && dateNow <= dateFin
-    })
-    $: expiredOffer = jobOffers.filter((x) => {
-        if (!x.isApproved) return false
-        let dateFin = new Date(x.deadlineApply).toISOString().split("T")[0]
-        return dateFin < dateNow
-    })
+    let toBeApprovedOffer = $derived(
+        jobOffers
+            .filter((x) => x.isApproved === null)
+            .sort(
+                (a, b) =>
+                    new Date(a.lastModifiedDate!).getTime() -
+                    new Date(b.lastModifiedDate!).getTime(),
+            ),
+    )
+    let isRefusedOffer = $derived(
+        jobOffers.filter((x) => x.isApproved === false),
+    )
+    let offerToCome = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            return new Date(x.offerDebut) > dateNow
+        }),
+    )
+    let offerDisplayed = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            let dateDebut = new Date(x.offerDebut)
+            let dateFin = new Date(x.deadlineApply)
+            return dateNow >= dateDebut && dateNow <= dateFin
+        }),
+    )
+    let expiredOffer = $derived(
+        jobOffers.filter((x) => {
+            if (!x.isApproved) return false
+            let dateFin = new Date(x.deadlineApply)
+            return dateFin < dateNow
+        }),
+    )
 </script>
 
 <main>
@@ -184,10 +188,10 @@
                 />
             </div>
 
-            {#if userHaveEnterprise}
+            {#if currentEnterprise}
                 <div class="divFlex" id="editEnterprise">
                     <Button
-                        onClick={handleEditEnterprise}
+                        onClick={handleShowEditEnterpriseModal}
                         text="Modifier l'entreprise"
                     />
                 </div>
@@ -195,7 +199,7 @@
         </div>
     </section>
 
-    {#if !loaded}
+    {#if showLoadingSpinner}
         <section class="Loading">
             <LoadingSpinner />
         </section>
@@ -206,100 +210,142 @@
             </h1>
             {#if isRefusedOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideRefusedOfferList" 
-                        text={hideListsStates.hideRefusedOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideRefusedOffer")}}
+                    <Button
+                        cssId="btnHideRefusedOfferList"
+                        text={hideListsStates.hideRefusedOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideRefusedOffer")
+                        }}
                     />
-                    <h2 class="textSections">Offres refusées</h2>  
+                    <h2 class="textSections">Offres refusées</h2>
                 </div>
-                <div id="refusedOffersList" style="display: {hideListsStates.hideRefusedOffer ? 'none' : 'block'}">
+                <div
+                    id="refusedOffersList"
+                    style="display: {hideListsStates.hideRefusedOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={isRefusedOffer}
-                        {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
             {/if}
             {#if toBeApprovedOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHidetoBeApprovedOfferList" 
-                        text={hideListsStates.hideToBeApprovedOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideToBeApprovedOffer")}}
+                    <Button
+                        cssId="btnHidetoBeApprovedOfferList"
+                        text={hideListsStates.hideToBeApprovedOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideToBeApprovedOffer")
+                        }}
                     />
-                    <h2 class="textSections">Offres en attente d'approbation</h2>
+                    <h2 class="textSections">
+                        Offres en attente d'approbation
+                    </h2>
                 </div>
-                <div id="toBeApprovedOffersList" style="display: {hideListsStates.hideToBeApprovedOffer ? 'none' : 'block'}">
+                <div
+                    id="toBeApprovedOffersList"
+                    style="display: {hideListsStates.hideToBeApprovedOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={toBeApprovedOffer}
-                        {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
             {/if}
             {#if offerToCome.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideOfferToCome" 
-                        text={hideListsStates.hideOfferToCome ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideOfferToCome")}}
+                    <Button
+                        cssId="btnHideOfferToCome"
+                        text={hideListsStates.hideOfferToCome
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideOfferToCome")
+                        }}
                     />
                     <h2 class="textSections">Offres bientôt affichées</h2>
                 </div>
-                <div id="offersToComeList" style="display: {hideListsStates.hideOfferToCome ? 'none' : 'block'}"> 
+                <div
+                    id="offersToComeList"
+                    style="display: {hideListsStates.hideOfferToCome
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={offerToCome}
-                        {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
             {/if}
             {#if offerDisplayed.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideOfferDisplayed" 
-                        text={hideListsStates.hideOfferDisplayed ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideOfferDisplayed")}}
+                    <Button
+                        cssId="btnHideOfferDisplayed"
+                        text={hideListsStates.hideOfferDisplayed
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideOfferDisplayed")
+                        }}
                     />
                     <h2 class="textSections">Offres affichées</h2>
                 </div>
-                <div id="offerDisplayedList" style="display: {hideListsStates.hideOfferDisplayed ? 'none' : 'block'}">
+                <div
+                    id="offerDisplayedList"
+                    style="display: {hideListsStates.hideOfferDisplayed
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={offerDisplayed}
-                        {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
             {/if}
             {#if expiredOffer.length > 0}
                 <div class="offersHeader">
-                    <Button 
-                        cssId="btnHideExpiredOffer" 
-                        text={hideListsStates.hideExpiredOffer ? iconeUp : iconeDown} 
-                        onClick={() => {toggleList("hideExpiredOffer")}}
+                    <Button
+                        cssId="btnHideExpiredOffer"
+                        text={hideListsStates.hideExpiredOffer
+                            ? iconeUp
+                            : iconeDown}
+                        onClick={() => {
+                            toggleList("hideExpiredOffer")
+                        }}
                     />
                     <h2 class="textSections">Offres expirées</h2>
                 </div>
-                <div id="expiredOfferList" style="display: {hideListsStates.hideExpiredOffer ? 'none' : 'block'}">
+                <div
+                    id="expiredOfferList"
+                    style="display: {hideListsStates.hideExpiredOffer
+                        ? 'none'
+                        : 'block'}"
+                >
                     <TableDashboard
                         offers={expiredOffer}
-                        {isModerator}
-                        handleEditModalClick={handleEditEmploiClick}
-                        handleApproveModalClick={handleApproveClick}
-                        handleArchiveModalClick={handleArchiveClick}
+                        handleEditModalClick={handleShowEditJobOfferModal}
+                        handleApproveModalClick={handleShowApproveModal}
+                        handleArchiveModalClick={handleShowArchiveModal}
                         handleDeleteModalClick={handleDeleteClick}
                     />
                 </div>
@@ -307,41 +353,43 @@
         </section>
     {/if}
 
-    {#if showApproveModal}    
-        <Modal handleCloseClick={onFinishedCallBack}>
-            <ApprouveOffre
+    {#if showApproveModal}
+        <Modal handleCloseClick={handleCloseModalApprove}>
+            <ApproveOffer
                 offer={jobOfferSelected}
-                handleApproveClick={onFinishedCallBack}
+                onApprove={handleCloseModalApprove}
             />
         </Modal>
     {/if}
     {#if showEditEnterprise}
-        <ModifyEnterprise handleCloseClick={closeEditEnterprise} />
+        <Modal handleCloseClick={handleCloseEditModalEnterprise}>
+            <CreateEditEnterprise
+                enterpriseToEdit={currentEnterprise}
+                onApproveClick={handleCloseEditModalEnterprise}
+            />
+        </Modal>
     {/if}
-    {#if showCreateEditOffer}    
-        <Modal handleCloseClick={closeModalCreateEdit}>
+    {#if showCreateEditOfferModal}
+        <Modal handleCloseClick={handleCloseModalCreateEdit}>
             <CreateEditJobOffer
-                onFinished={onFinishedCallBack}
-                {isJobOfferEdit}
-                jobOffer={jobOfferSelected}
-                {enterprise}
+                onJobOfferProcessed={handleCloseModalCreateEdit}
+                jobOfferToEdit={jobOfferSelected}
             />
         </Modal>
     {/if}
     {#if showArchiveModal}
-        <Modal handleCloseClick={closeModalArchive}>
+        <Modal handleCloseClick={handleCloseModalArchive}>
             <ArchiveConfirm
                 offer={jobOfferSelected}
-                handleApproveClick={closeModalArchive}
+                onToggleArchiveClick={handleCloseModalArchive}
             />
         </Modal>
     {/if}
     {#if showDeleteModal}
-        <Modal handleCloseClick={closeModalDelete}>
+        <Modal handleCloseClick={handleCloseModalDelete}>
             <DeleteOffer
                 offer={jobOfferSelected}
-                {deleteOfferAndCloseModal}
-                {closeModalDelete}
+                onDeleteOffer={handleDeleteOfferAndCloseModal}
             />
         </Modal>
     {/if}
@@ -384,7 +432,7 @@
         display: flex;
         margin-bottom: 2vh;
     }
-    
+
     .offres {
         width: 100%;
         display: flex;
@@ -420,7 +468,7 @@
         font-size: 2.5vw;
         margin: 0;
     }
-    
+
     /* Section des tableaux*/
     table {
         width: 100%; /* Prend toute la largeur disponible */
@@ -446,7 +494,7 @@
         justify-content: flex-start;
         align-items: flex-end;
         width: 40%;
-        
+
         :global(.button) {
             margin: 40px 10px 0 10px;
         }
@@ -460,10 +508,10 @@
             font-size: 6vw;
         }
         table thead {
-            font-size: 3vw; 
+            font-size: 3vw;
         }
         table tbody {
-            font-size: 3vw; 
+            font-size: 3vw;
         }
     }
 </style>

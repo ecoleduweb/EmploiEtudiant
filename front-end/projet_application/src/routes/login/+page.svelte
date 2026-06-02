@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { preventDefault } from 'svelte/legacy';
+    import { preventDefault } from "svelte/legacy"
 
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -32,7 +32,7 @@
     const handleSubmit = async () => {
         try {
             // `abortEarly: false` to get all the errors
-            await schema.validate(form, { abortEarly: false })
+            schema.validateSync(form, { abortEarly: false })
             errors = {
                 email: "",
                 password: "",
@@ -40,7 +40,7 @@
             try {
                 try {
                     const response = await POST<Login, User>(
-                        "/user/login",
+                        "/auth/login",
                         form,
                         false,
                     )

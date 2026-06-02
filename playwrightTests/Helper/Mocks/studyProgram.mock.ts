@@ -1,7 +1,7 @@
 import { MockConfig } from "../types";
 export const studyProgramMocks = {
     success: {
-        url: '*/**/studyProgram/studyPrograms',
+        url: '*/**/studyProgram/all',
         response: {
             status: 200,
             json: [{
@@ -11,7 +11,7 @@ export const studyProgramMocks = {
         }
     },
     notFound: {
-        url: '*/**/studyProgram/studyPrograms',
+        url: '*/**/studyProgram/all',
         response: {
             status: 404,
             json: {

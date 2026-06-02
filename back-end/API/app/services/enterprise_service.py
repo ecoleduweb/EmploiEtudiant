@@ -1,28 +1,37 @@
 from app.repositories.enterprise_repo import EnterpriseRepo
+from app.dtos.enterprise_dto import (
+    EnterpriseCreateDTO,
+    EnterpriseReadDTO,
+    EnterpriseUpdateDTO
+)
+from app.customexception.exception import PermissionException
+
+from logging import getLogger
+logger = getLogger(__name__)
 enterprise_repo = EnterpriseRepo()
 
 class EnterpriseService:
 
-    def getEnterprises(self):
-        return enterprise_repo.getEnterprises()
+    def get_all(self) -> list[EnterpriseReadDTO]:
+        return enterprise_repo.get_all()
     
-    def createEnterprise(self, data, isTemporary):
-        return enterprise_repo.createEnterprise(data, isTemporary)
+    def create(self, dto: EnterpriseCreateDTO, is_temporary: bool) -> EnterpriseReadDTO:
+        dto.isTemporary = is_temporary
+        return enterprise_repo.create(dto)
     
-    def getEnterpriseByEmployer(self, employerId):
-        return enterprise_repo.getEnterpriseByEmployer(employerId)
+    def find_by_id(self, id) -> EnterpriseReadDTO:
+        return enterprise_repo.find_by_id(id)
     
-    def getEmployerFromEnterprise(self, id):
-        return enterprise_repo.getEmployerFromEntreprise(self, id)
-
-    def getEnterprise(self, id):
-        return enterprise_repo.getEnterprise(id)
+    def update(self, dto: EnterpriseUpdateDTO, current_user) -> EnterpriseReadDTO:
+        if not current_user.isModerator:
+            if current_user.enterpriseId != dto.id:
+                logger.warning("An user tried to modify an entreprise don't have permission")
+                raise PermissionException("Un utilisateur ne peut modifier que son entreprise")
+            # Setting the isTemporary field to the current value in the database to prevent a user from changing it when updating their enterprise
+            enterprise = enterprise_repo.find_by_id(current_user.enterpriseId)
+            dto.isTemporary = enterprise.isTemporary
+            dto.users = enterprise.users
+        return enterprise_repo.update(dto)
     
-    def updateEnterprise(self, data):
-        return enterprise_repo.updateEnterprise(data)
-    
-    def deleteEnterprise(self, id):
-        return enterprise_repo.deleteEnterprise(id)
-    
-    def getEnterpriseId(self, name):
-        return enterprise_repo.getEnterpriseId(name)
+    def delete_by_id(self, id) -> EnterpriseReadDTO:
+        return enterprise_repo.delete_by_id(id)

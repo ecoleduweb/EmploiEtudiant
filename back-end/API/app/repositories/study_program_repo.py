@@ -16,7 +16,7 @@ class StudyProgramRepo:
         dtos = [StudyProgramReadDTO.model_validate(sp) for sp in study_programs_sorted]
         return dtos
 
-    def findById(self, id) -> StudyProgramReadDTO:
+    def find_by_id(self, id) -> StudyProgramReadDTO:
         study_program = StudyProgram.query.filter_by(id=id).first()
         if study_program is None:
             raise NotFoundException(f"Study program not found with id: {id}")
@@ -30,7 +30,7 @@ class StudyProgramRepo:
         db.session.commit()
         return StudyProgramReadDTO.model_validate(studyProgram)
 
-    def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
+    def create(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
         new_study_program = StudyProgram(**dto.model_dump())
         db.session.add(new_study_program)
         db.session.commit()

@@ -3,8 +3,14 @@ from app import create_app, db
 from app.models.study_program_model import StudyProgram
 from app.models.user_model import User
 from argon2 import PasswordHasher
+from freezegun import freeze_time
 
 hasher = PasswordHasher()
+
+@pytest.fixture(scope='module', autouse=True)
+def freeze_test_date():
+    with freeze_time("2021-11-15"):
+        yield
 
 @pytest.fixture(scope='module')
 def app():
@@ -23,7 +29,7 @@ def app():
         }
         study_program2 = StudyProgram(**data_study_program2)
         db.session.add(study_program2)
-        hashed_password = hasher.hash("test")
+        hashed_password = hasher.hash("test123_12caracters!")
         data = {
             "id": 1,
             "email": "test@test.com",
@@ -45,15 +51,15 @@ def client(app):
        with app.test_client() as client:
         dataLogin = {
         "email": "test@test.com",
-        "password": "test",
+        "password": "test123_12caracters!",
         }
-        res = client.post('/user/login', json=dataLogin)
+        res = client.post('/auth/login', json=dataLogin)
         assert res.status_code == 200
         yield client
         
   
 def test_studyPrograms(client):
-    response = client.get('/studyProgram/studyPrograms')
+    response = client.get('/studyProgram/all')
     assert response.status_code == 200
     assert len(response.json) == 2
 
@@ -69,7 +75,7 @@ def test_editStudyProgram(client):
         "id": 1,
         "name": "Informatiques"
     }
-    response = client.put('/studyProgram/studyProgram/1', json=data)
+    response = client.put('/studyProgram/1', json=data)
     assert response.status_code == 200
 
 def test_editStudyProgram_sameName(client):
@@ -77,6 +83,6 @@ def test_editStudyProgram_sameName(client):
         "id": 1,
         "name": "Informatique"
     }
-    client.put('/studyProgram/studyProgram/1', json=data)
-    response = client.put('/studyProgram/studyProgram/1', json=data)
+    client.put('/studyProgram/1', json=data)
+    response = client.put('/studyProgram/1', json=data)
     assert response.status_code == 200

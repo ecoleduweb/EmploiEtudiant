@@ -1,19 +1,18 @@
 from logging import getLogger
-from app.models.user_model import User
-from app import db
-from flask import jsonify, current_app
 from argon2 import PasswordHasher
 import datetime
-from jwt import encode
 import os
-from app.repositories.auth_repo import AuthRepo
-from app.repositories.employer_repo import EmployerRepo
-from app.services.captcha_service import CaptchaService
-from app.customexception.exception import LoginException
+from app.repositories.user_repo import UserRepo
+from app.customexception.exception import PermissionException
 from app.repositories.enterprise_repo import EnterpriseRepo
-auth_repo = AuthRepo()
-captcha_service = CaptchaService()
-employer_repo = EmployerRepo()
+from app.utils.SanitizeDOM import sanitize_html
+from app.dtos.user_dto import (
+    UserUpdateDTO,
+    UserReadDTO,
+    UserUpdatePasswordDTO,
+    UpdatedUserReadDTO
+)
+user_repo = UserRepo()
 enterprise_repo = EnterpriseRepo()
 logger = getLogger(__name__)
 
@@ -21,124 +20,70 @@ hasher = PasswordHasher()
 
 
 class UserService:
-    def login(self, email, password):
-        user = auth_repo.getUser(email)
-        if user is None:
-            logger.warning("Login attempt failed on user: " + email + " user not found")
-            raise LoginException()
-        try:
-            if user.active:
-                if hasher.verify(user.password, password):
-                    return self._generateToken(user), user
-            else:
-                raise LoginException(True)
-        except Exception as e:
-            if hasattr(e, 'errorCode') and e.errorCode == 403:
-                raise e
-            else:
-                logger.warning("Login attempt failed on user: " + email + " could not verify : ", e)
-                raise LoginException()
+    def get_all(self) -> list[UserReadDTO]:
+        return user_repo.get_all()
 
-    def register(self, data):
-        if not current_app.config.get('TESTING'):
-            if not captcha_service.verify_captcha(data['captchaToken']):
-                return jsonify({'message': 'Captcha verification failed'}), 400
-        try:
-            new_user = auth_repo.register(data) 
-            token = self._generateToken(new_user)  
-            return token,new_user 
-        except Exception as e:
-            logger.warning("Registration error for " + data.get('email') + ": " + str(e))
-            return jsonify({'message': "Could not verify"}), 401
+    def find_by_id(self, id) -> UserReadDTO:
+        dto = user_repo.find_by_id(id)
+        del dto.password
+        return dto
 
-        
-
-    def getAllUsers(self):
-        return auth_repo.getAllUsers()
-
-    def getUser(self, email):
-        return auth_repo.getUser(email)
+    def find_by_email(self, email) -> UpdatedUserReadDTO:
+        return user_repo.find_by_email(email)
     
-    def getUserById(self, id):
-        return auth_repo.getUserById(id)
+    def reset_password(self, email, new_password):
+        user = user_repo.find_by_email(email)
+        user.password = hasher.hash(new_password)
+        return user_repo.update(user)
 
-    def updatePassword(self, current_user, data):
-        email = ""
-        
-        if current_user.isModerator:
-            email = data["email"]
-        else:
-            email = current_user.email
-
-        try:
-            auth_repo.updatePassword(email, data["password"])
-        except Exception as e:
-            raise Exception("Failed to update password")
+    def update_password(self, current_user, dto: UserUpdatePasswordDTO) -> UpdatedUserReadDTO:
+        if not current_user.isModerator and current_user.id != dto.id:
+            raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier le mot de passe de l'utilisateur {dto.id}")
+        user = user_repo.find_by_id(dto.id)
+        user.password = hasher.hash(dto.password)
+        user = user_repo.update(user)
+        return user
     
-    def updateUser(self, current_user, data):
-        email = ""
-
-        if current_user.isModerator:
-            email = data["email"]
-        else:
-            email = current_user.email
+    def update_name_and_email(self, current_user, dto: UserUpdateDTO) -> UpdatedUserReadDTO:
+        user = user_repo.find_by_id(dto.id)
+        if not current_user.isModerator and  current_user.id != user.id:
+            raise PermissionException(f"L'utilisateur {current_user.id} n'a pas la permission de modifier les informations de l'utilisateur {user.id}")
         
-        try:
-            auth_repo.updateUser(email, data)
-        except Exception as e:
-            raise Exception("Failed to update user")
-        
-    def makeAdmin(self, user):
-        auth_repo.updateAdmin(user, not user.isModerator)
-        db.session.commit()
+        user.email = dto.email
+        user.firstName = sanitize_html(dto.firstName)
+        user.lastName = sanitize_html(dto.lastName)
 
-    def removeUser(self, current_user, userEmail):
-        user = User.query.filter_by(email=userEmail).first()
+        return user_repo.update(user)
 
-        if user != current_user:
-            employer_repo.removeUserIdFromEmployer(user.id)
-            auth_repo.removeUser(userEmail)
-        else:
-            logger.warning("Admin (" + current_user.email + ") tried to remove itself")
+    def toggle_admin(self, current_user, id) -> UpdatedUserReadDTO:
+        user = user_repo.find_by_id(id)
+        if current_user.id == user.id:
+            raise PermissionException("Un administrateur ne peut pas changer son propre statut d'administrateur")
+        user.isModerator = not user.isModerator
+        return user_repo.update(user)
 
-    def desactivateUser(self, current_user, userEmail):
-        user = User.query.filter_by(email=userEmail).first()
+    def delete(self, current_user, id: int):
+        user = user_repo.find_by_id(id)
 
-        if user != current_user:
-            auth_repo.updateActive(user, not user.active)
-        else:
-            logger.warning("Admin (" + current_user.email + ") tried to desactivate itself")
+        if user.id == current_user.id:
+            raise PermissionException("Un utilisateur ne peut pas se supprimer lui même")
+        user_repo.delete(user)
 
+    def toggle_active(self, current_user, id: int) -> UpdatedUserReadDTO:
+        user = user_repo.find_by_id(id)
+        if user.id == current_user.id:
+            raise PermissionException("Un administrateur ne peut pas se désactiver lui même")
+        user.active = not user.active
+        return user_repo.update(user)
     
-    def manageTemporaryEnterprise(self, offer, selectedEnterpriseId):
-
-        employer = employer_repo.getEmployer(offer.employerId)
-        enterprise = enterprise_repo.getEnterprise(employer.enterpriseId)
-    
-        #L'admin n'est pas lié à une entreprise, on ne fait rien
-        if not enterprise:
-            return
+    def manage_temporary_enterprise(self, selected_enterprise_id, previous_enterprise_id) -> None:
+        previous_enterprise = enterprise_repo.find_by_id(previous_enterprise_id)
+        selected_enterprise = enterprise_repo.find_by_id(selected_enterprise_id)
         # si l'entreprise n'est pas temporaire, on ne fait rien
-        if not enterprise.isTemporary:
-            return
-
-        # On lie l'employeur à l'entreprise qu'il a crée et on supprime l'entreprise temporaire
-        if employer.enterpriseId == selectedEnterpriseId:
-            enterprise_repo.endEnterpriseTemporary(enterprise)
+        # L'entreprise perd sont status de temporaire.
+        if previous_enterprise_id == selected_enterprise_id and selected_enterprise.isTemporary:
+            enterprise_repo.end_enterprise_temporary(previous_enterprise)
         # On lie l'employeur à l'entreprise ciblée et on supprime l'entreprise temporaire
-        else:
-            user = auth_repo.getUserById(employer.userId)
-            employer_repo.linkEmployerEnterprise(user.id, selectedEnterpriseId)
-            enterprise_repo.deleteEnterprise(enterprise.id)
-           
-    
-    def _generateToken(self, user):
-        payload = {
-            'email': user.email,
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=30),
-            'active': user.active,
-            'isModerator': user.isModerator,
-            'firstName': user.firstName,
-            'lastName': user.lastName
-        }
-        return encode(payload, os.environ.get('SECRET_KEY'))
+        elif previous_enterprise.isTemporary:
+            user_repo.update_users_enterprise_id(previous_enterprise_id, selected_enterprise_id)
+            enterprise_repo.delete_by_id(previous_enterprise_id)

@@ -17,7 +17,7 @@
             const captchaToken = await doRecaptcha()
 
             if (captchaToken) {
-                const response = await POST<any, User>("/user/register", {
+                const response = await POST<any, User>("/auth/register", {
                     ...values.user,
                     captchaToken,
                 })

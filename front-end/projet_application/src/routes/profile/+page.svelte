@@ -2,60 +2,49 @@
     import { goto } from "$app/navigation"
     import { currentUser, isLoggedIn } from "$lib"
     import { onMount } from "svelte"
-    import ModifyEnterprise from "../../Components/Enterprise/ModifyEnterprise.svelte"
     import Button from "../../Components/Inputs/Button.svelte"
     import type { User } from "../../Models/User"
-    import { GET, PUT } from "../../ts/server"
-    import { checkIfUserHaveEnterprise } from "../../Service/EnterpriseService"
-
+    import { PUT } from "../../ts/server"
+    import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
+    import { fetchCurrentUserEnterprise } from "../../Service/EnterpriseService"
+    import type { Enterprise } from "../../Models/Enterprise"
+    import Modal from "../../Components/Common/Modal.svelte"
     let lastname: string = $state("")
     let firstname: string = $state("")
     let password: string = $state("")
     let showEnterpriseEditModal = $state(false)
+    let currentEnterprise: Enterprise | undefined = $state(undefined)
 
-    const handleShow = () => {
-        showEnterpriseEditModal = true
-    }
-
-    const closeModal = () => {
-        showEnterpriseEditModal = false
-    }
-
-    const ChangePassword = async () => {
-        await PUT<any, any>("/user/updatePassword", {
-            email: ($currentUser as User).email,
-            password: password,
-        })
+    const changePassword = async () => {
+        await PUT<any, any>(
+            `/auth/updatePassword/${($currentUser as User).id}`,
+            {
+                email: ($currentUser as User).email,
+                password: password,
+            },
+        )
 
         isLoggedIn.set(false)
         goto("/")
     }
 
-    const ChangeUser = async (lastName: string, firstName: string) => {
+    const updatePersonnalInformations = async (user: User) => {
         try {
-            const updatedUser = {
-                lastname: lastName || $currentUser?.lastName,
-                firstname: firstName || $currentUser?.firstName,
-                email: ($currentUser as User).email,
-            }
+            await PUT<any, any>(`/user/${user.id}`, user)
 
-            await PUT<any, any>("/user/user", updatedUser)
-
-            if ($currentUser?.firstName !== firstName && firstName) {
-                currentUser.set({ ...$currentUser!, firstName: firstName })
+            if ($currentUser?.firstName !== user.firstName && user.firstName) {
+                currentUser.set({ ...$currentUser!, firstName: user.firstName })
             }
-            if ($currentUser?.lastName !== lastName && lastName) {
-                currentUser.set({ ...$currentUser!, lastName: lastName })
+            if ($currentUser?.lastName !== user.lastName && user.lastName) {
+                currentUser.set({ ...$currentUser!, lastName: user.lastName })
             }
         } catch {
             alert("Erreur lors de la modification de l'utilisateur")
         }
     }
 
-    let userHaveEnterprise = $state(false)
-
     onMount(async () => {
-        userHaveEnterprise = await checkIfUserHaveEnterprise($currentUser)
+        currentEnterprise = await fetchCurrentUserEnterprise()
     })
 </script>
 
@@ -75,15 +64,23 @@
             <br />
         </div>
 
-        <div class="Modal">
-            {#if userHaveEnterprise}
-                <div class="divFlex" id="editEnterprise">
-                    <Button onClick={handleShow} text="Modifier l'entreprise" />
-                </div>
+        {#if currentEnterprise}
+            <div class="divFlex" id="editEnterprise">
+                <Button
+                    onClick={() => (showEnterpriseEditModal = true)}
+                    text="Modifier l'entreprise"
+                />
+            </div>
+            {#if showEnterpriseEditModal}
+                <Modal
+                    handleCloseClick={() => (showEnterpriseEditModal = false)}
+                >
+                    <CreateEditEnterprise
+                        enterpriseToEdit={currentEnterprise}
+                        onApproveClick={() => (showEnterpriseEditModal = false)}
+                    ></CreateEditEnterprise>
+                </Modal>
             {/if}
-        </div>
-        {#if showEnterpriseEditModal}
-            <ModifyEnterprise handleCloseClick={closeModal}></ModifyEnterprise>
         {/if}
 
         <div class="more-information">
@@ -101,7 +98,10 @@
                     <Button
                         text="Changer"
                         onClick={() =>
-                            ChangeUser($currentUser.lastName, firstname)}
+                            updatePersonnalInformations({
+                                ...$currentUser,
+                                firstName: firstname,
+                            })}
                     />
                 </div>
             </div>
@@ -119,7 +119,10 @@
                     <Button
                         text="Changer"
                         onClick={() =>
-                            ChangeUser(lastname, $currentUser.firstName)}
+                            updatePersonnalInformations({
+                                ...$currentUser,
+                                lastName: lastname,
+                            })}
                     />
                 </div>
             </div>
@@ -133,7 +136,7 @@
                 />
 
                 <div class="button">
-                    <Button text="Changer" onClick={() => ChangePassword()} />
+                    <Button text="Changer" onClick={() => changePassword()} />
                 </div>
             </div>
             <div>

@@ -18,9 +18,8 @@ def token_required(f):
             try:
                 data = decode(token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
                 current_user = User.query.filter_by(email = data['email']).first()
-
             except Exception as e:
-                logger.warning('Could not decode token : ' + str(e))
+                logger.warning('Could not decode token : ', exc_info=e)
                 return jsonify({'message': 'token is invalid'}), 401
             return f(current_user, *args, **kwargs)
         return decorated

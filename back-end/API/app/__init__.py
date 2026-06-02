@@ -105,23 +105,21 @@ def create_app():
 
     # Import des contrôleurs
     from app.controllers.user_controller import user_blueprint
+    from app.controllers.auth_controller import auth_blueprint
     from app.controllers.jobOffer_controller import job_offer_blueprint
     from app.controllers.city_controller import city_blueprint
     from app.controllers.ping_controller import ping_blueprint
     from app.controllers.enterprise_controller import enterprise_blueprint
-    from app.controllers.employer_controller import employer_blueprint
     from app.controllers.study_program_controller import study_program_blueprint
-    from app.controllers.offer_program_controller import offer_program_blueprint
     from app.controllers.employmentSchedule_controller import employment_schedule_blueprint
     from app.customexception.register_error_handlers import register_error_handlers
     register_error_handlers(app)
     app.register_blueprint(ping_blueprint)
     app.register_blueprint(user_blueprint, url_prefix='/user')
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(job_offer_blueprint, url_prefix='/jobOffer')
     app.register_blueprint(enterprise_blueprint, url_prefix='/enterprise')
-    app.register_blueprint(employer_blueprint, url_prefix='/employer')
     app.register_blueprint(city_blueprint, url_prefix='/city')
     app.register_blueprint(study_program_blueprint, url_prefix='/studyProgram')
-    app.register_blueprint(offer_program_blueprint, url_prefix='/offerProgram')
     app.register_blueprint(employment_schedule_blueprint, url_prefix='/employmentSchedule')
     return app

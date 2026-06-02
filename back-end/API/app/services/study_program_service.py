@@ -13,12 +13,12 @@ class StudyProgramService:
         return study_program_repo.studyPrograms()
 
     def find_by_id(self, id) -> StudyProgramReadDTO:
-        return study_program_repo.findById(id)
+        return study_program_repo.find_by_id(id)
 
     def update(self, dto: StudyProgramUpdateDTO) -> StudyProgramReadDTO:
         return study_program_repo.update(dto)
 
-    def add(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
+    def create(self, dto: StudyProgramCreateDTO) -> StudyProgramReadDTO:
         if not study_program_repo.name_exists(dto):
-            return study_program_repo.add(dto)
+            return study_program_repo.create(dto)
         raise DuplicateException("Name", f"Study program with the name '{dto.name}' already exists")

@@ -5,18 +5,8 @@ employment_schedule_service = EmploymentScheduleService()
 
 employment_schedule_blueprint = Blueprint('employmentSchedule', __name__)
 
-@employment_schedule_blueprint.route('/<int:id>', methods=['GET'])
-@token_required
-def employmentSchedule(current_user, id):
-    employmentSchedule = employment_schedule_service.employmentSchedule(id)
-    return employmentSchedule.to_json_string()
 
 @employment_schedule_blueprint.route('/all', methods=['GET'])
 def employmentSchedules():
-    employmentSchedules = employment_schedule_service.employmentSchedules()
-    return [employmentSchedule.to_json_string() for employmentSchedule in employmentSchedules]
-
-@employment_schedule_blueprint.route('/getByOfferId/<int:jobOfferId>', methods=['GET'])
-def getScheduleFromJobOffer(jobOfferId):
-    schedules = employment_schedule_service.getScheduleFromJobOffer(jobOfferId)
-    return [schedule.to_json_string() for schedule in schedules]
+    employmentSchedules = employment_schedule_service.get_all()
+    return [es.model_dump() for es in employmentSchedules], 200

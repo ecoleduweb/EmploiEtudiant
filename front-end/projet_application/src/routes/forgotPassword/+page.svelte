@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { preventDefault } from 'svelte/legacy';
+    import { preventDefault } from "svelte/legacy"
 
     import "../../styles/global.css"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -24,14 +24,15 @@
         email: "",
     })
 
-    let successPopupMessage = "La requête de changement de mot de passe à été envoyée."
-    let failedPopupMessage = "La requête de changement de mot de passe n'a pas pu être envoyée."
+    let successPopupMessage =
+        "La requête de changement de mot de passe a été envoyée."
+    let failedPopupMessage =
+        "La requête de changement de mot de passe n'a pas pu être envoyée."
 
     let popupMessage = $state("")
     let showPopup = $state(false)
 
-    const handlePopupClose = async () => 
-    {
+    const handlePopupClose = async () => {
         showPopup = false
     }
 
@@ -43,12 +44,10 @@
                 email: "",
             }
 
-            try 
-            {
-                await POST<any, any>('/user/requestResetPassword', login, false)
+            try {
+                await POST<any, any>("/auth/resetPassword", login, false)
                 popupMessage = successPopupMessage
-            } catch (err) 
-            {
+            } catch (err) {
                 popupMessage = failedPopupMessage
             }
 
@@ -93,7 +92,10 @@
         </form>
     </div>
     {#if showPopup}
-        <Popup handleApproveClick={handlePopupClose} approbationMessage={popupMessage}></Popup>
+        <Popup
+            handleApproveClick={handlePopupClose}
+            approbationMessage={popupMessage}
+        ></Popup>
     {/if}
 </section>
 

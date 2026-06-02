@@ -44,10 +44,10 @@ export async function DELETE(url: string): Promise<void> {
     try {
         const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "DELETE",
-            credentials:"include",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
-                
+
             },
         })
         await handleResponse(response)
@@ -59,13 +59,12 @@ export async function DELETE(url: string): Promise<void> {
 
 export async function PUT<T, T1>(url: string, body: T, redirectToLoginOn401?: boolean): Promise<{ data: T1 }> {
     try {
-      
+
         var response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "PUT",
-            credentials:"include",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
-                
             },
             body: JSON.stringify(body),
         })
@@ -83,7 +82,7 @@ export async function PATCH<T>(url: string, body: T): Promise<void> {
     try {
         const response = await fetch(`${env.PUBLIC_BASE_URL}${url}`, {
             method: "PATCH",
-            credentials:"include",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `${localStorage.getItem("token")}`,
@@ -116,5 +115,5 @@ async function handleResponse<T>(response: Response, redirectToLoginOn401: boole
             throw new Error(`Error: ${response.status} - ${response.statusText}`)
         }
     }
-    return (await response.json()) as T
+    return response.status == 204 ? undefined as T : (await response.json()) as T
 }

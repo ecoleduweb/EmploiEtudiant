@@ -61,7 +61,6 @@ export class ClientTelemetry {
                     }),
                 ],
             });
-            console.log("Client Telemetry Initialized");
             this.initialized = true;
         }
     }

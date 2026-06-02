@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { studyProgramMocks } from '.././Helper/Mocks/studyProgram.mock';
+import { jobOfferMocks } from '.././Helper/Mocks/jobOffer.mock';
 import { ApiMocker } from '.././Helper/mockApi';
 import { enterpriseMocks } from '../Helper/Mocks/enterprise.mock';
 import { loginMocks } from '../Helper/Mocks/login.mock';
@@ -13,6 +14,7 @@ test.describe('checkIfUserHaveEnterprise', () => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMocks([
             studyProgramMocks.success,
+            jobOfferMocks.jobOfferEmployerAll,
             loginMocks.successModerator,
             userMocks.meModerator])
             .apply();
@@ -27,7 +29,7 @@ test.describe('checkIfUserHaveEnterprise', () => {
     test('hasEntreprise', async ({ page }) => {
         const apiMocker = new ApiMocker(page);
         await apiMocker.addMock(
-            enterpriseMocks.success)
+            enterpriseMocks.hasCurrentEnterprise)
             .apply();
 
         await page.goto('http://localhost:5002/dashboard');
