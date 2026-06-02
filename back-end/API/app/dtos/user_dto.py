@@ -60,8 +60,8 @@ class UserReadDTO(_UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 class UserInEnterpriseDTO(BaseModel):
-    firstName: str = Field(min_length=3, max_length=255)
-    lastName: str = Field(min_length=3, max_length=255)
+    firstName: str = Field(max_length=255)
+    lastName: str = Field(max_length=255)
     email: Annotated[EmailStr, StringConstraints(max_length=255)]
     isModerator: bool | None = None
     enterpriseId: int | None = None   # keep the FK so the client still knows which enterprise
