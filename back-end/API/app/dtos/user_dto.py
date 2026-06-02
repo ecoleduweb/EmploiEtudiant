@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 
 class _UserBase(BaseModel):
-    firstName: str = Field(min_length=3, max_length=255)
-    lastName: str = Field(min_length=3, max_length=255)
+    firstName: str = Field(max_length=255)
+    lastName: str = Field(max_length=255)
     email: Annotated[EmailStr, StringConstraints(max_length=255)]
     isModerator: bool | None = None
     enterprise: EnterpriseReadDTO | None = None
