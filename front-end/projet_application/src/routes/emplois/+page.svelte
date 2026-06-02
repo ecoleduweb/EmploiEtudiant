@@ -6,7 +6,6 @@
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import TableOffer from "../../Components/JobOffer/TableOffer.svelte"
     import { pushState } from "$app/navigation"
-    import { page } from "$app/stores"
     import type { JobOffer } from "../../Models/Offre"
     import MultiSelect from "svelte-multiselect"
     import Button from "../../Components/Inputs/Button.svelte"
@@ -14,6 +13,7 @@
     import { fetchApprovedJobOffers } from "../../Service/JobOfferService"
     import { fetchStudyProgramsAsOptions } from "../../Service/StudyProgramService"
     import type { Option } from "../../Models/Option"
+    import { page } from "$app/state"
 
     let showModal = $state(false)
     let loaded = $state(false)
@@ -84,7 +84,7 @@
             jobOffers = await fetchApprovedJobOffers()
             filteredOffers = jobOffers
             // affiche l'offre d'emploi si un id est présent dans les query params
-            const id = $page.url.searchParams.get("id")
+            const id = page.url.searchParams.get("id")
             if (id) {
                 let jobOffer = jobOffers.find(
                     (offer) => offer.id.toString() == id,

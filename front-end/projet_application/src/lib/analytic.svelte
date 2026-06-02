@@ -15,7 +15,7 @@
         }
         gtag("config", measurementId, {
             page_title: document.title,
-            page_path: $page.url.pathname,
+            page_path: page.url.pathname,
         })
     })
 </script>

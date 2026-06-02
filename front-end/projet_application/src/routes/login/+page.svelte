@@ -5,7 +5,7 @@
     import Button from "../../Components/Inputs/Button.svelte"
     import Link from "../../Components/Inputs/Link.svelte"
     import type { Login } from "../../Models/Login"
-    import { GET, POST } from "../../ts/server"
+    import { POST } from "../../ts/server"
     import * as yup from "yup"
     import { extractErrors } from "../../ts/utils"
     import { logIn } from "../../lib/tokenLib"
@@ -44,7 +44,7 @@
                         form,
                         false,
                     )
-                    logIn(response.data)
+                    await logIn(response.data)
                 } catch (err) {
                     if (err.name == 403) {
                         errors = {
