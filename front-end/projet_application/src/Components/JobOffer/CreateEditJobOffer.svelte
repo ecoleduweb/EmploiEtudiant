@@ -258,7 +258,7 @@
             </div>
 
             <div class="form-group-vertical">
-                <label for="programme">Programme visé*</label>
+                <label for="programme">Programme(s) visé(s)</label>
                 <MultiSelect
                     loading={isFetchingOptions}
                     id="programme"

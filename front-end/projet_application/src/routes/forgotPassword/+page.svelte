@@ -45,7 +45,6 @@
             }
 
             try {
-                // TODO tester le reset password
                 await POST<any, any>("/auth/resetPassword", login, false)
                 popupMessage = successPopupMessage
             } catch (err) {

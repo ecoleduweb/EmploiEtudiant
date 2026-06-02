@@ -9,11 +9,11 @@ export const jobOfferMocks = {
       json: { "message": "Offre créée" }
     }
   },
-  jobOfferEmployer: {
+  emptyJobOfferEmployer: {
     url: '*/**/jobOffer/employer/*',
     response: {
-      status: 404,
-      json: { "message": "Offres non trouvées" }
+      status: 200,
+      json: []
     }
   },
   jobOfferVerifyURL: {

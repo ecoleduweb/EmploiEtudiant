@@ -24,14 +24,12 @@ logger = getLogger(__name__)
 user_service = UserService()
 hasher = PasswordHasher()
 
-# TODO quand on met le mauvais mot de passe, ca dit compte desactive
-# Reset password, la route n'existe plus :(
 class AuthService:
     def login(self, dto: UserLoginDTO):
         try:
             user = user_repo.find_by_email(dto.email)
             if not user.active:
-                raise LoginException(True, f"Impossible de se connecter avec l'email: {dto.email}")
+                raise LoginException(f"Impossible de se connecter avec l'email: {dto.email}", True)
             hasher.verify(user.password, dto.password)
             return self._generateToken(user), user
         except VerifyMismatchError:
@@ -85,12 +83,11 @@ class AuthService:
                 raise LoginException("Failed to send reset password email")
         except NotFoundException:
             logger.warning("A user tried to reset but provided a bad email")
-            raise LoginException(False, "Le courriel fourni pour la réinitialisation est invalide (Aucun utilisateur trouvé/invalide)")
+            raise LoginException("Le courriel fourni pour la réinitialisation est invalide (Aucun utilisateur trouvé/invalide)")
 
-    #TODO valider si le champ de confirmation de mot de passe valide que les deux champs sont identiques et validésa avec Felt
     def reset_password(self, email, new_passord, reset_date) -> UpdatedUserReadDTO:
         if (reset_date + 900) <= datetime.now().timestamp():
-            raise LoginException(True, "Le lien de réinitialisation a expiré, veuillez faire une nouvelle demande de réinitialisation de mot de passe")
+            raise LoginException("Le lien de réinitialisation a expiré, veuillez faire une nouvelle demande de réinitialisation de mot de passe", True)
 
         return user_service.reset_password(email, new_passord)
     

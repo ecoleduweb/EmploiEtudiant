@@ -11,7 +11,7 @@ const getCities = async (): Promise<City[]> => {
       cityData = JSON.parse(savedData)
     }
     // Valeur de date hardcodée. Pas parfait, mais plus simple.
-    if (cityData.cachingDate && cityData.cachingDate > new Date("2026-05-28").getTime()) {
+    if (cityData?.cachingDate && cityData.cachingDate > new Date("2026-05-28").getTime()) {
       return cityData.cities
     }
 

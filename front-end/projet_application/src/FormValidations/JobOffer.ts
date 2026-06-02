@@ -62,7 +62,7 @@ const schema = yup.object().shape({
     offerLink: yup
         .string()
         .max(255, "Le lien vers l'offre doit être de 255 caractères maximum")
-        .url("Le lien doit être une URL valide et débuter par https://"), //TODO valider l'url au back
+        .url("Le lien doit être une URL valide et débuter par https://"),
     acceptCondition: yup
         .boolean()
         .required("Vous devez accepter les conditions")

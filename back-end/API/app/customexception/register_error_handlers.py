@@ -56,27 +56,30 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(NotFoundException)
     def handle_not_found(e: NotFoundException):
         logger.warning(f"{e.message} for id : {e.id}", exc_info=e)
-        return {'message': e.message}, e.errorCode
+        return {'message': e.message}, e.error_code
 
     @app.errorhandler(DuplicateException)
     def handle_duplicate(e: DuplicateException):
         logger.warning(f"{e.message} for field : {e.field}", exc_info=e)
-        return {'message': e.message, 'field': e.field}, e.errorCode
+        return {'message': e.message, 'field': e.field}, e.error_code
     
     @app.errorhandler(ValidationException)
     def handle_validation(e: ValidationException):
         logger.warning(f"{e.message} for field : {e.field}", exc_info=e)
-        return {'message': e.message, 'field': e.field}, e.errorCode
+        return {'message': e.message, 'field': e.field}, e.error_code
         
     @app.errorhandler(PermissionException)
     def handle_permission(e: PermissionException):
         logger.warning(e.message, exc_info=e)
-        return {'message': e.message}, e.errorCode
+        return {'message': e.message}, e.error_code
             
     @app.errorhandler(LoginException)
     def handle_login(e: LoginException):
+        print("#"*150)
+        print(e.message, e.error_code)
+        print("#"*150)
         logger.warning(e.message, exc_info=e)
-        return {'message': e.message}, e.errorCode
+        return {'message': e.message}, e.error_code
     
     @app.errorhandler(ValidationError)
     def handle_validation_error(e: ValidationError):
