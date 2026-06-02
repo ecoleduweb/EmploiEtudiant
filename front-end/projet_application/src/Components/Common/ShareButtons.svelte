@@ -16,7 +16,9 @@
 
     let { title }: Props = $props()
 
-    const shareUrl = $derived(window.location.href)
+    const shareUrl = $derived(
+        typeof window !== "undefined" ? window.location.href : ""
+    )
 
     let isIOS = $derived(
         typeof navigator !== "undefined" &&
