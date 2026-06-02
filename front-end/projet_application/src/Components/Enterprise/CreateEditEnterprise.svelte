@@ -167,16 +167,13 @@
 
                         <MultiSelect
                             loading={isFetchingOptions}
-                            id="enterprise-city"
+                            id="enterprise-user"
                             options={userOptions as any[]}
                             bind:selected={selectedUsers as any[]}
                             closeDropdownOnSelect={true}
                             name="selectedUsers"
                             placeholder="Choisir les utilsateurs de l'entreprise..."
                         />
-                        <p class="errors-input">
-                            {#if $errors.cityId}{$errors.cityId}{/if}
-                        </p>
                     </div>
                 {/if}
             </div>

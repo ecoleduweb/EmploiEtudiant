@@ -98,7 +98,7 @@
         </p>
         <h5 class="infoTitle">Poste visé</h5>
         <p class="text">
-            {offer.employmentSchedules?.map((s) => s.description).join(", ")}
+            {offer.studyPrograms?.map((p) => p.name).join(", ")}
         </p>
         <h5 class="infoTitle">Description du poste</h5>
         <div class="description">{@html offer.description}</div>

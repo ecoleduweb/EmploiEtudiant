@@ -31,5 +31,43 @@ export const userMocks = {
                 lastname: "Admin",
             }
         }
+    },
+    all: {
+        url: '*/**/user/all',
+        response: {
+            status: 200,
+            json: [
+                {
+                    id: 1,
+                    firstName: 'John1',
+                    lastName: 'Doe1',
+                    email: 'John1@gmail.com',
+                    active: true,
+                    isModerator: false,
+                    verified: false,
+                    enterpriseId: 1
+                },
+                {
+                    id: 2,
+                    firstName: 'John2',
+                    lastName: 'Doe2',
+                    email: 'John2@gmail.com',
+                    active: true,
+                    isModerator: false,
+                    verified: false,
+                    enterpriseId: 1
+                },
+                {
+                    id: 3,
+                    firstName: 'John3',
+                    lastName: 'Doe3',
+                    email: 'John3@gmail.com',
+                    active: true,
+                    isModerator: false,
+                    verified: false,
+                    enterpriseId: 1
+                },
+            ]
+        }
     }
 } satisfies Record<string, MockConfig>;

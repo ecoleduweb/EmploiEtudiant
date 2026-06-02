@@ -7,7 +7,6 @@
     import { onMount } from "svelte"
     import Modal from "../../Components/Common/Modal.svelte"
     import ArchiveConfirm from "../../Components/JobOffer/ArchiveConfirm.svelte"
-    import { currentUser, isLoggedIn } from "$lib"
     import LoadingSpinner from "../../Components/Common/LoadingSpinner.svelte"
     import CreateEditEnterprise from "../../Components/Enterprise/CreateEditEnterprise.svelte"
     import { fetchCurrentUserEnterprise } from "../../Service/EnterpriseService"
@@ -30,7 +29,7 @@
     let showCreateEditOfferModal = $state(false)
     let showEditEnterprise = $state(false)
     let showArchiveModal = $state(false)
-    let showLoadingSpinner = $state(false)
+    let showLoadingSpinner = $state(true)
     let showDeleteModal = $state(false)
 
     let iconeUp = "⮞"
@@ -138,7 +137,7 @@
         } catch (error) {
             console.error("Error while loading:", error)
         } finally {
-            showLoadingSpinner = true
+            showLoadingSpinner = false
         }
     })
 
@@ -159,7 +158,7 @@
     let offerToCome = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            return new Date(x.offerDebut) > new Date()
+            return new Date(x.offerDebut) > dateNow
         }),
     )
     let offerDisplayed = $derived(
@@ -200,7 +199,7 @@
         </div>
     </section>
 
-    {#if !showLoadingSpinner}
+    {#if showLoadingSpinner}
         <section class="Loading">
             <LoadingSpinner />
         </section>
@@ -391,7 +390,6 @@
             <DeleteOffer
                 offer={jobOfferSelected}
                 onDeleteOffer={handleDeleteOfferAndCloseModal}
-                closeModalDelete={handleCloseModalDelete}
             />
         </Modal>
     {/if}

@@ -76,7 +76,19 @@ export const enterpriseMocks = {
                         id: 1,
                         city: 'Abercorn'
                     },
-                    isTemporary: false
+                    isTemporary: false,
+                    users: [
+                        {
+                            id: 1,
+                            firstName: 'John',
+                            lastName: 'Doe',
+                            email: 'John@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ]
                 },
                 {
                     id: 2,
@@ -89,6 +101,18 @@ export const enterpriseMocks = {
                         id: 2,
                         city: 'Montreal'
                     },
+                    users: [
+                        {
+                            id: 2,
+                            firstName: 'John2',
+                            lastName: 'Doe2',
+                            email: 'John@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ],
                     isTemporary: false
                 },
                 {
@@ -102,7 +126,19 @@ export const enterpriseMocks = {
                         id: 3,
                         city: 'Montreal'
                     },
-                    isTemporary: false
+                    isTemporary: false,
+                    users: [
+                        {
+                            id: 3,
+                            firstName: 'John3',
+                            lastName: 'Doe3',
+                            email: 'John3@gmail.com',
+                            active: true,
+                            isModerator: false,
+                            verified: false,
+                            enterpriseId: 1
+                        }
+                    ]
                 }
             ]
         }

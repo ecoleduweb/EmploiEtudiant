@@ -64,7 +64,7 @@
     const handleConfirmToProceed = (mode: number) => {
         switch (mode) {
             case 1: {
-                approbationMessage = `Voulez-vous vraiment {user.isModerator ? 'retirer' : 'accorder'} les permissions administrateur à cet utilisateur?`
+                approbationMessage = `Voulez-vous vraiment ${user.isModerator ? "retirer" : "accorder"} les permissions administrateur à cet utilisateur?`
                 break
             }
             case 2: {

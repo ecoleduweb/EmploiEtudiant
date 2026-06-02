@@ -144,11 +144,16 @@
 <style scoped>
     .rich-text-content {
         text-align: left;
-        min-height: 200px;
         padding: 10px;
         font-size: 16px;
         line-height: 1.5;
         color: #333;
+    }
+
+    .rich-text-content :global(.tiptap) {
+        min-height: 200px;
+        padding: 10px;
+        outline: none; /* drop the focus ring on the whole area */
     }
 
     .editor-wrapper {

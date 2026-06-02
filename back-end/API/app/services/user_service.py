@@ -74,8 +74,7 @@ class UserService:
         if user.id == current_user.id:
             raise PermissionException("Un administrateur ne peut pas se désactiver lui même")
         user.active = not user.active
-        user_repo.update(user)
-        return user
+        return user_repo.update(user)
     
     def manage_temporary_enterprise(self, selected_enterprise_id, previous_enterprise_id) -> None:
         previous_enterprise = enterprise_repo.find_by_id(previous_enterprise_id)

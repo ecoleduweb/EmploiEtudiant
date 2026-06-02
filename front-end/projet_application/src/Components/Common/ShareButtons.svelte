@@ -16,9 +16,7 @@
 
     let { title }: Props = $props()
 
-    const shareUrl = $derived(
-        typeof window !== "undefined" ? window.location.href : ""
-    )
+    const shareUrl = $derived(window.location.href)
 
     let isIOS = $derived(
         typeof navigator !== "undefined" &&
@@ -27,8 +25,8 @@
 
     let smsHref = $derived(
         isIOS
-            ? `sms:&body=${encodeURIComponent(title)}`
-            : `sms:?body=${encodeURIComponent(title)}`,
+            ? `sms:&body=${encodeURIComponent(shareUrl)}`
+            : `sms:?body=${encodeURIComponent(shareUrl)}`,
     )
     const isOnMobile = $derived(
         typeof navigator !== "undefined" &&

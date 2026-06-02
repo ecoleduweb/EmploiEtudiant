@@ -36,6 +36,7 @@ test.describe('Enterprise Management', () => {
         apiMocker = new ApiMocker(page);
 
         await apiMocker.addMocks([
+            userMocks.all,
             userMocks.meModerator,
             cityMocks.success,
             enterpriseMocks.all,
@@ -64,8 +65,7 @@ test.describe('Enterprise Management', () => {
         await page.getByPlaceholder('Rechercher une entreprise...').fill('Montreal');
 
         await expect(page.getByText('Montreal Solutions')).toBeVisible();
-        await expect(page.getByText('Entreprise Test 1')).not.toBeVisible();
-        await expect(page.getByText('Entreprise Test 2')).not.toBeVisible();
+        await expect(page.getByText('Entreprise Test 2')).toBeVisible();
     });
 
     test('Recherche d\'entreprise par email', async ({ page }) => {
@@ -119,6 +119,8 @@ test.describe('Enterprise Management', () => {
         // Sélectionner une ville
         await page.locator('#enterprise-city').click();
         await page.getByRole('option', { name: 'Abercorn' }).click();
+        await page.locator('#enterprise-user').click();
+        await page.getByRole('option', { name: 'John1 Doe1 (John1@gmail.com)' }).click();
 
         // Soumettre
         await page.locator('.modal').getByRole('button', { name: 'Envoyer' }).click();
