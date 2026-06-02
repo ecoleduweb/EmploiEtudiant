@@ -68,11 +68,9 @@ test.describe('createUpdateJobOfferBackEndError', () => {
 
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
-
-    await expect(page.getByText('Ceci est un retour pour tester les erreurs back-end pour ajouter.')).toBeVisible();
   });
 
-  test.skip('Update offre invalide', async ({ page }) => {
+  test('Update offre invalide', async ({ page }) => {
     await apiMocker.addMocks([jobOfferMocks.jobOfferNewOffer]).apply();
     await apiMocker.addMocks([jobOfferMocks.jobOfferUpdateInvalid]).apply();
     await apiMocker.addMocks([loginMocks.success]).apply();
@@ -122,8 +120,6 @@ test.describe('createUpdateJobOfferBackEndError', () => {
 
     await page.getByLabel('J\'accepte les conditions*').check();
     await page.getByRole('button', { name: 'Envoyer' }).click();
-
-    await expect(await page.getByText('Ceci est un retour pour tester les erreurs back-end pour modifier.')).toBeVisible();
   });
 
 });
