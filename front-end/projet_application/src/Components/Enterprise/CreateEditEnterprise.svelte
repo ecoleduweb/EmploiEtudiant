@@ -172,7 +172,7 @@
                             bind:selected={selectedUsers as any[]}
                             closeDropdownOnSelect={true}
                             name="selectedUsers"
-                            placeholder="Choisir les utilsateurs de l'entreprise..."
+                            placeholder="Choisir les utilisateurs de l'entreprise..."
                         />
                     </div>
                 {/if}
