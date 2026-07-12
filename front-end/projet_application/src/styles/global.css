@@ -1,3 +1,17 @@
+:root {
+    /* Fix des couleurs du svelte-multiselect : dropdown (ul.options) */
+    --sms-options-bg: #fcfcfc;
+    --sms-options-border: 1px solid #d3d3d3;
+    --sms-options-shadow: 0 0 14pt -3pt rgba(0, 0, 0, 0.2);
+
+    /* Fix des couleurs du svelte-multiselect : le champ lui-même (div.multiselect) */
+    --sms-bg: #fff;
+    --sms-border: 1px solid #d3d3d3;
+
+    /* Fix des couleurs du svelte-multiselect : partagé */
+    --sms-text-color: #222;
+}
+
 body {
     background-color: #1e2634;
     margin: 0px;
