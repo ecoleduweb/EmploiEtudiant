@@ -37,9 +37,9 @@ def create_job_offer(current_user):
 
 @job_offer_blueprint.route('/<int:id>', methods=['GET'])
 def get_job_offer(id):
-    needsentreprise_details = request.args.get("entrepriseDetails") == "true"
-    needsemployment_schedule_details = request.args.get("employmentScheduleDetails") == "true"
-    needsstudy_program_details = request.args.get("studyProgramDetails") == "true"
+    needsentreprise_details = request.args.get("entrepriseDetails", "true") == "true"
+    needsemployment_schedule_details = request.args.get("employmentScheduleDetails", "true") == "true"
+    needsstudy_program_details = request.args.get("studyProgramDetails", "true") == "true"
 
     dto = job_offer_service.find_by_id(id, needsentreprise_details, needsemployment_schedule_details, needsstudy_program_details)
     return dto.model_dump(), 200

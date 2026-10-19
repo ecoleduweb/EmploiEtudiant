@@ -163,6 +163,13 @@ def test_getOfferById(client):
     assert response.status_code == 200
     assert VerifyData(response.json)
 
+def test_getOfferByIdIncludesRelatedDetailsByDefault(client):
+    response = client.get('/jobOffer/1')
+    assert response.status_code == 200
+    assert response.json['enterprise']['id'] == 1
+    assert len(response.json['employmentSchedules']) == 1
+    assert len(response.json['studyPrograms']) == 2
+
 def test_getallEmployerOffer(client):
     response = client.get('/jobOffer/employer/all')
     assert response.status_code == 200
