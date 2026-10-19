@@ -149,6 +149,11 @@ def app():
         db.session.add(job_offer2)
         db.session.add(job_offer3)
 
+        base_approved = {**job_offer1_data, "approvedDate": datetime.now(), "studyPrograms": [sp1], "employmentSchedules": [es]}
+        db.session.add(JobOffer(**{**base_approved, "id": 4, "offerDebut": "2021-11-16"}))
+        db.session.add(JobOffer(**{**base_approved, "id": 5, "deadlineApply": "2021-11-14"}))
+        db.session.add(JobOffer(**{**base_approved, "id": 6, "offerDebut": "2021-11-15", "deadlineApply": "2021-11-15"}))
+
         hashed_password = hasher.hash("test123_12caracters!")
         user = User(id=1, firstName="Robert", lastName="Lizotte", email="test@gmail.com", password=hashed_password, active=True, isModerator=False, enterpriseId=1)
         db.session.add(user)
@@ -171,7 +176,15 @@ def test_getallEmployerOffer(client):
 def test_offresEmploiApprouvees(client):
     response = client.get('/jobOffer/approved')
     assert response.status_code == 200
-    assert len(response.json) == 1
+    assert len(response.json) == 2
+
+def test_offresEmploiApprouveesFiltreSelonDatesAffichage(client):
+    response = client.get('/jobOffer/approved')
+    assert response.status_code == 200
+    ids = {offer['id'] for offer in response.json}
+    assert 4 not in ids  # offerDebut dans le futur
+    assert 5 not in ids  # deadlineApply dépassée
+    assert {1, 6} <= ids  # offerDebut <= aujourd'hui <= deadlineApply
 
 def test_offresEmploiApprouveesWithDetails(client):
     response_without_details = client.get('/jobOffer/approved')
@@ -182,7 +195,7 @@ def test_offresEmploiApprouveesWithDetails(client):
 
     response = client.get('/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true')
     assert response.status_code == 200
-    assert len(response.json) == 1
+    assert len(response.json) == 2
     assert response.json[0]['enterprise']['id'] == 1
     assert response.json[0]['employmentSchedules'][0]['id'] == 1
     assert {program['id'] for program in response.json[0]['studyPrograms']} == {1, 2}
