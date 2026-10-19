@@ -105,13 +105,15 @@ class JobOfferRepo:
         else:
             statement = statement.options(db.noload(JobOffer.enterprise))
         if employment_schedule_details:
-            statement = statement.options(db.joinedload(JobOffer.employmentSchedules))
+            statement = statement.options(db.selectinload(JobOffer.employmentSchedules))
         else: 
             statement = statement.options(db.noload(JobOffer.employmentSchedules))
         if study_program_details:
-            statement = statement.options(db.joinedload(JobOffer.studyPrograms))
+            statement = statement.options(db.selectinload(JobOffer.studyPrograms))
         else:
             statement = statement.options(db.noload(JobOffer.studyPrograms))
+        if get_entreprise_details or employment_schedule_details or study_program_details:
+            statement = statement.populate_existing()
         job_offers = statement.all()
         return job_offers
 

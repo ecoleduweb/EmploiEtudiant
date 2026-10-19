@@ -163,13 +163,6 @@ def test_getOfferById(client):
     assert response.status_code == 200
     assert VerifyData(response.json)
 
-def test_getOfferByIdIncludesRelatedDetailsByDefault(client):
-    response = client.get('/jobOffer/1')
-    assert response.status_code == 200
-    assert response.json['enterprise']['id'] == 1
-    assert len(response.json['employmentSchedules']) == 1
-    assert len(response.json['studyPrograms']) == 2
-
 def test_getallEmployerOffer(client):
     response = client.get('/jobOffer/employer/all')
     assert response.status_code == 200
@@ -181,12 +174,18 @@ def test_offresEmploiApprouvees(client):
     assert len(response.json) == 1
 
 def test_offresEmploiApprouveesWithDetails(client):
+    response_without_details = client.get('/jobOffer/approved')
+    assert response_without_details.status_code == 200
+    assert response_without_details.json[0]['enterprise'] is None
+    assert response_without_details.json[0]['employmentSchedules'] == []
+    assert response_without_details.json[0]['studyPrograms'] == []
+
     response = client.get('/jobOffer/approved?entrepriseDetails=true&employmentScheduleDetails=true&studyProgramDetails=true')
     assert response.status_code == 200
     assert len(response.json) == 1
-    assert response.json[0]['enterprise'] is not None
-    assert len(response.json[0]['employmentSchedules']) == 1
-    assert len(response.json[0]['studyPrograms']) == 2
+    assert response.json[0]['enterprise']['id'] == 1
+    assert response.json[0]['employmentSchedules'][0]['id'] == 1
+    assert {program['id'] for program in response.json[0]['studyPrograms']} == {1, 2}
 
 def test_userCreateOffresEmploi(client):
     data = {
