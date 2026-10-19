@@ -310,6 +310,22 @@ def test_disapproveJobOfferAndAndValidatedEnterprise(client):
     response =  client.get('/user/1')
     assert response.status_code == 200
 
+def test_approveJobOfferPreservesPrograms(client):
+    response = client.get('/jobOffer/4?employmentScheduleDetails=true&studyProgramDetails=true')
+    assert response.status_code == 200
+    assert {program['id'] for program in response.json['studyPrograms']} == {sp1.id}
+    assert {schedule['id'] for schedule in response.json['employmentSchedules']} == {es.id}
+
+    response = client.put('/jobOffer/approve/4', json={'isApproved': True, 'approbationMessage': "", 'selectedEnterpriseId': 3})
+    assert response.status_code == 200
+    assert {program['id'] for program in response.json['studyPrograms']} == {sp1.id}
+    assert {schedule['id'] for schedule in response.json['employmentSchedules']} == {es.id}
+
+    response = client.get('/jobOffer/4?employmentScheduleDetails=true&studyProgramDetails=true')
+    assert response.status_code == 200
+    assert {program['id'] for program in response.json['studyPrograms']} == {sp1.id}
+    assert {schedule['id'] for schedule in response.json['employmentSchedules']} == {es.id}
+
 def test_approveJobOfferAndDeleteEnterprise(client):
     response = client.put('/jobOffer/approve/3', json={'isApproved': True, 'approbationMessage': "", 'selectedEnterpriseId': 1})
     assert response.status_code == 200  

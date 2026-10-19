@@ -105,7 +105,9 @@ class JobOfferService:
         return job_offer_repo.all_availables(get_entreprise_details, employment_schedule_details, study_program_details)
     
     def approve(self, dto: JobOfferApproveDTO) -> JobOfferReadDTO:
-        job_offer_to_approve = job_offer_repo.find_by_id(dto.id, True, False, False)
+        # Charge l'entreprise, les horaires de travail et les programmes d'études associés à l'offre.
+        # update_job_offer enregistre aussi ces relations; si elles ne sont pas chargées, l'approbation les efface.
+        job_offer_to_approve = job_offer_repo.find_by_id(dto.id, True, True, True)
         previous_enterprise_id = job_offer_to_approve.enterpriseId
         user_that_created_the_job_offer = user_repo.find_by_id(job_offer_to_approve.last_modified_by_id)
         job_offer_to_approve.isApproved = dto.isApproved
