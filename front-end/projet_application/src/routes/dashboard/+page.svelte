@@ -141,10 +141,7 @@
         }
     })
 
-    const toDay = (d: Date) =>
-        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-    const dayOf = (value: string | Date) => String(value).slice(0, 10)
-    let today = toDay(new Date())
+    let dateNow = new Date()
 
     let toBeApprovedOffer = $derived(
         jobOffers
@@ -161,21 +158,22 @@
     let offerToCome = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            return dayOf(x.offerDebut) > today
+            return new Date(x.offerDebut) > dateNow
         }),
     )
     let offerDisplayed = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            return (
-                today >= dayOf(x.offerDebut) && today <= dayOf(x.deadlineApply)
-            )
+            let dateDebut = new Date(x.offerDebut)
+            let dateFin = new Date(x.deadlineApply)
+            return dateNow >= dateDebut && dateNow <= dateFin
         }),
     )
     let expiredOffer = $derived(
         jobOffers.filter((x) => {
             if (!x.isApproved) return false
-            return dayOf(x.deadlineApply) < today
+            let dateFin = new Date(x.deadlineApply)
+            return dateFin < dateNow
         }),
     )
 </script>
