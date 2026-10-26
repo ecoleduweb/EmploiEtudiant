@@ -2,77 +2,179 @@ name: DEV - Build & Deploy
 on:
   push:
     branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Deploy NodeJS app
-        uses: appleboy/ssh-action@v0.1.2
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          host: ${{secrets.DEV_SSH_HOST}}
-          key: ${{secrets.DEV_SSH_KEY}}
-          username: ${{ secrets.SSH_USERNAME}}
+          node-version: 26
+          cache: npm
+          cache-dependency-path: front-end/projet_application/package-lock.json
 
+      # Front-end: PUBLIC_* variables are baked in at build time, so the .env lives only in the runner
+      - name: Build front-end
+        working-directory: front-end/projet_application
+        env:
+          PUBLIC_BASE_URL: ${{ secrets.DEV_FRONT_PUBLIC_URL }}
+          PUBLIC_RECAPTCHA_KEY: ${{ secrets.PUBLIC_RECAPTCHA_KEY }}
+          PUBLIC_PUBLIC_MEASUREMENT_ID: ${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }}
+          PUBLIC_TRACE_URL: https://telemetry.edwrdl.ca/traces
+          PUBLIC_APPLICATION_NAME: EMPLOI_ETUDIANT_DEV
+          PUBLIC_ENABLED_TELEMETRY: "TRUE"
+        run: |
+          {
+            echo "PUBLIC_BASE_URL=$PUBLIC_BASE_URL"
+            echo "PUBLIC_RECAPTCHA_KEY=$PUBLIC_RECAPTCHA_KEY"
+            echo "PUBLIC_PUBLIC_MEASUREMENT_ID=$PUBLIC_PUBLIC_MEASUREMENT_ID"
+            echo "PUBLIC_TRACE_URL=$PUBLIC_TRACE_URL"
+            echo "PUBLIC_APPLICATION_NAME=$PUBLIC_APPLICATION_NAME"
+            echo "PUBLIC_ENABLED_TELEMETRY=$PUBLIC_ENABLED_TELEMETRY"
+          } > .env
+          npm ci
+          npm run build
+
+      - name: Assemble release
+        env:
+          DATABASE_TEST_URL: ${{ secrets.DATABASE_TEST_URL }}
+          DATABASE_DEV_URL: ${{ secrets.DATABASE_DEV_URL }}
+          CORS: ${{ secrets.DEV_CORS_IP }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          MAIL_CLIENT_ID: ${{ secrets.MAIL_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
+          MAIL_GRAPH_USER_ID: ${{ secrets.MAIL_GRAPH_USER_ID }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          RECAPTCHA_KEY: ${{ secrets.RECAPTCHA_KEY }}
+          URL: ${{ secrets.DEV_URL }}
+        run: |
+          mkdir -p release/back-end release/front-end/projet_application
+
+          # Back-end (Python, nothing to compile): ship source only, no venv/tests/caches
+          rsync -a \
+            --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' \
+            --exclude 'tests' --exclude '.env' --exclude 'logs.txt' \
+            back-end/ release/back-end/
+
+          {
+            echo "DATABASE_TEST_URL=$DATABASE_TEST_URL"
+            echo "DATABASE_DEV_URL=$DATABASE_DEV_URL"
+            echo "CORS=$CORS"
+            echo "SECRET_KEY=$SECRET_KEY"
+            echo "MAIL_ENABLED=True"
+            echo "MAIL_CLIENT_ID=$MAIL_CLIENT_ID"
+            echo "CLIENT_SECRET=$CLIENT_SECRET"
+            echo "TENANT_ID=$TENANT_ID"
+            echo "MAIL_GRAPH_USER_ID=$MAIL_GRAPH_USER_ID"
+            echo "MAIL_ADMINISTRATOR_ADDRESS=emploietudiant@mailinator.com"
+            echo "ENCRYPTION_KEY=$ENCRYPTION_KEY"
+            echo "RECAPTCHA_KEY=$RECAPTCHA_KEY"
+            echo "URL=$URL"
+            echo "ENABLE_TRACING=true"
+            echo "TRACE_URL=https://telemetry.edwrdl.ca/traces"
+            echo "APPLICATION_NAME=API_EMPLOI_ETUDIANT_DEV"
+          } > release/back-end/API/.env
+
+          # Front-end: compiled output only (+ package files for production deps)
+          # NOTE: "build" is the SvelteKit adapter-node output folder; adjust if yours differs
+          cp -r front-end/projet_application/build release/front-end/projet_application/build
+          cp front-end/projet_application/package.json front-end/projet_application/package-lock.json \
+            release/front-end/projet_application/
+
+          tar -czf release.tar.gz -C release .
+
+      - name: Upload release to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          source: release.tar.gz
+          target: /tmp/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.DEV_SSH_KEY }}
           script: |
-            set -x
-            sudo systemctl stop front-end
-            sudo systemctl stop back-end
-            echo 'moving log file to logs folder'
-            mkdir /root/logs
+            set -e
+            umask 0027
+            APP_DIR=/var/www/ProjetApplicationH2024
+            APP_GROUP=webApp           # groupe de l'utilisateur qui exécute l'app
+            # Python installé par uv dans un dossier lisible par webApp
+            # (par défaut uv l'installerait dans ~deploy, inaccessible pour webApp)
+            export UV_PYTHON_INSTALL_DIR="$APP_DIR/.python"
+            STAGE=$(mktemp -d)
+
+            echo 'Stopping services'
+            sudo -n systemctl stop front-end
+            sudo -n systemctl stop back-end
+
+            echo 'Archiving log file'
+            mkdir -p ~/logs
             DATE=$(date +'%Y-%m-%d_%H-%M')
-            cp /root/dev_project/ProjetApplicationH2024/back-end/API/logs.txt /root/logs/logs_$DATE.txt
-            rm -r dev_project
-            mkdir dev_project
-            cd dev_project
-            git clone -b dev git@github.com:ecoleduweb/ProjetApplicationH2024.git
-            echo 'Deployment successful to DEV server'
-            echo 'Installing backend packages'
-            sudo apt-get update -y
-            sudo apt-get install -y libmariadb-dev
-            sudo apt-get install -y locales
-            sudo locale-gen fr_FR.UTF-8
-            sudo update-locale
-            python -m pip install --upgrade pip
-            cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/
-            python3 -m venv venv
-            source venv/bin/activate
+            cp "$APP_DIR/back-end/API/logs.txt" ~/logs/logs_$DATE.txt 2>/dev/null || true
+
+            echo 'Unpacking release'
+            tar -xzf /tmp/release.tar.gz -C "$STAGE"
+            rm -f /tmp/release.tar.gz
+            mkdir -p "$APP_DIR/back-end" "$APP_DIR/front-end/projet_application"
+
+            # Replace code but keep the venv and the log file between deploys
+            rsync -a --delete --exclude venv --exclude logs.txt --exclude __pycache__ \
+              "$STAGE/back-end/" "$APP_DIR/back-end/"
+            rsync -a --delete --exclude node_modules \
+              "$STAGE/front-end/projet_application/" "$APP_DIR/front-end/projet_application/"
+            rm -rf "$STAGE"
+
+            echo 'Back-end dependencies and migrations'
+            cd "$APP_DIR/back-end"
+            # uv installs the latest Python (3.15) without touching the system Python
+            export PATH="$HOME/.local/bin:$PATH"
+            command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+            uv self update || true     # un uv ancien ne connaît pas Python 3.15 final
+            if ! venv/bin/python --version 2>/dev/null | grep -q '^Python 3\.15'; then
+              rm -rf venv
+              uv venv --seed --python 3.15 venv
+            fi
+            . venv/bin/activate
+            pip install --upgrade pip
             pip install -r requirements.txt
-            cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/back-end/API
-            touch .env
-            echo DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }} >> .env
-            echo DATABASE_DEV_URL=${{ secrets.DATABASE_DEV_URL }} >> .env
-            echo CORS=${{ secrets.DEV_CORS_IP }} >> .env
-            echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-            echo MAIL_ENABLED=True >> .env
-            echo MAIL_CLIENT_ID=${{ secrets.MAIL_CLIENT_ID }} >> .env
-            echo CLIENT_SECRET=${{ secrets.MAIL_CLIENT_SECRET }} >> .env
-            echo TENANT_ID=${{ secrets.MAIL_TENANT_ID }} >> .env
-            echo MAIL_GRAPH_USER_ID=${{ secrets.MAIL_GRAPH_USER_ID }} >> .env
-            echo MAIL_ADMINISTRATOR_ADDRESS=emploietudiant@mailinator.com >> .env
-            echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
-            echo RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }} >> .env
-            echo URL=${{ secrets.DEV_URL }} >> .env
-            echo ENABLE_TRACING=true >> .env
-            echo TRACE_URL=https://telemetry.edwrdl.ca/traces >> .env
-            echo APPLICATION_NAME=API_EMPLOI_ETUDIANT_DEV >> .env
+            pip install gunicorn       # requis par ExecStart du service back-end
+            gunicorn --version
+            cd API
             flask db upgrade
-            echo 'Installing packages'
-            sudo systemctl enable back-end
-            sudo systemctl start back-end
-            cd /${{ secrets.SSH_USERNAME}}/dev_project/ProjetApplicationH2024/front-end/projet_application
-            npm i
-            touch .env
-            echo PUBLIC_BASE_URL = ${{ secrets.DEV_FRONT_PUBLIC_URL }} >> .env
-            echo 'Building front-end'
-            echo PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY }} >> .env
-            echo PUBLIC_PUBLIC_MEASUREMENT_ID=${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }} >> .env
-            echo PUBLIC_TRACE_URL=https://telemetry.edwrdl.ca/traces >> .env
-            echo PUBLIC_APPLICATION_NAME=EMPLOI_ETUDIANT_DEV >> .env
-            echo PUBLIC_ENABLED_TELEMETRY=TRUE >> .env
-            npm run build
+            deactivate
+
+            echo 'Front-end production dependencies'
+            cd "$APP_DIR/front-end/projet_application"
+            npm ci --omit=dev
+
+            echo 'Permissions for webApp'
+            # deploy reste propriétaire, webApp lit via le groupe
+            # (seulement les fichiers de deploy : logs.txt appartient à webApp)
+            find "$APP_DIR" -user "$(id -un)" -exec chgrp "$APP_GROUP" {} + \
+              -exec chmod g+rX,o-rwx {} +
+            chmod 640 "$APP_DIR/back-end/API/.env"
+            # webApp doit pouvoir créer/écrire logs.txt dans API/
+            chmod g+w "$APP_DIR/back-end/API"
+
             echo 'Starting services'
-            sudo systemctl enable front-end
-            sudo systemctl start front-end
+            sudo -n systemctl start back-end
+            sudo -n systemctl start front-end
+            echo 'Deployment successful to DEV server'
