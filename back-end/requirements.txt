@@ -15,7 +15,7 @@ opentelemetry-instrumentation-flask==0.66b1
 opentelemetry-instrumentation-requests==0.66b1
 opentelemetry-instrumentation-sqlalchemy==0.66b1
 opentelemetry-sdk==1.45.1
-opentelemetry-exporter-otlp==1.39.1
+opentelemetry-exporter-otlp==1.45.1
 bleach==6.4.0
 msal==1.39.0
 pydantic==2.14.1
