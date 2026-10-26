@@ -4,24 +4,20 @@ on:
     branches: [dev]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 26
           cache: npm
           cache-dependency-path: front-end/projet_application/package-lock.json
 
-      # Front-end: PUBLIC_* variables are baked in at build time, so the .env lives only in the runner
       - name: Build front-end
         working-directory: front-end/projet_application
         env:
@@ -59,7 +55,6 @@ jobs:
         run: |
           mkdir -p release/back-end release/front-end/projet_application
 
-          # Back-end (Python, nothing to compile): ship source only, no venv/tests/caches
           rsync -a \
             --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' \
             --exclude 'tests' --exclude '.env' --exclude 'logs.txt' \
@@ -84,16 +79,15 @@ jobs:
             echo "APPLICATION_NAME=API_EMPLOI_ETUDIANT_DEV"
           } > release/back-end/API/.env
 
-          # Front-end: compiled output only (+ package files for production deps)
-          # NOTE: "build" is the SvelteKit adapter-node output folder; adjust if yours differs
           cp -r front-end/projet_application/build release/front-end/projet_application/build
           cp front-end/projet_application/package.json front-end/projet_application/package-lock.json \
             release/front-end/projet_application/
+          cp front-end/projet_application/.env release/front-end/projet_application/.env
 
           tar -czf release.tar.gz -C release .
 
       - name: Upload release to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -106,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy on server
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -115,66 +109,74 @@ jobs:
             set -e
             umask 0027
             APP_DIR=/var/www/ProjetApplicationH2024
-            APP_GROUP=webApp           # groupe de l'utilisateur qui exécute l'app
-            # Python installé par uv dans un dossier lisible par webApp
-            # (par défaut uv l'installerait dans ~deploy, inaccessible pour webApp)
-            export UV_PYTHON_INSTALL_DIR="$APP_DIR/.python"
+            BUILD_DIR="$HOME/build/ProjetApplicationH2024"
+            APP_GROUP=webapp
+            export UV_PYTHON_INSTALL_DIR=/opt/ProjetApplicationH2024/python
+            export PATH="$HOME/.local/bin:$PATH"
+
+            if [ ! -w "$UV_PYTHON_INSTALL_DIR" ]; then
+              echo "ERREUR : $UV_PYTHON_INSTALL_DIR doit exister et appartenir à $(id -un)" >&2
+              exit 1
+            fi
+
+            echo '=== Préparation dans le dossier de build ==='
+            mkdir -p "$BUILD_DIR/back-end" "$BUILD_DIR/front-end/projet_application"
             STAGE=$(mktemp -d)
+            tar -xzf /tmp/release.tar.gz -C "$STAGE"
+            rm -f /tmp/release.tar.gz
+            rsync -a --delete --exclude venv --exclude logs.txt \
+              "$STAGE/back-end/" "$BUILD_DIR/back-end/"
+            rsync -a --delete --exclude node_modules \
+              "$STAGE/front-end/projet_application/" "$BUILD_DIR/front-end/projet_application/"
+            rm -rf "$STAGE"
 
-            echo 'Stopping services'
-            sudo -n systemctl stop front-end
-            sudo -n systemctl stop back-end
+            echo '=== Back-end : venv et dépendances ==='
+            command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+            uv self update || true
+            cd "$BUILD_DIR/back-end"
+            if ! venv/bin/python --version 2>/dev/null | grep -q '^Python 3\.15' \
+               || ! grep -q '^relocatable = true' venv/pyvenv.cfg 2>/dev/null; then
+              rm -rf venv
+              uv venv --relocatable --python 3.15 venv
+            fi
+            uv pip install --python venv -r requirements.txt gunicorn
+            venv/bin/gunicorn --version
 
-            echo 'Archiving log file'
+            echo '=== Front-end : dépendances de production ==='
+            cd "$BUILD_DIR/front-end/projet_application"
+            npm ci --omit=dev
+
+            echo '=== Arrêt des services ==='
+            systemctl stop front-end
+            systemctl stop back-end
+
+            echo '=== Archivage du log ==='
             mkdir -p ~/logs
             DATE=$(date +'%Y-%m-%d_%H-%M')
             cp "$APP_DIR/back-end/API/logs.txt" ~/logs/logs_$DATE.txt 2>/dev/null || true
 
-            echo 'Unpacking release'
-            tar -xzf /tmp/release.tar.gz -C "$STAGE"
-            rm -f /tmp/release.tar.gz
+            echo '=== Migrations ==='
+            cd "$BUILD_DIR/back-end/API"
+            ../venv/bin/flask db upgrade
+
+            echo '=== Copie vers /var/www ==='
             mkdir -p "$APP_DIR/back-end" "$APP_DIR/front-end/projet_application"
+            rsync -a --delete --exclude /API/logs.txt --exclude /API/__pycache__ \
+              "$BUILD_DIR/back-end/" "$APP_DIR/back-end/"
+            rsync -a --delete \
+              "$BUILD_DIR/front-end/projet_application/" "$APP_DIR/front-end/projet_application/"
+            rm -rf "$APP_DIR/.python"
 
-            # Replace code but keep the venv and the log file between deploys
-            rsync -a --delete --exclude venv --exclude logs.txt --exclude __pycache__ \
-              "$STAGE/back-end/" "$APP_DIR/back-end/"
-            rsync -a --delete --exclude node_modules \
-              "$STAGE/front-end/projet_application/" "$APP_DIR/front-end/projet_application/"
-            rm -rf "$STAGE"
-
-            echo 'Back-end dependencies and migrations'
-            cd "$APP_DIR/back-end"
-            # uv installs the latest Python (3.15) without touching the system Python
-            export PATH="$HOME/.local/bin:$PATH"
-            command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
-            uv self update || true     # un uv ancien ne connaît pas Python 3.15 final
-            if ! venv/bin/python --version 2>/dev/null | grep -q '^Python 3\.15'; then
-              rm -rf venv
-              uv venv --seed --python 3.15 venv
-            fi
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install gunicorn       # requis par ExecStart du service back-end
-            gunicorn --version
-            cd API
-            flask db upgrade
-            deactivate
-
-            echo 'Front-end production dependencies'
-            cd "$APP_DIR/front-end/projet_application"
-            npm ci --omit=dev
-
-            echo 'Permissions for webApp'
-            # deploy reste propriétaire, webApp lit via le groupe
-            # (seulement les fichiers de deploy : logs.txt appartient à webApp)
-            find "$APP_DIR" -user "$(id -un)" -exec chgrp "$APP_GROUP" {} + \
-              -exec chmod g+rX,o-rwx {} +
+            echo '=== Permissions pour webapp ==='
+            find "$APP_DIR" "$UV_PYTHON_INSTALL_DIR" -user "$(id -un)" \
+              -exec chgrp "$APP_GROUP" {} + -exec chmod g+rX,o-rwx {} +
             chmod 640 "$APP_DIR/back-end/API/.env"
-            # webApp doit pouvoir créer/écrire logs.txt dans API/
             chmod g+w "$APP_DIR/back-end/API"
+            if [ -O "$APP_DIR/back-end/API/logs.txt" ]; then
+              chmod 660 "$APP_DIR/back-end/API/logs.txt"
+            fi
 
-            echo 'Starting services'
-            sudo -n systemctl start back-end
-            sudo -n systemctl start front-end
+            echo '=== Démarrage des services ==='
+            systemctl start back-end
+            systemctl start front-end
             echo 'Deployment successful to DEV server'
