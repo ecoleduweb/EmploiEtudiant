@@ -120,8 +120,8 @@ jobs:
             STAGE=$(mktemp -d)
 
             echo 'Stopping services'
-            sudo -n systemctl stop front-end
-            sudo -n systemctl stop back-end
+            systemctl stop front-end
+            systemctl stop back-end
 
             echo 'Archiving log file'
             mkdir -p ~/logs
@@ -173,6 +173,6 @@ jobs:
             chmod g+w "$APP_DIR/back-end/API"
 
             echo 'Starting services'
-            sudo -n systemctl start back-end
-            sudo -n systemctl start front-end
+            systemctl start back-end
+            systemctl start front-end
             echo 'Deployment successful to DEV server'
