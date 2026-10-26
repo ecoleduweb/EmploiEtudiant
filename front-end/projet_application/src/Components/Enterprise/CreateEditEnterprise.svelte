@@ -54,13 +54,10 @@
     onMount(async () => {
         isFetchingOptions = true
         cityOptions = await fetchCitiesAsOptions()
-        if (isEnterpriseEdit && enterprise.city) {
-            selectedCities = [
-                {
-                    label: enterprise.city.city,
-                    value: enterprise.city.id,
-                },
-            ]
+        if (isEnterpriseEdit) {
+            const cityId = enterprise.city?.id ?? enterprise.cityId
+            const selectedCity = cityOptions.find((c) => c.value === cityId)
+            if (selectedCity) selectedCities = [selectedCity]
         }
         if (isModerator) {
             userOptions = await fetchUsersAsOptions()
