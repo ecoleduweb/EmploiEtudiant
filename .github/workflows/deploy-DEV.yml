@@ -82,6 +82,7 @@ jobs:
           cp -r front-end/projet_application/build release/front-end/projet_application/build
           cp front-end/projet_application/package.json front-end/projet_application/package-lock.json \
             release/front-end/projet_application/
+          cp front-end/projet_application/.env release/front-end/projet_application/.env
 
           tar -czf release.tar.gz -C release .
 
