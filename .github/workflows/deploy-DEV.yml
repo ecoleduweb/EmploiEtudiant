@@ -113,9 +113,9 @@ jobs:
             set -e
             umask 0027
             APP_DIR=/var/www/ProjetApplicationH2024
-            APP_GROUP=webApp           # groupe de l'utilisateur qui exécute l'app
-            # Python installé par uv dans un dossier lisible par webApp
-            # (par défaut uv l'installerait dans ~deploy, inaccessible pour webApp)
+            APP_GROUP=webapp           # groupe de l'utilisateur qui exécute l'app
+            # Python installé par uv dans un dossier lisible par webapp
+            # (par défaut uv l'installerait dans ~deploy, inaccessible pour webapp)
             export UV_PYTHON_INSTALL_DIR="$APP_DIR/.python"
             STAGE=$(mktemp -d)
 
@@ -163,13 +163,13 @@ jobs:
             cd "$APP_DIR/front-end/projet_application"
             npm ci --omit=dev
 
-            echo 'Permissions for webApp'
-            # deploy reste propriétaire, webApp lit via le groupe
-            # (seulement les fichiers de deploy : logs.txt appartient à webApp)
+            echo 'Permissions for webapp'
+            # deploy reste propriétaire, webapp lit via le groupe
+            # (seulement les fichiers de deploy : logs.txt appartient à webapp)
             find "$APP_DIR" -user "$(id -un)" -exec chgrp "$APP_GROUP" {} + \
               -exec chmod g+rX,o-rwx {} +
             chmod 640 "$APP_DIR/back-end/API/.env"
-            # webApp doit pouvoir créer/écrire logs.txt dans API/
+            # webapp doit pouvoir créer/écrire logs.txt dans API/
             chmod g+w "$APP_DIR/back-end/API"
 
             echo 'Starting services'
