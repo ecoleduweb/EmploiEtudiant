@@ -6,7 +6,7 @@ Flask-Migrate==4.1.0
 gunicorn==24.1.1
 mariadb==1.1.14
 node==1.2.2
-PyJWT==2.10.1
+PyJWT==2.15.0
 PyMySQL==1.1.2
 pytest==9.0.2
 python-dotenv==1.2.1
