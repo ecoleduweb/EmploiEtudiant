@@ -19,4 +19,5 @@ opentelemetry-exporter-otlp==1.45.1
 bleach==6.4.0
 msal==1.39.0
 pydantic==2.14.1
+pydantic[email]==2.14.1
 freezegun==1.5.5
