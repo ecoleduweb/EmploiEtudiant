@@ -2,20 +2,18 @@ name: DEV - Build & Deploy
 on:
   push:
     branches: [dev]
+  # Permet de lancer le workflow à la main : onglet Actions > "DEV - Build & Deploy" > Run workflow
   workflow_dispatch:
-
-permissions:
-  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 26
           cache: npm
@@ -93,7 +91,7 @@ jobs:
           tar -czf release.tar.gz -C release .
 
       - name: Upload release to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -106,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy on server
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.DEV_SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
