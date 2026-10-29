@@ -1,191 +1,96 @@
-name: PROD - Build & Deploy
+name: Deployer EmploiEtudiant PROD
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
-
-permissions:
-  contents: read
-
+  
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 26
-          cache: npm
-          cache-dependency-path: front-end/projet_application/package-lock.json
-
-      - name: Build front-end
-        working-directory: front-end/projet_application
-        env:
-          PUBLIC_BASE_URL: ${{ secrets.PROD_FRONT_PUBLIC_URL }}
-          PUBLIC_RECAPTCHA_KEY: ${{ secrets.PUBLIC_RECAPTCHA_KEY }}
-          PUBLIC_PUBLIC_MEASUREMENT_ID: ${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID }}
-          PUBLIC_TRACE_URL: https://telemetry.edwrdl.ca/traces
-          PUBLIC_APPLICATION_NAME: EMPLOI_ETUDIANT_PROD
-          PUBLIC_ENABLED_TELEMETRY: "TRUE"
-        run: |
-          {
-            echo "PUBLIC_BASE_URL=$PUBLIC_BASE_URL"
-            echo "PUBLIC_RECAPTCHA_KEY=$PUBLIC_RECAPTCHA_KEY"
-            echo "PUBLIC_PUBLIC_MEASUREMENT_ID=$PUBLIC_PUBLIC_MEASUREMENT_ID"
-            echo "PUBLIC_TRACE_URL=$PUBLIC_TRACE_URL"
-            echo "PUBLIC_APPLICATION_NAME=$PUBLIC_APPLICATION_NAME"
-            echo "PUBLIC_ENABLED_TELEMETRY=$PUBLIC_ENABLED_TELEMETRY"
-          } > .env
-          npm ci
-          npm run build
-
-      - name: Assemble release
-        env:
-          DATABASE_TEST_URL: ${{ secrets.DATABASE_TEST_URL }}
-          DATABASE_PROD_URL: ${{ secrets.DATABASE_PROD_URL }}
-          CORS: ${{ secrets.PROD_CORS_IP }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          MAIL_CLIENT_ID: ${{ secrets.MAIL_CLIENT_ID }}
-          MAIL_CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
-          MAIL_TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
-          MAIL_GRAPH_USER_ID: ${{ secrets.MAIL_GRAPH_USER_ID }}
-          MAIL_ADMINISTRATOR_ADDRESS: ${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-          RECAPTCHA_KEY: ${{ secrets.RECAPTCHA_KEY }}
-          URL: ${{ secrets.PROD_URL }}
-          ENABLE_TRACING: "True"
-          APPLICATION_NAME: "API_EMPLOI_ETUDIANT_PROD"
-        run: |
-          mkdir -p release/back-end release/front-end/projet_application
-
-          rsync -a \
-            --exclude 'venv' --exclude '__pycache__' --exclude '*.pyc' \
-            --exclude 'tests' --exclude '.env' --exclude 'logs.txt' \
-            back-end/ release/back-end/
-
-          {
-            echo "DATABASE_TEST_URL=$DATABASE_TEST_URL"
-            echo "DATABASE_DEV_URL=$DATABASE_PROD_URL"
-            echo "CORS=$CORS"
-            echo "SECRET_KEY=$SECRET_KEY"
-            echo "MAIL_ENABLED=True"
-            echo "MAIL_CLIENT_ID=$MAIL_CLIENT_ID"
-            echo "CLIENT_SECRET=$CLIENT_SECRET"
-            echo "TENANT_ID=$TENANT_ID"
-            echo "MAIL_GRAPH_USER_ID=$MAIL_GRAPH_USER_ID"
-            echo "MAIL_ADMINISTRATOR_ADDRESS=$MAIL_ADMINISTRATOR_ADDRESS"
-            echo "ENCRYPTION_KEY=$ENCRYPTION_KEY"
-            echo "RECAPTCHA_KEY=$RECAPTCHA_KEY"
-            echo "URL=$URL"
-            echo "ENABLE_TRACING=True"
-            echo "TRACE_URL=https://telemetry.edwrdl.ca/traces"
-            echo "MAIL_ENABLED=True"
-            echo "APPLICATION_NAME=API_EMPLOI_ETUDIANT_PROD"
-          } > release/back-end/API/.env
-
-          cp -r front-end/projet_application/build release/front-end/projet_application/build
-          cp front-end/projet_application/package.json front-end/projet_application/package-lock.json \
-            release/front-end/projet_application/
-          cp front-end/projet_application/.env release/front-end/projet_application/.env
-
-          tar -czf release.tar.gz -C release .
-
-      - name: Upload release to server
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.PROD_SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          source: release.tar.gz
-          target: /tmp/
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy on server
+      - name: Deploy Full Application
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
-            set -e
-            umask 0027
-            APP_DIR=/var/www/ProjetApplicationH2024
-            BUILD_DIR="$HOME/build/ProjetApplicationH2024"
-            APP_GROUP=webapp
-            export UV_PYTHON_INSTALL_DIR=/opt/ProjetApplicationH2024/python
-            export PATH="$HOME/.local/bin:$PATH"
+            set -e # Exit immediately if a command exits with a non-zero status.
+            echo "Starting deployment process..."
 
-            if [ ! -w "$UV_PYTHON_INSTALL_DIR" ]; then
-              echo "ERREUR : $UV_PYTHON_INSTALL_DIR doit exister et appartenir à $(id -un)" >&2
-              exit 1
-            fi
+            # Arrêt des services
+            echo "Stopping services..."
+            systemctl stop front-end.service || echo "Front-end service not running"
+            systemctl stop back-end.service || echo "API service not running"
 
-            echo '=== Préparation dans le dossier de build ==='
-            mkdir -p "$BUILD_DIR/back-end" "$BUILD_DIR/front-end/projet_application"
-            STAGE=$(mktemp -d)
-            tar -xzf /tmp/release.tar.gz -C "$STAGE"
-            rm -f /tmp/release.tar.gz
-            rsync -a --delete --exclude venv --exclude logs.txt \
-              "$STAGE/back-end/" "$BUILD_DIR/back-end/"
-            rsync -a --delete --exclude node_modules \
-              "$STAGE/front-end/projet_application/" "$BUILD_DIR/front-end/projet_application/"
-            rm -rf "$STAGE"
-
-            echo '=== Back-end : venv et dépendances ==='
-            command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
-            uv self update || true
-            cd "$BUILD_DIR/back-end"
-            if ! venv/bin/python --version 2>/dev/null | grep -q '^Python 3\.15' \
-               || ! grep -q '^relocatable = true' venv/pyvenv.cfg 2>/dev/null; then
-              rm -rf venv
-              uv venv --relocatable --python 3.15 venv
-            fi
-            uv pip install --python venv -r requirements.txt gunicorn
-            venv/bin/gunicorn --version
-
-            echo '=== Front-end : dépendances de production ==='
-            cd "$BUILD_DIR/front-end/projet_application"
-            npm ci --omit=dev
-
-            echo '=== Arrêt des services ==='
-            systemctl stop front-end
-            systemctl stop back-end
-
-            echo '=== Archivage du log ==='
-            mkdir -p ~/logs
+            # Copie du fichier de logs
+            echo 'Moving logs file to logs backup folder'
             DATE=$(date +'%Y-%m-%d_%H-%M')
-            cp "$APP_DIR/back-end/API/logs.txt" ~/logs/logs_$DATE.txt 2>/dev/null || true
+            #Pas encore de logs dans notre app
+            #[ -f "/var/www/emploi/back-end/API/logs.txt" ] && cp /var/www/emploi/back-end/API/logs.txt /var/www/logs/logs_Emploi_$DATE.txt
 
-            echo '=== Migrations ==='
-            cd "$BUILD_DIR/back-end/API"
-            ../venv/bin/flask db upgrade
+            # Suppression et recréation du répertoire
+            echo "Refreshing project directory..."
+            mkdir -p /var/www/emploi
+            find /var/www/emploi -mindepth 1 -delete
 
-            echo '=== Copie vers /var/www ==='
-            mkdir -p "$APP_DIR/back-end" "$APP_DIR/front-end/projet_application"
-            rsync -a --delete --exclude /API/logs.txt --exclude /API/__pycache__ \
-              "$BUILD_DIR/back-end/" "$APP_DIR/back-end/"
-            rsync -a --delete \
-              "$BUILD_DIR/front-end/projet_application/" "$APP_DIR/front-end/projet_application/"
-            rm -rf "$APP_DIR/.python"
+            #Préparation du VENV
+            echo "Cloning fresh repository..."
+            git clone --branch ${{ github.ref_name }} --depth 1 https://github.com/ecoleduweb/ProjetApplicationH2024.git /var/www/emploi
+            # Préparation du VENV
+            cd /var/www/emploi//back-end
+            python3 -m venv venv
+            source venv/bin/activate
 
-            echo '=== Permissions pour webapp ==='
-            find "$APP_DIR" "$UV_PYTHON_INSTALL_DIR" -user "$(id -un)" \
-              -exec chgrp "$APP_GROUP" {} + -exec chmod g+rX,o-rwx {} +
-            chmod 640 "$APP_DIR/back-end/API/.env"
-            chmod g+w "$APP_DIR/back-end/API"
-            if [ -O "$APP_DIR/back-end/API/logs.txt" ]; then
-              chmod 660 "$APP_DIR/back-end/API/logs.txt"
-            fi
+            # Dépendances système
+            pip install -r requirements.txt
+            
+            # Configuration API
+            echo "Configuring API..."
+            cd /var/www/emploi/back-end/API
+            cat > .env << EOF
+            DATABASE_TEST_URL=${{ secrets.DATABASE_TEST_URL }}
+            DATABASE_DEV_URL=${{ secrets.DATABASE_PROD_URL }}
+            CORS=${{ secrets.PROD_CORS_IP }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            MAIL_ENABLED=True
+            MAIL_CLIENT_ID=${{ secrets.MAIL_CLIENT_ID }}
+            CLIENT_SECRET=${{ secrets.MAIL_CLIENT_SECRET }}
+            MAIL_TENANT_ID=${{ secrets.MAIL_TENANT_ID }}
+            MAIL_GRAPH_USER_ID=${{ secrets.MAIL_GRAPH_USER_ID }}
+            MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+            RECAPTCHA_KEY=${{ secrets.RECAPTCHA_KEY }}
+            URL=${{ secrets.PROD_URL }}
+            ENABLE_TRACING=True
+            TRACE_URL=https://telemetry.edwrdl.ca/traces
+            APPLICATION_NAME=API_EMPLOI_ETUDIANT_PROD
+            EOF
+            
+            echo "Running migrations..."
+            flask db upgrade
 
-            echo '=== Démarrage des services ==='
-            systemctl start back-end
-            systemctl start front-end
-            echo 'Deployment successful to PROD server'  
+            # Configuration Frontend
+            echo "Configuring Frontend..."
+            cd /var/www/emploi/front-end/projet_application
+            cat > .env << EOF
+            PUBLIC_BASE_URL=${{ secrets.PROD_FRONT_PUBLIC_URL}}
+            PUBLIC_RECAPTCHA_KEY=${{ secrets.PUBLIC_RECAPTCHA_KEY}}
+            PUBLIC_PUBLIC_MEASUREMENT_ID=${{ secrets.PUBLIC_PUBLIC_MEASUREMENT_ID}}
+            PUBLIC_TRACE_URL=https://telemetry.edwrdl.ca/traces
+            PUBLIC_APPLICATION_NAME=EMPLOI_ETUDIANT_PROD
+            PUBLIC_ENABLED_TELEMETRY=TRUE
+            EOF
+
+            echo "Building Frontend..."
+            npm ci
+            npm run build
+
+            # Démarrage des services
+            echo "Starting services..."
+            systemctl start back-end.service || echo "Failed to start API service"
+            systemctl start front-end.service || echo "Failed to start Frontend service"
+
+
+            echo "Deployment completed successfully!"

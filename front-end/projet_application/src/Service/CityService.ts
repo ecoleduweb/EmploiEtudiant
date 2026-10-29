@@ -11,7 +11,7 @@ const getCities = async (): Promise<City[]> => {
       cityData = JSON.parse(savedData)
     }
     // Valeur de date hardcodée. Pas parfait, mais plus simple.
-    if (cityData?.cachingDate && cityData.cachingDate > new Date("2026-10-29").getTime()) {
+    if (cityData?.cachingDate && cityData?.cachingDate > new Date("2026-10-29").getTime()) {
       return cityData.cities
     }
 
@@ -26,11 +26,12 @@ const getCities = async (): Promise<City[]> => {
   }
   catch {
     console.error("Failed to fetch cities. Returning empty array.")
+    localStorage.removeItem("City")
     alert("Impossible de récupérer les villes. Veuillez contacter le service des communications pour nous faire part du problème.")
   }
   // plan b
   finally {
-    return cityData.cities ? cityData.cities : GET<City[]>("/city/all")
+    return await GET<City[]>("/city/all")
   }
 }
 
