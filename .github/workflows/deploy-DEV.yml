@@ -3,7 +3,10 @@ on:
   push:
     branches: [dev]
   workflow_dispatch:
-
+  
+permissions:
+  contents: read
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +49,8 @@ jobs:
           CORS: ${{ secrets.DEV_CORS_IP }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           MAIL_CLIENT_ID: ${{ secrets.MAIL_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
-          TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
+          MAIL_CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
+          MAIL_TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
           MAIL_GRAPH_USER_ID: ${{ secrets.MAIL_GRAPH_USER_ID }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
           RECAPTCHA_KEY: ${{ secrets.RECAPTCHA_KEY }}

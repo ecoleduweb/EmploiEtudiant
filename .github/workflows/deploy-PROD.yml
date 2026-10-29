@@ -5,6 +5,9 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,8 +51,8 @@ jobs:
           CORS: ${{ secrets.PROD_CORS_IP }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           MAIL_CLIENT_ID: ${{ secrets.MAIL_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
-          TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
+          MAIL_CLIENT_SECRET: ${{ secrets.MAIL_CLIENT_SECRET }}
+          MAIL_TENANT_ID: ${{ secrets.MAIL_TENANT_ID }}
           MAIL_GRAPH_USER_ID: ${{ secrets.MAIL_GRAPH_USER_ID }}
           MAIL_ADMINISTRATOR_ADDRESS: ${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -67,7 +70,7 @@ jobs:
 
           {
             echo "DATABASE_TEST_URL=$DATABASE_TEST_URL"
-            echo "DATABASE_PROD_URL=$DATABASE_PROD_URL"
+            echo "DATABASE_DEV_URL=$DATABASE_PROD_URL"
             echo "CORS=$CORS"
             echo "SECRET_KEY=$SECRET_KEY"
             echo "MAIL_ENABLED=True"
@@ -75,13 +78,13 @@ jobs:
             echo "CLIENT_SECRET=$CLIENT_SECRET"
             echo "TENANT_ID=$TENANT_ID"
             echo "MAIL_GRAPH_USER_ID=$MAIL_GRAPH_USER_ID"
-            echo "MAIL_ADMINISTRATOR_ADDRESS=$MAIL_ADMINISTRATOR_ADDRESS
+            echo "MAIL_ADMINISTRATOR_ADDRESS=$MAIL_ADMINISTRATOR_ADDRESS"
             echo "ENCRYPTION_KEY=$ENCRYPTION_KEY"
             echo "RECAPTCHA_KEY=$RECAPTCHA_KEY"
             echo "URL=$URL"
             echo "ENABLE_TRACING=True"
             echo "TRACE_URL=https://telemetry.edwrdl.ca/traces"
-            echo "MAIL_ENABLED="True"
+            echo "MAIL_ENABLED=True"
             echo "APPLICATION_NAME=API_EMPLOI_ETUDIANT_PROD"
           } > release/back-end/API/.env
 
