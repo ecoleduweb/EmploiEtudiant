@@ -56,7 +56,7 @@ jobs:
             SECRET_KEY=${{ secrets.SECRET_KEY }}
             MAIL_ENABLED=True
             MAIL_CLIENT_ID=${{ secrets.MAIL_CLIENT_ID }}
-            CLIENT_SECRET=${{ secrets.MAIL_CLIENT_SECRET }}
+            MAIL_CLIENT_SECRET=${{ secrets.MAIL_CLIENT_SECRET }}
             MAIL_TENANT_ID=${{ secrets.MAIL_TENANT_ID }}
             MAIL_GRAPH_USER_ID=${{ secrets.MAIL_GRAPH_USER_ID }}
             MAIL_ADMINISTRATOR_ADDRESS=${{ secrets.MAIL_ADMINISTRATOR_ADDRESS }}
