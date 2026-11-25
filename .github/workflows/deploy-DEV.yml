@@ -16,8 +16,8 @@ jobs:
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
-          oauth-client-id: ${{ secrets.TAILSCALE_CLIENTID }}      # your Client ID
-          audience: ${{ secrets.TAILSCALE_AUDIENCE }}  # your Audience
+          oauth-client-id: ${{ secrets.TAILSCALE_CLIENTID }}  
+          audience: ${{ secrets.TAILSCALE_AUDIENCE }}  
           tags: ${{ secrets.TAILSCALE_TAG }}
           
       - name: Deploy Full Application
